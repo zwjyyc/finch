@@ -10,7 +10,7 @@ def build_keras_lstm(input_size, time_steps, cell_size, output_size):
         input_length = time_steps,
         output_dim = cell_size,
         unroll = True,
-        dropout_W = 0.3,
+        dropout_W = 0.5,
     ))
     model.add(Dense(output_size))
     model.add(Activation('softmax'))

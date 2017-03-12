@@ -25,15 +25,15 @@ class RNNClassifier:
         # start rnn calculation
         X = tf.transpose(self.X, [1, 0, 2])
         X = tf.reshape(X, [-1, n_in])
-        X = tf.split(0, n_step, X)
+        X = tf.split(X, n_step, 0)
 
-        lstm_cell = tf.nn.rnn_cell.LSTMCell(n_hidden_units, state_is_tuple=True)
-        lstm_cell = tf.nn.rnn_cell.DropoutWrapper(lstm_cell, input_keep_prob=1.0, output_keep_prob=0.5)
-        outputs, states = tf.nn.rnn(cell=lstm_cell, inputs=X, dtype=tf.float32)
+        lstm_cell = tf.contrib.rnn.LSTMCell(n_hidden_units, state_is_tuple=True)
+        lstm_cell = tf.contrib.rnn.DropoutWrapper(lstm_cell, input_keep_prob=1.0, output_keep_prob=0.5)
+        outputs, states = tf.contrib.rnn.static_rnn(cell=lstm_cell, inputs=X, dtype=tf.float32)
         self.pred = tf.add(tf.matmul(outputs[-1], self.W), self.b)
         # end rnn calculation
 
-        self.cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(self.pred, self.y))
+        self.cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
         #self.learning_rate = tf.placeholder(tf.float32)
         self.optimize = tf.train.AdamOptimizer(1e-4).minimize(self.cost)
 

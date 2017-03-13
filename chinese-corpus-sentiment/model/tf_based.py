@@ -34,8 +34,9 @@ class RNNClassifier:
         # end rnn calculation
 
         self.cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
-        #self.learning_rate = tf.placeholder(tf.float32)
-        self.optimize = tf.train.AdamOptimizer(1e-4).minimize(self.cost)
+        self.init_lr = 1e-4
+        self.lr = tf.placeholder(tf.float32)
+        self.optimize = tf.train.AdamOptimizer(self.lr).minimize(self.cost)
 
         # evaluate model
         self.is_correct = tf.equal(tf.argmax(self.pred, 1), self.y)
@@ -60,7 +61,7 @@ class RNNClassifier:
             y_train_batch_list = np.array_split(y_train, nb_batch)
             for _ in range(nb_epoch):
                 for X_train_batch, y_train_batch in zip(X_train_batch_list, y_train_batch_list):
-                    sess.run(self.optimize, feed_dict={self.X: X_train_batch, self.y: y_train_batch})
+                    sess.run(self.optimize, feed_dict={self.X: X_train_batch, self.y: y_train_batch, self.lr: self.lr_fn(log)})
                 loss, acc = sess.run([self.cost, self.acc],
                                      feed_dict={self.X: X_train_batch, self.y: y_train_batch})
                 val_loss, val_acc = sess.run([self.cost, self.acc],
@@ -82,3 +83,14 @@ class RNNClassifier:
             self.saver.restore(sess, self.model_path) # restore model weights from disk
             y_test_pred = sess.run(self.pred, feed_dict={self.X: X_test})
         return np.argmax(y_test_pred, axis=1)
+
+
+    def lr_fn(self, log):
+        if len(log['val_loss']) < 2:
+            return self.init_lr
+        else:
+            if log['val_loss'][-1] > log['val_loss'][-2]:
+                return self.init_lr / 2
+            else:
+                return self.init_lr
+

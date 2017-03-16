@@ -2,4 +2,4 @@
  * classify the sentiments of hotel Chinese reviews ( [ChnSentiCorp](http://tjzhifei.github.io/resource.html) )
  * [fastText pre-trained model](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md) + LSTM
  * the results show [80% testing accuracy] (https://github.com/zhedongzheng/finch/blob/master/chinese-corpus-sentiment/tests/log/keras_lstm_test.png)
-* [beta stage](https://zhedongzheng.github.io/supervised-learning)
+* [beta stage](https://zhedongzheng.github.io/supervised-learning/svm.html)

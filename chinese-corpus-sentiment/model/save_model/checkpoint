@@ -1,2 +1,0 @@
-model_checkpoint_path: "/home/zhedongzheng/py2-linux/chinese-corpus-sentiment/model/save_model/rnn.ckpt"
-all_model_checkpoint_paths: "/home/zhedongzheng/py2-linux/chinese-corpus-sentiment/model/save_model/rnn.ckpt"

@@ -3,8 +3,7 @@ import numpy as np
 
 
 class LinearSVMClassifier:
-    def __init__(self, C, n_in, lr_decay_steps=None):
-        self.n_in = 0
+    def __init__(self, C, n_in):
         self.X = tf.placeholder(shape=(None, n_in), dtype=tf.float32)
         self.y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
 
@@ -18,12 +17,7 @@ class LinearSVMClassifier:
 
         self.pred = tf.sign(y_raw)
         self.loss = regu_loss + C * hinge_loss
-        if lr_decay_steps is None:
-            self.train = tf.train.GradientDescentOptimizer(1e-3).minimize(self.loss)
-        else:
-            global_step = tf.Variable(0, trainable=False)
-            lr = tf.train.exponential_decay(0.01, global_step, lr_decay_steps, 0.95, staircase=True)
-            self.train = tf.train.GradientDescentOptimizer(lr).minimize(self.loss, global_step=global_step)
+        self.train = tf.train.GradientDescentOptimizer(1e-3).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal(self.pred, self.y), tf.float32 ) )
 
         self.sess = tf.Session()
@@ -34,6 +28,7 @@ class LinearSVMClassifier:
         print("Train %d samples | Test %d samples" % (len(X), len(validation_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
 
+        test_batch_size = batch_size
         if batch_size is None:
             batch_size = len(X)
             test_batch_size = len(validation_data[0])
@@ -66,7 +61,7 @@ class LinearSVMClassifier:
 
             # verbose
             print ("%d / %d: train_loss: %.4f train_acc: %.4f | test_loss: %.4f test_acc: %.4f"
-                   % (epoch, n_epoch, loss, acc, val_loss, val_acc))
+                   % (epoch+1, n_epoch, loss, acc, val_loss, val_acc))
             
         return log
     # end method fit

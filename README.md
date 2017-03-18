@@ -3,4 +3,4 @@
         * [Tensorflow - Linear SVM](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm.py)
 * Deep Learning
     * [RNN](https://zhedongzheng.github.io/deep-learning/rnn.html)
-        * [Tensorflow - RNN(LSTM)](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn.py)
+        * [Tensorflow - RNN (LSTM)](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn.py)

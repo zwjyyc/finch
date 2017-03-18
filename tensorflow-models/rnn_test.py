@@ -4,6 +4,7 @@ from rnn import RNNClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import os, sys
 
 
 def plot(log, dir='./log'):
@@ -27,6 +28,7 @@ if __name__ == '__main__':
     clf = RNNClassifier(n_in=28, n_step=28, n_out=10)
     log = clf.fit(X_train, y_train, (X_test, y_test))
     pred = clf.predict(X_test)
+    clf.close()
     final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test[:len(pred)], 1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)
 

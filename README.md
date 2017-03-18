@@ -1,6 +1,6 @@
 * Supervised Learning
     * [SVM](https://zhedongzheng.github.io/supervised-learning/svm.html)
-        * [Tensorflow - Linear SVM](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm.py)
+        * TensorFlow - Linear SVM [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm.py) [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_test.py)
 * Deep Learning
     * [RNN](https://zhedongzheng.github.io/deep-learning/rnn.html)
-        * [Tensorflow - RNN (LSTM)](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn.py)
+        * TensorFlow - RNN (LSTM) [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn.py) [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_test.py)

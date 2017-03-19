@@ -10,16 +10,21 @@ class RNNClassifier:
         self.n_hidden = n_hidden
         self.n_out = n_out
 
-        self.X = tf.placeholder(tf.float32, [None, n_step, n_in])
-        self.y = tf.placeholder(tf.float32, [None, n_out])
+        self.build_graph()
+    # end constructor
+
+
+    def build_graph(self):
+        self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
+        self.y = tf.placeholder(tf.float32, [None, self.n_out])
 
         self.W = {
-            'in': tf.Variable(tf.random_normal([n_in, n_hidden])),
-            'out': tf.Variable(tf.random_normal([n_hidden, n_out]))
+            'in': tf.Variable(tf.random_normal([self.n_in, self.n_hidden])),
+            'out': tf.Variable(tf.random_normal([self.n_hidden, self.n_out]))
         }
         self.b = {
-            'in': tf.Variable(tf.constant(0.1, shape=[n_hidden])),
-            'out': tf.Variable(tf.constant(0.1, shape=[n_out]))
+            'in': tf.Variable(tf.constant(0.1, shape=[self.n_hidden])),
+            'out': tf.Variable(tf.constant(0.1, shape=[self.n_out]))
         }
 
         self.batch_size = tf.placeholder(tf.int32)
@@ -32,7 +37,8 @@ class RNNClassifier:
 
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
-    # end constructor
+    # end method build_graph
+
 
     def rnn(self, X, W, b):
         X = tf.reshape(X, [-1, self.n_in])
@@ -44,7 +50,7 @@ class RNNClassifier:
 
         outputs, final_state = tf.nn.dynamic_rnn(lstm_cell, X_in, initial_state=init_state, time_major=False)
         outputs = tf.unstack(tf.transpose(outputs, [1,0,2]))
-        results = tf.matmul(outputs[-1], W['out']) + b['out']
+        results = tf.nn.bias_add(tf.matmul(outputs[-1], W['out']), b['out'])
 
         return results
     # end method rnn

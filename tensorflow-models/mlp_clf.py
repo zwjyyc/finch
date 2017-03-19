@@ -9,8 +9,13 @@ class MLPClassifier:
         self.n_hid = n_hidden_list
         self.n_out = n_out
 
-        self.X = tf.placeholder(tf.float32, [None, n_in])
-        self.y = tf.placeholder(tf.float32, [None, n_out])
+        self.build_graph()
+    # end constructor
+
+
+    def build_graph(self):
+        self.X = tf.placeholder(tf.float32, [None, self.n_in])
+        self.y = tf.placeholder(tf.float32, [None, self.n_out])
 
         self.lr = tf.placeholder(tf.float32)
 
@@ -21,8 +26,7 @@ class MLPClassifier:
 
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
-    # end constructor
-
+    # end method build_graph
 
     def mlp(self, X):
         # [n_samples, n_feature] dot [n_feature, n_hidden[0]] -> [n_samples, n_hidden[0]]
@@ -56,7 +60,7 @@ class MLPClassifier:
 
 
     def get_equ(self, X, W, b):
-        return tf.matmul(X, W) + b
+        return tf.nn.bias_add(tf.matmul(X, W), b)
     # end method get_equ
 
 

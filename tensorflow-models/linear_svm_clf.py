@@ -4,10 +4,17 @@ import numpy as np
 
 class LinearSVMClassifier:
     def __init__(self, C, n_in):
-        self.X = tf.placeholder(shape=(None, n_in), dtype=tf.float32)
+        self.C = C
+        self.n_in = n_in
+
+        self.build_graph()
+    # end constructor
+
+    def build_graph(self):
+        self.X = tf.placeholder(shape=(None, self.n_in), dtype=tf.float32)
         self.y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
 
-        self.W = tf.Variable(tf.random_normal(shape=(n_in, 1)))
+        self.W = tf.Variable(tf.random_normal(shape=(self.n_in, 1)))
         self.b = tf.Variable(tf.random_normal(shape=[1]))
         self.batch_size = tf.placeholder(tf.int32)
 
@@ -16,13 +23,13 @@ class LinearSVMClassifier:
         hinge_loss = tf.reduce_sum( tf.maximum( tf.zeros([self.batch_size, 1]), 1 - self.y * y_raw ) )
 
         self.pred = tf.sign(y_raw)
-        self.loss = regu_loss + C * hinge_loss
+        self.loss = regu_loss + self.C * hinge_loss
         self.train = tf.train.GradientDescentOptimizer(1e-3).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal(self.pred, self.y), tf.float32 ) )
 
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
-    # end constructor
+    # end method build_graph
 
     def fit(self, X, y, validation_data, n_epoch=10, batch_size=None):
         print("Train %d samples | Test %d samples" % (len(X), len(validation_data[0])))

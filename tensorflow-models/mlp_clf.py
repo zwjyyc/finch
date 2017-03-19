@@ -12,7 +12,6 @@ class MLPClassifier:
         self.X = tf.placeholder(tf.float32, [None, n_in])
         self.y = tf.placeholder(tf.float32, [None, n_out])
 
-        self.batch_size = tf.placeholder(tf.int32)
         self.lr = tf.placeholder(tf.float32)
 
         self.pred = self.mlp(self.X)
@@ -75,20 +74,18 @@ class MLPClassifier:
             # batch training
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 self.sess.run(self.train, feed_dict={self.X: X_batch, self.y: y_batch,
-                                                     self.batch_size: batch_size,
                                                      self.lr: max_lr*math.exp(-decay_rate*global_step)})
                 global_step += 1
             # compute training loss and acc
-            loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
-                                                                        self.batch_size: batch_size})
+            loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch})
             # compute validation loss and acc
             val_loss_list, val_acc_list = [], []
             for X_test_batch, y_test_batch in zip(self.gen_batch(validation_data[0], batch_size),
                                                   self.gen_batch(validation_data[1], batch_size)):
-                val_loss_list.append(self.sess.run(self.loss, feed_dict={self.X: X_test_batch, self.y: y_test_batch,
-                                     self.batch_size: batch_size}))
-                val_acc_list.append(self.sess.run(self.acc, feed_dict={self.X: X_test_batch, self.y: y_test_batch,
-                                    self.batch_size: batch_size}))
+                val_loss_list.append(self.sess.run(self.loss, feed_dict={self.X: X_test_batch,
+                                                                         self.y: y_test_batch}))
+                val_acc_list.append(self.sess.run(self.acc, feed_dict={self.X: X_test_batch,
+                                                                       self.y: y_test_batch}))
             val_loss, val_acc = sum(val_loss_list)/len(val_loss_list), sum(val_acc_list)/len(val_acc_list)
 
             # append to log
@@ -108,7 +105,7 @@ class MLPClassifier:
     def predict(self, X_test, batch_size=32):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch, self.batch_size: batch_size})
+            batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

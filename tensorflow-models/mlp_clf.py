@@ -50,12 +50,12 @@ class MLPClassifier:
 
 
     def get_W(self, row, col):
-        return tf.Variable(tf.random_normal([row, col]))
+        return tf.Variable(tf.random_normal([row, col], stddev=math.sqrt(2.0/row)))
     # end method get_W
 
 
     def get_b(self, length):
-        return tf.Variable(tf.random_normal([length]))
+        return tf.Variable(tf.constant(0.1, shape=[length]))
     # end method get_b
 
 

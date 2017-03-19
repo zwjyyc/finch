@@ -15,7 +15,7 @@ class LinearSVMClassifier:
         self.y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
 
         self.W = tf.Variable(tf.random_normal(shape=(self.n_in, 1)))
-        self.b = tf.Variable(tf.random_normal(shape=[1]))
+        self.b = tf.Variable(tf.constant(0.1, shape=[1]))
         self.batch_size = tf.placeholder(tf.int32)
 
         y_raw = tf.matmul(self.X, self.W) + self.b

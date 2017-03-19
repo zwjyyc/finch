@@ -1,4 +1,4 @@
-from linear_svm import LinearSVMClassifier
+from linear_svm_clf import LinearSVMClassifier
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
 
     clf = LinearSVMClassifier(C=1.0, n_in=X_train.shape[1])
-    log = clf.fit(X_train, y_train.reshape(-1, 1), n_epoch=2000, batch_size=32,
+    log = clf.fit(X_train, y_train.reshape(-1, 1), n_epoch=100, batch_size=32,
                   validation_data=(X_test, y_test.reshape(-1, 1)))
     y_pred = clf.predict(X_test)
     print("linear svm (tensorflow):", np.equal(y_pred.ravel(), y_test[:len(y_pred)]).astype(float).mean())

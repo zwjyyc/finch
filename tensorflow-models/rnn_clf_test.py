@@ -1,6 +1,6 @@
 from keras.datasets import mnist
 from keras.utils.np_utils import to_categorical
-from rnn import RNNClassifier
+from rnn_clf import RNNClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np

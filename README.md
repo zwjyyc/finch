@@ -1,4 +1,5 @@
 ## Supervised Learning
+* [Preprocessing](https://zhedongzheng.github.io/finch/preprocessing.html)
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
     * TensorFlow | Linear SVM Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
 ## Advanced Topics

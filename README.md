@@ -9,4 +9,4 @@
     * TensorFlow | CNN Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
 * [Recurrent Neural Network](https://zhedongzheng.github.io/finch/rnn)
     * TensorFlow | RNN (LSTM) Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_test.py)
-    * TensorFlow | RNN (LSTM) Regressor | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py)
+    * TensorFlow | RNN (LSTM) seq2seq Regressor | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py)

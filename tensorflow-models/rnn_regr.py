@@ -1,5 +1,6 @@
 import tensorflow as tf
 import math
+import matplotlib.pyplot as plt
 
 
 class RNNRegressor:
@@ -89,6 +90,43 @@ class RNNRegressor:
                     test_loss_list.append(test_loss)
                 if train_idx % 20 == 0:
                     print('train loss: %.4f | test loss: %.4f'
-                          % (train_loss, sum(test_loss_list)/len(test_loss_list)))                
+                          % (train_loss, sum(test_loss_list)/len(test_loss_list)))        
+    # end method fit
+
+
+    def fit_plot(self, train_data, batch_size, test_data):
+        self.sess.run(self.init)
+        plt.ion()
+        plt.show()
+
+        for train_idx, train_sample in enumerate(train_data):
+            seq, res, xs = train_sample
+            if train_idx == 0:
+                feed_dict_train = {self.X: seq, self.y: res, self.batch_size: batch_size}
+            else:
+                feed_dict_train = {self.X: seq, self.y: res, self.cell_init_state: train_state,
+                                   self.batch_size: batch_size}
+            _, train_loss, train_state = self.sess.run(
+                [self.train, self.loss, self.cell_final_state], feed_dict=feed_dict_train)
+
+            test_sample = test_data[train_idx]
+            seq_test, res_test, xs_test = test_sample
+            if train_idx == 0:
+                feed_dict_test = {self.X: seq_test, self.y: res_test, self.batch_size: batch_size}
+            else:
+                feed_dict_test = {self.X: seq_test, self.y: res_test, self.cell_init_state: test_state,
+                                  self.batch_size: batch_size}
+            test_loss, test_state, test_pred = self.sess.run([self.loss, self.cell_final_state, self.pred],
+                                                    feed_dict=feed_dict_test)
+            
+            # update plotting
+            plt.plot(xs.ravel(), res_test.ravel(), 'r', xs.ravel(), test_pred.ravel(), 'b--')
+            plt.ylim((-1.2, 1.2))
+            plt.xlim((xs.ravel()[0], xs.ravel()[-1]))
+            plt.draw()
+            plt.pause(0.3)
+
+            if train_idx % 20 == 0:
+                print('train loss: %.4f | test loss: %.4f' % (train_loss, test_loss))         
     # end method fit
 # end class RNNRegressor

@@ -14,8 +14,8 @@ def get_data_batch():
     seq = np.sin(xs)
     res = np.cos(xs)
     BATCH_START += TIME_STEPS
-    # returned seq, res and xs: shape (batch, step, input)
-    return [seq[:, :, np.newaxis], res[:, :, np.newaxis], xs]
+    # returned seq, res: shape (batch, step, input)
+    return (seq[:, :, np.newaxis], res[:, :, np.newaxis])
 
 
 if __name__ == '__main__':

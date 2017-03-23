@@ -54,8 +54,8 @@ class MLPClassifier:
     # end method get_W
 
 
-    def get_b(self, length):
-        return tf.Variable(tf.constant(0.1, shape=[length]))
+    def get_b(self, D):
+        return tf.Variable(tf.zeros([D]))
     # end method get_b
 
 

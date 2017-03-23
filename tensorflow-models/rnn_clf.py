@@ -23,8 +23,8 @@ class RNNClassifier:
             'out': tf.Variable(tf.random_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2.0/self.n_hidden)))
         }
         self.b = {
-            'in': tf.Variable(tf.constant(0.1, shape=[self.n_hidden])),
-            'out': tf.Variable(tf.constant(0.1, shape=[self.n_out]))
+            'in': tf.Variable(tf.zeros([self.n_hidden])),
+            'out': tf.Variable(tf.zeros([self.n_out]))
         }
 
         self.batch_size = tf.placeholder(tf.int32)

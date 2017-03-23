@@ -10,3 +10,5 @@
 * [Recurrent Neural Network](https://zhedongzheng.github.io/finch/rnn)
     * TensorFlow | RNN (LSTM) Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_test.py)
     * TensorFlow | RNN (LSTM) Regressor | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) | [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)
+## Computer Vision
+* [contours](https://github.com/zhedongzheng/finch/blob/master/computer_vision/contours.ipynb)

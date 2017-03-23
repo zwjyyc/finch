@@ -12,5 +12,5 @@
     * TensorFlow | RNN (LSTM) Regressor | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) | [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)
 ## Computer Vision
 * Image Segmentation
-   * [Contours](https://github.com/zhedongzheng/finch/blob/master/computer_vision/contours.ipynb)
-   * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer_vision/sorting-contours.ipynb)
+   * [Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/contours.ipynb)
+   * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/sorting-contours.ipynb)

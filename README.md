@@ -13,3 +13,4 @@
 ## Computer Vision
 * Image Segmentation
    * [Contours](https://github.com/zhedongzheng/finch/blob/master/computer_vision/contours.ipynb)
+   * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer_vision/contours.ipynb)

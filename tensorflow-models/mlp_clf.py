@@ -49,8 +49,8 @@ class MLPClassifier:
     # end method mlp
 
 
-    def get_W(self, row, col):
-        return tf.Variable(tf.random_normal([row, col], stddev=math.sqrt(2.0/row)))
+    def get_W(self, N, D):
+        return tf.Variable(tf.random_normal([N, D], stddev=math.sqrt(2.0/N)))
     # end method get_W
 
 

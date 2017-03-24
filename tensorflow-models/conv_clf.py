@@ -4,9 +4,9 @@ import math
 
 
 class ConvClassifier:
-    def __init__(self, width, height, n_out=2):
-        self.width = width
-        self.height = height
+    def __init__(self, img_h, img_w, n_out=2):
+        self.img_h = img_h
+        self.img_w = img_w
         self.n_out = n_out
 
         self.build_graph()
@@ -14,14 +14,14 @@ class ConvClassifier:
 
 
     def build_graph(self):
-        self.X = tf.placeholder(tf.float32, [None, self.width, self.height, 1])
+        self.X = tf.placeholder(tf.float32, [None, self.img_h, self.img_w, 1])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
 
         self.W = {
             'wc1': tf.Variable(tf.random_normal([5, 5, 1, 32])), # 5x5 conv, 1 input, 32 outputs
             'wc2': tf.Variable(tf.random_normal([5, 5, 32, 64])), # 5x5 conv, 32 inputs, 64 outputs
             # fully connected
-            'wd1': tf.Variable(tf.random_normal([int(self.width/4) * int(self.height/4) * 64, 1024])),
+            'wd1': tf.Variable(tf.random_normal([int(self.img_h/4) * int(self.img_w/4) * 64, 1024])),
             'out': tf.Variable(tf.random_normal([1024, self.n_out])) # class prediction
         }
         self.b = {

@@ -49,13 +49,13 @@ class MLPClassifier:
     # end method mlp
 
 
-    def get_W(self, N, D):
-        return tf.Variable(tf.random_normal([N, D], stddev=math.sqrt(2.0/N)))
+    def get_W(self, fan_in, fan_out):
+        return tf.Variable(tf.random_normal([fan_in, fan_out], stddev=math.sqrt(2.0 / fan_in)))
     # end method get_W
 
 
-    def get_b(self, D):
-        return tf.Variable(tf.zeros([D]))
+    def get_b(self, fan_out):
+        return tf.Variable(tf.zeros([fan_out]))
     # end method get_b
 
 

@@ -1,8 +1,9 @@
 ## Contents
 * [Supervised Learning](https://github.com/zhedongzheng/finch#supervised-learning)
-* [Advanced Topics](https://github.com/zhedongzheng/finch#advanced-topics)
-* [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
 
+* [Advanced Topics](https://github.com/zhedongzheng/finch#advanced-topics)
+
+* [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
 ## Supervised Learning
 * [Preprocessing](https://zhedongzheng.github.io/finch/preprocessing)
 

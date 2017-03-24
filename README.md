@@ -6,7 +6,8 @@
 * [Neural Network / Multilayer Perceptron](https://zhedongzheng.github.io/finch/mlp)
     * TensorFlow | MLP Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_test.py)
     
-        enable: batch normalization, exponentially decreasing learning rate 
+        * batch normalization
+        * exponentially decreasing learning rate 
  * [Convolutional Neural Network](https://zhedongzheng.github.io/finch/conv)
     * TensorFlow | CNN Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
     

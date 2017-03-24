@@ -99,9 +99,9 @@ class MLPClassifier:
             log['val_acc'].append(val_acc)
 
             # verbose
-            print ("%d / %d: train_loss: %.4f train_acc: %.4f | test_loss: %.4f test_acc: %.4f"
-                   % (epoch+1, n_epoch, loss, acc, val_loss, val_acc))
-            
+            print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                   "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
+                   "learning rate: %.4f" % (max_lr*math.exp(-decay_rate*global_step)) )
         return log
     # end method fit
 

@@ -11,7 +11,8 @@
  * [Convolutional Neural Network](https://zhedongzheng.github.io/finch/conv)
     * TensorFlow | CNN Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
     
-        * batch normalization, dropout 
+        * batch normalization 
+        * dropout 
         * exponentially decreasing learning rate
 * [Recurrent Neural Network](https://zhedongzheng.github.io/finch/rnn)
     * TensorFlow | RNN (LSTM) Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_test.py)

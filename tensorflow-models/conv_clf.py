@@ -32,8 +32,9 @@ class ConvClassifier:
         }
 
         self.lr = tf.placeholder(tf.float32)
+        self.keep_prob = tf.placeholder(tf.float32)
 
-        self.pred = self.conv(self.X, self.W, self.b)
+        self.pred = self.conv(self.X, self.W, self.b, self.keep_prob)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
         self.train = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal( tf.argmax(self.pred, 1), tf.argmax(self.y, 1) ), tf.float32 ) )
@@ -43,7 +44,7 @@ class ConvClassifier:
     # end method build_graph
 
 
-    def conv(self, X, W, b):
+    def conv(self, X, W, b, keep_prob):
         conv1 = self.conv2d(X, W['wc1'], b['bc1'])       # convolution layer
         conv1 = self.maxpool2d(conv1, k=2)               # max pooling (down-sampling)
 
@@ -54,6 +55,8 @@ class ConvClassifier:
         fc1 = tf.reshape(conv2, [-1, W['wd1'].get_shape().as_list()[0]])
         fc1 = tf.nn.bias_add(tf.matmul(fc1, W['wd1']),b['bd1'])
         fc1 = tf.nn.relu(tf.contrib.layers.batch_norm(fc1))
+
+        fc1 = tf.nn.dropout(fc1, keep_prob)
 
         # output, class prediction
         out = tf.nn.bias_add(tf.matmul(fc1, W['out']), b['out'])
@@ -71,7 +74,7 @@ class ConvClassifier:
         return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
 
 
-    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32):
+    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32, keep_prob=1.0):
         print("Train %d samples | Test %d samples" % (len(X), len(validation_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         max_lr = 0.003
@@ -85,18 +88,22 @@ class ConvClassifier:
             # batch training
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 self.sess.run(self.train, feed_dict={self.X: X_batch, self.y: y_batch,
-                                                     self.lr: max_lr*math.exp(-decay_rate*global_step)})
+                                                     self.lr: max_lr*math.exp(-decay_rate*global_step),
+                                                     self.keep_prob: keep_prob})
                 global_step += 1
             # compute training loss and acc
-            loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch})
+            loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
+                                                                        self.keep_prob: 1.0})
             # compute validation loss and acc
             val_loss_list, val_acc_list = [], []
             for X_test_batch, y_test_batch in zip(self.gen_batch(validation_data[0], batch_size),
                                                   self.gen_batch(validation_data[1], batch_size)):
                 val_loss_list.append(self.sess.run(self.loss, feed_dict={self.X: X_test_batch,
-                                                                         self.y: y_test_batch}))
+                                                                         self.y: y_test_batch,
+                                                                         self.keep_prob: 1.0}))
                 val_acc_list.append(self.sess.run(self.acc, feed_dict={self.X: X_test_batch,
-                                                                       self.y: y_test_batch}))
+                                                                       self.y: y_test_batch,
+                                                                       self.keep_prob: 1.0}))
             val_loss, val_acc = sum(val_loss_list)/len(val_loss_list), sum(val_acc_list)/len(val_acc_list)
 
             # append to log
@@ -106,8 +113,9 @@ class ConvClassifier:
             log['val_acc'].append(val_acc)
 
             # verbose
-            print ("%d / %d: train_loss: %.4f train_acc: %.4f | test_loss: %.4f test_acc: %.4f"
-                   % (epoch+1, n_epoch, loss, acc, val_loss, val_acc))
+            print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                   "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
+                   "learning rate: %.4f" % (max_lr*math.exp(-decay_rate*global_step)) )
             
         return log
     # end method fit
@@ -116,7 +124,7 @@ class ConvClassifier:
     def predict(self, X_test, batch_size=32):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch})
+            batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch, self.keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

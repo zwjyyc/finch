@@ -11,11 +11,13 @@
  * [Convolutional Neural Network](https://zhedongzheng.github.io/finch/conv)
     * TensorFlow | CNN Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
     
-        enable: batch normalization, dropout, exponentially decreasing learning rate
+        * batch normalization, dropout 
+        * exponentially decreasing learning rate
 * [Recurrent Neural Network](https://zhedongzheng.github.io/finch/rnn)
     * TensorFlow | RNN (LSTM) Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_test.py)
     
-        enable: dropout, exponentially decreasing learning rate
+        * dropout
+        * exponentially decreasing learning rate
     * TensorFlow | RNN (LSTM) Regressor | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) | [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)
 ## Computer Vision
 * Image Segmentation

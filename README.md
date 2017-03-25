@@ -27,3 +27,6 @@
 * Image Segmentation
     * [Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/contours.ipynb)
     * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/sorting-contours.ipynb)
+## Presentation Skills
+* Technical
+   * [Simple Infographics Dashboard for PowerPoint](https://slidemodel.com/templates/simple-infographics-dashboard/)

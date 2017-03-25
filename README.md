@@ -42,6 +42,8 @@
     * [Growth Concept](https://slidemodel.com/templates/growth-concept-powerpoint-template/)
     
     * [Complex to Simple](https://slidemodel.com/templates/complex-to-simple-process-metaphor-template/)
+    
+    * [4 Step Evolving Process](https://slidemodel.com/templates/4-step-evolving-process-powerpoint-template/)
 
 * Strategy
     * [Strategy Map](https://slidemodel.com/templates/strategy-map-diagram-powerpoint/)

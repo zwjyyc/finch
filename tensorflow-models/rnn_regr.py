@@ -28,6 +28,8 @@ class RNNRegressor:
         }
         self.batch_size = tf.placeholder(tf.int32)
         self.pred = self.rnn(self.X, self.W, self.b)
+        self.loss = tf.reduce_mean(tf.square(self.pred - self.y))
+        """
         self.losses = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
             logits = [tf.reshape(self.pred, [-1])],
             targets = [tf.reshape(self.y, [-1])],
@@ -37,14 +39,12 @@ class RNNRegressor:
             name = 'losses'
         )
         self.loss = tf.reduce_sum(self.losses, name='losses_sum') / tf.cast(self.batch_size, tf.float32)
+        """
         self.train = tf.train.AdamOptimizer().minimize(self.loss)
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
     # end method build_graph
 
-    def ms_error(self, y_pre, y_target):
-        return tf.square(y_pre - y_target)
-    # end method ms_error
 
     def rnn(self, X, W, b):
         X_in = tf.reshape(X, [-1, self.n_in]) # (batch * n_step, n_in)
@@ -57,7 +57,8 @@ class RNNRegressor:
             lstm_cell, y_in, initial_state=self.cell_init_state, time_major=False)
         
         X_out = tf.reshape(cell_outputs, [-1, self.n_hidden]) # (batch * n_step, n_hidden)
-        return tf.matmul(X_out, self.W['out']) + self.b['out'] # (batch * n_step, n_hidden) dot (n_hidden, n_out)
+        X_out = tf.matmul(X_out, self.W['out']) + self.b['out'] # (batch * n_step, n_hidden) dot (n_hidden, n_out)
+        return tf.reshape(X_out, [-1, self.n_step, self.n_out])
     # end method rnn
 
 

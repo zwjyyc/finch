@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.contrib.layers import batch_norm
 import numpy as np
 import math
 
@@ -30,8 +31,8 @@ class MLPClassifier:
 
     def mlp(self, X):
         # [n_samples, n_feature] dot [n_feature, n_hidden[0]] -> [n_samples, n_hidden[0]]
-        new_layer = self.get_equ(X, self.get_W(self.n_in, self.n_hid[0]), self.get_b(self.n_hid[0]))
-        new_layer = tf.nn.relu(tf.contrib.layers.batch_norm(new_layer))
+        new_layer = self.lin_equ(X, self.get_W(self.n_in, self.n_hid[0]), self.get_b(self.n_hid[0]))
+        new_layer = tf.nn.relu(batch_norm(new_layer))
         """
         if there are three hidden layers: [1, 2, 3], we need two iterations:
         [n_samples, 1] dot [1, 2] -> [n_samples, 2]
@@ -40,11 +41,11 @@ class MLPClassifier:
         """
         if len(self.n_hid) != 1:
             for idx in range(len(self.n_hid) - 1):
-                new_layer = self.get_equ(new_layer, self.get_W(self.n_hid[idx], self.n_hid[idx+1]),
+                new_layer = self.lin_equ(new_layer, self.get_W(self.n_hid[idx], self.n_hid[idx+1]),
                                          self.get_b(self.n_hid[idx+1]))
-                new_layer = tf.nn.relu(tf.contrib.layers.batch_norm(new_layer))
+                new_layer = tf.nn.relu(batch_norm(new_layer))
         # [n_samples, n_hidden[-1]] dot [n_hidden[-1], n_out] -> [n_samples, n_out]
-        out_layer = self.get_equ(new_layer, self.get_W(self.n_hid[-1], self.n_out), self.get_b(self.n_out))
+        out_layer = self.lin_equ(new_layer, self.get_W(self.n_hid[-1], self.n_out), self.get_b(self.n_out))
         return out_layer
     # end method mlp
 
@@ -59,27 +60,33 @@ class MLPClassifier:
     # end method get_b
 
 
-    def get_equ(self, X, W, b):
+    def lin_equ(self, X, W, b):
         return tf.nn.bias_add(tf.matmul(X, W), b)
     # end method get_equ
 
 
-    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32):
+    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32, en_exp_decay=True):
         print("Train %d samples | Test %d samples" % (len(X), len(validation_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
-        max_lr = 0.003
-        min_lr = 0.0001
-        decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len(X)/batch_size)
+        global_step = 0
 
         self.sess.run(self.init) # initialize all variables
 
-        global_step = 0
         for epoch in range(n_epoch):
             # batch training
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
-                self.sess.run(self.train, feed_dict={self.X: X_batch, self.y: y_batch,
-                                                     self.lr: max_lr*math.exp(-decay_rate*global_step)})
+
+                if en_exp_decay:
+                    max_lr = 0.003
+                    min_lr = 0.0001
+                    decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len(X)/batch_size)
+                    lr = max_lr*math.exp(-decay_rate*global_step)
+                else:
+                    lr = 0.001
+
+                self.sess.run(self.train, feed_dict={self.X: X_batch, self.y: y_batch, self.lr: lr})
                 global_step += 1
+            
             # compute training loss and acc
             loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch})
             # compute validation loss and acc
@@ -101,7 +108,7 @@ class MLPClassifier:
             # verbose
             print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
                    "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
-                   "learning rate: %.4f" % (max_lr*math.exp(-decay_rate*global_step)) )
+                   "learning rate: %.4f" % (lr) )
         return log
     # end method fit
 

@@ -49,3 +49,6 @@
     * [Strategy Map](https://slidemodel.com/templates/strategy-map-diagram-powerpoint/)
     
     * [SWOT](https://slidemodel.com/templates/tows-analysis-powerpoint-template/)
+    
+    * [Boston Matrix](https://slidemodel.com/templates/market-share-analysis-matrix-powerpoint/)
+

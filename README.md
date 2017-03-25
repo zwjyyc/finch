@@ -30,7 +30,9 @@
     * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/sorting-contours.ipynb)
 ## Presentation Skills
 * Data-driven
-   * [Infographics Dashboard](https://slidemodel.com/templates/simple-infographics-dashboard/)
+    * [Infographics Dashboard](https://slidemodel.com/templates/simple-infographics-dashboard/)
    
-   * [Business Plan](https://slidemodel.com/templates/business-plan-powerpoint-templates/)
+    * [Business Plan](https://slidemodel.com/templates/business-plan-powerpoint-templates/)
+    
+    * [Data Science](https://slidemodel.com/templates/data-science-shapes-powerpoint-template/)
 * Business

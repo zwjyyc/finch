@@ -4,6 +4,8 @@
 * [Advanced Topics](https://github.com/zhedongzheng/finch#advanced-topics)
 
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
+
+* [Presentation Skills](https://github.com/zhedongzheng/finch#presentation-skills)
 ## Supervised Learning
 * [Preprocessing](https://zhedongzheng.github.io/finch/preprocessing)
 

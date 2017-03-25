@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.contrib.layers import batch_norm
 import numpy as np
 import math
 
@@ -54,7 +55,7 @@ class ConvClassifier:
         # fully connected layer, reshape conv2 output to fit fully connected layer input
         fc1 = tf.reshape(conv2, [-1, W['wd1'].get_shape().as_list()[0]])
         fc1 = tf.nn.bias_add(tf.matmul(fc1, W['wd1']),b['bd1'])
-        fc1 = tf.nn.relu(tf.contrib.layers.batch_norm(fc1))
+        fc1 = tf.nn.relu(batch_norm(fc1))
 
         fc1 = tf.nn.dropout(fc1, keep_prob)
 
@@ -67,30 +68,36 @@ class ConvClassifier:
     def conv2d(self, X, W, b, strides=1):
         conv = tf.nn.conv2d(X, W, strides=[1, strides, strides, 1], padding='SAME')
         conv = tf.nn.bias_add(conv, b)
-        return tf.nn.relu(tf.contrib.layers.batch_norm(conv))
+        return tf.nn.relu(batch_norm(conv))
 
 
     def maxpool2d(self, X, k=2):
         return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
 
 
-    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32, keep_prob=0.5):
+    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32, keep_prob=0.5, en_exp_decay=True):
         print("Train %d samples | Test %d samples" % (len(X), len(validation_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
-        max_lr = 0.003
-        min_lr = 0.0001
-        decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len(X)/batch_size)
+        global_step = 0
 
         self.sess.run(self.init) # initialize all variables
 
-        global_step = 0
         for epoch in range(n_epoch):
             # batch training
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
+
+                if en_exp_decay:
+                    max_lr = 0.003
+                    min_lr = 0.0001
+                    decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len(X)/batch_size)
+                    lr = max_lr*math.exp(-decay_rate*global_step)
+                else:
+                    lr = 0.001
+
                 self.sess.run(self.train, feed_dict={self.X: X_batch, self.y: y_batch,
-                                                     self.lr: max_lr*math.exp(-decay_rate*global_step),
-                                                     self.keep_prob: keep_prob})
+                                                     self.lr: lr, self.keep_prob: keep_prob})
                 global_step += 1
+            
             # compute training loss and acc
             loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
                                                                         self.keep_prob: 1.0})
@@ -115,7 +122,7 @@ class ConvClassifier:
             # verbose
             print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
                    "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
-                   "learning rate: %.4f" % (max_lr*math.exp(-decay_rate*global_step)) )
+                   "learning rate: %.4f" % (lr) )
             
         return log
     # end method fit

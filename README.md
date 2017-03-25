@@ -12,20 +12,13 @@
 ## Advanced Topics
 * [Neural Network / Multilayer Perceptron](https://zhedongzheng.github.io/finch/mlp)
     * TensorFlow | MLP Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_test.py)
-    
-        * batch normalization
-        * exponentially decreasing learning rate 
+
  * [Convolutional Neural Network](https://zhedongzheng.github.io/finch/conv)
     * TensorFlow | CNN Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
-    
-        * batch normalization 
-        * dropout 
-        * exponentially decreasing learning rate
+
 * [Recurrent Neural Network](https://zhedongzheng.github.io/finch/rnn)
     * TensorFlow | RNN (LSTM) Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_test.py)
-    
-        * dropout
-        * exponentially decreasing learning rate
+
     * TensorFlow | RNN (LSTM) Regressor | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) | [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)
 ## Computer Vision
 * Basic Operations

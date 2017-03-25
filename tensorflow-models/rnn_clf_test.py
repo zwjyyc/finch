@@ -26,7 +26,8 @@ if __name__ == '__main__':
     y_test = to_categorical(y_test)
 
     clf = RNNClassifier(n_in=28, n_step=28, n_out=10)
-    log = clf.fit(X_train, y_train, (X_test, y_test), n_epoch=20, in_keep_prob=1.0, out_keep_prob=0.5)
+    log = clf.fit(X_train, y_train, (X_test, y_test), n_epoch=20, batch_size=150,
+                  in_keep_prob=1.0, out_keep_prob=1.0)
     pred = clf.predict(X_test)
     clf.close()
     final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test[:len(pred)], 1)).astype(float).mean()

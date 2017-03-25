@@ -74,7 +74,7 @@ class ConvClassifier:
         return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
 
 
-    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32, keep_prob=1.0):
+    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32, keep_prob=0.5):
         print("Train %d samples | Test %d samples" % (len(X), len(validation_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         max_lr = 0.003

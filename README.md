@@ -51,4 +51,6 @@
     * [SWOT](https://slidemodel.com/templates/tows-analysis-powerpoint-template/)
     
     * [Boston Matrix](https://slidemodel.com/templates/market-share-analysis-matrix-powerpoint/)
-
+    
+* Process
+    * [7 Steps of Buying and Selling Process](https://slidemodel.com/templates/7-steps-of-buying-and-selling-process-powerpoint/)

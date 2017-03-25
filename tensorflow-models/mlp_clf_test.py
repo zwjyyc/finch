@@ -1,5 +1,5 @@
 from keras.datasets import mnist
-from keras.utils.np_utils import to_categorical
+from utils import to_one_hot
 from mlp_clf import MLPClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -22,11 +22,11 @@ if __name__ == '__main__':
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
     X_train = X_train.reshape(-1, 28*28)
     X_test = X_test.reshape(-1, 28*28)
-    y_train = to_categorical(y_train)
-    y_test = to_categorical(y_test)
+    y_train = to_one_hot(y_train)
+    y_test = to_one_hot(y_test)
 
     clf = MLPClassifier(n_in=28*28, n_hidden_list=[100, 200, 100], n_out=10)
-    log = clf.fit(X_train, y_train, (X_test, y_test))
+    log = clf.fit(X_train, y_train, (X_test, y_test), en_exp_decay=True)
     pred = clf.predict(X_test)
     clf.close()
     final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test[:len(pred)], 1)).astype(float).mean()

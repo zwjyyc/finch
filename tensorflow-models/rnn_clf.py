@@ -27,8 +27,10 @@ class RNNClassifier:
 
         self.batch_size = tf.placeholder(tf.int32)
         self.lr = tf.placeholder(tf.float32)
+        self.in_keep_prob = tf.placeholder(tf.float32)
+        self.out_keep_prob = tf.placeholder(tf.float32)
 
-        self.pred = self.rnn(self.X, self.W, self.b)
+        self.pred = self.rnn(self.X, self.W, self.b, self.in_keep_prob, self.out_keep_prob)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
         self.train = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal( tf.argmax(self.pred, 1), tf.argmax(self.y, 1) ), tf.float32 ) )
@@ -38,8 +40,9 @@ class RNNClassifier:
     # end method build_graph
 
 
-    def rnn(self, X, W, b):
+    def rnn(self, X, W, b, in_keep_prob, out_keep_prob):
         lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
+        lstm_cell = tf.contrib.rnn.DropoutWrapper(lstm_cell, in_keep_prob, out_keep_prob)
         outputs, final_state = tf.nn.dynamic_rnn(lstm_cell, X, time_major=False, dtype=tf.float32)
         
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
@@ -48,7 +51,8 @@ class RNNClassifier:
         return results
     # end method rnn
 
-    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32, en_exp_decay=True):
+    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32, en_exp_decay=True,
+            keep_prob_tuple=(1.0, 1.0)):
         print("Train %d samples | Test %d samples" % (len(X), len(validation_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0
@@ -68,22 +72,30 @@ class RNNClassifier:
                     lr = 0.001
                 
                 self.sess.run(self.train, feed_dict={self.X: X_batch, self.y: y_batch,
-                                                     self.batch_size: batch_size, self.lr: lr})
+                                                     self.batch_size: batch_size, self.lr: lr,
+                                                     self.in_keep_prob: keep_prob_tuple[0],
+                                                     self.out_keep_prob: keep_prob_tuple[1]})
                 global_step += 1
             
             # compute training loss and acc
             loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
-                                                                        self.batch_size: batch_size})
+                                                                        self.batch_size: batch_size,
+                                                                        self.in_keep_prob: 1.0,
+                                                                        self.out_keep_prob: 1.0})
             # compute validation loss and acc
             val_loss_list, val_acc_list = [], []
             for X_test_batch, y_test_batch in zip(self.gen_batch(validation_data[0], batch_size),
                                                   self.gen_batch(validation_data[1], batch_size)):
                 val_loss_list.append(self.sess.run(self.loss, feed_dict={self.X: X_test_batch,
                                                                          self.y: y_test_batch,
-                                                                         self.batch_size: batch_size}))
+                                                                         self.batch_size: batch_size,
+                                                                         self.in_keep_prob: 1.0,
+                                                                         self.out_keep_prob: 1.0}))
                 val_acc_list.append(self.sess.run(self.acc, feed_dict={self.X: X_test_batch,
                                                                        self.y: y_test_batch,
-                                                                       self.batch_size: batch_size}))
+                                                                       self.batch_size: batch_size,
+                                                                       self.in_keep_prob: 1.0,
+                                                                       self.out_keep_prob: 1.0}))
             val_loss, val_acc = sum(val_loss_list)/len(val_loss_list), sum(val_acc_list)/len(val_acc_list)
 
             # append to log
@@ -103,7 +115,8 @@ class RNNClassifier:
     def predict(self, X_test, batch_size=32):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch, self.batch_size: batch_size})
+            batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch, self.batch_size: batch_size,
+                                                             self.in_keep_prob: 1.0, self.out_keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

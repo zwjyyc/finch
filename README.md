@@ -30,3 +30,6 @@
 ## Presentation Skills
 * Technical
    * [Simple Infographics Dashboard for PowerPoint](https://slidemodel.com/templates/simple-infographics-dashboard/)
+  
+* Business
+

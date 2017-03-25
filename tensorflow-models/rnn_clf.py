@@ -52,7 +52,8 @@ class RNNClassifier:
         init_state = lstm_cell.zero_state(self.batch_size, dtype=tf.float32)
         outputs, final_state = tf.nn.dynamic_rnn(lstm_cell, X_in, initial_state=init_state, time_major=False)
         
-        outputs = tf.unstack(tf.transpose(outputs, [1,0,2])) # (batch, n_step, n_out) -> n_step * [(batch, n_out)]
+        # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
+        outputs = tf.unstack(tf.transpose(outputs, [1,0,2]))
         results = tf.nn.bias_add(tf.matmul(outputs[-1], W['out']), b['out'])
 
         return results

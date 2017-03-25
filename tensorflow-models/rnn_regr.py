@@ -47,18 +47,14 @@ class RNNRegressor:
 
 
     def rnn(self, X, W, b):
-        X_in = tf.reshape(X, [-1, self.n_in]) # (batch * n_step, n_in)
-        y_in = tf.matmul(X_in, self.W['in']) + self.b['in'] # (batch * n_step, n_in) dot (n_in, n_hidden)
-        y_in = tf.reshape(y_in, [-1, self.n_step, self.n_hidden]) # (batch, n_step, n_hidden)
-
         lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
-        self.cell_init_state = lstm_cell.zero_state(self.batch_size, dtype=tf.float32)
-        cell_outputs, self.cell_final_state = tf.nn.dynamic_rnn(
-            lstm_cell, y_in, initial_state=self.cell_init_state, time_major=False)
+        self.init_state = lstm_cell.zero_state(self.batch_size, dtype=tf.float32)
+        outputs, self.final_state = tf.nn.dynamic_rnn(lstm_cell, X, initial_state=self.init_state,
+                                                      time_major=False)
         
-        X_out = tf.reshape(cell_outputs, [-1, self.n_hidden]) # (batch * n_step, n_hidden)
-        X_out = tf.matmul(X_out, self.W['out']) + self.b['out'] # (batch * n_step, n_hidden) dot (n_hidden, n_out)
-        return tf.reshape(X_out, [-1, self.n_step, self.n_out])
+        outputs = tf.reshape(outputs, [-1, self.n_hidden]) # (batch * n_step, n_hidden)
+        outputs = tf.matmul(outputs, self.W['out']) + self.b['out'] # (batch * n_step, n_hidden) dot (n_hidden, n_out)
+        return tf.reshape(outputs, [-1, self.n_step, self.n_out])
     # end method rnn
 
 
@@ -69,10 +65,10 @@ class RNNRegressor:
             if train_idx == 0:
                 feed_dict_train = {self.X: seq, self.y: res, self.batch_size: batch_size}
             else:
-                feed_dict_train = {self.X: seq, self.y: res, self.cell_init_state: train_state,
+                feed_dict_train = {self.X: seq, self.y: res, self.init_state: train_state,
                                    self.batch_size: batch_size}
             _, train_loss, train_state = self.sess.run(
-                [self.train, self.loss, self.cell_final_state], feed_dict=feed_dict_train)
+                [self.train, self.loss, self.final_state], feed_dict=feed_dict_train)
 
             if test_data is None:
                 if train_idx % 20 == 0:
@@ -84,14 +80,14 @@ class RNNRegressor:
                     if test_idx == 0:
                         feed_dict_test = {self.X: seq_test, self.y: res_test, self.batch_size: batch_size}
                     else:
-                        feed_dict_test = {self.X: seq_test, self.y: res_test, self.cell_init_state: test_state,
+                        feed_dict_test = {self.X: seq_test, self.y: res_test, self.init_state: test_state,
                                           self.batch_size: batch_size}
-                    test_loss, test_state = self.sess.run([self.loss, self.cell_final_state],
-                                                          feed_dict=feed_dict_test)
+                    test_loss, test_state = self.sess.run([self.loss, self.final_state], feed_dict=feed_dict_test)
                     test_loss_list.append(test_loss)
+                
                 if train_idx % 20 == 0:
-                    print('train loss: %.4f | test loss: %.4f'
-                          % (train_loss, sum(test_loss_list)/len(test_loss_list)))        
+                    print('train loss: %.4f |' % (train_loss),
+                          'test loss: %.4f' % (sum(test_loss_list)/len(test_loss_list)) )
     # end method fit
 
 
@@ -105,20 +101,20 @@ class RNNRegressor:
             if train_idx == 0:
                 feed_dict_train = {self.X: seq, self.y: res, self.batch_size: batch_size}
             else:
-                feed_dict_train = {self.X: seq, self.y: res, self.cell_init_state: train_state,
+                feed_dict_train = {self.X: seq, self.y: res, self.init_state: train_state,
                                    self.batch_size: batch_size}
             _, train_loss, train_state = self.sess.run(
-                [self.train, self.loss, self.cell_final_state], feed_dict=feed_dict_train)
+                [self.train, self.loss, self.final_state], feed_dict=feed_dict_train)
 
             test_sample = test_data[train_idx]
             seq_test, res_test, xs_test = test_sample
             if train_idx == 0:
                 feed_dict_test = {self.X: seq_test, self.y: res_test, self.batch_size: batch_size}
             else:
-                feed_dict_test = {self.X: seq_test, self.y: res_test, self.cell_init_state: test_state,
+                feed_dict_test = {self.X: seq_test, self.y: res_test, self.init_state: test_state,
                                   self.batch_size: batch_size}
-            test_loss, test_state, test_pred = self.sess.run([self.loss, self.cell_final_state, self.pred],
-                                                    feed_dict=feed_dict_test)
+            test_loss, test_state, test_pred = self.sess.run([self.loss, self.final_state, self.pred],
+                                                              feed_dict=feed_dict_test)
             
             # update plotting
             plt.plot(xs.ravel(), res_test.ravel(), 'r', xs.ravel(), test_pred.ravel(), 'b--')

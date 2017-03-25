@@ -11,7 +11,7 @@
     * TensorFlow | Linear SVM Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
 
 * Ensemble
-    * [Aurélien Geron's Work](https://github.com/ageron/handson-ml/blob/master/07_ensemble_learning_and_random_forests.ipynb)
+    * [Aurélien Geron's Notebook](https://github.com/ageron/handson-ml/blob/master/07_ensemble_learning_and_random_forests.ipynb)
 ## Advanced Topics
 * [Neural Network / Multilayer Perceptron](https://zhedongzheng.github.io/finch/mlp)
     * TensorFlow | MLP Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_test.py)

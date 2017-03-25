@@ -37,4 +37,13 @@
     * [Business Plan](https://slidemodel.com/templates/business-plan-powerpoint-templates/)
     
     * [Data Science](https://slidemodel.com/templates/data-science-shapes-powerpoint-template/)
-* Business
+
+* Concept
+    * [Growth Concept](https://slidemodel.com/templates/growth-concept-powerpoint-template/)
+    
+    * [Complex to Simple](https://slidemodel.com/templates/complex-to-simple-process-metaphor-template/)
+
+* Strategy
+    * [Strategy Map](https://slidemodel.com/templates/strategy-map-diagram-powerpoint/)
+    
+    * [SWOT](https://slidemodel.com/templates/tows-analysis-powerpoint-template/)

@@ -38,7 +38,6 @@ class RNNClassifier(nn.Module):
             for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 images = Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
                 labels = Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
-                
                 # forward + backward + optimize
                 self.optimizer.zero_grad()
                 outputs = self.forward(images)

@@ -51,8 +51,11 @@ class RNNClassifier:
         return results
     # end method rnn
 
-    def fit(self, X, y, val_data, n_epoch=10, batch_size=32, en_exp_decay=True, keep_prob_tuple=(1.0, 1.0)):
-        print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=32, en_exp_decay=True, keep_prob_tuple=(1.0, 1.0)):
+        if val_data is None:
+            print("Train %d samples" % len(X) )
+        else:
+            print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0
 
@@ -68,26 +71,33 @@ class RNNClassifier:
             # compute training loss and acc at the final batch
             loss, acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(X_train_batch,
                                                              y_train_batch, batch_size))
-            # go through testing data, average validation loss and acc
-            val_loss_list, val_acc_list = [], []
-            for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
-                                                  self.gen_batch(val_data[1], batch_size)):
-                v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(
-                                               X_test_batch, y_test_batch, batch_size))
-                val_loss_list.append(v_loss)
-                val_acc_list.append(v_acc)
-            val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
+            
+            if val_data is not None:
+                # go through testing data, average validation loss and acc
+                val_loss_list, val_acc_list = [], []
+                for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
+                                                    self.gen_batch(val_data[1], batch_size)):
+                    v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(
+                                                X_test_batch, y_test_batch, batch_size))
+                    val_loss_list.append(v_loss)
+                    val_acc_list.append(v_acc)
+                val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
 
             # append to log
             log['loss'].append(loss)
             log['acc'].append(acc)
-            log['val_loss'].append(val_loss)
-            log['val_acc'].append(val_acc)
+            if val_data is not None:
+                log['val_loss'].append(val_loss)
+                log['val_acc'].append(val_acc)
 
             # verbose
-            print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
-                   "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
-                   "learning rate: %.4f" % (lr) )
+            if val_data is None:
+                print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                       "learning rate: %.4f" % (lr) )
+            else:
+                print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                       "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
+                       "learning rate: %.4f" % (lr) )
             
         return log
     # end method fit

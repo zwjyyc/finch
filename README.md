@@ -29,12 +29,11 @@
 * Concept
     * [Growth Concept](https://slidemodel.com/templates/growth-concept-powerpoint-template/)
     * [Complex to Simple](https://slidemodel.com/templates/complex-to-simple-process-metaphor-template/)
-    * [4 Step Evolving Process](https://slidemodel.com/templates/4-step-evolving-process-powerpoint-template/)
 * Strategy
     * [Strategy Map](https://slidemodel.com/templates/strategy-map-diagram-powerpoint/)
     * [SWOT](https://slidemodel.com/templates/tows-analysis-powerpoint-template/)
     * [Boston Matrix](https://slidemodel.com/templates/market-share-analysis-matrix-powerpoint/)
 * Process
     * [7 Steps of Buying and Selling Process](https://slidemodel.com/templates/7-steps-of-buying-and-selling-process-powerpoint/)
-* Structure
+    * [4 Step Evolving Process](https://slidemodel.com/templates/4-step-evolving-process-powerpoint-template/)
     * [V-Model](https://slidemodel.com/templates/v-model-powerpoint-template/)

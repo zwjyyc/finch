@@ -51,8 +51,7 @@ class RNNClassifier:
         return results
     # end method rnn
 
-    def fit(self, X, y, val_data, n_epoch=10, batch_size=32, en_exp_decay=True,
-            keep_prob_tuple=(1.0, 1.0)):
+    def fit(self, X, y, val_data, n_epoch=10, batch_size=32, en_exp_decay=True, keep_prob_tuple=(1.0, 1.0)):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0

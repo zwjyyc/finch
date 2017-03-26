@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     clf = LinearSVMClassifier(C=1.0, n_in=X_train.shape[1])
     log = clf.fit(X_train, y_train.reshape(-1, 1), n_epoch=100, batch_size=32,
-                  validation_data=(X_test, y_test.reshape(-1, 1)))
+                  val_data=(X_test, y_test.reshape(-1, 1)))
     y_pred = clf.predict(X_test)
     print("linear svm (tensorflow):", np.equal(y_pred.ravel(), y_test[:len(y_pred)]).astype(float).mean())
     clf.close()

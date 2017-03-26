@@ -63,15 +63,19 @@ class RNNClassifier:
 
         for epoch in range(n_epoch):
             # batch training
+            i = 0
             for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)             
                 self.sess.run(self.train_op, feed_dict = self.get_train_op_dict(X_train_batch, y_train_batch,
                                              batch_size, lr, keep_prob_tuple))
+                i += 1
                 global_step += 1
-            # compute training loss and acc at the final batch
-            loss, acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(X_train_batch,
-                                                             y_train_batch, batch_size))
-            
+                # compute training loss and acc
+                loss, acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(X_train_batch,
+                                           y_train_batch, batch_size))
+                if (i+1) % 100 == 0:
+                    print ('Epoch [%d/%d], Step [%d/%d], LR: %.4f, Train loss: %.4f, Train acc: %.4f'
+                           %(epoch+1, n_epoch, i+1, int(len(X)/batch_size), lr, loss, acc))
             if val_data is not None:
                 # go through testing data, average validation loss and acc
                 val_loss_list, val_acc_list = [], []

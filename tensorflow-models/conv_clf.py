@@ -75,8 +75,11 @@ class ConvClassifier:
         return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
 
 
-    def fit(self, X, y, val_data, n_epoch=10, batch_size=32, keep_prob=0.5, en_exp_decay=True):
-        print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=32, keep_prob=0.5, en_exp_decay=True):
+        if val_data is None:
+            print("Train %d samples" % len(X))
+        else:
+            print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0
 
@@ -84,35 +87,46 @@ class ConvClassifier:
 
         for epoch in range(n_epoch):
             # batch training
+            i = 0
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 self.sess.run(self.train_op, feed_dict={self.X: X_batch, self.y: y_batch, self.lr: lr,
                                                         self.keep_prob: keep_prob})
+                i += 1
                 global_step += 1
-            # compute training loss and acc
-            loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
-                                                                        self.keep_prob: 1.0})
-            # compute validation loss and acc
-            val_loss_list, val_acc_list = [], []
-            for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
-                                                  self.gen_batch(val_data[1], batch_size)):
-                v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_test_batch,
-                                                                                self.y: y_test_batch,
-                                                                                self.keep_prob: 1.0})
-                val_loss_list.append(v_loss)
-                val_acc_list.append(v_acc)
-            val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
+                # compute training loss and acc
+                loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
+                                                                            self.keep_prob: 1.0})
+                if (i+1) % 100 == 0:
+                    print ('Epoch [%d/%d], Step [%d/%d], LR: %.4f, Train loss: %.4f, Train acc: %.4f'
+                           %(epoch+1, n_epoch, i+1, int(len(X)/batch_size), lr, loss, acc))
+            if val_data is not None:
+                # go through test dara, compute validation loss and acc
+                val_loss_list, val_acc_list = [], []
+                for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
+                                                    self.gen_batch(val_data[1], batch_size)):
+                    v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_test_batch,
+                                                                                    self.y: y_test_batch,
+                                                                                    self.keep_prob: 1.0})
+                    val_loss_list.append(v_loss)
+                    val_acc_list.append(v_acc)
+                val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
 
             # append to log
             log['loss'].append(loss)
             log['acc'].append(acc)
-            log['val_loss'].append(val_loss)
-            log['val_acc'].append(val_acc)
+            if val_data is not None:
+                log['val_loss'].append(val_loss)
+                log['val_acc'].append(val_acc)
 
             # verbose
-            print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
-                   "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
-                   "learning rate: %.4f" % (lr) )
+            if val_data is None:
+                print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                    "learning rate: %.4f" % (lr) )
+            else:
+                print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                    "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
+                    "learning rate: %.4f" % (lr) )
             
         return log
     # end method fit

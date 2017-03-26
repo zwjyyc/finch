@@ -13,9 +13,9 @@
  * [Convolutional Neural Network](https://zhedongzheng.github.io/finch/conv)
     * TensorFlow | CNN Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
 * [Recurrent Neural Network](https://zhedongzheng.github.io/finch/rnn)
+    * Torch | RNN (LSTM) Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf_test.py)
     * TensorFlow | RNN (LSTM) Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_test.py)
     * TensorFlow | RNN (LSTM) Regressor | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) | [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)
-    * Torch | RNN (LSTM) Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf_test.py)
 ## Computer Vision
 * Basic Operations
     * [Rotations](https://github.com/zhedongzheng/finch/blob/master/computer-vision/rotations.ipynb)

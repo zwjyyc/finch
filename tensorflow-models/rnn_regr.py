@@ -40,7 +40,7 @@ class RNNRegressor:
         )
         self.loss = tf.reduce_sum(self.losses, name='losses_sum') / tf.cast(self.batch_size, tf.float32)
         """
-        self.train = tf.train.AdamOptimizer().minimize(self.loss)
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
     # end method build_graph
@@ -68,7 +68,7 @@ class RNNRegressor:
                 feed_dict_train = {self.X: seq, self.y: res, self.init_state: train_state,
                                    self.batch_size: batch_size}
             _, train_loss, train_state = self.sess.run(
-                [self.train, self.loss, self.final_state], feed_dict=feed_dict_train)
+                [self.train_op, self.loss, self.final_state], feed_dict=feed_dict_train)
 
             if test_data is None:
                 if train_idx % 20 == 0:
@@ -104,7 +104,7 @@ class RNNRegressor:
                 feed_dict_train = {self.X: seq, self.y: res, self.init_state: train_state,
                                    self.batch_size: batch_size}
             _, train_loss, train_state = self.sess.run(
-                [self.train, self.loss, self.final_state], feed_dict=feed_dict_train)
+                [self.train_op, self.loss, self.final_state], feed_dict=feed_dict_train)
 
             test_sample = test_data[train_idx]
             seq_test, res_test, xs_test = test_sample

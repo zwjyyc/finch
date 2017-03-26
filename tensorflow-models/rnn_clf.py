@@ -32,7 +32,7 @@ class RNNClassifier:
 
         self.pred = self.rnn(self.X, self.W, self.b, self.in_keep_prob, self.out_keep_prob)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
-        self.train = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal( tf.argmax(self.pred, 1), tf.argmax(self.y, 1) ), tf.float32 ) )
 
         self.sess = tf.Session()
@@ -51,9 +51,9 @@ class RNNClassifier:
         return results
     # end method rnn
 
-    def fit(self, X, y, validation_data, n_epoch=10, batch_size=32, en_exp_decay=True,
+    def fit(self, X, y, val_data, n_epoch=10, batch_size=32, en_exp_decay=True,
             keep_prob_tuple=(1.0, 1.0)):
-        print("Train %d samples | Test %d samples" % (len(X), len(validation_data[0])))
+        print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0
 
@@ -61,42 +61,23 @@ class RNNClassifier:
 
         for epoch in range(n_epoch):
             # batch training
-            for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
-
-                if en_exp_decay:
-                    max_lr = 0.003
-                    min_lr = 0.0001
-                    decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len(X)/batch_size)
-                    lr = max_lr*math.exp(-decay_rate*global_step)
-                else:
-                    lr = 0.001
-                
-                self.sess.run(self.train, feed_dict={self.X: X_batch, self.y: y_batch,
-                                                     self.batch_size: batch_size, self.lr: lr,
-                                                     self.in_keep_prob: keep_prob_tuple[0],
-                                                     self.out_keep_prob: keep_prob_tuple[1]})
+            for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
+                lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)             
+                self.sess.run(self.train_op, feed_dict = self.get_train_op_dict(X_train_batch, y_train_batch,
+                                             batch_size, lr, keep_prob_tuple))
                 global_step += 1
-            
-            # compute training loss and acc
-            loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
-                                                                        self.batch_size: batch_size,
-                                                                        self.in_keep_prob: 1.0,
-                                                                        self.out_keep_prob: 1.0})
-            # compute validation loss and acc
+            # compute training loss and acc at the final batch
+            loss, acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(X_train_batch,
+                                                             y_train_batch, batch_size))
+            # go through testing data, average validation loss and acc
             val_loss_list, val_acc_list = [], []
-            for X_test_batch, y_test_batch in zip(self.gen_batch(validation_data[0], batch_size),
-                                                  self.gen_batch(validation_data[1], batch_size)):
-                val_loss_list.append(self.sess.run(self.loss, feed_dict={self.X: X_test_batch,
-                                                                         self.y: y_test_batch,
-                                                                         self.batch_size: batch_size,
-                                                                         self.in_keep_prob: 1.0,
-                                                                         self.out_keep_prob: 1.0}))
-                val_acc_list.append(self.sess.run(self.acc, feed_dict={self.X: X_test_batch,
-                                                                       self.y: y_test_batch,
-                                                                       self.batch_size: batch_size,
-                                                                       self.in_keep_prob: 1.0,
-                                                                       self.out_keep_prob: 1.0}))
-            val_loss, val_acc = sum(val_loss_list)/len(val_loss_list), sum(val_acc_list)/len(val_acc_list)
+            for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
+                                                  self.gen_batch(val_data[1], batch_size)):
+                v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(
+                                               X_test_batch, y_test_batch, batch_size))
+                val_loss_list.append(v_loss)
+                val_acc_list.append(v_acc)
+            val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
 
             # append to log
             log['loss'].append(loss)
@@ -135,4 +116,29 @@ class RNNClassifier:
             for i in range(0, len(arr), batch_size):
                 yield arr[i : i + batch_size]
     # end method gen_batch
+
+    def get_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
+        if en_exp_decay:
+            max_lr = 0.003
+            min_lr = 0.0001
+            decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
+            lr = max_lr*math.exp(-decay_rate*global_step)
+        else:
+            lr = 0.001
+        return lr
+    # end method get_lr
+
+    def get_train_op_dict(self, X_batch, y_batch, batch_size, lr, keep_prob_tuple):
+        return {self.X: X_batch, self.y: y_batch, self.batch_size: batch_size, self.lr: lr,
+                self.in_keep_prob: keep_prob_tuple[0], self.out_keep_prob: keep_prob_tuple[1]}
+    # end method get_train_op_dict
+
+    def get_val_dict(self, X_batch, y_batch, batch_size):
+        return {self.X: X_batch, self.y: y_batch, self.batch_size: batch_size, self.in_keep_prob: 1.0,
+                self.out_keep_prob: 1.0}
+    # end method get_val_dict
+
+    def list_avg(self, l):
+        return sum(l) / len(l)
+    # end method list_avg
 # end class LinearSVMClassifier

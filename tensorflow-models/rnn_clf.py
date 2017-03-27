@@ -10,7 +10,6 @@ class RNNClassifier:
         self.n_hidden = n_hidden
         self.n_out = n_out
         self.n_layer = n_layer
-
         self.build_graph()
     # end constructor
 
@@ -18,7 +17,6 @@ class RNNClassifier:
     def build_graph(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
-
         self.W = {
             'out': tf.Variable(tf.random_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2.0/self.n_hidden)))
         }
@@ -46,12 +44,13 @@ class RNNClassifier:
         cell = tf.contrib.rnn.DropoutWrapper(cell, in_keep_prob, out_keep_prob)
         cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)        
         outputs, final_state = tf.nn.dynamic_rnn(cells, X, time_major=False, dtype=tf.float32)
-        
+
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         outputs = tf.unstack(tf.transpose(outputs, [1,0,2]))
         results = tf.nn.bias_add(tf.matmul(outputs[-1], W['out']), b['out'])
         return results
     # end method rnn
+
 
     def fit(self, X, y, val_data=None, n_epoch=10, batch_size=32, en_exp_decay=True, keep_prob_tuple=(1.0, 1.0)):
         if val_data is None:
@@ -76,8 +75,8 @@ class RNNClassifier:
                 loss, acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(X_train_batch,
                                            y_train_batch, batch_size))
                 if (i+1) % 100 == 0:
-                    print ('Epoch [%d/%d], Step [%d/%d], LR: %.4f, Train loss: %.4f, Train acc: %.4f'
-                           %(epoch+1, n_epoch, i+1, int(len(X)/batch_size), lr, loss, acc))
+                    print ('Epoch %d/%d | Step %d/%d | train loss: %.4f | train acc: %.4f | lr: %.4f'
+                           %(epoch+1, n_epoch, i+1, int(len(X)/batch_size), loss, acc, lr))
             if val_data is not None:
                 # go through testing data, average validation loss and acc
                 val_loss_list, val_acc_list = [], []
@@ -98,15 +97,15 @@ class RNNClassifier:
 
             # verbose
             if val_data is None:
-                print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
-                       "learning rate: %.4f" % (lr) )
+                print ("Epoch %d/%d | train loss: %.4f | train acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                       "lr: %.4f" % (lr) )
             else:
-                print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
-                       "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
-                       "learning rate: %.4f" % (lr) )
-            
+                print ("Epoch %d/%d | train loss: %.4f | train acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                       "test loss: %.4f | test acc: %.4f |" % (val_loss, val_acc),
+                       "lr: %.4f" % (lr) )
         return log
     # end method fit
+
 
     def predict(self, X_test, batch_size=32):
         batch_pred_list = []
@@ -117,10 +116,12 @@ class RNNClassifier:
         return np.concatenate(batch_pred_list)
     # end method predict
 
+
     def close(self):
         self.sess.close()
         tf.reset_default_graph()
     # end method close
+
 
     def gen_batch(self, arr, batch_size):
         if len(arr) % batch_size != 0:
@@ -131,6 +132,7 @@ class RNNClassifier:
             for i in range(0, len(arr), batch_size):
                 yield arr[i : i + batch_size]
     # end method gen_batch
+
 
     def get_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
@@ -143,15 +145,18 @@ class RNNClassifier:
         return lr
     # end method get_lr
 
+
     def get_train_op_dict(self, X_batch, y_batch, batch_size, lr, keep_prob_tuple):
         return {self.X: X_batch, self.y: y_batch, self.batch_size: batch_size, self.lr: lr,
                 self.in_keep_prob: keep_prob_tuple[0], self.out_keep_prob: keep_prob_tuple[1]}
     # end method get_train_op_dict
 
+
     def get_val_dict(self, X_batch, y_batch, batch_size):
         return {self.X: X_batch, self.y: y_batch, self.batch_size: batch_size, self.in_keep_prob: 1.0,
                 self.out_keep_prob: 1.0}
     # end method get_val_dict
+
 
     def list_avg(self, l):
         return sum(l) / len(l)

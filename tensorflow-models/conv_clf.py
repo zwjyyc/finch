@@ -9,7 +9,6 @@ class ConvClassifier:
         self.img_h = img_h
         self.img_w = img_w
         self.n_out = n_out
-
         self.build_graph()
     # end constructor
 
@@ -17,7 +16,6 @@ class ConvClassifier:
     def build_graph(self):
         self.X = tf.placeholder(tf.float32, [None, self.img_h, self.img_w, 1])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
-
         self.W = {
             'wc1': tf.Variable(tf.random_normal([5, 5, 1, 32])), # 5x5 conv, 1 input, 32 outputs
             'wc2': tf.Variable(tf.random_normal([5, 5, 32, 64])), # 5x5 conv, 32 inputs, 64 outputs
@@ -56,11 +54,8 @@ class ConvClassifier:
         fc1 = tf.reshape(conv2, [-1, W['wd1'].get_shape().as_list()[0]])
         fc1 = tf.nn.bias_add(tf.matmul(fc1, W['wd1']),b['bd1'])
         fc1 = tf.nn.relu(batch_norm(fc1))
-
         fc1 = tf.nn.dropout(fc1, keep_prob)
-
-        # output, class prediction
-        out = tf.nn.bias_add(tf.matmul(fc1, W['out']), b['out'])
+        out = tf.nn.bias_add(tf.matmul(fc1, W['out']), b['out']) # output, class prediction
         return out
     # end method conv
 
@@ -69,10 +64,12 @@ class ConvClassifier:
         conv = tf.nn.conv2d(X, W, strides=[1, strides, strides, 1], padding='SAME')
         conv = tf.nn.bias_add(conv, b)
         return tf.nn.relu(batch_norm(conv))
+    # end method conv2d
 
 
     def maxpool2d(self, X, k=2):
         return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
+    # end method maxpool2d
 
 
     def fit(self, X, y, val_data=None, n_epoch=10, batch_size=32, keep_prob=0.5, en_exp_decay=True):
@@ -98,8 +95,8 @@ class ConvClassifier:
                 loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
                                                                             self.keep_prob: 1.0})
                 if (i+1) % 100 == 0:
-                    print ('Epoch [%d/%d], Step [%d/%d], LR: %.4f, Train loss: %.4f, Train acc: %.4f'
-                           %(epoch+1, n_epoch, i+1, int(len(X)/batch_size), lr, loss, acc))
+                    print ("Epoch %d/%d | Step %d/%d | train loss: %.4f | train acc: %.4f | lr: %.4f"
+                           %(epoch+1, n_epoch, i+1, int(len(X)/batch_size), loss, acc, lr))
             if val_data is not None:
                 # go through test dara, compute validation loss and acc
                 val_loss_list, val_acc_list = [], []
@@ -121,13 +118,12 @@ class ConvClassifier:
 
             # verbose
             if val_data is None:
-                print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
-                    "learning rate: %.4f" % (lr) )
+                print ("Epoch %d/%d | train loss: %.4f | train acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                       "lr: %.4f" % (lr) )
             else:
-                print ("%d / %d: train_loss: %.4f train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
-                    "test_loss: %.4f test_acc: %.4f |" % (val_loss, val_acc),
-                    "learning rate: %.4f" % (lr) )
-            
+                print ("Epoch %d/%d | train loss: %.4f | train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                       "test loss: %.4f | test acc: %.4f |" % (val_loss, val_acc),
+                       "lr: %.4f" % (lr) )
         return log
     # end method fit
 
@@ -157,6 +153,7 @@ class ConvClassifier:
                 yield arr[i : i + batch_size]
     # end method gen_batch
 
+
     def get_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
             max_lr = 0.003
@@ -167,6 +164,7 @@ class ConvClassifier:
             lr = 0.001
         return lr
     # end method get_lr
+
 
     def list_avg(self, l):
         return sum(l) / len(l)

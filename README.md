@@ -2,7 +2,6 @@
 * [Supervised Learning](https://github.com/zhedongzheng/finch#supervised-learning)
 * [Advanced Topics in Machine Learning](https://github.com/zhedongzheng/finch#advanced-topics-in-machine-learning)
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
-* [Presentation Skills](https://github.com/zhedongzheng/finch#presentation-skills)
 ## Supervised Learning
 * [Preprocessing](https://zhedongzheng.github.io/finch/preprocessing)
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm)
@@ -24,19 +23,3 @@
 * Image Segmentation
     * [Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/contours.ipynb)
     * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/sorting-contours.ipynb)
-## Presentation Skills
-* Data-driven
-    * [Infographics Dashboard](https://slidemodel.com/templates/simple-infographics-dashboard/)
-    * [Business Plan](https://slidemodel.com/templates/business-plan-powerpoint-templates/)
-    * [Data Science](https://slidemodel.com/templates/data-science-shapes-powerpoint-template/)
-* Concept
-    * [Growth Concept](https://slidemodel.com/templates/growth-concept-powerpoint-template/)
-    * [Complex to Simple](https://slidemodel.com/templates/complex-to-simple-process-metaphor-template/)
-* Strategy
-    * [Strategy Map](https://slidemodel.com/templates/strategy-map-diagram-powerpoint/)
-    * [SWOT](https://slidemodel.com/templates/tows-analysis-powerpoint-template/)
-    * [Boston Matrix](https://slidemodel.com/templates/market-share-analysis-matrix-powerpoint/)
-* Process
-    * [7 Steps of Buying and Selling Process](https://slidemodel.com/templates/7-steps-of-buying-and-selling-process-powerpoint/)
-    * [4 Step Evolving Process](https://slidemodel.com/templates/4-step-evolving-process-powerpoint-template/)
-    * [V-Model](https://slidemodel.com/templates/v-model-powerpoint-template/)

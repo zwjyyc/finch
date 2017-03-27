@@ -6,7 +6,7 @@
 ## Supervised Learning
 * [Preprocessing](https://zhedongzheng.github.io/finch/preprocessing)
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm)
-    * TensorFlow ` ` | ` ` Linear SVM Classifier ` ` | ` ` [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) ` ` | ` ` [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
+    * TensorFlow &nbsp | ` ` Linear SVM Classifier ` ` | ` ` [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) ` ` | ` ` [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
 ## Advanced Topics
 * [Neural Network / Multilayer Perceptron](https://zhedongzheng.github.io/finch/mlp)
     * TensorFlow ` ` | ` ` MLP Classifier ` ` | ` ` [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) ` ` | ` ` [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_test.py)

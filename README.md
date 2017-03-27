@@ -1,6 +1,6 @@
 ## Contents
 * [Supervised Learning](https://github.com/zhedongzheng/finch#supervised-learning)
-* [Advanced Topics](https://github.com/zhedongzheng/finch#advanced-topics)
+* [Advanced Topics in Machine Learning](https://github.com/zhedongzheng/finch#advanced-topics-in-machine-learning)
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
 * [Presentation Skills](https://github.com/zhedongzheng/finch#presentation-skills)
 ## Supervised Learning

@@ -35,9 +35,8 @@ public class LinearSVM {
                 } // end for
             } // end for
 
-            // update graident
             for (int j=0; j<nbDims; j++)
-                w[j] -= lr * grad[j];
+                w[j] -= lr * grad[j]; // update graident
             
             System.out.println("Iteration: " + step + " | Cost: " + cost);
         } // end for

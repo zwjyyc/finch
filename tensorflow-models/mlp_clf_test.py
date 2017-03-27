@@ -25,7 +25,7 @@ if __name__ == '__main__':
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 
-    clf = MLPClassifier(n_in=28*28, n_hidden_list=[100, 200, 100], n_out=10)
+    clf = MLPClassifier(n_in=28*28, hidden_unit_list=[100, 200, 100], n_out=10)
     log = clf.fit(X_train, y_train, batch_size=100, en_exp_decay=True, val_data=(X_test, y_test))
     pred = clf.predict(X_test)
     clf.close()

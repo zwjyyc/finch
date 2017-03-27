@@ -35,7 +35,8 @@ class RNNClassifier(nn.Module):
     def fit(self, X, y, num_epochs, batch_size):
         for epoch in range(num_epochs):
             i = 0
-            for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
+            for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size),
+                                                    self.gen_batch(y, batch_size)):
                 images = Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
                 labels = Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
                 # forward + backward + optimize
@@ -75,4 +76,4 @@ class RNNClassifier(nn.Module):
             for i in range(0, len(arr), batch_size):
                 yield arr[i : i + batch_size]
     # end method gen_batch
-
+# end class RNNClassifier

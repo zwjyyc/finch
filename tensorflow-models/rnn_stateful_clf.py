@@ -133,8 +133,7 @@ class RNNClassifier:
     def predict(self, X_test, batch_size=32):
         batch_pred_list = []
         if self.stateful:
-            i = 0
-            for X_test_batch in self.gen_batch(X_test, batch_size):
+            for i, X_test_batch in enumerate(self.gen_batch(X_test, batch_size)):
                 if i == 0:
                     batch_pred, next_state = self.sess.run([self.pred, self.final_state],
                         feed_dict = self.get_pred_dict(X_test_batch, batch_size) )
@@ -142,7 +141,6 @@ class RNNClassifier:
                     batch_pred, next_state = self.sess.run([self.pred, self.final_state],
                         feed_dict = self.get_pred_dict(X_test_batch, batch_size, state=next_state) )
                 batch_pred_list.append(batch_pred)
-                i += 1
         else:
             for X_test_batch in self.gen_batch(X_test, batch_size):
                 batch_pred = self.sess.run(self.pred, feed_dict = self.get_pred_dict(X_test_batch, batch_size))

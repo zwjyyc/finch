@@ -14,7 +14,15 @@ class RNNClassifier(nn.Module):
         self.build_model()
     # end constructor
 
-    
+
+    def build_model(self):
+        self.lstm = nn.LSTM(self.input_size, self.hidden_size, self.num_layers, batch_first=True)
+        self.fc = nn.Linear(self.hidden_size, self.num_classes)
+        self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
+    # end method build_model    
+
+
     def forward(self, x):
         h0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size)) # set initial states  
         c0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size)) # set initial states 
@@ -22,14 +30,6 @@ class RNNClassifier(nn.Module):
         out = self.fc(out[:, -1, :]) # decode hidden state of last time step
         return out
     # end method forward
-
-
-    def build_model(self):
-        self.lstm = nn.LSTM(self.input_size, self.hidden_size, self.num_layers, batch_first=True)
-        self.fc = nn.Linear(self.hidden_size, self.num_classes)
-        self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
-    # end method build_model
 
 
     def fit(self, X, y, num_epochs, batch_size):

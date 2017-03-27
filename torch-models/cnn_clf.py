@@ -13,15 +13,6 @@ class CNNClassifier(nn.Module):
         self.build_model()
     # end constructor
 
-    
-    def forward(self, x):
-        out = self.layer1(x)
-        out = self.layer2(out)
-        out = out.view(out.size(0), -1)
-        out = self.fc(out)
-        return out
-    # end method forward
-
 
     def build_model(self):
         self.layer1 = nn.Sequential(
@@ -38,6 +29,15 @@ class CNNClassifier(nn.Module):
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
     # end method build_model
+
+
+    def forward(self, x):
+        out = self.layer1(x)
+        out = self.layer2(out)
+        out = out.view(out.size(0), -1)
+        out = self.fc(out)
+        return out
+    # end method forward
 
 
     def fit(self, X, y, num_epochs, batch_size):

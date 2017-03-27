@@ -5,9 +5,9 @@ import math
 
 
 class MLPClassifier:
-    def __init__(self, n_in, n_hidden_list, n_out=2):
+    def __init__(self, n_in, hidden_unit_list, n_out=2):
         self.n_in = n_in
-        self.n_hid = n_hidden_list
+        self.hidden_unit_list = hidden_unit_list
         self.n_out = n_out
         self.build_graph()
     # end constructor
@@ -30,37 +30,20 @@ class MLPClassifier:
 
 
     def mlp(self, X):
-        # [n_samples, n_feature] dot [n_feature, n_hidden[0]] -> [n_samples, n_hidden[0]]
-        new_layer = self.lin_equ(X, self.get_W(self.n_in, self.n_hid[0]), self.get_b(self.n_hid[0]))
-        new_layer = tf.nn.relu(batch_norm(new_layer))
-        """
-        if there are three hidden layers: [1, 2, 3], we need two iterations:
-        [n_samples, 1] dot [1, 2] -> [n_samples, 2]
-        [n_samples, 2] dot [2, 3] -> [n_samples, 3]
-        finally we have [n_samples, n_hidden[-1]]
-        """
-        if len(self.n_hid) != 1:
-            for idx in range(len(self.n_hid) - 1):
-                new_layer = self.lin_equ(new_layer, self.get_W(self.n_hid[idx], self.n_hid[idx+1]),
-                                         self.get_b(self.n_hid[idx+1]))
-                new_layer = tf.nn.relu(batch_norm(new_layer))
-        # [n_samples, n_hidden[-1]] dot [n_hidden[-1], n_out] -> [n_samples, n_out]
-        out_layer = self.lin_equ(new_layer, self.get_W(self.n_hid[-1], self.n_out), self.get_b(self.n_out))
+        new_layer = X
+        forward = [self.n_in] + self.hidden_unit_list
+        for i in range( len(forward)-1 ):
+            new_layer = self.fc(new_layer, forward[i], forward[i+1])
+            #new_layer = tf.nn.relu(batch_norm(new_layer))
+            new_layer = tf.nn.relu(new_layer)
+        out_layer = self.fc(new_layer, self.hidden_unit_list[-1], self.n_out)
         return out_layer
     # end method mlp
 
 
-    def get_W(self, fan_in, fan_out):
-        return tf.Variable(tf.random_normal([fan_in, fan_out], stddev=math.sqrt(2.0 / fan_in)))
-    # end method get_W
-
-
-    def get_b(self, fan_out):
-        return tf.Variable(tf.zeros([fan_out]))
-    # end method get_b
-
-
-    def lin_equ(self, X, W, b):
+    def fc(self, X, fan_in, fan_out):
+        W = tf.Variable(tf.random_normal([fan_in, fan_out], stddev=math.sqrt(2.0 / fan_in)))
+        b = tf.Variable(tf.zeros([fan_out]))
         return tf.nn.bias_add(tf.matmul(X, W), b)
     # end method get_equ
 

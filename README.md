@@ -11,6 +11,7 @@
 * [Neural Network / Multilayer Perceptron](https://zhedongzheng.github.io/finch/mlp)
     * TensorFlow | MLP Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_test.py)
  * [Convolutional Neural Network](https://zhedongzheng.github.io/finch/conv)
+    * PyTorch | CNN Classifier | [OOP Model] | [Test]
     * TensorFlow | CNN Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
 * [Recurrent Neural Network](https://zhedongzheng.github.io/finch/rnn)
     * PyTorch | RNN (LSTM) Classifier | [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf.py) | [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf_test.py)

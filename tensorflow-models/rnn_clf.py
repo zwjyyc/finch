@@ -4,11 +4,12 @@ import math
 
 
 class RNNClassifier:
-    def __init__(self, n_in, n_step, n_hidden=128, n_out=2):
+    def __init__(self, n_in, n_step, n_hidden=128, n_out=2, n_layer=1):
         self.n_in = n_in
         self.n_step = n_step
         self.n_hidden = n_hidden
         self.n_out = n_out
+        self.n_layer = n_layer
 
         self.build_graph()
     # end constructor
@@ -41,9 +42,10 @@ class RNNClassifier:
 
 
     def rnn(self, X, W, b, in_keep_prob, out_keep_prob):
-        lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
-        lstm_cell = tf.contrib.rnn.DropoutWrapper(lstm_cell, in_keep_prob, out_keep_prob)
-        outputs, final_state = tf.nn.dynamic_rnn(lstm_cell, X, time_major=False, dtype=tf.float32)
+        cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
+        cell = tf.contrib.rnn.DropoutWrapper(cell, in_keep_prob, out_keep_prob)
+        cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)        
+        outputs, final_state = tf.nn.dynamic_rnn(cells, X, time_major=False, dtype=tf.float32)
         
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         outputs = tf.unstack(tf.transpose(outputs, [1,0,2]))

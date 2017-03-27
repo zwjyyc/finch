@@ -51,11 +51,11 @@ class ConvClassifier:
         conv2 = self.maxpool2d(conv2, k=2)               # max pooling (down-sampling)
 
         # fully connected layer, reshape conv2 output to fit fully connected layer input
-        fc1 = tf.reshape(conv2, [-1, W['wd1'].get_shape().as_list()[0]])
-        fc1 = tf.nn.bias_add(tf.matmul(fc1, W['wd1']),b['bd1'])
-        fc1 = tf.nn.relu(batch_norm(fc1))
-        fc1 = tf.nn.dropout(fc1, keep_prob)
-        out = tf.nn.bias_add(tf.matmul(fc1, W['out']), b['out']) # output, class prediction
+        fc = tf.reshape(conv2, [-1, W['wd1'].get_shape().as_list()[0]])
+        fc = tf.nn.bias_add(tf.matmul(fc, W['wd1']),b['bd1'])
+        fc = tf.nn.relu(batch_norm(fc))
+        fc = tf.nn.dropout(fc, keep_prob)
+        out = tf.nn.bias_add(tf.matmul(fc, W['out']), b['out']) # output / class prediction
         return out
     # end method conv
 

@@ -12,8 +12,8 @@ num_epochs = 5
 
 # MNIST Dataset
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
-X_train = X_train.reshape(-1, 28*28)
-X_test = X_test.reshape(-1, 28*28)
+X_train = (X_train / 255.0).reshape(-1, 28*28)
+X_test = (X_test / 255.0).reshape(-1, 28*28)
 mlp = MLPClassifier(input_size, hidden_1_size, hidden_2_size, hidden_3_size, num_classes)
 mlp.fit(X_train, y_train, num_epochs, batch_size)
 mlp.evaluate(X_test, y_test, batch_size)

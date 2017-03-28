@@ -11,6 +11,8 @@ num_epochs = 2
 
 # MNIST Dataset
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
+X_train = X_train / 255.0
+X_test = X_test / 255.0
 rnn = RNNClassifier(input_size, hidden_size, num_layers, num_classes)
 rnn.fit(X_train, y_train, num_epochs, batch_size)
 rnn.evaluate(X_test, y_test, batch_size)

@@ -19,7 +19,7 @@ class Autoencoder:
         self.y_pred = decoder_op
         y_true = self.X
         self.loss = tf.reduce_mean(tf.square(y_true - self.y_pred))
-        self.train_op = tf.train.AdamOptimizer(0.01).minimize(self.loss)
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
     # end method build_graph
@@ -38,10 +38,10 @@ class Autoencoder:
 
     def decoder(self, X, decoder_units):
         new_layer = X
-        forward = decoder_units + [self.n_in]
-        for i in range( len(forward)-1 ):
-            new_layer = self.fc(new_layer, forward[i], forward[i+1])
+        for i in range( len(decoder_units)-1 ):
+            new_layer = self.fc(new_layer, decoder_units[i], decoder_units[i+1])
             new_layer = tf.nn.sigmoid(new_layer)
+        new_layer = self.fc(new_layer, decoder_units[-1], self.n_in)
         return new_layer
     # end method decoder
 

@@ -53,13 +53,17 @@ class Autoencoder:
 
     def fit_transform(self, X_train, n_epoch=10, batch_size=32):
         self.sess.run(self.init) # initialize all variables
+        global_step = 0
         for epoch in range(n_epoch):
             # batch training
             for local_step, X_batch in enumerate(self.gen_batch(X_train, batch_size)):
                 _, loss = self.sess.run([self.train_op, self.loss], feed_dict={self.X: X_batch})
+                if global_step == 0:
+                    print("Initial loss: ", loss)
                 if (local_step + 1) % 100 == 0:
                     print ("Epoch %d/%d | Step %d/%d | train loss: %.4f"
                            %(epoch+1, n_epoch, local_step+1, int(len(X_train)/batch_size), loss))
+                global_step += 1
 
         res = []
         for X_batch in self.gen_batch(X_train, batch_size):

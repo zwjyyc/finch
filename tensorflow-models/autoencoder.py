@@ -15,10 +15,8 @@ class Autoencoder:
     def build_graph(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.encoder_op = self.encoder(self.X, self.encoder_units)
-        decoder_op = self.decoder(self.encoder_op, self.decoder_units)
-        self.y_pred = decoder_op
-        y_true = self.X
-        self.loss = tf.reduce_mean(tf.square(y_true - self.y_pred))
+        self.decoder_op = self.decoder(self.encoder_op, self.decoder_units)
+        self.loss = tf.reduce_mean(tf.square(self.X - self.decoder_op))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()

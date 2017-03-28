@@ -17,14 +17,10 @@ class RNNRegressor:
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_step, self.n_out])
         self.W = {
-            'in': tf.Variable(tf.random_normal([self.n_in, self.n_hidden],
-                                               stddev=math.sqrt(2.0/self.n_in))),
-            'out': tf.Variable(tf.random_normal([self.n_hidden, self.n_out],
-                                                stddev=math.sqrt(2.0/self.n_hidden)))
+            'out': tf.Variable(tf.random_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2.0/self.n_hidden)))
         }
         self.b = {
-            'in': tf.Variable(tf.zeros([self.n_hidden])),
-            'out': tf.Variable(tf.zeros([self.n_out]))
+            'out': tf.Variable(tf.random_normal([self.n_out]))
         }
         self.batch_size = tf.placeholder(tf.int32)
         self.pred = self.rnn(self.X, self.W, self.b)

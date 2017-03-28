@@ -42,8 +42,8 @@ class MLPClassifier:
 
 
     def fc(self, X, fan_in, fan_out):
-        W = tf.Variable(tf.random_normal([fan_in, fan_out], stddev=math.sqrt(2.0 / fan_in)))
-        b = tf.Variable(tf.zeros([fan_out]))
+        W = tf.Variable(tf.random_normal([fan_in, fan_out], stddev=math.sqrt(2.0/fan_in)))
+        b = tf.Variable(tf.random_normal([fan_out]))
         return tf.nn.bias_add(tf.matmul(X, W), b)
     # end method get_equ
 

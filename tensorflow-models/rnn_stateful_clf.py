@@ -22,7 +22,7 @@ class RNNClassifier:
             'out': tf.Variable(tf.random_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2.0/self.n_hidden)))
         }
         self.b = {
-            'out': tf.Variable(tf.zeros([self.n_out]))
+            'out': tf.Variable(tf.random_normal([self.n_out]))
         }
 
         self.batch_size = tf.placeholder(tf.int32)

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     y_test = to_one_hot(y_test)
 
     clf = ConvClassifier(28, 28, n_out=10)
-    log = clf.fit(X_train, y_train, batch_size=100, keep_prob=0.5, val_data=(X_test, y_test))
+    log = clf.fit(X_train, y_train, batch_size=100, n_epoch=2, keep_prob=0.5, val_data=(X_test, y_test))
     pred = clf.predict(X_test)
     clf.close()
     final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test[:len(pred)], 1)).astype(float).mean()

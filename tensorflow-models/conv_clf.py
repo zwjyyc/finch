@@ -100,8 +100,7 @@ class ConvClassifier:
                 for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_test_batch,
-                                                                                    self.y: y_test_batch,
-                                                                                    self.keep_prob: 1.0})
+                        self.y: y_test_batch, self.keep_prob: 1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)

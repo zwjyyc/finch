@@ -29,5 +29,5 @@
     * [Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/contours.ipynb)
     * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/sorting-contours.ipynb)
 * Detection
-    * [Face Eye Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
+    * [Face & Eye Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
     * [Walker & Car Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)

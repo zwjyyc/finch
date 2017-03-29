@@ -5,10 +5,10 @@
 ## Supervised Learning
 * [Preprocessing](https://zhedongzheng.github.io/finch/preprocessing)
 * Logistic Regression
-    * Java &nbsp; | &nbsp; Logistic Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)
+    * Logistic Regression &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm)
-    * Java &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java)
-    * TensorFlow &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
+    * Linear SVM Classifier &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java)
+    * Linear SVM Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
 ## Advanced Topics in Machine Learning
 * [Neural Network / Multilayer Perceptron](https://zhedongzheng.github.io/finch/mlp)
     * MLP Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf_test.py)

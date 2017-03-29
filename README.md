@@ -22,12 +22,13 @@
     * RNN Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf_test.py)
     * RNN Regressor &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) &nbsp; | &nbsp; [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)
 ## Computer Vision
-* Basic Operations
-    * [Resize](https://github.com/zhedongzheng/finch/blob/master/computer-vision/resize.ipynb)
-    * [Rotations](https://github.com/zhedongzheng/finch/blob/master/computer-vision/rotations.ipynb)
-* Image Segmentation
-    * [Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/contours.ipynb)
-    * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/sorting-contours.ipynb)
-* Detection
-    * [Face & Eye Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
-    * [Walker & Car Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)
+* OpenCV
+    * Basic Operations
+        * [Resize](https://github.com/zhedongzheng/finch/blob/master/computer-vision/resize.ipynb)
+        * [Rotations](https://github.com/zhedongzheng/finch/blob/master/computer-vision/rotations.ipynb)
+    * Image Segmentation
+        * [Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/contours.ipynb)
+        * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/sorting-contours.ipynb)
+    * Detection
+        * [Face & Eye Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
+        * [Walker & Car Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)

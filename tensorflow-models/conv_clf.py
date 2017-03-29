@@ -84,24 +84,21 @@ class ConvClassifier:
 
         for epoch in range(n_epoch):
             # batch training
-            i = 0
+            local_step = 0
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
-                self.sess.run(self.train_op, feed_dict={self.X: X_batch, self.y: y_batch, self.lr: lr,
-                                                        self.keep_prob: keep_prob})
-                i += 1
+                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
+                    self.y: y_batch, self.lr: lr, self.keep_prob: keep_prob})
+                local_step += 1
                 global_step += 1
-                # compute training loss and acc
-                loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
-                                                                            self.keep_prob: 1.0})
-                if (i+1) % 100 == 0:
+                if (local_step + 1) % 100 == 0:
                     print ("Epoch %d/%d | Step %d/%d | train loss: %.4f | train acc: %.4f | lr: %.4f"
-                           %(epoch+1, n_epoch, i+1, int(len(X)/batch_size), loss, acc, lr))
+                           %(epoch+1, n_epoch, local_step+1, int(len(X)/batch_size), loss, acc, lr))
             if val_data is not None:
                 # go through test dara, compute validation loss and acc
                 val_loss_list, val_acc_list = [], []
                 for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
-                                                    self.gen_batch(val_data[1], batch_size)):
+                                                      self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_test_batch,
                                                                                     self.y: y_test_batch,
                                                                                     self.keep_prob: 1.0})

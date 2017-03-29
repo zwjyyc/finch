@@ -45,11 +45,8 @@ class LinearSVMClassifier:
         for epoch in range(n_epoch):
             # batch training
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
-                self.sess.run(self.train_op, feed_dict={self.X: X_batch, self.y: y_batch,
-                                                        self.batch_size: batch_size})
-            # compute training loss and acc
-            loss, acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_batch, self.y: y_batch,
-                                                                        self.batch_size: batch_size})
+                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
+                                              self.y: y_batch, self.batch_size: batch_size})
             # compute validation loss and acc
             val_loss_list, val_acc_list = [], []
             for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], test_batch_size),

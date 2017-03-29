@@ -71,21 +71,19 @@ class RNNClassifier:
                 lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 if self.stateful:
                     if local_step == 0:
-                        _, next_state = self.sess.run([self.train_op, self.final_state],
-                                feed_dict = self.get_train_op_dict(X_train_batch, y_train_batch, batch_size, lr,
-                                    keep_prob_tuple) )
+                        _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss,
+                            self.acc], feed_dict = self.get_train_op_dict(X_train_batch, y_train_batch, batch_size,
+                                lr, keep_prob_tuple) )
                     else:
-                        _, next_state = self.sess.run([self.train_op, self.final_state],
-                                feed_dict = self.get_train_op_dict(X_train_batch, y_train_batch, batch_size, lr,
-                                    keep_prob_tuple, state=next_state) )
+                        _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss,
+                            self.acc], feed_dict = self.get_train_op_dict(X_train_batch, y_train_batch, batch_size,
+                                lr, keep_prob_tuple, state=next_state) )
                 else:             
-                    self.sess.run(self.train_op, feed_dict = self.get_train_op_dict(X_train_batch, y_train_batch,
-                        batch_size, lr, keep_prob_tuple))
+                    _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
+                        feed_dict = self.get_train_op_dict(X_train_batch, y_train_batch, batch_size, lr,
+                            keep_prob_tuple))
                 local_step += 1
                 global_step += 1
-                # compute training loss and acc
-                loss, acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(X_train_batch,
-                                           y_train_batch, batch_size))
                 if (local_step + 1) % 100 == 0:
                     print ('Epoch %d/%d | Step %d/%d | train loss: %.4f | train acc: %.4f | lr: %.4f'
                            %(epoch+1, n_epoch, local_step+1, int(len(X)/batch_size), loss, acc, lr))

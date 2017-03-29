@@ -29,3 +29,4 @@
     * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/computer-vision/sorting-contours.ipynb)
 * Detection
     * [Face Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
+    * [Walker & Car Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)  &nbsp; | &nbsp; [Visualization (Walker)](https://github.com/zhedongzheng/finch/blob/master/assets/walkers.gif) &nbsp; | &nbsp; [Visualization (Car)](https://github.com/zhedongzheng/finch/blob/master/assets/car.gif)

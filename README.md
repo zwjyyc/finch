@@ -1,14 +1,14 @@
 ## Contents
-* [Supervised Learning](https://github.com/zhedongzheng/finch#supervised-learning)
-* [Advanced Topics in Machine Learning](https://github.com/zhedongzheng/finch#advanced-topics-in-machine-learning)
+* [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning)
+* [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
-## Supervised Learning
+## Machine Learning
 * Logistic Regression
     * Logistic Regression &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm)
     * Linear SVM Classifier &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java)
     * Linear SVM Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
-## Advanced Topics in Machine Learning
+## Deep Learning
 * Neural Network / Multilayer Perceptron
     * MLP Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_test.py)
     * MLP Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf_test.py)

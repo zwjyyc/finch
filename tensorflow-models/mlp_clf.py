@@ -19,7 +19,7 @@ class MLPClassifier:
 
         self.lr = tf.placeholder(tf.float32)
 
-        self.pred = self.mlp(self.X)
+        self.pred = self.mlp(self.X, self.n_in, self.hidden_unit_list, self.n_out)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal( tf.argmax(self.pred, 1), tf.argmax(self.y, 1) ), tf.float32 ) )
@@ -29,14 +29,14 @@ class MLPClassifier:
     # end method build_graph
 
 
-    def mlp(self, X):
+    def mlp(self, X, n_in, hidden_unit_list, n_out):
         new_layer = X
-        forward = [self.n_in] + self.hidden_unit_list
+        forward = [n_in] + hidden_unit_list
         for i in range( len(forward)-1 ):
             new_layer = self.fc(new_layer, forward[i], forward[i+1])
             #new_layer = tf.nn.relu(batch_norm(new_layer))
             new_layer = tf.nn.relu(new_layer)
-        out_layer = self.fc(new_layer, self.hidden_unit_list[-1], self.n_out)
+        out_layer = self.fc(new_layer, hidden_unit_list[-1], n_out)
         return out_layer
     # end method mlp
 

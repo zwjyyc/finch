@@ -42,10 +42,15 @@ class MLPClassifier:
 
 
     def fc(self, X, fan_in, fan_out):
-        W = tf.Variable(tf.random_normal([fan_in, fan_out], stddev=math.sqrt(2.0/fan_in)))
+        W = tf.Variable(tf.truncated_normal([fan_in, fan_out], stddev=math.sqrt(2/fan_in)))
         b = tf.Variable(tf.random_normal([fan_out]))
         return tf.nn.bias_add(tf.matmul(X, W), b)
     # end method get_equ
+
+
+    def _weight_variable(self, shape, name='W'):
+        initializer = tf.contrib.layers.variance_scaling_initializer()
+        return tf.get_variable(shape=shape, initializer=initializer, name=name)
 
 
     def fit(self, X, y, val_data=None, n_epoch=10, batch_size=32, en_exp_decay=True):

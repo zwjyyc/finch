@@ -18,7 +18,7 @@ class RNNClassifier:
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
         self.W = {
-            'out': tf.Variable(tf.random_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2.0/self.n_hidden)))
+            'out': tf.Variable(tf.truncated_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2/self.n_hidden)))
         }
         self.b = {
             'out': tf.Variable(tf.random_normal([self.n_out]))
@@ -37,6 +37,11 @@ class RNNClassifier:
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
     # end method build_graph
+
+
+    def _weight_variable(self, shape, name='W'):
+        initializer = tf.contrib.layers.variance_scaling_initializer()
+        return tf.get_variable(shape=shape, initializer=initializer, name=name)
 
 
     def rnn(self, X, W, b, in_keep_prob, out_keep_prob):

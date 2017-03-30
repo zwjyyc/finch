@@ -17,7 +17,7 @@ class RNNRegressor:
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_step, self.n_out])
         self.W = {
-            'out': tf.Variable(tf.random_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2.0/self.n_hidden)))
+            'out': tf.Variable(tf.truncated_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2/self.n_hidden)))
         }
         self.b = {
             'out': tf.Variable(tf.random_normal([self.n_out]))

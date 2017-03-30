@@ -33,4 +33,6 @@
         * [Face & Eye Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
         * [Walker & Car Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)
 ## Natural Language Processing
-* [Text Processing in Python]
+* Language Processing in Python
+   * [Text Pre-processing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
+   * [Build Word Vocabulary](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/build-word-vocab.ipynb)

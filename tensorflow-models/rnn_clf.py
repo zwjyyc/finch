@@ -4,12 +4,13 @@ import math
 
 
 class RNNClassifier:
-    def __init__(self, n_in, n_step, n_hidden=128, n_out=2, n_layer=1):
+    def __init__(self, n_in, n_step, n_hidden=128, n_out=2, n_layer=1, stateful=False):
         self.n_in = n_in
         self.n_step = n_step
         self.n_hidden = n_hidden
         self.n_out = n_out
         self.n_layer = n_layer
+        self.stateful = stateful
         self.build_graph()
     # end constructor
 
@@ -39,16 +40,12 @@ class RNNClassifier:
     # end method build_graph
 
 
-    def _weight_variable(self, shape, name='W'):
-        initializer = tf.contrib.layers.variance_scaling_initializer()
-        return tf.get_variable(shape=shape, initializer=initializer, name=name)
-
-
     def rnn(self, X, W, b, in_keep_prob, out_keep_prob):
         cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
         cell = tf.contrib.rnn.DropoutWrapper(cell, in_keep_prob, out_keep_prob)
-        cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)        
-        outputs, final_state = tf.nn.dynamic_rnn(cells, X, time_major=False, dtype=tf.float32)
+        cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)
+        self.init_state = cells.zero_state(self.batch_size, tf.float32)        
+        outputs, self.final_state = tf.nn.dynamic_rnn(cells, X, initial_state=self.init_state, time_major=False)
 
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         outputs = tf.unstack(tf.transpose(outputs, [1,0,2]))
@@ -71,10 +68,18 @@ class RNNClassifier:
             # batch training
             local_step = 0
             for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
-                lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)             
-                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                    feed_dict = self.get_train_op_dict(X_train_batch, y_train_batch, batch_size, lr,
-                        keep_prob_tuple))
+                lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
+                if self.stateful:
+                    next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: batch_size})
+                    _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
+                        feed_dict = {self.X: X_train_batch, self.y: y_train_batch, self.batch_size: batch_size,
+                            self.lr: lr, self.in_keep_prob: keep_prob_tuple[0],
+                                self.out_keep_prob: keep_prob_tuple[1], self.init_state: next_state})
+                else:             
+                    _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
+                        feed_dict = {self.X: X_train_batch, self.y: y_train_batch, self.batch_size: batch_size,
+                            self.lr: lr, self.in_keep_prob: keep_prob_tuple[0],
+                                self.out_keep_prob: keep_prob_tuple[1]})
                 local_step += 1
                 global_step += 1
                 if (local_step + 1) % 100 == 0:
@@ -83,12 +88,22 @@ class RNNClassifier:
             if val_data is not None:
                 # go through testing data, average validation loss and acc
                 val_loss_list, val_acc_list = [], []
+                local_step = 0
                 for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
-                    v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict = self.get_val_dict(
-                                                   X_test_batch, y_test_batch, batch_size))
+                    if self.stateful:
+                        next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: batch_size})
+                        v_loss, v_acc, next_state = self.sess.run([self.loss, self.acc, self.final_state],
+                                feed_dict = {self.X: X_test_batch, self.y: y_test_batch,
+                                    self.batch_size: batch_size, self.in_keep_prob: 1.0, self.out_keep_prob: 1.0,
+                                        self.init_state: next_state})
+                    else:
+                        v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict = {self.X: X_test_batch,
+                            self.y: y_test_batch, self.batch_size: batch_size, self.in_keep_prob: 1.0,
+                                self.out_keep_prob: 1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
+                    local_step += 1
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
 
             # append to log
@@ -113,8 +128,14 @@ class RNNClassifier:
     def predict(self, X_test, batch_size=32):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch, self.batch_size: batch_size,
-                                                             self.in_keep_prob: 1.0, self.out_keep_prob: 1.0})
+            if self.stateful:
+                next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: batch_size})
+                batch_pred, next_state = self.sess.run([self.pred, self.final_state], 
+                    feed_dict = {self.X: X_test_batch, self.batch_size: batch_size, self.in_keep_prob: 1.0,
+                        self.out_keep_prob: 1.0, self.init_state: next_state})
+            else:
+                batch_pred = self.sess.run(self.pred, feed_dict = {self.X: X_test_batch,
+                    self.batch_size: batch_size, self.in_keep_prob: 1.0, self.out_keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict
@@ -147,18 +168,6 @@ class RNNClassifier:
             lr = 0.001
         return lr
     # end method get_lr
-
-
-    def get_train_op_dict(self, X_batch, y_batch, batch_size, lr, keep_prob_tuple):
-        return {self.X: X_batch, self.y: y_batch, self.batch_size: batch_size, self.lr: lr,
-                self.in_keep_prob: keep_prob_tuple[0], self.out_keep_prob: keep_prob_tuple[1]}
-    # end method get_train_op_dict
-
-
-    def get_val_dict(self, X_batch, y_batch, batch_size):
-        return {self.X: X_batch, self.y: y_batch, self.batch_size: batch_size, self.in_keep_prob: 1.0,
-                self.out_keep_prob: 1.0}
-    # end method get_val_dict
 
 
     def list_avg(self, l):

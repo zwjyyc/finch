@@ -1,6 +1,6 @@
 from keras.datasets import mnist
 from utils import to_one_hot
-from rnn_clf import RNNClassifier
+from rnn_stateful_clf import RNNClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -26,12 +26,12 @@ if __name__ == '__main__':
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 
-    clf = RNNClassifier(n_in=28, n_step=28, n_out=10, n_layer=2)
-    log = clf.fit(X_train, y_train, n_epoch=10, batch_size=100, en_exp_decay=True, keep_prob_tuple=(0.5, 1.0),
+    clf = RNNClassifier(n_in=28, n_step=28, n_out=10, n_layer=2, stateful=False)
+    log = clf.fit(X_train, y_train, n_epoch=2, batch_size=100, en_exp_decay=True, keep_prob_tuple=(0.5, 1.0),
                   val_data=(X_test, y_test) )
     pred = clf.predict(X_test)
     clf.close()
     final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test[:len(pred)], 1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)
 
-    plot(log)
+    #plot(log)

@@ -56,7 +56,7 @@ def build_vocab(characters):
     chars = character_counts.keys()
     vocab_to_ix_dict = {key:(ix+1) for ix, key in enumerate(chars)}
     # Add unknown key --> 0 index
-    vocab_to_ix_dict['unknown']=0
+    vocab_to_ix_dict['_unknown']=0
     # Create index --> vocab mapping
     ix_to_vocab_dict = {val:key for key,val in vocab_to_ix_dict.items()}
     return(ix_to_vocab_dict, vocab_to_ix_dict)
@@ -106,8 +106,8 @@ if __name__ == '__main__':
 
     s_text_idx = convert_text_to_word_vecs(word_list, vocab2idx)
     
-    batches = create_batch(s_text_idx)
-    X = batches[:-1]
-    y = batches[1:]
+    batch_list = create_batch(s_text_idx)
+    X = batch_list
+    y = [np.roll(batch, -1, axis=0) for batch in batch_list]
     model = RNNLangModel(n_hidden=128, n_layers=2, vocab_size=vocab_size, seq_len=training_seq_len)
     model.fit(X, y)

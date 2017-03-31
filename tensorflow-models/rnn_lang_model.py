@@ -1,7 +1,4 @@
 import tensorflow as tf
-import random
-from utils import to_one_hot
-import numpy as np
 
 
 class RNNLangModel:

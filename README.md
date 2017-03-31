@@ -35,4 +35,4 @@
 ## Natural Language Processing
 * Language Processing in Python
    * [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
-   * [Build Word Vocabulary](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/build-word-vocab.ipynb)
+   * [Word Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-embedding.ipynb)

@@ -6,6 +6,7 @@ import collections
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import seaborn as sns
 from utils import to_one_hot
 from rnn_lang_model import RNNLangModel
 
@@ -82,6 +83,15 @@ def create_batch(s_text_ix):
     return batches
 
 
+def plot(log, dir='./log'):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    sns.set(style='white')
+    plt.plot(log['train_loss'])
+    plt.savefig(os.path.join(dir, sys.argv[0][:-3]))
+    print("Figure created !")
+
+
 if __name__ == '__main__':
     s_text = load_text()
 
@@ -105,5 +115,5 @@ if __name__ == '__main__':
     y = [np.roll(batch, -1, axis=1) for batch in batch_list]
     model = RNNLangModel(n_hidden=128, n_layers=2, vocab_size=vocab_size, seq_len=training_seq_len)
     log = model.fit(X, y, n_epoch=10)
-    plt.plot(log['train_acc'])
-    plt.show()
+    
+    plot(log)

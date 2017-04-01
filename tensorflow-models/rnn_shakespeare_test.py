@@ -4,6 +4,7 @@ import re
 import string
 import collections
 import numpy as np
+import matplotlib.pyplot as plt
 from utils import to_one_hot
 from rnn_lang_model import RNNLangModel
 
@@ -100,5 +101,7 @@ if __name__ == '__main__':
     batch_list = create_batch(s_text_idx)
     X = batch_list
     y = [np.roll(batch, -1, axis=1) for batch in batch_list]
-    model = RNNLangModel(n_hidden=128, n_layers=2, vocab_size=vocab_size, seq_len=training_seq_len)
-    model.fit(X, y)
+    model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=training_seq_len)
+    log = model.fit(X, y, n_epoch=5)
+    plt.plot(log['train_acc'])
+    plt.show()

@@ -33,7 +33,9 @@ class RNNLangModel:
                 average_across_timesteps = self.vocab_size,
         )
         self.cost = tf.reduce_sum(self.loss) / tf.cast((self.batch_size*self.seq_len), tf.float32)
-        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
+        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.cost, tf.trainable_variables()), 4.5)
+        optimizer = tf.train.AdamOptimizer()
+        self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
 
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
@@ -51,7 +53,8 @@ class RNNLangModel:
     # end method rnn
 
 
-    def fit(self, X_list, Y_list, n_epoch=5, batch_size=100):
+    def fit(self, X_list, Y_list, n_epoch=10, batch_size=100):
+        log = {'train_acc': []}
         self.sess.run(self.init) # initialize all variables
         next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
         for epoch in range(n_epoch):
@@ -62,6 +65,8 @@ class RNNLangModel:
                         self.batch_size:batch_size})
                 print ('Epoch %d/%d | Step %d/%d | train loss: %.4f' % (epoch+1, n_epoch, local_step+1,
                         len(X_list), loss))
+                log['train_acc'].append(loss)
                 local_step += 1
+        return log
     # end method fit
 # end class CharRNNModel

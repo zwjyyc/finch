@@ -68,13 +68,13 @@ class RNNLangModel:
     # end method rnn
 
 
-    def fit(self, X_list, Y_list, n_epoch=10, batch_size=100):
+    def fit(self, X_batch_list, Y_batch_list, n_epoch=10, batch_size=100):
         log = {'train_acc': []}
         self.sess.run(self.init) # initialize all variables
         next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
         for epoch in range(n_epoch):
             local_step = 0
-            for X_batch, Y_batch in zip(X_list, Y_list):
+            for X_batch, Y_batch in zip(X_batch_list, Y_batch_list):
                 _, loss, next_state = self.sess.run([self.train_op, self.cost, self.final_state],
                     feed_dict={self.X:X_batch, self.Y:Y_batch, self.init_state:next_state,
                                self.batch_size:batch_size})

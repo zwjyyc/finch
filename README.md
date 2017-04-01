@@ -39,4 +39,4 @@
 ## Natural Language Processing
 * Language Processing in Python
    * [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
-   * [Char Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/char-embedding.ipynb)
+   * [Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/char-embedding.ipynb)

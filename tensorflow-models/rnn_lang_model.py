@@ -34,9 +34,12 @@ class RNNLangModel:
                 average_across_timesteps = self.vocab_size,
         )
         self.cost = tf.reduce_sum(self.loss) / tf.cast((self.batch_size*self.seq_len), tf.float32)
+        """
         gradients, _ = tf.clip_by_global_norm(tf.gradients(self.cost, tf.trainable_variables()), 4.5)
         optimizer = tf.train.AdamOptimizer()
         self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
+        """
+        self.train_op = tf.train.AdamOptimizer().minimize(self.cost)
 
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()

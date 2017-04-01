@@ -77,8 +77,8 @@ class RNNLangModel:
             for X_batch, Y_batch in zip(X_list, Y_list):
                 _, loss, next_state = self.sess.run([self.train_op, self.cost, self.final_state],
                     feed_dict={self.X:X_batch, self.Y:Y_batch, self.init_state:next_state,
-                        self.batch_size:batch_size})
-                print ('Epoch %d/%d | Step %d/%d | train loss: %.4f' % (epoch+1, n_epoch, local_step+1,
+                               self.batch_size:batch_size})
+                print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f' % (epoch+1, n_epoch, local_step+1,
                         len(X_list), loss))
                 log['train_acc'].append(loss)
                 local_step += 1

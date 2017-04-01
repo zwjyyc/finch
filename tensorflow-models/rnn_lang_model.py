@@ -1,4 +1,5 @@
 import tensorflow as tf
+import math
 
 
 class RNNLangModel:
@@ -14,8 +15,8 @@ class RNNLangModel:
     def build_graph(self):
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.W = tf.random_normal([self.n_hidden, self.vocab_size])
-        self.b = tf.random_normal([self.vocab_size])
+        self.W = tf.truncated_normal([self.n_hidden, self.vocab_size], stddev=math.sqrt(2/self.n_hidden))
+        self.b = tf.Variable(tf.zeros([self.vocab_size])) # must be zeros, random_normal does not work here
         self.batch_size = tf.placeholder(tf.int32)
 
         """
@@ -49,7 +50,21 @@ class RNNLangModel:
         output, self.final_state = tf.nn.dynamic_rnn(lstm_cell, X, initial_state=self.init_state,
                                                      time_major=False)
         output = tf.reshape(output, [-1, self.n_hidden])
-        return output 
+        return output
+
+        """
+        lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
+        lstm_cell = tf.contrib.rnn.MultiRNNCell([lstm_cell] * self.n_layers)
+        self.init_state = lstm_cell.zero_state(self.batch_size, tf.float32)
+
+        rnn_inputs = tf.split(axis=1, num_or_size_splits=self.seq_len, value=X)
+        rnn_inputs_trimmed = [tf.squeeze(x, [1]) for x in rnn_inputs]
+        decoder = tf.contrib.legacy_seq2seq.rnn_decoder
+        outputs, self.final_state = decoder(rnn_inputs_trimmed, self.init_state, lstm_cell)
+        output = tf.reshape(tf.concat(axis=1, values=outputs), [-1, self.n_hidden])
+
+        return output
+        """ 
     # end method rnn
 
 

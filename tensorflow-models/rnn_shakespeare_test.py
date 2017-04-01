@@ -4,6 +4,7 @@ import re
 import string
 import collections
 import numpy as np
+import random
 import matplotlib.pyplot as plt
 from utils import to_one_hot
 from rnn_lang_model import RNNLangModel
@@ -99,9 +100,10 @@ if __name__ == '__main__':
     s_text_idx = convert_text_to_word_vecs(word_list, word2idx)
     
     batch_list = create_batch(s_text_idx)
+    random.shuffle(batch_list)
     X = batch_list
     y = [np.roll(batch, -1, axis=1) for batch in batch_list]
-    model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=training_seq_len)
+    model = RNNLangModel(n_hidden=128, n_layers=3, vocab_size=vocab_size, seq_len=training_seq_len)
     log = model.fit(X, y, n_epoch=5)
     plt.plot(log['train_acc'])
     plt.show()

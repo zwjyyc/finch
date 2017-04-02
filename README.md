@@ -43,8 +43,8 @@
 ## Computational Framework
 * TensorFlow
    * Basic Operations
-      * [feed_dict](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/feed_dict.ipynb)- also be used to change an existing node in graph
-      * [tf.concat - concatenates a list of tensors into a large tensor](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.concat.ipynb)
-      * [tf.split - split a tensor into a list of sub-tensors](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.split.ipynb)
-      * [tf.squeeze - remove 1 in the shape of tensor](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.squeeze.ipynb)
-      * [tf.nn.embedding_lookup - each word index representated by a vector](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.nn.embedding_lookup.ipynb)
+      * [feed_dict](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/feed_dict.ipynb) also be used to update an existing node in graph
+      * [tf.concat](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.concat.ipynb) concatenates a list of tensors into a large tensor
+      * [tf.split](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.split.ipynb) splits a tensor into a list of sub-tensors
+      * [tf.squeeze](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.squeeze.ipynb) removes 1 in the shape of tensor
+      * [tf.nn.embedding_lookup](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.nn.embedding_lookup.ipynb) represents each word index by a vector

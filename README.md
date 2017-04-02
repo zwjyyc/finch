@@ -40,3 +40,8 @@
 * Language Processing in Python
    * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
    * [Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/char-embedding.ipynb)
+## Computational Framework
+* TensorFlow
+   * Basic Operations
+      * [Concatenates a list of tensors into a large tensor](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.concat.ipynb)
+      * [Split a tensor into a list of sub-tensors](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.split.ipynb)

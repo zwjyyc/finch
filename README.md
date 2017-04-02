@@ -43,7 +43,7 @@
 ## Computational Framework
 * TensorFlow
    * Basic Operations
-      * [tf.concat: concatenates a list of tensors into a large tensor](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.concat.ipynb)
-      * [tf.split: split a tensor into a list of sub-tensors](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.split.ipynb)
-      * [tf.squeeze: remove 1 in shape of tensor](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.squeeze.ipynb)
-      * [feed_dict: can also be used to replace the value of existing node in graph](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/feed_dict.ipynb)
+      * [tf.concat - concatenates a list of tensors into a large tensor](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.concat.ipynb)
+      * [tf.split - split a tensor into a list of sub-tensors](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.split.ipynb)
+      * [tf.squeeze - remove 1 in shape of tensor](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.squeeze.ipynb)
+      * [feed_dict - can also be used to replace the value of an existing node in graph](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/feed_dict.ipynb)

@@ -53,7 +53,7 @@ class MLPClassifier:
         return tf.get_variable(shape=shape, initializer=initializer, name=name)
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=32, en_exp_decay=True):
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -105,9 +105,10 @@ class MLPClassifier:
     # end method fit
 
 
-    def predict(self, X_test, batch_size=32):
+    def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        for X_test_batch in self.gen_batch(X_test, batch_size):
+        X_test_batch_list = np.array_split(X_test, int( len(X_test) / batch_size ))
+        for X_test_batch in X_test_batch_list:
             batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)

@@ -54,7 +54,7 @@ class RNNClassifier:
     # end method rnn
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=32, en_exp_decay=True, keep_prob_tuple=(1.0, 1.0)):
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, keep_prob_tuple=(1.0, 1.0)):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -125,17 +125,18 @@ class RNNClassifier:
     # end method fit
 
 
-    def predict(self, X_test, batch_size=32):
+    def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        for X_test_batch in self.gen_batch(X_test, batch_size):
+        X_test_batch_list = np.array_split(X_test, int( len(X_test)/batch_size ))
+        for X_test_batch in X_test_batch_list:
             if self.stateful:
-                next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: batch_size})
+                next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: len(X_test_batch)})
                 batch_pred, next_state = self.sess.run([self.pred, self.final_state], 
-                    feed_dict = {self.X: X_test_batch, self.batch_size: batch_size, self.in_keep_prob: 1.0,
+                    feed_dict = {self.X: X_test_batch, self.batch_size: len(X_test_batch), self.in_keep_prob: 1.0,
                         self.out_keep_prob: 1.0, self.init_state: next_state})
             else:
                 batch_pred = self.sess.run(self.pred, feed_dict = {self.X: X_test_batch,
-                    self.batch_size: batch_size, self.in_keep_prob: 1.0, self.out_keep_prob: 1.0})
+                    self.batch_size: len(X_test_batch), self.in_keep_prob: 1.0, self.out_keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

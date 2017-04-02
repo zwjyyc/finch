@@ -3,6 +3,7 @@
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
+* [Computational Framework](https://github.com/zhedongzheng/finch#computational-framework)
 ## Supervised Learning
 * Logistic Regression
     * Logistic Regression &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)

@@ -15,7 +15,7 @@ class RNNLangModel:
     def build_graph(self):
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.W = tf.truncated_normal([self.n_hidden, self.vocab_size], stddev=math.sqrt(2/self.n_hidden))
+        self.W = tf.random_normal([self.n_hidden, self.vocab_size])
         self.b = tf.Variable(tf.zeros([self.vocab_size])) # must be zeros, random_normal does not work here
         self.batch_size = tf.placeholder(tf.int32)
 
@@ -27,6 +27,7 @@ class RNNLangModel:
         embedding_output = tf.nn.embedding_lookup(embedding_mat, self.X)
 
         self.pred = tf.matmul(self.rnn(embedding_output), self.W) + self.b
+        """
         self.loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
                 logits = [self.pred],
                 targets = [tf.reshape(self.Y, [-1])],
@@ -35,11 +36,16 @@ class RNNLangModel:
         )
         self.cost = tf.reduce_sum(self.loss) / tf.cast((self.batch_size*self.seq_len), tf.float32)
         """
+        self.loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.pred, labels=tf.reshape(self.Y, [-1]))
+        self.cost = tf.reduce_mean(self.loss)
+
+        """
+        gradient clipping works better than simply: 
+        self.train_op = tf.train.AdamOptimizer().minimize(self.cost)
+        """
         gradients, _ = tf.clip_by_global_norm(tf.gradients(self.cost, tf.trainable_variables()), 4.5)
         optimizer = tf.train.AdamOptimizer()
         self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
-        """
-        self.train_op = tf.train.AdamOptimizer().minimize(self.cost)
 
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
@@ -72,7 +78,7 @@ class RNNLangModel:
 
 
     def fit(self, X_batch_list, Y_batch_list, n_epoch=10, batch_size=100):
-        log = {'train_acc': []}
+        log = {'train_loss': []}
         self.sess.run(self.init) # initialize all variables
         next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
         for epoch in range(n_epoch):
@@ -83,7 +89,7 @@ class RNNLangModel:
                                self.batch_size:batch_size})
                 print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f' % (epoch+1, n_epoch, local_step+1,
                         len(X_batch_list), loss))
-                log['train_acc'].append(loss)
+                log['train_loss'].append(loss)
                 local_step += 1
         return log
     # end method fit

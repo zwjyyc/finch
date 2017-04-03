@@ -43,7 +43,7 @@
    * [Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/char-embedding.ipynb)
 ## Computational Framework
 * TensorFlow
-   * Basic Operations
+   * Useful Operations
       * [feed_dict](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/feed_dict.ipynb) also be used to update an existing node in graph
       * [tf.concat](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.concat.ipynb) concatenates a list of tensors into a large tensor
       * [tf.split](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.split.ipynb) splits a tensor into a list of sub-tensors

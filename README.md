@@ -44,7 +44,7 @@
 ## Computational Framework
 * NumPy
    * Useful Ops in ML
-      * [np.roll](https://github.com/zhedongzheng/finch/blob/master/numpy-basic-ops/np.roll.ipynb) rolls array elements along given axis
+      * [np.roll](https://github.com/zhedongzheng/finch/blob/master/numpy-basic-ops/np.roll.ipynb) shifts array elements along given axis
       * [np.resize](https://github.com/zhedongzheng/finch/blob/master/numpy-basic-ops/np.resize.ipynb) returns a new array with a specified shape
 * TensorFlow
    * Useful Ops in ML

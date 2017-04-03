@@ -60,7 +60,7 @@ class RNNLangModel:
         else:
             lr = 0.001
         return lr
-    # end method get_lr
+    # end method adjust_lr
 
 
     def fit(self, X_batch_list, Y_batch_list, n_epoch=10, batch_size=128, en_exp_decay=True):

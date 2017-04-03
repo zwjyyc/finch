@@ -11,22 +11,18 @@ class LinearSVMClassifier:
     # end constructor
 
     def build_graph(self):
+        self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(shape=(None, self.n_in), dtype=tf.float32)
         self.y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-
-        self.W = tf.Variable(tf.random_normal(shape=(self.n_in, 1)))
-        self.b = tf.Variable(tf.constant(0.1, shape=[1]))
-        self.batch_size = tf.placeholder(tf.int32)
-
-        y_raw = tf.matmul(self.X, self.W) + self.b
+        W = tf.Variable(tf.random_normal(shape=(self.n_in, 1)))
+        b = tf.Variable(tf.constant(0.1, shape=[1]))
+        y_raw = tf.matmul(self.X, W) + b
         regu_loss = 0.5 * tf.reduce_sum(tf.square(self.W))
         hinge_loss = tf.reduce_sum( tf.maximum( tf.zeros([self.batch_size, 1]), 1 - self.y * y_raw ) )
-
         self.pred = tf.sign(y_raw)
         self.loss = regu_loss + self.C * hinge_loss
         self.train_op = tf.train.GradientDescentOptimizer(1e-3).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal(self.pred, self.y), tf.float32 ) )
-
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
     # end method build_graph

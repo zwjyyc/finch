@@ -16,28 +16,25 @@ class ConvClassifier:
     def build_graph(self):
         self.X = tf.placeholder(tf.float32, [None, self.img_h, self.img_w, 1])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.W = {
+        W = {
             'wc1': tf.Variable(tf.truncated_normal([5, 5, 1, 32], stddev=0.1)), # 5x5 conv, 1 input, 32 outputs
             'wc2': tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev=0.1)), # 5x5 conv, 32 inputs, 64 outputs
             # fully connected
             'wd1': tf.Variable(tf.truncated_normal([int(self.img_h/4)*int(self.img_w/4)*64, 1024], stddev=0.1)),
             'out': tf.Variable(tf.truncated_normal([1024, self.n_out], stddev=0.1)) # class prediction
         }
-        self.b = {
-            'bc1': tf.Variable(tf.random_normal([32])),
-            'bc2': tf.Variable(tf.random_normal([64])),
-            'bd1': tf.Variable(tf.random_normal([1024])),
-            'out': tf.Variable(tf.random_normal([self.n_out]))
+        b = {
+            'bc1': tf.Variable(tf.constant(0.1, shape=[32])),
+            'bc2': tf.Variable(tf.constant(0.1, shape=[64])),
+            'bd1': tf.Variable(tf.constant(0.1, shape=[1024])),
+            'out': tf.Variable(tf.constant(0.1, shape=[self.n_out]))
         }
-
         self.lr = tf.placeholder(tf.float32)
         self.keep_prob = tf.placeholder(tf.float32)
-
-        self.pred = self.conv(self.X, self.W, self.b, self.keep_prob)
+        self.pred = self.conv(self.X, W, b, self.keep_prob)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal( tf.argmax(self.pred, 1), tf.argmax(self.y, 1) ), tf.float32 ) )
-
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
     # end method build_graph
@@ -72,7 +69,7 @@ class ConvClassifier:
     # end method maxpool2d
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=32, keep_prob=0.5, en_exp_decay=True):
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True):
         if val_data is None:
             print("Train %d samples" % len(X))
         else:
@@ -86,7 +83,7 @@ class ConvClassifier:
             # batch training
             local_step = 0
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
-                lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
+                lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
                     self.y: y_batch, self.lr: lr, self.keep_prob: keep_prob})
                 local_step += 1
@@ -124,10 +121,11 @@ class ConvClassifier:
     # end method fit
 
 
-    def predict(self, X_test, batch_size=32):
+    def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch, self.keep_prob: 1.0})
+        X_test_batch_list = np.array_split(X_test, int( len(X_test)/batch_size ))
+        for X_test_batch in X_test_batch_list:
+            batch_pred = self.sess.run(self.pred, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict
@@ -150,7 +148,7 @@ class ConvClassifier:
     # end method gen_batch
 
 
-    def get_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
+    def adjust_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
             max_lr = 0.003
             min_lr = 0.0001
@@ -159,7 +157,7 @@ class ConvClassifier:
         else:
             lr = 0.001
         return lr
-    # end method get_lr
+    # end method adjust_lr
 
 
     def list_avg(self, l):

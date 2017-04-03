@@ -16,25 +16,18 @@ class RNNClassifier:
 
 
     def build_graph(self):
+        self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.W = {
-            'out': tf.Variable(tf.truncated_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2/self.n_hidden)))
-        }
-        self.b = {
-            'out': tf.Variable(tf.random_normal([self.n_out]))
-        }
-
-        self.batch_size = tf.placeholder(tf.int32)
+        W = tf.Variable(tf.random_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2/self.n_hidden)))
+        b = tf.Variable(tf.zeros([self.n_out]))
         self.lr = tf.placeholder(tf.float32)
         self.in_keep_prob = tf.placeholder(tf.float32)
         self.out_keep_prob = tf.placeholder(tf.float32)
-
-        self.pred = self.rnn(self.X, self.W, self.b, self.in_keep_prob, self.out_keep_prob)
+        self.pred = self.rnn(self.X, W, b, self.in_keep_prob, self.out_keep_prob)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal( tf.argmax(self.pred, 1), tf.argmax(self.y, 1) ), tf.float32 ) )
-
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
     # end method build_graph
@@ -49,7 +42,7 @@ class RNNClassifier:
 
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         outputs = tf.unstack(tf.transpose(outputs, [1,0,2]))
-        results = tf.nn.bias_add(tf.matmul(outputs[-1], W['out']), b['out'])
+        results = tf.nn.bias_add(tf.matmul(outputs[-1], W), b)
         return results
     # end method rnn
 
@@ -69,7 +62,7 @@ class RNNClassifier:
             local_step = 0
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: batch_size})
             for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
-                lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
+                lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 if self.stateful:
                     _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
                         feed_dict = {self.X: X_train_batch, self.y: y_train_batch, self.batch_size: batch_size,
@@ -127,16 +120,15 @@ class RNNClassifier:
 
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        X_test_batch_list = np.array_split(X_test, int( len(X_test)/batch_size ))
-        next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: len(X_test_batch)})
-        for X_test_batch in X_test_batch_list:
+        next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
+        for X_test_batch in self.gen_batch(X_test, batch_size):
             if self.stateful:
                 batch_pred, next_state = self.sess.run([self.pred, self.final_state], 
-                    feed_dict = {self.X: X_test_batch, self.batch_size: len(X_test_batch), self.in_keep_prob: 1.0,
-                        self.out_keep_prob: 1.0, self.init_state: next_state})
+                    feed_dict = {self.X:X_test_batch, self.batch_size:batch_size, self.in_keep_prob:1.0,
+                        self.out_keep_prob:1.0, self.init_state:next_state})
             else:
-                batch_pred = self.sess.run(self.pred, feed_dict = {self.X: X_test_batch,
-                    self.batch_size: len(X_test_batch), self.in_keep_prob: 1.0, self.out_keep_prob: 1.0})
+                batch_pred = self.sess.run(self.pred, feed_dict = {self.X:X_test_batch, self.batch_size:batch_size,
+                    self.in_keep_prob:1.0, self.out_keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict
@@ -159,7 +151,7 @@ class RNNClassifier:
     # end method gen_batch
 
 
-    def get_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
+    def adjust_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
             max_lr = 0.003
             min_lr = 0.0001
@@ -168,7 +160,7 @@ class RNNClassifier:
         else:
             lr = 0.001
         return lr
-    # end method get_lr
+    # end method adjust_lr
 
 
     def list_avg(self, l):

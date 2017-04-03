@@ -16,14 +16,11 @@ class MLPClassifier:
     def build_graph(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
-
         self.lr = tf.placeholder(tf.float32)
-
         self.pred = self.mlp(self.X, self.n_in, self.hidden_unit_list, self.n_out)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean( tf.cast( tf.equal( tf.argmax(self.pred, 1), tf.argmax(self.y, 1) ), tf.float32 ) )
-
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
     # end method build_graph
@@ -48,11 +45,6 @@ class MLPClassifier:
     # end method get_equ
 
 
-    def _weight_variable(self, shape, name='W'):
-        initializer = tf.contrib.layers.variance_scaling_initializer()
-        return tf.get_variable(shape=shape, initializer=initializer, name=name)
-
-
     def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True):
         if val_data is None:
             print("Train %d samples" % len(X) )
@@ -67,7 +59,7 @@ class MLPClassifier:
             # batch training
             local_step = 0
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
-                lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
+                lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
                                               self.y: y_batch, self.lr: lr})
                 local_step += 1
@@ -132,7 +124,7 @@ class MLPClassifier:
     # end method gen_batch
 
 
-    def get_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
+    def adjust_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
             max_lr = 0.003
             min_lr = 0.0001
@@ -141,7 +133,7 @@ class MLPClassifier:
         else:
             lr = 0.001
         return lr
-    # end method get_lr
+    # end method adjust_lr
 
 
     def list_avg(self, l):

@@ -53,4 +53,4 @@
       * [tf.unstack / tf.split](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.unstack%20%26%20tf.split.ipynb) splits a tensor into a list of sub-tensors
       * [tf.squeeze](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.squeeze.ipynb) removes 1 in the shape of tensor
       * [tf.nn.embedding_lookup](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.nn.embedding_lookup.ipynb) represents each word index by a vector
-      * [tf.multinomial]((https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.multinomial.ipynb) outputs actions based on given probability
+      * [tf.multinomial](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.multinomial.ipynb) outputs actions based on given probability

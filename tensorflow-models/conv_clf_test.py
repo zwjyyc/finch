@@ -29,7 +29,7 @@ if __name__ == '__main__':
     log = clf.fit(X_train, y_train, batch_size=100, n_epoch=2, keep_prob=0.5, val_data=(X_test, y_test))
     pred = clf.predict(X_test)
     clf.close()
-    final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test[:len(pred)], 1)).astype(float).mean()
+    final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test, 1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)
 
     plot(log)

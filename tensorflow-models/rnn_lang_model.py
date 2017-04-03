@@ -25,9 +25,9 @@ class RNNLangModel:
         embedding_mat = tf.Variable(tf.random_normal([self.vocab_size, self.n_hidden]))
         embedding_output = tf.nn.embedding_lookup(embedding_mat, self.X)
         self.pred = tf.matmul(self.rnn(embedding_output), W) + b
-        self.losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.pred,
+        losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.pred,
                                                                      labels=tf.reshape(self.Y, [-1]))
-        self.loss = tf.reduce_mean(self.losses)
+        self.loss = tf.reduce_mean(losses)
         self.lr = tf.placeholder(tf.float32)
         """
         gradients, _ = tf.clip_by_global_norm(tf.gradients(self.cost, tf.trainable_variables()), 4.5)
@@ -67,8 +67,8 @@ class RNNLangModel:
         log = {'train_loss': []}
         global_step = 0
         self.sess.run(self.init) # initialize all variables
-        next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
         for epoch in range(n_epoch):
+            next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
             batch_count = 1
             for X_batch, Y_batch in zip(X_batch_list, Y_batch_list):
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X_batch_list))

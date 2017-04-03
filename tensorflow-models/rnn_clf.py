@@ -67,10 +67,10 @@ class RNNClassifier:
         for epoch in range(n_epoch):
             # batch training
             local_step = 0
+            next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: batch_size})
             for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 lr = self.get_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 if self.stateful:
-                    next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: batch_size})
                     _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
                         feed_dict = {self.X: X_train_batch, self.y: y_train_batch, self.batch_size: batch_size,
                             self.lr: lr, self.in_keep_prob: keep_prob_tuple[0],
@@ -89,10 +89,10 @@ class RNNClassifier:
                 # go through testing data, average validation loss and acc
                 val_loss_list, val_acc_list = [], []
                 local_step = 0
+                next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: batch_size})
                 for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
                     if self.stateful:
-                        next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: batch_size})
                         v_loss, v_acc, next_state = self.sess.run([self.loss, self.acc, self.final_state],
                                 feed_dict = {self.X: X_test_batch, self.y: y_test_batch,
                                     self.batch_size: batch_size, self.in_keep_prob: 1.0, self.out_keep_prob: 1.0,
@@ -128,9 +128,9 @@ class RNNClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         X_test_batch_list = np.array_split(X_test, int( len(X_test)/batch_size ))
+        next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: len(X_test_batch)})
         for X_test_batch in X_test_batch_list:
             if self.stateful:
-                next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: len(X_test_batch)})
                 batch_pred, next_state = self.sess.run([self.pred, self.final_state], 
                     feed_dict = {self.X: X_test_batch, self.batch_size: len(X_test_batch), self.in_keep_prob: 1.0,
                         self.out_keep_prob: 1.0, self.init_state: next_state})

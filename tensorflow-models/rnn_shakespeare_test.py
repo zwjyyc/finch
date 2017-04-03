@@ -114,7 +114,7 @@ if __name__ == '__main__':
     random.shuffle(batch_list)
     X = batch_list
     y = [np.roll(batch, -1, axis=1) for batch in batch_list]
-    model = RNNLangModel(n_hidden=128, n_layers=3, vocab_size=vocab_size, seq_len=training_seq_len)
+    model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=training_seq_len)
     log = model.fit(X, y, n_epoch=1, batch_size=batch_size)
     
     plot(log)

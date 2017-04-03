@@ -49,7 +49,7 @@
 * TensorFlow
    * Useful Ops in ML
       * [feed_dict](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/feed_dict.ipynb) also be used to update an existing node in graph
-      * [tf.concat <br>|<br>  tf.stack](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.concat%20%26%20tf.stack.ipynb) concatenates a list of tensors into a large tensor
-      * [tf.unstack  |  tf.split](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.unstack%20%26%20tf.split.ipynb) splits a tensor into a list of sub-tensors
+      * [tf.concat &nbsp; | &nbsp; tf.stack](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.concat%20%26%20tf.stack.ipynb) concatenates a list of tensors into a large tensor
+      * [tf.unstack &nbsp; | &nbsp; tf.split](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.unstack%20%26%20tf.split.ipynb) splits a tensor into a list of sub-tensors
       * [tf.squeeze](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.squeeze.ipynb) removes 1 in the shape of tensor
       * [tf.nn.embedding_lookup](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.nn.embedding_lookup.ipynb) represents each word index by a vector

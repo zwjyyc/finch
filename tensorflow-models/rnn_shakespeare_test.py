@@ -99,8 +99,8 @@ if __name__ == '__main__':
     print('Cleaning Text')
     s_text = clean_text(s_text)
 
-    word_list = list(s_text) # split up by characters
-    #word_list = s_text.split()
+    #word_list = list(s_text) # split up by characters
+    word_list = s_text.split()
 
     print('Building Shakespeare Vocab by Characters')
     idx2word, word2idx = build_vocab(word_list)
@@ -115,6 +115,6 @@ if __name__ == '__main__':
     X = batch_list
     y = [np.roll(batch, -1, axis=1) for batch in batch_list]
     model = RNNLangModel(n_hidden=128, n_layers=3, vocab_size=vocab_size, seq_len=training_seq_len)
-    log = model.fit(X, y, n_epoch=5)
+    log = model.fit(X, y, n_epoch=1, batch_size=batch_size)
     
     plot(log)

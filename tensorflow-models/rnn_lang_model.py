@@ -16,24 +16,25 @@ class RNNLangModel:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.W = tf.Variable(tf.random_normal([self.n_hidden, self.vocab_size], stddev=math.sqrt(2/self.n_hidden)))
-        self.b = tf.Variable(tf.zeros([self.vocab_size]))
+        W = tf.Variable(tf.random_normal([self.n_hidden, self.vocab_size], stddev=math.sqrt(2/self.n_hidden)))
+        b = tf.Variable(tf.zeros([self.vocab_size]))
         """
         X from (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
         where each word in (batch_size, seq_len) is represented by a vector of length [n_hidden]
         """
-        self.embedding_mat = tf.Variable(tf.random_normal([self.vocab_size, self.n_hidden]))
-        embedding_output = tf.nn.embedding_lookup(self.embedding_mat, self.X)
-        self.pred = tf.matmul(self.rnn(embedding_output), self.W) + self.b
-        self.loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.pred, labels=tf.reshape(self.Y, [-1]))
-        self.cost = tf.reduce_mean(self.loss)
+        embedding_mat = tf.Variable(tf.random_normal([self.vocab_size, self.n_hidden]))
+        embedding_output = tf.nn.embedding_lookup(embedding_mat, self.X)
+        self.pred = tf.matmul(self.rnn(embedding_output), W) + b
+        self.losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.pred,
+                                                                     labels=tf.reshape(self.Y, [-1]))
+        self.loss = tf.reduce_mean(self.losses)
         self.lr = tf.placeholder(tf.float32)
         """
         gradients, _ = tf.clip_by_global_norm(tf.gradients(self.cost, tf.trainable_variables()), 4.5)
         optimizer = tf.train.AdamOptimizer()
         self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
         """
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.cost)
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.sess = tf.Session()
         self.init = tf.global_variables_initializer()
     # end method build_graph
@@ -71,7 +72,7 @@ class RNNLangModel:
             batch_count = 1
             for X_batch, Y_batch in zip(X_batch_list, Y_batch_list):
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X_batch_list))
-                _, loss, next_state = self.sess.run([self.train_op, self.cost, self.final_state],
+                _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                     feed_dict={self.X:X_batch, self.Y:Y_batch, self.init_state:next_state,
                                self.batch_size:batch_size, self.lr:lr})
                 if batch_count % 10 == 0:

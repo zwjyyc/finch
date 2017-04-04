@@ -39,8 +39,8 @@
         * [Walker & Car Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)
 ## Natural Language Processing
 * Language Processing in Python
-   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
-   * [Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/char-embedding.ipynb)
+   * [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
+   * [Word Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-embedding.ipynb)
 ## Computational Framework
 * NumPy
    * Useful Ops in ML

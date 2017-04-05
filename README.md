@@ -1,7 +1,7 @@
 ## Contents
 * [Supervised Learning](https://github.com/zhedongzheng/finch#supervised-learning)
-    * Logistic Regression
-    * Support Vector Machine
+    * Logistic Regression(https://github.com/zhedongzheng/finch#logistic-regression)
+    * Support Vector Machine(https://github.com/zhedongzheng/finch#support-vector-machine)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
     * Neural Network / Multilayer Perceptron
     * Autoencoder

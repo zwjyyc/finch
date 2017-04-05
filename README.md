@@ -1,4 +1,4 @@
-## Contents
+### Contents
 * [Supervised Learning](https://github.com/zhedongzheng/finch#supervised-learning)
     * [Logistic Regression](https://github.com/zhedongzheng/finch#logistic-regression)
     * [Support Vector Machine](https://github.com/zhedongzheng/finch#support-vector-machine)
@@ -14,13 +14,13 @@
 * [Computational Framework](https://github.com/zhedongzheng/finch#computational-framework)
     * [NumPy](https://github.com/zhedongzheng/finch#numpy)
     * [TensorFlow](https://github.com/zhedongzheng/finch#tensorflow)
-## Supervised Learning
+### Supervised Learning
 #### Logistic Regression
 * Logistic Regression &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)
 #### Support Vector Machine
 * Linear SVM Classifier &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java)
 * Linear SVM Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
-## Deep Learning
+### Deep Learning
 #### Multilayer Perceptron
 * MLP Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_test.py)
 * MLP Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf_test.py)
@@ -36,7 +36,7 @@
  * RNN Language Model &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_lang_model.py) &nbsp; | &nbsp; [Shakespeare Text Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_shakespeare_test.py)
 * PyTorch
   * RNN Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf_test.py)
-## Computer Vision
+### Computer Vision
 #### OpenCV
 * Basic Operations
   * [Resize](https://github.com/zhedongzheng/finch/blob/master/computer-vision/resize.ipynb)
@@ -47,11 +47,11 @@
 * Detection
   * [Face & Eye Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
   * [Walker & Car Detection](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)
-## Natural Language Processing
+### Natural Language Processing
 #### Language Processing in Python
 * [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
 * [Word Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-embedding.ipynb)
-## Computational Framework
+### Computational Framework
 #### NumPy
 * Useful Ops in ML
    * [np.roll](https://github.com/zhedongzheng/finch/blob/master/numpy-basic-ops/np.roll.ipynb) shifts array elements along given axis

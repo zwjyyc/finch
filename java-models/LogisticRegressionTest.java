@@ -18,20 +18,18 @@ public class LogisticRegressionTest {
             double[][] X = M.subMatrix(inputMatrix, 0, M.searchHeader(header, "target"));
             double[] y = M.getColVal(inputMatrix, M.searchHeader(header, "target"));
 
-            // Split
+            // Split data
             double[][] X_train = Arrays.copyOfRange(X, 0, 70);
             double[][] X_test = Arrays.copyOfRange(X, 70, 100);
             double[] y_train = Arrays.copyOfRange(y, 0, 70);
             double[] y_test = Arrays.copyOfRange(y, 70, 100);
-            System.out.println("X_train: (" + X_train.length + ", " + X_train[0].length + ")");
-            System.out.println("X_test: (" + X_test.length + ", " + X_test[0].length + ")");
-            System.out.println("y_train: (" + y_train.length + ")");
-            System.out.println("y_test: (" + y_test.length + ")");
             
             // Apply machine learning
-            //LogisticRegression classifier = new LogisticRegression();
-            //classifier.fit(X, y);
-            //double[] prediction = classifier.predict(X);
+            LogisticRegression classifier = new LogisticRegression();
+            classifier.fit(X_train, y_train);
+            double[] y_pred = classifier.predict(X_test);
+            double acc = M.evaluate(y_pred, y_test);
+            System.out.println("Test acc: " + acc);
         } catch (Exception e) {
             System.out.println(e);
         } // end try catch

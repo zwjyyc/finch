@@ -32,7 +32,7 @@ public class LogisticRegression {
     } // end method fit
 
     public void optimize (double[][]X, double[]y) {
-        for (int step=0; step<10000; step++) {
+        for (int step=0; step<1000; step++) {
             for (int i=0; i<nbSamples; i++) {
                 yPred[i] = 0;
                 for (int j=0; j<nbDims; j++)
@@ -70,8 +70,13 @@ public class LogisticRegression {
     public double[] predict (double[][]X) {
         double[] pred = new double[X.length];
         for (int i=0; i<X.length; i++) {
+            double res = 0;
             for (int j=0; j<X[0].length; j++)
-                pred[i] = sigmoid(X[i][j] * w[j]);
+                res += X[i][j] * w[j];
+            if (sigmoid(res) >= 0.5)
+                pred[i] = 1.0;
+            else
+                pred[i] = 0.0;
         } // end for
         return pred;
     } // end method predict

@@ -74,4 +74,16 @@ public class M {
                 temp[i][j] = 1;
         return temp;
     }
+
+    public static double evaluate(double[] y_pred, double[] y_test) {
+        if (y_pred.length != y_test.length)
+            System.out.println("Warning! y_pred is unequal to y_test");
+        int total = y_pred.length;
+        double count = 0.0;
+        for (int i=0; i<total; i++) {
+            if (y_pred[i] == y_test[i])
+                count += 1;
+        }
+        return count / total;
+    }
 } // end class MatrixUtil

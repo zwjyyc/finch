@@ -1,11 +1,21 @@
 ## Contents
 * [Supervised Learning](https://github.com/zhedongzheng/finch#supervised-learning)
+    * Logistic Regression
+    * Support Vector Machine
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
+    * Neural Network / Multilayer Perceptron
+    * Autoencoder
+    * Convolutional Neural Network
+    * Recurrent Neural Network
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
+    * OpenCV
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
+    * Language Processing in Python
 * [Computational Framework](https://github.com/zhedongzheng/finch#computational-framework)
+    * NumPy
+    * TensorFlow
 ## Supervised Learning
-* Logistic Regression
+### Logistic Regression
     * Logistic Regression &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm)
     * Linear SVM Classifier &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java)

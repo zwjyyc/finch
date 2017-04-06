@@ -14,15 +14,15 @@ class RNNLangModel:
 
     def build_graph(self):
         with tf.variable_scope('input_layer'):
-            self.add(self.input_layer())
+            self.add( self.input_layer() )
         with tf.variable_scope('word_embedding_layer'):
-            self.add(self.word_embedding_layer())
+            self.add( self.word_embedding_layer() )
         with tf.variable_scope('forward'):
-            self.add(self.rnn_forward())  
+            self.add( self.rnn_forward() )  
         with tf.name_scope('output_layer'):
-            self.add(self.output_layer()) 
+            self.add( self.output_layer() ) 
         with tf.name_scope('backward'):
-            self.add(self.backward())
+            self.add( self.backward() )
         with tf.name_scope('session'):
             self.sess = tf.Session()
             self.init = tf.global_variables_initializer()

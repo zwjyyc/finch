@@ -45,6 +45,7 @@ def load_text():
         with open(os.path.join(data_dir, data_file), 'r') as file_conn: # If file has been saved, load from that file
             s_text = file_conn.read().replace('\n', '')
     return s_text
+# end function load_text()
 
 
 def build_vocab(word_list, min_word_freq=5):
@@ -55,12 +56,14 @@ def build_vocab(word_list, min_word_freq=5):
     word2idx['_unknown'] = 0 # add unknown key --> 0 index
     idx2word = {val:key for key,val in word2idx.items()} # create index --> word mapping
     return(idx2word, word2idx)
+# end function build_vocab()
 
 
 def clean_text(s_text):
     s_text = re.sub(r'[{}]'.format(punctuation), ' ', s_text)
     s_text = re.sub('\s+', ' ', s_text ).strip().lower()
     return s_text
+# end function clean_text()
 
 
 def convert_text_to_word_vecs(word_list, word2idx):
@@ -72,6 +75,7 @@ def convert_text_to_word_vecs(word_list, word2idx):
             s_text_idx.append(0)
     s_text_idx = np.array(s_text_idx)
     return s_text_idx
+# end function convert_text_to_word_vecs()
 
 
 def create_batch(s_text_ix):
@@ -82,6 +86,7 @@ def create_batch(s_text_ix):
     # Reshape each split into [batch_size, training_seq_len]
     batches = [np.resize(x, [batch_size, training_seq_len]) for x in batches]
     return batches
+# end function create_batch()
 
 
 def plot(log, dir='./log'):
@@ -91,6 +96,7 @@ def plot(log, dir='./log'):
     plt.plot(log['train_loss'])
     plt.savefig(os.path.join(dir, sys.argv[0][:-3]))
     print("Figure created !")
+# end function plot()
 
 
 if __name__ == '__main__':
@@ -118,7 +124,7 @@ if __name__ == '__main__':
     tf.reset_default_graph()
     train_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=training_seq_len)
     with tf.variable_scope(tf.get_variable_scope(), reuse=True):
-        test_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=training_seq_len)
+        test_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=1)
     log = train_model.fit(X, y, n_epoch=1, batch_size=batch_size)
     
     plot(log)

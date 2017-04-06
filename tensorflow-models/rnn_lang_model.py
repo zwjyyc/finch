@@ -13,42 +13,71 @@ class RNNLangModel:
 
 
     def build_graph(self):
+        with tf.variable_scope('input_layer'):
+            self.add(self.input_layer())
+        with tf.variable_scope('word_embedding_layer'):
+            self.add(self.word_embedding_layer())
+        with tf.variable_scope('forward'):
+            self.add(self.rnn_forward())  
+        with tf.name_scope('output_layer'):
+            self.add(self.output_layer()) 
+        with tf.name_scope('backward'):
+            self.add(self.backward())
+        with tf.name_scope('session'):
+            self.sess = tf.Session()
+            self.init = tf.global_variables_initializer()
+    # end method build_graph
+
+
+    def add(self, layer):
+        return layer
+    # end method add
+
+
+    def input_layer(self):
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        W = tf.Variable(tf.random_normal([self.n_hidden, self.vocab_size], stddev=math.sqrt(2/self.n_hidden)))
-        b = tf.Variable(tf.zeros([self.vocab_size]))
+        self.W = tf.get_variable('W', [self.n_hidden, self.vocab_size], tf.float32,
+                                 tf.contrib.layers.variance_scaling_initializer())
+        self.b = tf.get_variable('b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))
+    # end method input_layer
+
+
+    def word_embedding_layer(self):
         """
         X from (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
         where each word in (batch_size, seq_len) is represented by a vector of length [n_hidden]
         """
-        embedding_mat = tf.Variable(tf.random_normal([self.vocab_size, self.n_hidden]))
-        embedding_output = tf.nn.embedding_lookup(embedding_mat, self.X)
-        self.pred = tf.matmul(self.rnn(embedding_output), W) + b
-        losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.pred,
-                                                                     labels=tf.reshape(self.Y, [-1]))
-        self.loss = tf.reduce_mean(losses)
-        self.lr = tf.placeholder(tf.float32)
-        """
-        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.cost, tf.trainable_variables()), 4.5)
-        optimizer = tf.train.AdamOptimizer()
-        self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
-        """
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.sess = tf.Session()
-        self.init = tf.global_variables_initializer()
-    # end method build_graph
+        embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size, self.n_hidden], tf.float32,
+                                        tf.random_normal_initializer())
+        self.embedding_out = tf.nn.embedding_lookup(embedding_mat, self.X)
+    # end method word_embedding_layer
 
-    
-    def rnn(self, X):
+
+    def rnn_forward(self):
         lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
         lstm_cell = tf.contrib.rnn.MultiRNNCell([lstm_cell] * self.n_layers)
         self.init_state = lstm_cell.zero_state(self.batch_size, tf.float32)
-        output, self.final_state = tf.nn.dynamic_rnn(lstm_cell, X, initial_state=self.init_state,
+        output, self.final_state = tf.nn.dynamic_rnn(lstm_cell, self.embedding_out, initial_state=self.init_state,
                                                      time_major=False)
-        output = tf.reshape(output, [-1, self.n_hidden])
-        return output
-    # end method rnn
+        self.rnn_out = tf.reshape(output, [-1, self.n_hidden])
+    # end method rnn_forward
+
+
+    def output_layer(self):
+        self.logits = tf.matmul(self.rnn_out, self.W) + self.b
+        self.softmax_out = tf.nn.softmax(self.logits)
+    # end method output_layer
+
+
+    def backward(self):
+        losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
+                                                                labels=tf.reshape(self.Y, [-1]))
+        self.loss = tf.reduce_mean(losses)
+        self.lr = tf.placeholder(tf.float32)
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+    # end method backward
 
 
     def adjust_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):

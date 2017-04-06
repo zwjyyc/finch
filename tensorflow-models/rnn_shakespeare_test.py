@@ -9,7 +9,6 @@ import random
 import matplotlib.pyplot as plt
 import seaborn as sns
 import tensorflow as tf
-from utils import to_one_hot
 from rnn_lang_model import RNNLangModel
 
 

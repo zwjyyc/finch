@@ -18,7 +18,7 @@
 #### Logistic Regression
 * Logistic Regression &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)
 #### Support Vector Machine
-* [Theoretical Background](https://zhedongzheng.github.io/finch/svm)
+* [Theory](https://zhedongzheng.github.io/finch/svm)
 * Linear SVM Classifier &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java)
 * Linear SVM Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
 ### Deep Learning
@@ -28,11 +28,11 @@
 #### Autoencoder
 * Stacked &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_test.py)
 #### Convolutional Neural Network
-* [Theoretical Background](https://zhedongzheng.github.io/finch/conv)
+* [Theory](https://zhedongzheng.github.io/finch/conv)
 * CNN Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
 * CNN Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/cnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/cnn_clf_test.py)
 #### Recurrent Neural Network
-* [Theoretical Background](https://zhedongzheng.github.io/finch/rnn)
+* [Theory](https://zhedongzheng.github.io/finch/rnn)
 * TensorFlow  
     * RNN Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_test.py)
     * RNN Regressor &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) &nbsp; | &nbsp; [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)

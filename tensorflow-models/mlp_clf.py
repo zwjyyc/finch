@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.contrib.layers import batch_norm
 import numpy as np
 import math
 
@@ -31,7 +30,6 @@ class MLPClassifier:
         forward = [n_in] + hidden_unit_list
         for i in range( len(forward)-1 ):
             new_layer = self.fc(new_layer, forward[i], forward[i+1])
-            #new_layer = tf.nn.relu(batch_norm(new_layer))
             new_layer = tf.nn.relu(new_layer)
         out_layer = self.fc(new_layer, hidden_unit_list[-1], n_out)
         return out_layer
@@ -42,7 +40,7 @@ class MLPClassifier:
         W = tf.Variable(tf.truncated_normal([fan_in, fan_out], stddev=math.sqrt(2/fan_in)))
         b = tf.Variable(tf.random_normal([fan_out]))
         return tf.nn.bias_add(tf.matmul(X, W), b)
-    # end method get_equ
+    # end method fc (fully-connected)
 
 
     def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True):

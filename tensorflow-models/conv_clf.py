@@ -4,10 +4,11 @@ import math
 
 
 class ConvClassifier:
-    def __init__(self, img_h, img_w, n_out=2):
+    def __init__(self, img_h, img_w, n_out, sess):
         self.img_h = img_h
         self.img_w = img_w
         self.n_out = n_out
+        self.sess = sess
         self.build_graph()
     # end constructor
 
@@ -27,9 +28,6 @@ class ConvClassifier:
             self.add_output_layer()   
         with tf.name_scope('backward_path'):
             self.add_backward_path()
-        with tf.name_scope('session'):
-            self.sess = tf.Session()
-            self.init = tf.global_variables_initializer()
     # end method build_graph
 
 
@@ -105,7 +103,7 @@ class ConvClassifier:
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0
 
-        self.sess.run(self.init) # initialize all variables
+        self.sess.run(tf.global_variables_initializer()) # initialize all variables
 
         for epoch in range(n_epoch):
             # batch training

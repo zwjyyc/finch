@@ -26,8 +26,8 @@ if __name__ == '__main__':
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 
-    tf.reset_default_graph()
-    clf = ConvClassifier(28, 28, n_out=10)
+    sess = tf.Session()
+    clf = ConvClassifier(28, 28, 10, sess)
     log = clf.fit(X_train, y_train, n_epoch=1, keep_prob=0.5, val_data=(X_test, y_test))
     pred = clf.predict(X_test)
     clf.close()

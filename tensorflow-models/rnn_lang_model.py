@@ -14,37 +14,32 @@ class RNNLangModel:
 
     def build_graph(self):
         with tf.variable_scope('input_layer'):
-            self.add( self.input_layer() )
+            self.add_input_layer()
         with tf.variable_scope('word_embedding_layer'):
-            self.add( self.word_embedding_layer() )
-        with tf.variable_scope('forward'):
-            self.add( self.rnn_forward() )  
+            self.add_word_embedding_layer()
+        with tf.variable_scope('forward_path'):
+            self.add_forward_path() 
         with tf.name_scope('output_layer'):
-            self.add( self.output_layer() ) 
-        with tf.name_scope('backward'):
-            self.add( self.backward() )
+            self.add_output_layer()
+        with tf.name_scope('backward_path'):
+            self.add_backward_path()
         with tf.name_scope('session'):
             self.sess = tf.Session()
             self.init = tf.global_variables_initializer()
     # end method build_graph
 
 
-    def add(self, layer):
-        return layer
-    # end method add
-
-
-    def input_layer(self):
+    def add_input_layer(self):
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
         self.W = tf.get_variable('W', [self.n_hidden, self.vocab_size], tf.float32,
                                  tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))
-    # end method input_layer
+    # end method add_input_layer
 
 
-    def word_embedding_layer(self):
+    def add_word_embedding_layer(self):
         """
         X from (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
         where each word in (batch_size, seq_len) is represented by a vector of length [n_hidden]
@@ -52,32 +47,32 @@ class RNNLangModel:
         embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size, self.n_hidden], tf.float32,
                                         tf.random_normal_initializer())
         self.embedding_out = tf.nn.embedding_lookup(embedding_mat, self.X)
-    # end method word_embedding_layer
+    # end method add_word_embedding_layer
 
 
-    def rnn_forward(self):
+    def add_forward_path(self):
         lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
         lstm_cell = tf.contrib.rnn.MultiRNNCell([lstm_cell] * self.n_layers)
         self.init_state = lstm_cell.zero_state(self.batch_size, tf.float32)
         output, self.final_state = tf.nn.dynamic_rnn(lstm_cell, self.embedding_out, initial_state=self.init_state,
                                                      time_major=False)
         self.rnn_out = tf.reshape(output, [-1, self.n_hidden])
-    # end method rnn_forward
+    # end method add_forward_path
 
 
-    def output_layer(self):
+    def add_output_layer(self):
         self.logits = tf.matmul(self.rnn_out, self.W) + self.b
         self.softmax_out = tf.nn.softmax(self.logits)
-    # end method output_layer
+    # end method add_output_layer
 
 
-    def backward(self):
+    def add_backward_path(self):
         losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
                                                                 labels=tf.reshape(self.Y, [-1]))
         self.loss = tf.reduce_mean(losses)
         self.lr = tf.placeholder(tf.float32)
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-    # end method backward
+    # end method add_backward_path
 
 
     def adjust_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):

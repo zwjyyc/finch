@@ -16,12 +16,12 @@ class ConvClassifier:
         with tf.name_scope('input_layer'):
             self.add_input_layer()
         with tf.variable_scope('forward_path'):
-            self.add_conv_layer(self.X, 'wc1', [5,5,1,32], 'bc1', [32])
-            self.add_maxpool_layer(self.conv, k=2)
-            self.add_conv_layer(self.conv, 'wc2', [5,5,32,64], 'bc2', [64])
-            self.add_maxpool_layer(self.conv, k=2)
+            self.add_conv_layer('wc1', [5,5,1,32], 'bc1', [32], self.X)
+            self.add_maxpool_layer(k=2)
+            self.add_conv_layer('wc2', [5,5,32,64], 'bc2', [64])
+            self.add_maxpool_layer(k=2)
             self.add_fully_connected_layer(
-                self.conv, self._W('wd1', [int(self.img_h/4)*int(self.img_w/4)*64, 1024]), self._b('bd1', [1024])
+                self._W('wd1', [int(self.img_h/4)*int(self.img_w/4)*64, 1024]), self._b('bd1', [1024])
             )
         with tf.variable_scope('output_layer'):
             self.add_output_layer()   
@@ -40,18 +40,21 @@ class ConvClassifier:
     # end method add_input_layer
 
 
-    def add_conv_layer(self, in_layer, w_name, w_shape, b_name, b_shape):
-        self.conv = self.conv2d(in_layer, self._W(w_name, w_shape), self._b(b_name, b_shape))
+    def add_conv_layer(self, w_name, w_shape, b_name, b_shape, in_layer=None):
+        if in_layer is None:
+            self.conv = self.conv2d(self.conv, self._W(w_name, w_shape), self._b(b_name, b_shape))
+        else:
+            self.conv = self.conv2d(in_layer, self._W(w_name, w_shape), self._b(b_name, b_shape))
     # end method add_conv_layer
 
 
-    def add_maxpool_layer(self, in_layer, k=2):
-        self.conv = self.maxpool2d(in_layer, k=k)
+    def add_maxpool_layer(self, k=2):
+        self.conv = self.maxpool2d(self.conv, k=k)
     # end method add_maxpool_layer
 
 
-    def add_fully_connected_layer(self, in_layer, W, b):
-        fc = tf.reshape(in_layer, [-1, W.get_shape().as_list()[0]])
+    def add_fully_connected_layer(self, W, b):
+        fc = tf.reshape(self.conv, [-1, W.get_shape().as_list()[0]])
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
         fc = tf.nn.relu(fc)
         self.fc = tf.nn.dropout(fc, self.keep_prob)

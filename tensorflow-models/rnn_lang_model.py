@@ -1,13 +1,15 @@
 import tensorflow as tf
 import math
+import numpy as np
 
 
 class RNNLangModel:
-    def __init__(self, n_hidden, n_layers, vocab_size, seq_len):
+    def __init__(self, n_hidden, n_layers, vocab_size, seq_len, sess):
         self.n_hidden = n_hidden
         self.n_layers = n_layers
         self.vocab_size = vocab_size
         self.seq_len = seq_len
+        self.sess = sess
         self.build_graph()
     # end constructor
 
@@ -17,15 +19,12 @@ class RNNLangModel:
             self.add_input_layer()
         with tf.variable_scope('word_embedding_layer'):
             self.add_word_embedding_layer()
-        with tf.variable_scope('forward_path'):
+        with tf.name_scope('forward_path'):
             self.add_forward_path() 
         with tf.name_scope('output_layer'):
             self.add_output_layer()
         with tf.name_scope('backward_path'):
             self.add_backward_path()
-        with tf.name_scope('session'):
-            self.sess = tf.Session()
-            self.init = tf.global_variables_initializer()
     # end method build_graph
 
 
@@ -71,7 +70,9 @@ class RNNLangModel:
                                                                 labels=tf.reshape(self.Y, [-1]))
         self.loss = tf.reduce_mean(losses)
         self.lr = tf.placeholder(tf.float32)
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), 4.5)
+        optimizer = tf.train.AdamOptimizer(self.lr)
+        self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
     # end method add_backward_path
 
 
@@ -87,10 +88,12 @@ class RNNLangModel:
     # end method adjust_lr
 
 
-    def fit(self, X_batch_list, Y_batch_list, n_epoch=10, batch_size=128, en_exp_decay=True):
+    def fit(self, X_batch_list, Y_batch_list, n_epoch=10, batch_size=128, en_exp_decay=True, sample_pack=None):
         log = {'train_loss': []}
         global_step = 0
-        self.sess.run(self.init) # initialize all variables
+        self.sess.run(tf.global_variables_initializer()) # initialize all variables
+        if sample_pack is not None:
+            s_model, idx2word, word2idx, num, prime_texts = sample_pack
         for epoch in range(n_epoch):
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
             batch_count = 1
@@ -102,9 +105,36 @@ class RNNLangModel:
                 if batch_count % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f' % (epoch+1, n_epoch,
                         batch_count, len(X_batch_list), loss, lr))
+                    if (sample_pack is not None) and (batch_count % 50 == 0):
+                        for prime_text in prime_texts:
+                            print(self.sample(s_model, idx2word, word2idx, num, prime_text))
                 log['train_loss'].append(loss)
                 batch_count += 1
                 global_step += 1
         return log
     # end method fit
+
+
+    def sample(self, s_model, words, vocab, num, prime_text):
+        state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
+        word_list = prime_text.split()
+        for word in word_list[:-1]:
+            x = np.zeros((1, 1))
+            x[0, 0] = vocab[word] 
+            state = self.sess.run(s_model.final_state, feed_dict={s_model.X:x, s_model.init_state:state})
+
+        out_sentence = prime_text
+        word = word_list[-1]
+        for n in range(num):
+            x = np.zeros((1, 1))
+            x[0, 0] = vocab[word]
+            feed_dict = {s_model.X:x, s_model.init_state:state}
+            model_output, state = self.sess.run([s_model.softmax_out, s_model.final_state], feed_dict=feed_dict)
+            sample = np.argmax(model_output[0])
+            if sample == 0:
+                break
+            word = words[sample]
+            out_sentence = out_sentence + ' ' + word
+        return(out_sentence)
+    # end method sample
 # end class CharRNNModel

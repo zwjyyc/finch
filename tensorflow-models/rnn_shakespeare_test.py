@@ -14,6 +14,7 @@ from rnn_lang_model import RNNLangModel
 
 batch_size = 100
 training_seq_len = 50
+prime_texts = ['thou art more', 'to be or not to', 'wherefore art thou']
 
 
 punctuation = string.punctuation
@@ -117,9 +118,11 @@ if __name__ == '__main__':
     X = batch_list
     y = [np.roll(batch, -1, axis=1) for batch in batch_list] # predicting next word
 
-    tf.reset_default_graph()
-    train_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=training_seq_len)
+    sess = tf.Session()
+    train_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=training_seq_len,
+                               sess=sess)
     with tf.variable_scope(tf.get_variable_scope(), reuse=True):
-        test_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=1)
-    log = train_model.fit(X, y, n_epoch=1, batch_size=batch_size)
+        sample_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=1, sess=sess)
+    log = train_model.fit(X, y, n_epoch=5, batch_size=batch_size,
+                          sample_pack=(sample_model, idx2word, word2idx, 10, prime_texts))
     plot(log)

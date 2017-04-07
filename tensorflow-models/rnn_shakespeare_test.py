@@ -101,12 +101,9 @@ def plot(log, dir='./log'):
 
 if __name__ == '__main__':
     s_text = load_text()
-
     print('Cleaning Text')
     s_text = clean_text(s_text)
-
-    #word_list = list(s_text) # split up by characters
-    word_list = s_text.split()
+    word_list = s_text.split() #word_list = list(s_text) # split up by characters
 
     print('Building Shakespeare Vocab by Characters')
     idx2word, word2idx = build_vocab(word_list)
@@ -115,16 +112,14 @@ if __name__ == '__main__':
     assert(len(idx2word) == len(word2idx)) # sanity Check
 
     s_text_idx = convert_text_to_word_vecs(word_list, word2idx)
-    
     batch_list = create_batch(s_text_idx)
     random.shuffle(batch_list)
     X = batch_list
-    y = [np.roll(batch, -1, axis=1) for batch in batch_list]
+    y = [np.roll(batch, -1, axis=1) for batch in batch_list] # predicting next word
 
     tf.reset_default_graph()
     train_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=training_seq_len)
     with tf.variable_scope(tf.get_variable_scope(), reuse=True):
         test_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=1)
     log = train_model.fit(X, y, n_epoch=1, batch_size=batch_size)
-    
     plot(log)

@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.contrib.layers import batch_norm
 import numpy as np
 import math
 
@@ -14,59 +13,75 @@ class ConvClassifier:
 
 
     def build_graph(self):
-        self.X = tf.placeholder(tf.float32, [None, self.img_h, self.img_w, 1])
-        self.y = tf.placeholder(tf.float32, [None, self.n_out])
-        W = {
-            'wc1': tf.Variable(tf.truncated_normal([5, 5, 1, 32], stddev=0.1)), # 5x5 conv, 1 input, 32 outputs
-            'wc2': tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev=0.1)), # 5x5 conv, 32 inputs, 64 outputs
-            # fully connected
-            'wd1': tf.Variable(tf.truncated_normal([int(self.img_h/4)*int(self.img_w/4)*64, 1024], stddev=0.1)),
-            'out': tf.Variable(tf.truncated_normal([1024, self.n_out], stddev=0.1)) # class prediction
-        }
-        b = {
-            'bc1': tf.Variable(tf.constant(0.1, shape=[32])),
-            'bc2': tf.Variable(tf.constant(0.1, shape=[64])),
-            'bd1': tf.Variable(tf.constant(0.1, shape=[1024])),
-            'out': tf.Variable(tf.constant(0.1, shape=[self.n_out]))
-        }
-        self.lr = tf.placeholder(tf.float32)
-        self.keep_prob = tf.placeholder(tf.float32)
-        self.pred = self.conv(self.X, W, b, self.keep_prob)
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.reduce_mean( tf.cast( tf.equal( tf.argmax(self.pred, 1), tf.argmax(self.y, 1) ), tf.float32 ) )
-        self.sess = tf.Session()
-        self.init = tf.global_variables_initializer()
+        with tf.name_scope('input_layer'):
+            self.add_input_layer()
+        with tf.variable_scope('forward_path'):
+            self.add_forward_path()
+        with tf.variable_scope('output_layer'):
+            self.add_output_layer()   
+        with tf.name_scope('backward_path'):
+            self.add_backward_path()
+        with tf.name_scope('session'):
+            self.sess = tf.Session()
+            self.init = tf.global_variables_initializer()
     # end method build_graph
 
 
-    def conv(self, X, W, b, keep_prob):
-        conv1 = self.conv2d(X, W['wc1'], b['bc1'])       # convolution layer
-        conv1 = self.maxpool2d(conv1, k=2)               # max pooling (down-sampling)
+    def add_input_layer(self):
+        self.X = tf.placeholder(tf.float32, [None, self.img_h, self.img_w, 1])
+        self.y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.keep_prob = tf.placeholder(tf.float32)
+    # end method add_input_layer
 
-        conv2 = self.conv2d(conv1, W['wc2'], b['bc2'])   # convolution layer
-        conv2 = self.maxpool2d(conv2, k=2)               # max pooling (down-sampling)
 
+    def add_forward_path(self):
+        conv1 = self.conv2d( self.X, self._W('wc1', [5,5,1,32]), self._b('bc1', [32]) ) # convolution layer
+        conv1 = self.maxpool2d(conv1, k=2) # max pooling (down-sampling)
+        conv2 = self.conv2d( conv1, self._W('wc2', [5,5,32,64]), self._b('bc2', [64]) ) # convolution layer
+        conv2 = self.maxpool2d(conv2, k=2) # max pooling (down-sampling)
         # fully connected layer, reshape conv2 output to fit fully connected layer input
-        fc = tf.reshape(conv2, [-1, W['wd1'].get_shape().as_list()[0]])
-        fc = tf.nn.bias_add(tf.matmul(fc, W['wd1']),b['bd1'])
-        fc = tf.nn.relu(batch_norm(fc))
-        fc = tf.nn.dropout(fc, keep_prob)
-        out = tf.nn.bias_add(tf.matmul(fc, W['out']), b['out']) # output / class prediction
-        return out
-    # end method conv
+        fc_W = self._W('wd1', [int(self.img_h/4)*int(self.img_w/4)*64, 1024])
+        fc = tf.reshape(conv2, [-1, fc_W.get_shape().as_list()[0]])
+        fc = tf.nn.bias_add(tf.matmul(fc, fc_W), self._b('bd1', [1024]))
+        fc = tf.nn.relu(fc)
+        self.fc = tf.nn.dropout(fc, self.keep_prob)
+    # end method forward_path
+
+
+    def add_output_layer(self):
+        self.logits = tf.nn.bias_add(tf.matmul(self.fc, self._W('w_out', [1024,self.n_out])),
+                                     self._b('b_out', [self.n_out]))
+    # end method add_output_layer
+
+
+    def add_backward_path(self):
+        self.lr = tf.placeholder(tf.float32)
+        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y))
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.y, 1)), tf.float32))
+    # end method add_backward_path
 
 
     def conv2d(self, X, W, b, strides=1):
         conv = tf.nn.conv2d(X, W, strides=[1, strides, strides, 1], padding='SAME')
         conv = tf.nn.bias_add(conv, b)
-        return tf.nn.relu(batch_norm(conv))
+        return tf.nn.relu(conv)
     # end method conv2d
 
 
     def maxpool2d(self, X, k=2):
         return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
     # end method maxpool2d
+
+
+    def _W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+    # end method _W
+
+    
+    def _b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.1))
+    # end method _b
 
 
     def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True):
@@ -125,7 +140,7 @@ class ConvClassifier:
         batch_pred_list = []
         X_test_batch_list = np.array_split(X_test, int( len(X_test)/batch_size ))
         for X_test_batch in X_test_batch_list:
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
+            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

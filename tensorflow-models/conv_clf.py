@@ -16,7 +16,13 @@ class ConvClassifier:
         with tf.name_scope('input_layer'):
             self.add_input_layer()
         with tf.variable_scope('forward_path'):
-            self.add_forward_path()
+            self.add_conv_layer(self.X, 'wc1', [5,5,1,32], 'bc1', [32])
+            self.add_maxpool_layer(self.conv, k=2)
+            self.add_conv_layer(self.conv, 'wc2', [5,5,32,64], 'bc2', [64])
+            self.add_maxpool_layer(self.conv, k=2)
+            self.add_fully_connected_layer(
+                self.conv, self._W('wd1', [int(self.img_h/4)*int(self.img_w/4)*64, 1024]), self._b('bd1', [1024])
+            )
         with tf.variable_scope('output_layer'):
             self.add_output_layer()   
         with tf.name_scope('backward_path'):
@@ -34,18 +40,22 @@ class ConvClassifier:
     # end method add_input_layer
 
 
-    def add_forward_path(self):
-        conv1 = self.conv2d( self.X, self._W('wc1', [5,5,1,32]), self._b('bc1', [32]) ) # convolution layer
-        conv1 = self.maxpool2d(conv1, k=2) # max pooling (down-sampling)
-        conv2 = self.conv2d( conv1, self._W('wc2', [5,5,32,64]), self._b('bc2', [64]) ) # convolution layer
-        conv2 = self.maxpool2d(conv2, k=2) # max pooling (down-sampling)
-        # fully connected layer, reshape conv2 output to fit fully connected layer input
-        fc_W = self._W('wd1', [int(self.img_h/4)*int(self.img_w/4)*64, 1024])
-        fc = tf.reshape(conv2, [-1, fc_W.get_shape().as_list()[0]])
-        fc = tf.nn.bias_add(tf.matmul(fc, fc_W), self._b('bd1', [1024]))
+    def add_conv_layer(self, in_layer, w_name, w_shape, b_name, b_shape):
+        self.conv = self.conv2d(in_layer, self._W(w_name, w_shape), self._b(b_name, b_shape))
+    # end method add_conv_layer
+
+
+    def add_maxpool_layer(self, in_layer, k=2):
+        self.conv = self.maxpool2d(in_layer, k=k)
+    # end method add_maxpool_layer
+
+
+    def add_fully_connected_layer(self, in_layer, W, b):
+        fc = tf.reshape(in_layer, [-1, W.get_shape().as_list()[0]])
+        fc = tf.nn.bias_add(tf.matmul(fc, W), b)
         fc = tf.nn.relu(fc)
         self.fc = tf.nn.dropout(fc, self.keep_prob)
-    # end method forward_path
+    # end method fully_connected_layer
 
 
     def add_output_layer(self):

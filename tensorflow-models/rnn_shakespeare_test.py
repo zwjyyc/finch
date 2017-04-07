@@ -103,7 +103,7 @@ if __name__ == '__main__':
     s_text = load_text()
     print('Cleaning Text')
     s_text = clean_text(s_text)
-    word_list = s_text.split() #word_list = list(s_text) # split up by characters
+    word_list = s_text.split() # word_list = list(s_text) # split up by characters
 
     print('Building Shakespeare Vocab by Characters')
     idx2word, word2idx = build_vocab(word_list)

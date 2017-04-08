@@ -123,6 +123,6 @@ if __name__ == '__main__':
                                sess=sess)
     with tf.variable_scope(tf.get_variable_scope(), reuse=True):
         sample_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=1, sess=sess)
-    log = train_model.fit(X, y, n_epoch=10, batch_size=batch_size,
+    log = train_model.fit(X, y, n_epoch=5, batch_size=batch_size,
                           sample_pack=(sample_model, idx2word, word2idx, 10, prime_texts))
     plot(log)

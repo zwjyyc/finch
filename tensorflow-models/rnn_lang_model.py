@@ -70,9 +70,12 @@ class RNNLangModel:
                                                                 labels=tf.reshape(self.Y, [-1]))
         self.loss = tf.reduce_mean(losses)
         self.lr = tf.placeholder(tf.float32)
+        """
         gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), 4.5)
         optimizer = tf.train.AdamOptimizer(self.lr)
         self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
+        """
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
 
 

@@ -12,8 +12,9 @@ import tensorflow as tf
 from rnn_lang_model import RNNLangModel
 
 
-batch_size = 100
-training_seq_len = 50
+batch_size = 128
+training_seq_len = 20
+num_layers = 1
 prime_texts = ['thou art more', 'to be or not to', 'wherefore art thou']
 
 
@@ -100,6 +101,16 @@ def plot(log, dir='./log'):
 # end function plot()
 
 
+def change_word_seq(batch_list):
+    y = [] 
+    for idx, row in enumerate(batch_list):
+        row  = np.roll(row, -1, axis=1)
+        if idx != len(batch_list)-1:
+            row[-1] = batch_list[idx+1][0]
+        y.append(row)
+    return y
+# end function change_seq()
+
 if __name__ == '__main__':
     s_text = load_text()
     print('Cleaning Text')
@@ -110,19 +121,20 @@ if __name__ == '__main__':
     idx2word, word2idx = build_vocab(word_list)
     vocab_size = len(idx2word)
     print('Vocabulary Length = {}'.format(vocab_size))
-    assert(len(idx2word) == len(word2idx)) # sanity Check
+    assert len(idx2word) == len(word2idx), "len(idx2word) is not equal to len(word2idx)" # sanity Check
 
     s_text_idx = convert_text_to_word_vecs(word_list, word2idx)
     batch_list = create_batch(s_text_idx)
-    random.shuffle(batch_list)
     X = batch_list
-    y = [np.roll(batch, -1, axis=1) for batch in batch_list] # predicting next word
+    # y = [np.roll(batch, -1, axis=1) for batch in batch_list] # predicting next word if axis = 1
+    y = change_word_seq(batch_list)
+    assert len(X) == len(y), "len(X) is not equal to len(y)" # sanity Check
 
     sess = tf.Session()
-    train_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=training_seq_len,
+    train_model = RNNLangModel(n_hidden=128, n_layers=num_layers, vocab_size=vocab_size, seq_len=training_seq_len,
                                sess=sess)
     with tf.variable_scope(tf.get_variable_scope(), reuse=True):
-        sample_model = RNNLangModel(n_hidden=128, n_layers=1, vocab_size=vocab_size, seq_len=1, sess=sess)
-    log = train_model.fit(X, y, n_epoch=10, batch_size=batch_size, en_exp_decay=False,
+        sample_model = RNNLangModel(n_hidden=128, n_layers=num_layers, vocab_size=vocab_size, seq_len=1, sess=sess)
+    log = train_model.fit(X, y, n_epoch=5, batch_size=batch_size, en_exp_decay=False,
                           sample_pack=(sample_model, idx2word, word2idx, 10, prime_texts))
     plot(log)

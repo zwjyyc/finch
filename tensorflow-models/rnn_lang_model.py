@@ -108,35 +108,35 @@ class RNNLangModel:
                 if batch_count % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f' % (epoch+1, n_epoch,
                         batch_count, len(X_batch_list), loss, lr))
-                    if (sample_pack is not None) and (batch_count % 50 == 0):
-                        for prime_text in prime_texts:
-                            print(self.sample(s_model, idx2word, word2idx, num, prime_text))
                 log['train_loss'].append(loss)
                 batch_count += 1
                 global_step += 1
+            if sample_pack is not None:
+                for prime_text in prime_texts:
+                    print(self.sample(s_model, idx2word, word2idx, num, prime_text))
         return log
     # end method fit
 
 
-    def sample(self, s_model, words, vocab, num, prime_text):
+    def sample(self, s_model, idx2word, word2idx, num, prime_text):
         state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
         word_list = prime_text.split()
         for word in word_list[:-1]:
-            x = np.zeros((1, 1))
-            x[0, 0] = vocab[word] 
+            x = np.zeros((1,1))
+            x[0,0] = word2idx[word] 
             state = self.sess.run(s_model.final_state, feed_dict={s_model.X:x, s_model.init_state:state})
 
         out_sentence = prime_text
         word = word_list[-1]
         for n in range(num):
-            x = np.zeros((1, 1))
-            x[0, 0] = vocab[word]
-            feed_dict = {s_model.X:x, s_model.init_state:state}
-            model_output, state = self.sess.run([s_model.softmax_out, s_model.final_state], feed_dict=feed_dict)
-            sample = np.argmax(model_output[0])
+            x = np.zeros((1,1))
+            x[0,0] = word2idx[word]
+            softmax_out, state = self.sess.run([s_model.softmax_out, s_model.final_state],
+                                                feed_dict={s_model.X:x, s_model.init_state:state})
+            sample = np.argmax(softmax_out[0])
             if sample == 0:
                 break
-            word = words[sample]
+            word = idx2word[sample]
             out_sentence = out_sentence + ' ' + word
         return(out_sentence)
     # end method sample

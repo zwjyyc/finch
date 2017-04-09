@@ -95,7 +95,8 @@ class ConvClassifier:
     # end method _b
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True):
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True,
+            batch_mode='equal'):
         if val_data is None:
             print("Train %d samples" % len(X))
         else:
@@ -104,21 +105,22 @@ class ConvClassifier:
         global_step = 0
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
-
         for epoch in range(n_epoch):
-            # batch training
-            local_step = 0
-            for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
+            local_step = 1
+            if batch_mode == 'all':
+                gen = zip(np.array_split(X, int(len(X)/batch_size)), np.array_split(y, int(len(X)/batch_size)))
+            if batch_mode == 'equal':
+                gen = zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size))
+            for X_batch, y_batch in gen: # batch training
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
                     self.y: y_batch, self.lr: lr, self.keep_prob: keep_prob})
                 local_step += 1
                 global_step += 1
-                if (local_step + 1) % 100 == 0:
-                    print ("Epoch %d/%d | Step %d/%d | train loss: %.4f | train acc: %.4f | lr: %.4f"
-                           %(epoch+1, n_epoch, local_step+1, int(len(X)/batch_size), loss, acc, lr))
-            if val_data is not None:
-                # go through test dara, compute validation loss and acc
+                if local_step % 50 == 0:
+                    print ("Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f"
+                           %(epoch+1, n_epoch, local_step, int(len(X)/batch_size), loss, acc, lr))
+            if val_data is not None: # go through test dara, compute averaged validation loss and acc
                 val_loss_list, val_acc_list = [], []
                 for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
@@ -134,15 +136,14 @@ class ConvClassifier:
             if val_data is not None:
                 log['val_loss'].append(val_loss)
                 log['val_acc'].append(val_acc)
-
             # verbose
             if val_data is None:
-                print ("Epoch %d/%d | train loss: %.4f | train acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
-                       "lr: %.4f" % (lr) )
+                print ("Epoch %d/%d | train_loss: %.4f | train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                    "lr: %.4f" % (lr) )
             else:
-                print ("Epoch %d/%d | train loss: %.4f | train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
-                       "test loss: %.4f | test acc: %.4f |" % (val_loss, val_acc),
-                       "lr: %.4f" % (lr) )
+                print ("Epoch %d/%d | train_loss: %.4f | train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                    "test_loss: %.4f | test_acc: %.4f |" % (val_loss, val_acc),
+                    "lr: %.4f" % (lr) )
         return log
     # end method fit
 
@@ -164,13 +165,8 @@ class ConvClassifier:
 
 
     def gen_batch(self, arr, batch_size):
-        if len(arr) % batch_size != 0:
-            new_len = len(arr) - len(arr) % batch_size
-            for i in range(0, new_len, batch_size):
-                yield arr[i : i + batch_size]
-        else:
-            for i in range(0, len(arr), batch_size):
-                yield arr[i : i + batch_size]
+        for i in range(0, len(arr), batch_size):
+            yield arr[i : i + batch_size]
     # end method gen_batch
 
 

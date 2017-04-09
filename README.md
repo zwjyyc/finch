@@ -38,8 +38,8 @@
 * PyTorch
      * RNN Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf_test.py)
 #### Autoencoder
-* Stacked Autoencoder &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_test.py)
-* Weight-shared Autoencoder &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_shared_w.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_shared_w_test.py)
+* Stacked &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_test.py)
+* Weight-shared &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_shared_w.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_shared_w_test.py)
 ### Computer Vision
 #### OpenCV
 * Basic Operations

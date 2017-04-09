@@ -1,4 +1,4 @@
-from autoencoder_shared_w import Autoencoder
+from autoencoder_tied_w import Autoencoder
 from keras.datasets import mnist
 import matplotlib.pyplot as plt
 

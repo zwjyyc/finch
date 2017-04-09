@@ -108,9 +108,9 @@ class ConvClassifier:
         for epoch in range(n_epoch):
             local_step = 1
             if batch_mode == 'all':
-                gen = zip(np.array_split(X, int(len(X)/batch_size)), np.array_split(y, int(len(X)/batch_size)))
+                gen = zip(np.array_split(X,int(len(X)/batch_size)), np.array_split(y,int(len(X)/batch_size)))
             if batch_mode == 'equal':
-                gen = zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size))
+                gen = zip(self.gen_batch(X,batch_size), self.gen_batch(y,batch_size))
             for X_batch, y_batch in gen: # batch training
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
@@ -150,7 +150,7 @@ class ConvClassifier:
 
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        X_test_batch_list = np.array_split(X_test, int( len(X_test)/batch_size ))
+        X_test_batch_list = np.array_split(X_test, int(len(X_test)/batch_size))
         for X_test_batch in X_test_batch_list:
             batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
@@ -160,7 +160,7 @@ class ConvClassifier:
 
     def gen_batch(self, arr, batch_size):
         for i in range(0, len(arr), batch_size):
-            yield arr[i : i + batch_size]
+            yield arr[i : i+batch_size]
     # end method gen_batch
 
 

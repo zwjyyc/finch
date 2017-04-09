@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = ConvClassifier(28, 28, 10, sess)
-    log = clf.fit(X_train, y_train, n_epoch=1, keep_prob=0.5, val_data=(X_test, y_test))
+    log = clf.fit(X_train, y_train, n_epoch=1, keep_prob=0.5, val_data=(X_test, y_test), batch_mode='equal')
     pred = clf.predict(X_test)
     clf.close()
     final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test, 1)).astype(float).mean()

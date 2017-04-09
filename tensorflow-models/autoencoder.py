@@ -25,28 +25,29 @@ class Autoencoder:
 
     def encoder(self, X, encoder_units):
         new_layer = X
-        forward = [self.n_in] + encoder_units[:-1]
-        for i in range( len(forward)-1 ):
+        forward = [self.n_in] + encoder_units
+        for i in range(len(forward)-2):
             new_layer = self.fc(new_layer, forward[i], forward[i+1])
             new_layer = tf.nn.sigmoid(new_layer)
-        new_layer = self.fc(new_layer, encoder_units[-2], encoder_units[-1])
+        new_layer = self.fc(new_layer, forward[-2], forward[-1])
         return new_layer
     # end method encoder
 
 
     def decoder(self, X, decoder_units):
         new_layer = X
-        for i in range( len(decoder_units)-1 ):
-            new_layer = self.fc(new_layer, decoder_units[i], decoder_units[i+1])
+        forward = decoder_units + [self.n_in]
+        for i in range(len(forward)-2):
+            new_layer = self.fc(new_layer, forward[i], forward[i+1])
             new_layer = tf.nn.sigmoid(new_layer)
-        new_layer = self.fc(new_layer, decoder_units[-1], self.n_in)
+        new_layer = self.fc(new_layer, forward[-2], forward[-1])
         return new_layer
     # end method decoder
 
 
     def fc(self, X, fan_in, fan_out):
         W = tf.Variable(tf.random_normal([fan_in, fan_out], stddev=math.sqrt(2.0/fan_in)))
-        b = tf.Variable(tf.random_normal([fan_out]))
+        b = tf.Variable(tf.constant(0.0, shape=[fan_out]))
         return tf.nn.bias_add(tf.matmul(X, W), b)
     # end method fc
 

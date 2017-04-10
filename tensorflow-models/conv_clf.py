@@ -95,8 +95,7 @@ class ConvClassifier:
     # end method _b
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True,
-            batch_mode='equal'):
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True):
         if val_data is None:
             print("Train %d samples" % len(X))
         else:
@@ -107,11 +106,8 @@ class ConvClassifier:
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
             local_step = 1
-            if batch_mode == 'all':
-                gen = zip(np.array_split(X,int(len(X)/batch_size)), np.array_split(y,int(len(X)/batch_size)))
-            if batch_mode == 'equal':
-                gen = zip(self.gen_batch(X,batch_size), self.gen_batch(y,batch_size))
-            for X_batch, y_batch in gen: # batch training
+            for X_batch, y_batch in zip(self.gen_batch(X,batch_size),
+                                        self.gen_batch(y,batch_size)): # batch training
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
                     self.y: y_batch, self.lr: lr, self.keep_prob: keep_prob})
@@ -150,8 +146,7 @@ class ConvClassifier:
 
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        X_test_batch_list = np.array_split(X_test, int(len(X_test)/batch_size))
-        for X_test_batch in X_test_batch_list:
+        for X_test_batch in self.gen_batch(X_test, batch_size):
             batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)

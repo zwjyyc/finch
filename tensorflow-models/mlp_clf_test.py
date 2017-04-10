@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import os, sys
+import tensorflow as tf
 
 
 def plot(log, dir='./log'):
@@ -25,10 +26,11 @@ if __name__ == '__main__':
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 
-    clf = MLPClassifier(n_in=28*28, hidden_unit_list=[100, 200, 100], n_out=10)
-    log = clf.fit(X_train, y_train, batch_size=100, en_exp_decay=True, val_data=(X_test, y_test))
+    sess = tf.Session()
+    clf = MLPClassifier(n_in=28*28, hidden_unit_list=[100, 200, 100], n_out=10, sess=sess)
+    log = clf.fit(X_train, y_train, en_exp_decay=True, val_data=(X_test, y_test))
     pred = clf.predict(X_test)
-    clf.close()
+    tf.reset_default_graph()
     final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test, 1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)
 

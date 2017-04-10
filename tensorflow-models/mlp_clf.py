@@ -4,10 +4,11 @@ import math
 
 
 class MLPClassifier:
-    def __init__(self, n_in, hidden_unit_list, n_out=2):
+    def __init__(self, n_in, hidden_unit_list, n_out, sess):
         self.n_in = n_in
         self.hidden_unit_list = hidden_unit_list
         self.n_out = n_out
+        self.sess = sess
         self.build_graph()
     # end constructor
 
@@ -16,12 +17,10 @@ class MLPClassifier:
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
         self.lr = tf.placeholder(tf.float32)
-        self.pred = self.mlp(self.X, self.n_in, self.hidden_unit_list, self.n_out)
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
+        self.logits = self.mlp(self.X, self.n_in, self.hidden_unit_list, self.n_out)
+        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.reduce_mean( tf.cast( tf.equal( tf.argmax(self.pred, 1), tf.argmax(self.y, 1) ), tf.float32 ) )
-        self.sess = tf.Session()
-        self.init = tf.global_variables_initializer()
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.y,1)), tf.float32))
     # end method build_graph
 
 
@@ -51,20 +50,19 @@ class MLPClassifier:
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0
 
-        self.sess.run(self.init) # initialize all variables
-
+        self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
             # batch training
-            local_step = 0
+            local_step = 1
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
                                               self.y: y_batch, self.lr: lr})
                 local_step += 1
                 global_step += 1
-                if (local_step + 1) % 100 == 0:
-                    print ('Epoch %d/%d | Step %d/%d | train loss: %.4f | train acc: %.4f | lr: %.4f'
-                           %(epoch+1, n_epoch, local_step+1, int(len(X)/batch_size), loss, acc, lr))
+                if local_step % 100 == 0:
+                    print ('Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f'
+                           %(epoch+1, n_epoch, local_step, int(len(X)/batch_size), loss, acc, lr))
             if val_data is not None:
                 # compute validation loss and acc
                 val_loss_list, val_acc_list = [], []
@@ -85,11 +83,11 @@ class MLPClassifier:
 
             # verbose
             if val_data is None:
-                print ("Epoch %d/%d | train loss: %.4f | train acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                print ("Epoch %d/%d | train_loss: %.4f | train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
                        "lr: %.4f" % (lr) )
             else:
-                print ("Epoch %d/%d | train loss: %.4f | train acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
-                       "test loss: %.4f | test acc: %.4f |" % (val_loss, val_acc),
+                print ("Epoch %d/%d | train_loss: %.4f | train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
+                       "test_loss: %.4f | test_acc: %.4f |" % (val_loss, val_acc),
                        "lr: %.4f" % (lr) )
         return log
     # end method fit
@@ -97,28 +95,16 @@ class MLPClassifier:
 
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        X_test_batch_list = np.array_split(X_test, int( len(X_test) / batch_size ))
-        for X_test_batch in X_test_batch_list:
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X: X_test_batch})
+        for X_test_batch in self.gen_batch(X_test, batch_size):
+            batch_pred = self.sess.run(self.logits, feed_dict={self.X: X_test_batch})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict
 
 
-    def close(self):
-        self.sess.close()
-        tf.reset_default_graph()
-    # end method close
-
-
     def gen_batch(self, arr, batch_size):
-        if len(arr) % batch_size != 0:
-            new_len = len(arr) - len(arr) % batch_size
-            for i in range(0, new_len, batch_size):
-                yield arr[i : i + batch_size]
-        else:
-            for i in range(0, len(arr), batch_size):
-                yield arr[i : i + batch_size]
+        for i in range(0, len(arr), batch_size):
+            yield arr[i : i+batch_size]
     # end method gen_batch
 
 

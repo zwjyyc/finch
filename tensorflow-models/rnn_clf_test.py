@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import os, sys
+import tensorflow as tf
 
 
 def plot(log, dir='./log'):
@@ -26,12 +27,14 @@ if __name__ == '__main__':
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 
-    clf = RNNClassifier(n_in=28, n_step=28, n_out=10, n_layer=2, stateful=True)
-    log = clf.fit(X_train, y_train, n_epoch=2, en_exp_decay=True, keep_prob_tuple=(0.5, 1.0),
-                  val_data=(X_test, y_test) )
+    sess = tf.Session()
+    clf = RNNClassifier(n_in=28, n_step=28, n_hidden=128, n_out=10, n_layer=2, sess=sess, stateful=True)
+    log = clf.fit(X_train, y_train, n_epoch=2, en_exp_decay=True, keep_prob_tuple=(0.5,1.0),
+                  val_data=(X_test,y_test))
     pred = clf.predict(X_test)
-    clf.close()
-    final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test[:len(pred)], 1)).astype(float).mean()
+    tf.reset_default_graph()
+
+    final_acc = np.equal(np.argmax(pred,1), np.argmax(y_test,1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)
 
     #plot(log)

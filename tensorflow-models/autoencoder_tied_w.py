@@ -21,7 +21,6 @@ class Autoencoder:
         self.loss = tf.reduce_mean(tf.square(self.X - self.decoder_op))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
         self.sess = tf.Session()
-        self.init = tf.global_variables_initializer()
     # end method build_graph
 
 
@@ -65,7 +64,7 @@ class Autoencoder:
 
 
     def fit_transform(self, X_train, n_epoch=10, batch_size=32):
-        self.sess.run(self.init) # initialize all variables
+        self.sess.run(tf.global_variables_initializer()) # initialize all variables
         global_step = 0
         for epoch in range(n_epoch):
             # batch training

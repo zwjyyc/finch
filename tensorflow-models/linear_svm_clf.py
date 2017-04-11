@@ -100,7 +100,7 @@ class LinearSVMClassifier:
 
     def gen_batch(self, arr, batch_size):
         for i in range(0, len(arr), batch_size):
-            yield arr[i : i + batch_size]
+            yield arr[i : i+batch_size]
     # end method gen_batch
 
 

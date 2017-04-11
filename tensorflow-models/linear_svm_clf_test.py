@@ -22,9 +22,7 @@ def plot(log, dir='./log'):
 
 if __name__ == '__main__':
     X, y = make_classification(5000)
-    for idx, val in enumerate(y):
-        if val == 0:
-            y[idx] = -1
+    y = np.array([1 if y_==1 else -1 for y_ in y])
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
 
     sess = tf.Session()

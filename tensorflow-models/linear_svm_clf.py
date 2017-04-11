@@ -50,14 +50,9 @@ class LinearSVMClassifier:
     # end method add_backward_path
 
 
-    def fit(self, X, y, val_data, n_epoch=10, batch_size=None):
+    def fit(self, X, y, val_data, n_epoch=100, batch_size=100):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
-
-        test_batch_size = batch_size
-        if batch_size is None:
-            batch_size = len(X)
-            test_batch_size = len(validation_data[0])
         
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
@@ -66,8 +61,8 @@ class LinearSVMClassifier:
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X:X_batch,
                                               self.y:y_batch, self.batch_size:len(X_batch)})
             val_loss_list, val_acc_list = [], [] # compute validation loss and acc
-            for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], test_batch_size),
-                                                  self.gen_batch(val_data[1], test_batch_size)):
+            for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
+                                                  self.gen_batch(val_data[1], batch_size)):
                 v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict={self.X:X_test_batch,
                                                self.y:y_test_batch, self.batch_size:len(X_test_batch)})
                 val_loss_list.append(v_loss)
@@ -80,8 +75,9 @@ class LinearSVMClassifier:
             log['val_loss'].append(val_loss)
             log['val_acc'].append(val_acc)
             # verbose
-            print ("%d / %d: train_loss: %.4f train_acc: %.4f | test_loss: %.4f test_acc: %.4f"
-                   % (epoch+1, n_epoch, loss, acc, val_loss, val_acc))
+            if epoch % 20 == 0:
+                print ("%d / %d: train_loss: %.4f train_acc: %.4f | test_loss: %.4f test_acc: %.4f"
+                    % (epoch+1, n_epoch, loss, acc, val_loss, val_acc))
             
         return log
     # end method fit

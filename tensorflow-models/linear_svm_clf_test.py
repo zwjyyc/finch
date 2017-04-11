@@ -21,7 +21,7 @@ def plot(log, dir='./log'):
 
 
 if __name__ == '__main__':
-    X, y = make_classification(1000)
+    X, y = make_classification(5000)
     for idx, val in enumerate(y):
         if val == 0:
             y[idx] = -1
@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = LinearSVMClassifier(C=1.0, n_in=X_train.shape[1], sess=sess)
-    log = clf.fit(X_train, y_train.reshape(-1, 1), n_epoch=100, batch_size=32,
+    log = clf.fit(X_train, y_train.reshape(-1, 1), n_epoch=100, batch_size=100,
                   val_data=(X_test, y_test.reshape(-1, 1)))
     y_pred = clf.predict(X_test)
     print("linear svm (tensorflow):", np.equal(y_pred.ravel(), y_test).astype(float).mean())

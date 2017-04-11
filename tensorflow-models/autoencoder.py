@@ -4,21 +4,23 @@ import math
 
 
 class Autoencoder:
-    def __init__(self, n_in, encoder_units, decoder_units):
+    def __init__(self, n_in, encoder_units, decoder_units, sess):
         self.n_in = n_in
         self.encoder_units = encoder_units
         self.decoder_units = decoder_units
+        self.sess = sess
         self.build_graph()
     # end constructor
 
 
     def build_graph(self):
-        self.X = tf.placeholder(tf.float32, [None, self.n_in])
-        self.encoder_op = self.encoder(self.X, self.encoder_units)
-        self.decoder_op = self.decoder(self.encoder_op, self.decoder_units)
-        self.loss = tf.reduce_mean(tf.square(self.X - self.decoder_op))
-        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
-        self.sess = tf.Session()
+        with tf.name_scope('input_layer'):
+            self.X = tf.placeholder(tf.float32, [None, self.n_in])
+        with tf.variable_scope('forward_path'):
+            self.encoder_op = self.encoder(self.X, self.encoder_units)
+            self.decoder_op = self.decoder(self.encoder_op, self.decoder_units)
+        with tf.name_scope('backward_path'):
+            self.add_backward_path()
     # end method build_graph
 
 
@@ -26,9 +28,9 @@ class Autoencoder:
         new_layer = X
         forward = [self.n_in] + encoder_units
         for i in range(len(forward)-2):
-            new_layer = self.fc(new_layer, forward[i], forward[i+1])
+            new_layer = self.fc('encoder%s'%i, new_layer, forward[i], forward[i+1])
             new_layer = tf.nn.sigmoid(new_layer)
-        new_layer = self.fc(new_layer, forward[-2], forward[-1])
+        new_layer = self.fc('encoder%s'%(i+1), new_layer, forward[-2], forward[-1])
         return new_layer
     # end method encoder
 
@@ -37,16 +39,23 @@ class Autoencoder:
         new_layer = X
         forward = decoder_units + [self.n_in]
         for i in range(len(forward)-2):
-            new_layer = self.fc(new_layer, forward[i], forward[i+1])
+            new_layer = self.fc('decoder%s'%i, new_layer, forward[i], forward[i+1])
             new_layer = tf.nn.sigmoid(new_layer)
-        new_layer = self.fc(new_layer, forward[-2], forward[-1])
+        new_layer = self.fc('decoder%s'%(i+1), new_layer, forward[-2], forward[-1])
         return new_layer
     # end method decoder
 
 
-    def fc(self, X, fan_in, fan_out):
-        W = tf.Variable(tf.random_normal([fan_in, fan_out], stddev=math.sqrt(2.0/fan_in)))
-        b = tf.Variable(tf.constant(0.0, shape=[fan_out]))
+    def add_backward_path(self):
+        self.loss = tf.reduce_mean(tf.square(self.X - self.decoder_op))
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
+    # end method add_backward_path
+
+
+    def fc(self, name, X, fan_in, fan_out):
+        W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32,
+                            tf.contrib.layers.variance_scaling_initializer())
+        b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.0))
         return tf.nn.bias_add(tf.matmul(X, W), b)
     # end method fc
 

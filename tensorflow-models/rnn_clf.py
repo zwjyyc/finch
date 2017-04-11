@@ -17,33 +17,54 @@ class RNNClassifier:
 
 
     def build_graph(self):
-        self.batch_size = tf.placeholder(tf.int32)
-        self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
-        self.y = tf.placeholder(tf.float32, [None, self.n_out])
-        W = tf.Variable(tf.random_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2/self.n_hidden)))
-        b = tf.Variable(tf.zeros([self.n_out]))
-        self.lr = tf.placeholder(tf.float32)
-        self.in_keep_prob = tf.placeholder(tf.float32)
-        self.out_keep_prob = tf.placeholder(tf.float32)
-        self.pred = self.rnn(self.X, W, b, self.in_keep_prob, self.out_keep_prob)
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.pred,1),tf.argmax(self.y,1)), tf.float32))
+        with tf.variable_scope('input_layer'):
+            self.add_input_layer()
+        with tf.name_scope('forward_path'):
+            self.add_forward_path() 
+        with tf.name_scope('output_layer'):
+            self.add_output_layer()
+        with tf.name_scope('backward_path'):
+            self.add_backward_path()
     # end method build_graph
 
 
-    def rnn(self, X, W, b, in_keep_prob, out_keep_prob):
+    def add_input_layer(self):
+        self.batch_size = tf.placeholder(tf.int32)
+        self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
+        self.y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.W = tf.get_variable('W', [self.n_hidden, self.n_out], tf.float32,
+                                 tf.contrib.layers.variance_scaling_initializer())
+        self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
+        self.in_keep_prob = tf.placeholder(tf.float32)
+        self.out_keep_prob = tf.placeholder(tf.float32)
+    # end method add_input_layer
+
+
+    def add_forward_path(self):
         cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
-        cell = tf.contrib.rnn.DropoutWrapper(cell, in_keep_prob, out_keep_prob)
+        cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
         cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)
         self.init_state = cells.zero_state(self.batch_size, tf.float32)        
-        outputs, self.final_state = tf.nn.dynamic_rnn(cells, X, initial_state=self.init_state, time_major=False)
+        outputs, self.final_state = tf.nn.dynamic_rnn(cells, self.X, initial_state=self.init_state,
+                                                      time_major=False)
 
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         outputs = tf.unstack(tf.transpose(outputs, [1,0,2]))
-        results = tf.nn.bias_add(tf.matmul(outputs[-1], W), b)
-        return results
-    # end method rnn
+        self.rnn_out = outputs
+    # end method add_forward_path
+
+
+    def add_output_layer(self):
+        self.logits = tf.nn.bias_add(tf.matmul(self.rnn_out[-1], self.W), self.b)
+    # end method add_output_layer
+
+
+    def add_backward_path(self):
+        self.lr = tf.placeholder(tf.float32)
+        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y))
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.y,1)), tf.float32))
+    # end method add_backward_path
 
 
     def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, keep_prob_tuple=(1.0,1.0)):
@@ -114,11 +135,11 @@ class RNNClassifier:
         next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
         for X_test_batch in self.gen_batch(X_test, batch_size, is_size_equal=False):
             if (self.stateful) and (len(X_test_batch) == batch_size):
-                batch_pred, next_state = self.sess.run([self.pred, self.final_state], 
+                batch_pred, next_state = self.sess.run([self.logits, self.final_state], 
                     feed_dict = {self.X:X_test_batch, self.batch_size:batch_size, self.in_keep_prob:1.0,
                         self.out_keep_prob:1.0, self.init_state:next_state})
             else:
-                batch_pred = self.sess.run(self.pred, feed_dict = {self.X:X_test_batch,
+                batch_pred = self.sess.run(self.logits, feed_dict = {self.X:X_test_batch,
                     self.batch_size:len(X_test_batch), self.in_keep_prob:1.0, self.out_keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)

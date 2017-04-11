@@ -14,30 +14,49 @@ class MLPClassifier:
 
 
     def build_graph(self):
-        self.X = tf.placeholder(tf.float32, [None, self.n_in])
-        self.y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.lr = tf.placeholder(tf.float32)
-        self.logits = self.mlp(self.X, self.n_in, self.hidden_unit_list, self.n_out)
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y))
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.y,1)), tf.float32))
+        with tf.variable_scope('input_layer'):
+            self.add_input_layer()
+        with tf.variable_scope('forward_path'):
+            self.add_forward_path() 
+        with tf.variable_scope('output_layer'):
+            self.add_output_layer()
+        with tf.name_scope('backward_path'):
+            self.add_backward_path()
     # end method build_graph
 
 
-    def mlp(self, X, n_in, hidden_unit_list, n_out):
-        new_layer = X
-        forward = [n_in] + hidden_unit_list
+    def add_input_layer(self):
+        self.X = tf.placeholder(tf.float32, [None, self.n_in])
+        self.y = tf.placeholder(tf.float32, [None, self.n_out])
+    # end method add_input_layer
+
+
+    def add_forward_path(self):
+        new_layer = self.X
+        forward = [self.n_in] + self.hidden_unit_list
         for i in range( len(forward)-1 ):
-            new_layer = self.fc(new_layer, forward[i], forward[i+1])
+            new_layer = self.fc('layer%s'%i, new_layer, forward[i], forward[i+1])
             new_layer = tf.nn.relu(new_layer)
-        out_layer = self.fc(new_layer, hidden_unit_list[-1], n_out)
-        return out_layer
-    # end method mlp
+        self.mlp_out = new_layer
+    # end method add_forward_path
 
 
-    def fc(self, X, fan_in, fan_out):
-        W = tf.Variable(tf.truncated_normal([fan_in, fan_out], stddev=math.sqrt(2/fan_in)))
-        b = tf.Variable(tf.random_normal([fan_out]))
+    def add_output_layer(self):
+        self.logits = self.fc('layer_out', self.mlp_out, self.hidden_unit_list[-1], self.n_out)
+    # end method add_output_layer
+
+
+    def add_backward_path(self):
+        self.lr = tf.placeholder(tf.float32)
+        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y))
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.y,1)), tf.float32))
+    # end method add_backward_path
+
+
+    def fc(self, name, X, fan_in, fan_out):
+        W = tf.get_variable(name+'_w', [fan_in, fan_out], tf.float32, tf.contrib.layers.variance_scaling_initializer())
+        b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
         return tf.nn.bias_add(tf.matmul(X, W), b)
     # end method fc (fully-connected)
 

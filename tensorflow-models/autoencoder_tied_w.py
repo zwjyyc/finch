@@ -4,23 +4,24 @@ import math
 
 
 class Autoencoder:
-    def __init__(self, n_in, encoder_units, decoder_units):
+    def __init__(self, n_in, encoder_units, decoder_units, sess):
         self.n_in = n_in
         self.encoder_units = encoder_units
         self.decoder_units = decoder_units
+        self.sess = sess
         self.build_graph()
     # end constructor
 
 
     def build_graph(self):
-        self.X = tf.placeholder(tf.float32, [None, self.n_in])
+        with tf.name_scope('input_layer'):
+            self.X = tf.placeholder(tf.float32, [None, self.n_in])
         with tf.variable_scope('forward_path') as scope:
             self.encoder_op = self.encoder(self.X, self.encoder_units)
             scope.reuse_variables()
             self.decoder_op = self.decoder(self.encoder_op, self.decoder_units)
-        self.loss = tf.reduce_mean(tf.square(self.X - self.decoder_op))
-        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
-        self.sess = tf.Session()
+        with tf.name_scope('backward_path'):
+            self.add_backward_path()
     # end method build_graph
 
 
@@ -46,6 +47,12 @@ class Autoencoder:
         new_layer = self._fc(names[-1], new_layer, forward[-2], forward[-1])
         return new_layer
     # end method decoder
+
+
+    def add_backward_path(self):
+        self.loss = tf.reduce_mean(tf.square(self.X - self.decoder_op))
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
+    # end method add_backward_path
 
 
     def fc(self, name, X, fan_in, fan_out):

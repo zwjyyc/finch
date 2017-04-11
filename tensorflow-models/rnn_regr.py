@@ -4,43 +4,61 @@ import matplotlib.pyplot as plt
 
 
 class RNNRegressor:
-    def __init__(self, n_in, n_step, n_hidden, n_out):
+    def __init__(self, n_in, n_step, n_hidden, n_out, sess):
         self.n_in = n_in
         self.n_step = n_step
         self.n_hidden = n_hidden
         self.n_out = n_out
-
+        self.sess = sess
         self.build_graph()
     # end constructor
 
     def build_graph(self):
+        with tf.variable_scope('input_layer'):
+            self.add_input_layer()
+        with tf.name_scope('forward_path'):
+            self.add_forward_path()
+        with tf.name_scope('output_layer'):
+            self.add_output_layer() 
+        with tf.name_scope('backward_path'):
+            self.add_backward_path()
+    # end method build_graph
+
+    def add_input_layer(self):
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_step, self.n_out])
-        W = tf.Variable(tf.truncated_normal([self.n_hidden, self.n_out], stddev=math.sqrt(2/self.n_hidden)))
-        b = tf.Variable(tf.zeros([self.n_out]))
-        self.pred = self.rnn(self.X, W, b)
-        self.loss = tf.reduce_mean(tf.square(self.pred - self.y))
-        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
-        self.sess = tf.Session()
-        self.init = tf.global_variables_initializer()
-    # end method build_graph
+        self.W = tf.get_variable('W', [self.n_hidden, self.n_out], tf.float32,
+                                 tf.contrib.layers.variance_scaling_initializer())
+        self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
+    # end method add_input_layer
 
 
-    def rnn(self, X, W, b):
+    def add_forward_path(self):
         lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
         self.init_state = lstm_cell.zero_state(self.batch_size, dtype=tf.float32)
-        outputs, self.final_state = tf.nn.dynamic_rnn(lstm_cell, X, initial_state=self.init_state,
+        outputs, self.final_state = tf.nn.dynamic_rnn(lstm_cell, self.X, initial_state=self.init_state,
                                                       time_major=False)
-        
         outputs = tf.reshape(outputs, [-1, self.n_hidden]) # (batch * n_step, n_hidden)
-        outputs = tf.matmul(outputs, W) + b # (batch * n_step, n_hidden) dot (n_hidden, n_out)
-        return tf.reshape(outputs, [-1, self.n_step, self.n_out])
-    # end method rnn
+        self.rnn_out = outputs
+    # end method add_forward_path
+
+
+    def add_output_layer(self):
+        # (batch * n_step, n_hidden) dot (n_hidden, n_out)
+        outputs = tf.nn.bias_add(tf.matmul(self.rnn_out, self.W), self.b)
+        self.time_seq_out = tf.reshape(outputs, [-1, self.n_step, self.n_out])
+    # end method add_output_layer
+
+
+    def add_backward_path(self):
+        self.loss = tf.reduce_mean(tf.square(self.time_seq_out - self.y))
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
+    # end method add_backward_path
 
 
     def fit(self, train_data, batch_size, test_data=None):
-        self.sess.run(self.init)
+        self.sess.run(tf.global_variables_initializer())
         train_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
         for train_idx, train_sample in enumerate(train_data):
             seq, res = train_sample
@@ -65,7 +83,7 @@ class RNNRegressor:
 
 
     def fit_plot(self, train_data, batch_size, test_data):
-        self.sess.run(self.init)
+        self.sess.run(tf.global_variables_initializer())
         plt.ion()
         plt.show()
 
@@ -78,7 +96,7 @@ class RNNRegressor:
 
             test_sample = test_data[train_idx]
             seq_test, res_test, xs_test = test_sample
-            test_loss, test_state, test_pred = self.sess.run([self.loss, self.final_state, self.pred],
+            test_loss, test_state, test_pred = self.sess.run([self.loss, self.final_state, self.time_seq_out],
                 feed_dict={self.X: seq_test, self.y: res_test, self.init_state: test_state,
                     self.batch_size: batch_size})
             

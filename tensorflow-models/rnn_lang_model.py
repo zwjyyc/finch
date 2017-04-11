@@ -60,7 +60,7 @@ class RNNLangModel:
 
 
     def add_output_layer(self):
-        self.logits = tf.matmul(self.rnn_out, self.W) + self.b
+        self.logits = tf.nn.bias_add(tf.matmul(self.rnn_out, self.W), self.b)
         self.softmax_out = tf.nn.softmax(self.logits)
     # end method add_output_layer
 

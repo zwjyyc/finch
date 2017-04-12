@@ -38,9 +38,8 @@ class ConvClassifier:
 
     def add_conv_layer(self, name, w_shape, in_layer=None):
         if in_layer is None:
-            self.conv = self.conv2d(self.conv, self._W(name+'_w', w_shape), self._b(name+'_b', [w_shape[-1]]))
-        else:
-            self.conv = self.conv2d(in_layer, self._W(name+'_w', w_shape), self._b(name+'_b', [w_shape[-1]]))
+            in_layer = self.conv
+        self.conv = self.conv2d(in_layer, self._W(name+'_w', w_shape), self._b(name+'_b', [w_shape[-1]]))
     # end method add_conv_layer
 
 

@@ -20,7 +20,9 @@ class RNNClassifier:
         with tf.variable_scope('input_layer'):
             self.add_input_layer()
         with tf.name_scope('forward_path'):
-            self.add_forward_path() 
+            self.add_rnn_cells()
+            self.add_dynamic_rnn()
+            self.add_rnn_out()
         with tf.name_scope('output_layer'):
             self.add_output_layer()
         with tf.name_scope('backward_path'):
@@ -40,18 +42,24 @@ class RNNClassifier:
     # end method add_input_layer
 
 
-    def add_forward_path(self):
+    def add_rnn_cells(self):
         cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
         cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
-        cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)
-        self.init_state = cells.zero_state(self.batch_size, tf.float32)        
-        outputs, self.final_state = tf.nn.dynamic_rnn(cells, self.X, initial_state=self.init_state,
-                                                      time_major=False)
+        self.cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)
+    # end method add_rnn_cells
 
+
+    def add_dynamic_rnn(self):
+        self.init_state = self.cells.zero_state(self.batch_size, tf.float32)        
+        self.rnn_out, self.final_state = tf.nn.dynamic_rnn(self.cells, self.X, initial_state=self.init_state,
+                                                           time_major=False)
+    # end method add_dynamic_rnn
+
+
+    def add_rnn_out(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        outputs = tf.unstack(tf.transpose(outputs, [1,0,2]))
-        self.rnn_out = outputs
-    # end method add_forward_path
+        self.rnn_out = tf.unstack(tf.transpose(self.rnn_out, [1,0,2]))
+    # end method add_rnn_out
 
 
     def add_output_layer(self):

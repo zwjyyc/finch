@@ -16,11 +16,12 @@ class RNNLangModel:
 
     def build_graph(self):
         with tf.variable_scope('input_layer'):
-            self.add_input_layer()
-        with tf.variable_scope('word_embedding_layer'):
+            self.add_input_layer()            
+        with tf.variable_scope('forward_path'):
             self.add_word_embedding_layer()
-        with tf.name_scope('forward_path'):
-            self.add_forward_path() 
+            self.add_lstm_cells()
+            self.add_dynamic_rnn()
+            self.add_rnn_out()
         with tf.name_scope('output_layer'):
             self.add_output_layer()
         with tf.name_scope('backward_path'):
@@ -49,14 +50,22 @@ class RNNLangModel:
     # end method add_word_embedding_layer
 
 
-    def add_forward_path(self):
-        lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
-        lstm_cell = tf.contrib.rnn.MultiRNNCell([lstm_cell] * self.n_layers)
-        self.init_state = lstm_cell.zero_state(self.batch_size, tf.float32)
-        output, self.final_state = tf.nn.dynamic_rnn(lstm_cell, self.embedding_out, initial_state=self.init_state,
-                                                     time_major=False)
-        self.rnn_out = tf.reshape(output, [-1, self.n_hidden])
-    # end method add_forward_path
+    def add_lstm_cells(self):
+        cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
+        self.cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layers)
+    # end method add_rnn_cells
+
+
+    def add_dynamic_rnn(self):
+        self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
+        self.rnn_out, self.final_state = tf.nn.dynamic_rnn(self.cells, self.embedding_out,
+                                                           initial_state=self.init_state, time_major=False)       
+    # end method add_dynamic_rnn
+
+
+    def add_rnn_out(self):
+        self.rnn_out = tf.reshape(self.rnn_out, [-1, self.n_hidden])
+    # end method add_rnn_out
 
 
     def add_output_layer(self):

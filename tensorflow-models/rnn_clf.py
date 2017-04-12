@@ -20,7 +20,7 @@ class RNNClassifier:
         with tf.variable_scope('input_layer'):
             self.add_input_layer()
         with tf.name_scope('forward_path'):
-            self.add_rnn_cells()
+            self.add_lstm_cells()
             self.add_dynamic_rnn()
             self.add_rnn_out()
         with tf.name_scope('output_layer'):
@@ -42,7 +42,7 @@ class RNNClassifier:
     # end method add_input_layer
 
 
-    def add_rnn_cells(self):
+    def add_lstm_cells(self):
         cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
         cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
         self.cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)

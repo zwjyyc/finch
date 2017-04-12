@@ -61,7 +61,7 @@
 #### TensorFlow
 * Useful Ops in ML
    * [feed_dict](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/feed_dict.ipynb) also be used to update an existing node in graph
-   * [tf.gather](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.multinomial.ipynb) provides basic tensor indexing
+   * [tf.gather](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.gather.ipynb) provides basic tensor indexing
    * [tf.concat / tf.stack](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.concat%20%26%20tf.stack.ipynb) concatenates a list of tensors into a large tensor
    * [tf.unstack / tf.split](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.unstack%20%26%20tf.split.ipynb) splits a tensor into a list of sub-tensors
    * [tf.squeeze](https://github.com/zhedongzheng/finch/blob/master/tensorflow-basic-ops/tf.squeeze.ipynb) removes 1 in the shape of tensor

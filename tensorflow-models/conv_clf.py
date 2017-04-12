@@ -44,9 +44,23 @@ class ConvClassifier:
     # end method add_conv_layer
 
 
+    def conv2d(self, X, W, b, strides=1):
+        conv = tf.nn.conv2d(X, W, strides=[1, strides, strides, 1], padding='SAME')
+        conv = tf.nn.bias_add(conv, b)
+        conv = tf.contrib.layers.batch_norm(conv)
+        conv = tf.nn.relu(conv)
+        return conv
+    # end method conv2d
+
+
     def add_maxpool_layer(self, k=2):
         self.conv = self.maxpool2d(self.conv, k=k)
     # end method add_maxpool_layer
+
+
+    def maxpool2d(self, X, k=2):
+        return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
+    # end method maxpool2d
 
 
     def add_fully_connected_layer(self, name, w_shape):
@@ -72,18 +86,6 @@ class ConvClassifier:
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.y, 1)), tf.float32))
     # end method add_backward_path
-
-
-    def conv2d(self, X, W, b, strides=1):
-        conv = tf.nn.conv2d(X, W, strides=[1, strides, strides, 1], padding='SAME')
-        conv = tf.nn.bias_add(conv, b)
-        return tf.nn.relu(conv)
-    # end method conv2d
-
-
-    def maxpool2d(self, X, k=2):
-        return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
-    # end method maxpool2d
 
 
     def _W(self, name, shape):

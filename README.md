@@ -16,28 +16,28 @@
     * [TensorFlow](https://github.com/zhedongzheng/finch#tensorflow)
 ### Supervised Learning
 #### Logistic Regression
-* Logistic Regression &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)
+* Java &nbsp; | &nbsp; Logistic Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)
 #### Support Vector Machine
 * [Theory](https://zhedongzheng.github.io/finch/svm)
-* Linear SVM Classifier &nbsp; | &nbsp; Java &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java)
-* Linear SVM Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
+* Java &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java)
+* TensorFlow &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_svm_clf_test.py)
 ### Deep Learning
 #### Multilayer Perceptron
-* MLP Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_test.py)
-* MLP Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf_test.py)
+* TensorFlow &nbsp; | &nbsp; MLP Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_test.py)
+* PyTorch &nbsp; | &nbsp; MLP Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf_test.py)
 #### Convolutional Neural Network
 * [Theory](https://zhedongzheng.github.io/finch/conv)
-* CNN Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
-* CNN Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/cnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/cnn_clf_test.py)
+* TensorFlow &nbsp; | &nbsp; CNN Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/conv_clf_test.py)
+* PyTorch &nbsp; | &nbsp; CNN Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/cnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/cnn_clf_test.py)
 #### Recurrent Neural Network
 * [Theory](https://zhedongzheng.github.io/finch/rnn) 
- * LSTM Classifier &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_test.py)
- * LSTM Regressor &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) &nbsp; | &nbsp; [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)
- * LSTM Text Generation &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_lang_model.py) &nbsp; | &nbsp; [Shakespeare Text Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_shakespeare_test.py)
-  * LSTM Classifier &nbsp; | &nbsp; PyTorch &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf_test.py)
+ * TensorFlow &nbsp; | &nbsp; LSTM Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_test.py)
+ * TensorFlow &nbsp; | &nbsp; LSTM Regressor &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) &nbsp; | &nbsp; [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)
+ * TensorFlow &nbsp; | &nbsp; LSTM Text Generation &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_lang_model.py) &nbsp; | &nbsp; [Shakespeare Text Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_shakespeare_test.py)
+  * PyTorch &nbsp; | &nbsp; LSTM Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf_test.py)
 #### Autoencoder
-* Basic Model &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_test.py)
-* Weights-tied Model &nbsp; | &nbsp; TensorFlow &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_tied_w.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_tied_w_test.py)
+* TensorFlow &nbsp; | &nbsp; Basic Model &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_test.py)
+* TensorFlow &nbsp; | &nbsp; Weights-tied Model &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_tied_w.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_tied_w_test.py)
 ### Computer Vision
 #### OpenCV
 * Basic Operations

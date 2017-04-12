@@ -22,7 +22,7 @@ class RNNClassifier:
         with tf.name_scope('forward_path'):
             self.add_lstm_cells()
             self.add_dynamic_rnn()
-            self.add_rnn_out()
+            self.reshape_rnn_out()
         with tf.name_scope('output_layer'):
             self.add_output_layer()
         with tf.name_scope('backward_path'):
@@ -56,7 +56,7 @@ class RNNClassifier:
     # end method add_dynamic_rnn
 
 
-    def add_rnn_out(self):
+    def reshape_rnn_out(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         self.rnn_out = tf.unstack(tf.transpose(self.rnn_out, [1,0,2]))
     # end method add_rnn_out

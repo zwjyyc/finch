@@ -19,7 +19,7 @@ class RNNRegressor:
         with tf.name_scope('forward_path'):
             self.add_lstm_cells()
             self.add_dynamic_rnn()
-            self.add_rnn_out()
+            self.reshape_rnn_out()
         with tf.name_scope('output_layer'):
             self.add_output_layer() 
         with tf.name_scope('backward_path'):
@@ -44,11 +44,11 @@ class RNNRegressor:
     def add_dynamic_rnn(self):
         self.init_state = self.cell.zero_state(self.batch_size, dtype=tf.float32)
         self.rnn_out, self.final_state = tf.nn.dynamic_rnn(self.cell, self.X, initial_state=self.init_state,
-                                                      time_major=False)
+                                                           time_major=False)
     # end method add_dynamic_rnn
 
 
-    def add_rnn_out(self):
+    def reshape_rnn_out(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         self.rnn_out = tf.reshape(self.rnn_out, [-1, self.n_hidden]) # (batch * n_step, n_hidden)
     # end method add_rnn_out

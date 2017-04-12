@@ -21,7 +21,7 @@ class RNNLangModel:
             self.add_word_embedding_layer()
             self.add_lstm_cells()
             self.add_dynamic_rnn()
-            self.add_rnn_out()
+            self.reshape_rnn_out()
         with tf.name_scope('output_layer'):
             self.add_output_layer()
         with tf.name_scope('backward_path'):
@@ -63,7 +63,7 @@ class RNNLangModel:
     # end method add_dynamic_rnn
 
 
-    def add_rnn_out(self):
+    def reshape_rnn_out(self):
         self.rnn_out = tf.reshape(self.rnn_out, [-1, self.n_hidden])
     # end method add_rnn_out
 

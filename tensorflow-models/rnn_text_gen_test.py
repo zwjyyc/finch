@@ -115,7 +115,7 @@ if __name__ == '__main__':
     s_text = load_text()
     print('Cleaning Text')
     s_text = clean_text(s_text)
-    #word_list = s_text.split()
+    # word_list = s_text.split()
     word_list = list(s_text)
 
     print('Building Shakespeare Vocab by Characters')
@@ -127,7 +127,6 @@ if __name__ == '__main__':
     s_text_idx = convert_text_to_word_vecs(word_list, word2idx)
     batch_list = create_batch(s_text_idx)
     X = batch_list
-    # y = [np.roll(batch, -1, axis=1) for batch in batch_list] # predicting next word if axis = 1
     y = change_word_seq(batch_list)
     assert len(X) == len(y), "len(X) is not equal to len(y)" # sanity Check
 

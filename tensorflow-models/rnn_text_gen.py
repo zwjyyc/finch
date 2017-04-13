@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 
-class RNNLangModel:
+class RNNTextGen:
     def __init__(self, n_hidden, n_layers, vocab_size, seq_len, sess):
         self.n_hidden = n_hidden
         self.n_layers = n_layers
@@ -79,12 +79,9 @@ class RNNLangModel:
                                                                 labels=tf.reshape(self.Y, [-1]))
         self.loss = tf.reduce_mean(losses)
         self.lr = tf.placeholder(tf.float32)
-        """
         gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), 4.5)
         optimizer = tf.train.AdamOptimizer(self.lr)
         self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
-        """
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
 
 
@@ -114,7 +111,7 @@ class RNNLangModel:
                 _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                     feed_dict={self.X:X_batch, self.Y:Y_batch, self.init_state:next_state,
                                self.batch_size:batch_size, self.lr:lr})
-                if batch_count % 10 == 0:
+                if batch_count % 50 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f' % (epoch+1, n_epoch,
                         batch_count, len(X_batch_list), loss, lr))
                 log['train_loss'].append(loss)
@@ -129,7 +126,7 @@ class RNNLangModel:
 
     def sample(self, s_model, idx2word, word2idx, num, prime_text):
         state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
-        word_list = prime_text.split()
+        word_list = list(prime_text)
         for word in word_list[:-1]:
             x = np.zeros((1,1))
             x[0,0] = word2idx[word] 
@@ -146,7 +143,8 @@ class RNNLangModel:
             if sample == 0:
                 break
             word = idx2word[sample]
-            out_sentence = out_sentence + ' ' + word
+            # out_sentence = out_sentence + ' ' + word
+            out_sentence = out_sentence + word
         return(out_sentence)
     # end method sample
 # end class CharRNNModel

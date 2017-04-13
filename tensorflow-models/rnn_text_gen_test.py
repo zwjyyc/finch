@@ -9,12 +9,12 @@ import random
 import matplotlib.pyplot as plt
 import seaborn as sns
 import tensorflow as tf
-from rnn_lang_model import RNNLangModel
+from rnn_text_gen import RNNTextGen
 
 
-batch_size = 128
-training_seq_len = 20
-num_layers = 1
+batch_size = 100
+training_seq_len = 50
+num_layers = 3
 prime_texts = ['thou art more', 'to be or not to', 'wherefore art thou']
 
 
@@ -115,7 +115,8 @@ if __name__ == '__main__':
     s_text = load_text()
     print('Cleaning Text')
     s_text = clean_text(s_text)
-    word_list = s_text.split() # word_list = list(s_text) # split up by characters
+    #word_list = s_text.split()
+    word_list = list(s_text)
 
     print('Building Shakespeare Vocab by Characters')
     idx2word, word2idx = build_vocab(word_list)
@@ -131,10 +132,10 @@ if __name__ == '__main__':
     assert len(X) == len(y), "len(X) is not equal to len(y)" # sanity Check
 
     sess = tf.Session()
-    train_model = RNNLangModel(n_hidden=128, n_layers=num_layers, vocab_size=vocab_size, seq_len=training_seq_len,
-                               sess=sess)
+    train_model = RNNTextGen(n_hidden=128, n_layers=num_layers, vocab_size=vocab_size, seq_len=training_seq_len,
+                             sess=sess)
     with tf.variable_scope(tf.get_variable_scope(), reuse=True):
-        sample_model = RNNLangModel(n_hidden=128, n_layers=num_layers, vocab_size=vocab_size, seq_len=1, sess=sess)
-    log = train_model.fit(X, y, n_epoch=5, batch_size=batch_size, en_exp_decay=False,
-                          sample_pack=(sample_model, idx2word, word2idx, 10, prime_texts))
+        sample_model = RNNTextGen(n_hidden=128, n_layers=num_layers, vocab_size=vocab_size, seq_len=1, sess=sess)
+    log = train_model.fit(X, y, n_epoch=5, batch_size=batch_size, en_exp_decay=True,
+                          sample_pack=(sample_model, idx2word, word2idx, 20, prime_texts))
     plot(log)

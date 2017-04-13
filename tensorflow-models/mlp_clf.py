@@ -28,6 +28,7 @@ class MLPClassifier:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.keep_prob = tf.placeholder(tf.float32)
     # end method add_input_layer
 
 
@@ -37,6 +38,7 @@ class MLPClassifier:
         for i in range( len(forward)-1 ):
             new_layer = self.fc('layer%s'%i, new_layer, forward[i], forward[i+1])
             new_layer = tf.nn.relu(new_layer)
+            new_layer = tf.nn.dropout(new_layer, self.keep_prob)
         self.mlp_out = new_layer
     # end method add_forward_path
 
@@ -61,7 +63,7 @@ class MLPClassifier:
     # end method fc (fully-connected)
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True):
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, dropout=1.0):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -76,7 +78,7 @@ class MLPClassifier:
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
-                                              self.y: y_batch, self.lr: lr})
+                                              self.y: y_batch, self.lr: lr, self.keep_prob:dropout})
                 local_step += 1
                 global_step += 1
                 if local_step % 100 == 0:
@@ -87,8 +89,9 @@ class MLPClassifier:
                 val_loss_list, val_acc_list = [], []
                 for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                     self.gen_batch(val_data[1], batch_size)):
-                    v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict={self.X: X_test_batch,
-                                                                                    self.y: y_test_batch})
+                    v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict={self.X:X_test_batch,
+                                                                                    self.y:y_test_batch,
+                                                                                    self.keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -115,7 +118,7 @@ class MLPClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.logits, feed_dict={self.X: X_test_batch})
+            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

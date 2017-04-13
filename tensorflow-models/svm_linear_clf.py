@@ -26,7 +26,7 @@ class LinearSVMClassifier:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(shape=(None, self.n_in), dtype=tf.float32)
         self.y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-        self.W = tf.Variable(tf.random_normal(shape=(self.n_in, 1)))
+        self.W = tf.Variable(tf.random_normal([self.n_in, 1]))
         self.b = tf.Variable(tf.constant(0.1, shape=[1]))
     # end method add_input_layer
 
@@ -46,7 +46,7 @@ class LinearSVMClassifier:
         hinge_loss = tf.reduce_sum(tf.maximum(tf.zeros([self.batch_size,1]), 1-self.y*self.y_raw))
         self.loss = regu_loss + self.C * hinge_loss
         self.train_op = tf.train.GradientDescentOptimizer(1e-3).minimize(self.loss)
-        self.acc = tf.reduce_mean( tf.cast( tf.equal(self.pred, self.y), tf.float32 ) )
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(self.pred, self.y), tf.float32))
     # end method add_backward_path
 
 

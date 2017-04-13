@@ -126,6 +126,7 @@ class RNNTextGen:
 
     def sample(self, s_model, idx2word, word2idx, num, prime_text):
         state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
+        # word_list = prime_text.split()
         word_list = list(prime_text)
         for word in word_list[:-1]:
             x = np.zeros((1,1))

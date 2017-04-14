@@ -10,54 +10,59 @@
 ### SELECT
 #### DISTINCT
 * In a table, a column may contain many duplicated values; and sometimes you only want to list the different (distinct) values. The `DISTINCT` keyword can be used to return only distinct (different) values.
-
 	```sql
 	SELECT DISTINCT column_1, column_2 FROM table_name;
 	```
 * Example
-
-		SELECT DISTINCT rating FROM film;
+	```sql
+	SELECT DISTINCT rating FROM film;
+	```
 #### WHERE
 * To query just particular rows from a table, you need `WHERE` clause in the `SELECT` statement.
-
-		SELECT column_1, column_2, ... column_n
-		FROM table_name
-		WHERE conditions;
+	```sql
+	SELECT column_1, column_2, ... column_n
+	FROM table_name
+	WHERE conditions;
+	```
 * Example
-
-		SELECT customer_id,amount,payment_date FROM payment
-		WHERE amount<=1 or amount>=8;
-
+	```sql
+	SELECT customer_id,amount,payment_date FROM payment
+	WHERE amount<=1 or amount>=8;
+	```
 #### COUNT
 * The `COUNT(*)` function returns the number of rows returned by a SELECT clause; When you apply the `COUNT(*)` to the entire table, Postgresql scans table sequentially.
-
-		SELECT COUNT(*) FROM table;
+	```sql
+	SELECT COUNT(*) FROM table;
+	```
 * You can also specify a specific column count for readability
-
-		SELECT COUNT(column) FROM table;
+	```sql
+	SELECT COUNT(column) FROM table;
+	```
 * We can use `COUNT` with `DISTINCT`, for example:
-
-		SELECT COUNT(DISTINCT column) FROM table;
+	```sql
+	SELECT COUNT(DISTINCT column) FROM table;
+	```
 * Example
-
-		SELECT COUNT(DISTINCT amount) FROM payment WHERE amount<=1 or amount>=8;
-
+	```sql
+	SELECT COUNT(DISTINCT amount) FROM payment WHERE amount<=1 or amount>=8;
+	```
 #### LIMIT
 * `LIMIT` allows you to limit the number of rows you get back after a query, useful when wanting to get all columns but not all rows
 * Example
-
-		SELECT * FROM customer LIMIT 5;
-
+	```sql
+	SELECT * FROM customer LIMIT 5;
+	```
 #### Order By
 * When you query data from a table, PostgreSQL returns the rows in the order that they were inserted into the table. In order to sort the result set, use the `ORDER BY` clause in the `SELECT` statement. (ascending by default)
-
-		SELECT column_1, column_2
-		FROM table_name
-		ORDER BY column 1 ASC / DESC;
+	```sql
+	SELECT column_1, column_2
+	FROM table_name
+	ORDER BY column 1 ASC / DESC;
+	```
 * Example
-
-		SELECT first_name, last_name FROM customer ORDER BY first_name ASC;
-
+	```sql
+	SELECT first_name, last_name FROM customer ORDER BY first_name ASC;
+	```
 #### Between
 * We use the `BETWEEN` operator to match a value against a range of values. For example:
 	```sql

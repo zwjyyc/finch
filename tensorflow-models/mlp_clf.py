@@ -37,6 +37,7 @@ class MLPClassifier:
         forward = [self.n_in] + self.hidden_unit_list
         for i in range( len(forward)-1 ):
             new_layer = self.fc('layer%s'%i, new_layer, forward[i], forward[i+1])
+            new_layer = tf.contrib.layers.batch_norm(new_layer)
             new_layer = tf.nn.relu(new_layer)
             new_layer = tf.nn.dropout(new_layer, self.keep_prob)
         self.mlp_out = new_layer

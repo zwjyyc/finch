@@ -34,7 +34,7 @@
 	```sql
 	SELECT COUNT(*) FROM table;
 	```
-* You can also specify a specific column count for readability
+* You can also specify a specific column count for readability.
 	```sql
 	SELECT COUNT(column) FROM table;
 	```
@@ -47,7 +47,7 @@
 	SELECT COUNT(DISTINCT amount) FROM payment WHERE amount<=1 or amount>=8;
 	```
 #### LIMIT
-* `LIMIT` allows you to limit the number of rows you get back after a query, useful when wanting to get all columns but not all rows
+* `LIMIT` allows you to limit the number of rows you get back after a query, useful when wanting to get all columns but not all rows.
 * Example
 	```sql
 	SELECT * FROM customer LIMIT 5;

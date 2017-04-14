@@ -11,6 +11,8 @@
     * [OpenCV](https://github.com/zhedongzheng/finch#opencv)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
     * [Language Processing in Python](https://github.com/zhedongzheng/finch#language-processing-in-python)
+* [Database]
+    * [SQL](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ### Supervised Learning
 #### Logistic Regression
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java)

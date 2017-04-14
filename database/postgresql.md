@@ -4,7 +4,7 @@
 * [WHERE](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#where)
 * [COUNT](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#count)
 * [LIMIT](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#limit)
-* [Order By](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#LimitBt)
+* [Order By](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#order-by)
 * [BETWEEN](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#between)
 * [IN](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#in)
 ### SELECT

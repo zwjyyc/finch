@@ -17,9 +17,9 @@ class ConvClassifier:
         with tf.name_scope('input_layer'):
             self.add_input_layer()
         with tf.variable_scope('forward_path'):
-            self.add_conv_layer('conv1', [5,5,1,32], self.X)
+            self.add_conv_layer('conv1', filter_shape=[5,5,1,32], in_layer=self.X)
             self.add_maxpool_layer(k=2)
-            self.add_conv_layer('conv2', [5,5,32,64])
+            self.add_conv_layer('conv2', filter_shape=[5,5,32,64])
             self.add_maxpool_layer(k=2)
             self.add_fully_connected_layer('fc', [int(self.img_h/4)*int(self.img_w/4)*64, 1024])
         with tf.variable_scope('output_layer'):
@@ -36,14 +36,15 @@ class ConvClassifier:
     # end method add_input_layer
 
 
-    def add_conv_layer(self, name, w_shape, in_layer=None):
+    def add_conv_layer(self, name, filter_shape, in_layer=None):
         if in_layer is None:
             in_layer = self.conv
-        self.conv = self.conv2d(in_layer, self._W(name+'_w', w_shape), self._b(name+'_b', [w_shape[-1]]))
+        self.conv = self.conv2d_wrapper(in_layer, self._W(name+'_w', filter_shape),
+                                        self._b(name+'_b', [filter_shape[-1]]))
     # end method add_conv_layer
 
 
-    def conv2d(self, X, W, b, strides=1):
+    def conv2d_wrapper(self, X, W, b, strides=1):
         conv = tf.nn.conv2d(X, W, strides=[1, strides, strides, 1], padding='SAME')
         conv = tf.nn.bias_add(conv, b)
         conv = tf.contrib.layers.batch_norm(conv)
@@ -53,11 +54,11 @@ class ConvClassifier:
 
 
     def add_maxpool_layer(self, k=2):
-        self.conv = self.maxpool2d(self.conv, k=k)
+        self.conv = self.maxpool2d_wrapper(self.conv, k=k)
     # end method add_maxpool_layer
 
 
-    def maxpool2d(self, X, k=2):
+    def maxpool2d_wrapper(self, X, k=2):
         return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
     # end method maxpool2d
 

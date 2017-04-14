@@ -66,31 +66,28 @@
 
 		value < low OR value > high
 * Example
-
-		SELECT customer_id,amount FROM payment
-		WHERE amount BETWEEN 9 AND 9;
-
-		SELECT customer_id,amount FROM payment
-		WHERE amount NOT BETWEEN 9 AND 9;
-		
-		SELECT amount,payment_date FROM payment
-		WHERE payment_date NOT BETWEEN '2007-02-07' AND '2007-02-15';
-
+	```sql
+	SELECT customer_id,amount FROM payment
+	WHERE amount BETWEEN 9 AND 9;
+	```
+	```sql
+	SELECT customer_id,amount FROM payment
+	WHERE amount NOT BETWEEN 9 AND 9;
+	```
+	```sql
+	SELECT amount,payment_date FROM payment
+	WHERE payment_date NOT BETWEEN '2007-02-07' AND '2007-02-15';
+	```
 #### IN
 * You use the `IN` operator with the `WHERE` clause to check if a value matches any value in a list of values. The syntax is:
-
-		value IN (value1,value2,...)
-
-		value IN (SELECT value FROM tbl_name)
-* You can use `NOT IN`
-
-* Example
 	```sql
-	SELECT customer_id,rental_id,return_date
-	FROM rental
-	WHERE customer_id IN (1,2)
-	ORDER BY return_date DESC;
+	value IN (value1,value2,...)
 	```
+	```sql
+	value IN (SELECT value FROM tbl_name)
+	```
+* You can use `NOT IN`
+* Example
 	```sql
 	SELECT customer_id,rental_id,return_date
 	FROM rental

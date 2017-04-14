@@ -1,11 +1,17 @@
 ![postgresql-logo](https://www.postgresql.org/media/img/about/press/slonik_with_black_text_and_tagline.gif)
 ### Contents
 [DISTINCT](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#distinct)
+[WHERE](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#where)
+[COUNT](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#count)
+[LIMIT](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#limit)
+[Order By](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#LimitBt)
+[BETWEEN](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#between)
+[IN](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md#in)
 ### SELECT
 #### DISTINCT
 * In a table, a column may contain many duplicated values; and sometimes you only want to list the different (distinct) values. The `DISTINCT` keyword can be used to return only distinct (different) values.
 
-	SELECT DISTINCT column_1, column_2 FROM table_name;
+		SELECT DISTINCT column_1, column_2 FROM table_name;
 * Example
 
 		SELECT DISTINCT rating FROM film;

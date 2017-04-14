@@ -60,11 +60,13 @@
 
 #### Between
 * We use the `BETWEEN` operator to match a value against a range of values. For example:
-
-		low <= value <= high
+	```sql
+	low <= value <= high
+	```
 * If you want to check if a value is out of a range, we use the NOT BETWEEN operator:
-
-		value < low OR value > high
+	```sql
+	value < low OR value > high
+	```
 * Example
 	```sql
 	SELECT customer_id,amount FROM payment

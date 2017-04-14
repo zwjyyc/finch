@@ -66,7 +66,7 @@ class ConvClassifier:
     def add_fully_connected_layer(self, name, w_shape):
         W = self._W(name+'_w', w_shape)
         b = self._b(name+'_b', [w_shape[-1]])
-        fc = tf.reshape(self.conv, [-1, W.get_shape().as_list()[0]])
+        fc = tf.reshape(self.conv, [-1, w_shape[0]])
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
         fc = tf.contrib.layers.batch_norm(fc)
         fc = tf.nn.relu(fc)

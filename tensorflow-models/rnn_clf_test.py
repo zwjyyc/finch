@@ -1,5 +1,4 @@
-from keras.datasets import mnist
-from utils import to_one_hot
+from utils import to_one_hot, load_mnist
 from rnn_clf import RNNClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -20,10 +19,10 @@ def plot(log, dir='./log'):
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
-    # normalization ( / 255.0) provides great effect here
-    X_train = (X_train / 255.0).reshape(-1, 28, 28)
-    X_test = (X_test / 255.0).reshape(-1, 28, 28)
+    X_train, y_train, X_test, y_test = load_mnist()
+    # normalization ( / 255.0) is already done in the load_mnist() function
+    X_train = X_train.reshape(-1, 28, 28)
+    X_test = X_test.reshape(-1, 28, 28)
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 

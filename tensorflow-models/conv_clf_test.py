@@ -1,5 +1,4 @@
-from keras.datasets import mnist
-from utils import to_one_hot
+from utils import to_one_hot, load_mnist
 from conv_clf import ConvClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -20,9 +19,9 @@ def plot(log, dir='./log'):
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
-    X_train = (X_train / 255.0).reshape(-1, 28, 28, 1)
-    X_test = (X_test / 255.0).reshape(-1, 28, 28, 1)
+    X_train, y_train, X_test, y_test = load_mnist()
+    X_train = X_train.reshape(-1, 28, 28, 1)
+    X_test = X_test.reshape(-1, 28, 28, 1)
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 

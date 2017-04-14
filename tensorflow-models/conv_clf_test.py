@@ -27,10 +27,10 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = ConvClassifier(28, 28, 10, sess)
-    log = clf.fit(X_train, y_train, n_epoch=1, keep_prob=0.5, val_data=(X_test,y_test), en_exp_decay=False)
+    log = clf.fit(X_train, y_train, n_epoch=5, keep_prob=0.5, val_data=(X_test,y_test), en_exp_decay=True)
     pred = clf.predict(X_test)
     tf.reset_default_graph()
     final_acc = np.equal(np.argmax(pred,1), np.argmax(y_test,1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)
 
-    # plot(log)
+    plot(log)

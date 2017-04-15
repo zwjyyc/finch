@@ -1,6 +1,6 @@
 from utils import to_one_hot
 from keras.datasets import cifar10
-from conv_clf import ConvClassifier
+from rnn_clf import RNNClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -21,15 +21,16 @@ def plot(log, dir='./log'):
 
 if __name__ == '__main__':
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
-    X_train = X_train / 255.0
-    X_test = X_test / 255.0
+
+    X_train = (X_train / 255.0).mean(axis=3) # rbg averaging to grayscale
+    X_test = (X_test / 255.0).mean(axis=3) # rgb averaging to grayscale
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = ConvClassifier(32, 32, 3, 10, sess)
-    log = clf.fit(X_train, y_train, n_epoch=20, batch_size=32, keep_prob=0.5, val_data=(X_test,y_test),
-                  en_exp_decay=True)
+    clf = RNNClassifier(n_in=32, n_step=32, n_hidden=128, n_out=10, n_layer=3, sess=sess, stateful=False)
+    log = clf.fit(X_train, y_train, n_epoch=20, batch_size=32, en_exp_decay=True, keep_prob_tuple=(0.5,1.0),
+                  val_data=(X_test,y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()
     final_acc = np.equal(np.argmax(pred,1), np.argmax(y_test,1)).astype(float).mean()

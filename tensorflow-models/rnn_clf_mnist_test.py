@@ -21,8 +21,8 @@ def plot(log, dir='./log'):
 
 if __name__ == '__main__':
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
-    X_train = (X_train / 255.0)
-    X_test = (X_test / 255.0)
+    X_train /= 255.0
+    X_test /= 255.0
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 

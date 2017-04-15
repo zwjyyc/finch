@@ -22,9 +22,10 @@ class ConvClassifier:
             self.add_maxpool_layer(k=2)
             self.add_conv_layer('conv2', filter_shape=[5,5,32,64])
             self.add_maxpool_layer(k=2)
-            self.add_fully_connected_layer('fc', [int(self.img_h/4)*int(self.img_w/4)*64, 1024])
+            self.add_fc_layer('fc1', [int(self.img_h/4)*int(self.img_w/4)*64,1024], flatten_input=True)
+            self.add_fc_layer('fc2', [1024,512])
         with tf.variable_scope('output_layer'):
-            self.add_output_layer()   
+            self.add_output_layer(in_dim=512)   
         with tf.name_scope('backward_path'):
             self.add_backward_path()
     # end method build_graph
@@ -64,10 +65,13 @@ class ConvClassifier:
     # end method maxpool2d
 
 
-    def add_fully_connected_layer(self, name, w_shape):
+    def add_fc_layer(self, name, w_shape, flatten_input=False):
         W = self._W(name+'_w', w_shape)
         b = self._b(name+'_b', [w_shape[-1]])
-        fc = tf.reshape(self.conv, [-1, w_shape[0]])
+        if flatten_input:
+            fc = tf.reshape(self.conv, [-1, w_shape[0]])
+        else:
+            fc = self.fc
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
         fc = tf.contrib.layers.batch_norm(fc)
         fc = tf.nn.relu(fc)
@@ -75,8 +79,8 @@ class ConvClassifier:
     # end method add_fully_connected_layer
 
 
-    def add_output_layer(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.fc, self._W('w_out', [1024,self.n_out])),
+    def add_output_layer(self, in_dim):
+        self.logits = tf.nn.bias_add(tf.matmul(self.fc, self._W('w_out', [in_dim,self.n_out])),
                                      self._b('b_out', [self.n_out]))
     # end method add_output_layer
 

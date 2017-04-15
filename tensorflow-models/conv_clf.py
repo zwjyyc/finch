@@ -4,9 +4,10 @@ import math
 
 
 class ConvClassifier:
-    def __init__(self, img_h, img_w, n_out, sess):
+    def __init__(self, img_h, img_w, img_ch, n_out, sess):
         self.img_h = img_h
         self.img_w = img_w
+        self.img_ch = img_ch
         self.n_out = n_out
         self.sess = sess
         self.build_graph()
@@ -17,7 +18,7 @@ class ConvClassifier:
         with tf.name_scope('input_layer'):
             self.add_input_layer()
         with tf.variable_scope('forward_path'):
-            self.add_conv_layer('conv1', filter_shape=[5,5,1,32], in_layer=self.X)
+            self.add_conv_layer('conv1', filter_shape=[5,5,self.img_ch,32], in_layer=self.X)
             self.add_maxpool_layer(k=2)
             self.add_conv_layer('conv2', filter_shape=[5,5,32,64])
             self.add_maxpool_layer(k=2)
@@ -30,7 +31,7 @@ class ConvClassifier:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.float32, [None, self.img_h, self.img_w, 1])
+        self.X = tf.placeholder(tf.float32, [None, self.img_h, self.img_w, self.img_ch])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
     # end method add_input_layer

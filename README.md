@@ -2,7 +2,7 @@
 * [Supervised Learning](https://github.com/zhedongzheng/finch#supervised-learning)
     * [Logistic Regression](https://github.com/zhedongzheng/finch#logistic-regression)
     * [Support Vector Machine](https://github.com/zhedongzheng/finch#support-vector-machine)
-* [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
+* [Neural Network](https://github.com/zhedongzheng/finch#neural-network)
     * [Multilayer Perceptron](https://github.com/zhedongzheng/finch#multilayer-perceptron)
     * [Convolutional Neural Network](https://github.com/zhedongzheng/finch#convolutional-neural-network)
     * [Recurrent Neural Network](https://github.com/zhedongzheng/finch#recurrent-neural-network)
@@ -19,7 +19,7 @@
 * [Theory](https://zhedongzheng.github.io/finch/svm)
 * Java &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java)
 * TensorFlow &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/svm_linear_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/svm_linear_clf_test.py)
-### Deep Learning
+### Neural Network
 #### Multilayer Perceptron
 * TensorFlow &nbsp; | &nbsp; MLP Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_mnist_test.py)
 * PyTorch &nbsp; | &nbsp; MLP Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf_test.py)

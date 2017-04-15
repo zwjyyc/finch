@@ -9,7 +9,7 @@
     * [Autoencoder](https://github.com/zhedongzheng/finch#autoencoder)
     * [Highway Networks](https://github.com/zhedongzheng/finch#highway-networks)
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
-    * [OpenCV](https://github.com/zhedongzheng/finch#opencv)
+    * [OpenCV in Python](https://github.com/zhedongzheng/finch#opencv-in-python)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
     * [Language Processing in Python](https://github.com/zhedongzheng/finch#language-processing-in-python)
 * [Database](https://github.com/zhedongzheng/finch#database)
@@ -41,7 +41,7 @@
 * TensorFlow &nbsp; | &nbsp; Highway MLP Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_cifar10_test.py)
 * TensorFlow &nbsp; | &nbsp; Highway CNN Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf_cifar10_test.py)
 ### Computer Vision
-#### OpenCV
+#### OpenCV in Python
 * Basic Operations
   * [Resize](https://github.com/zhedongzheng/finch/blob/master/computer-vision/resize.ipynb)
   * [Rotations](https://github.com/zhedongzheng/finch/blob/master/computer-vision/rotations.ipynb)

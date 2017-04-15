@@ -7,6 +7,7 @@
     * [Convolutional Neural Network](https://github.com/zhedongzheng/finch#convolutional-neural-network)
     * [Recurrent Neural Network](https://github.com/zhedongzheng/finch#recurrent-neural-network)
     * [Autoencoder](https://github.com/zhedongzheng/finch#autoencoder)
+    * [Highway Networks](https://github.com/zhedongzheng/finch#highway-networks)
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
     * [OpenCV](https://github.com/zhedongzheng/finch#opencv)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
@@ -29,13 +30,15 @@
 * PyTorch &nbsp; | &nbsp; CNN Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/cnn_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/cnn_clf_test.py)
 #### Recurrent Neural Network
 * [Theory](https://zhedongzheng.github.io/finch/rnn) 
- * TensorFlow &nbsp; | &nbsp; LSTM Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_mnist_test.py)&nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_cifar10_test.py)
+ * TensorFlow &nbsp; | &nbsp; LSTM Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_clf_cifar10_test.py)
  * TensorFlow &nbsp; | &nbsp; LSTM Regressor &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_regr_test.py) &nbsp; | &nbsp; [Visualization](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif)
  * TensorFlow &nbsp; | &nbsp; LSTM Text Generation &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_text_gen.py) &nbsp; | &nbsp; [Shakespeare Text Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn_text_gen_test.py)
   * PyTorch &nbsp; | &nbsp; LSTM Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/rnn_clf_test.py)
 #### Autoencoder
 * TensorFlow &nbsp; | &nbsp; Basic Model &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_mnist_test.py)
 * TensorFlow &nbsp; | &nbsp; Weights-tied Model &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_tied_w.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_tied_w_mnist_test.py)
+#### Highway Networks
+* TensorFlow &nbsp; | &nbsp; Highway MLP &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_cifar10_test.py)
 ### Computer Vision
 #### OpenCV
 * Basic Operations

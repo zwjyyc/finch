@@ -3,10 +3,11 @@ import numpy as np
 import math
 
 
-class MLPClassifier:
-    def __init__(self, n_in, hidden_unit_list, n_out, sess):
+class HighwayMLPClassifier:
+    def __init__(self, n_in, n_hidden, n_highway, n_out, sess):
         self.n_in = n_in
-        self.hidden_unit_list = hidden_unit_list
+        self.n_hidden = n_hidden
+        self.n_highway = n_highway
         self.n_out = n_out
         self.sess = sess
         self.build_graph()
@@ -33,17 +34,16 @@ class MLPClassifier:
 
 
     def add_forward_path(self):
-        new_layer = self.X
-        forward = [self.n_in] + self.hidden_unit_list
-        for i in range( len(forward)-1 ):
-            new_layer = self.fc('layer%s'%i, new_layer, forward[i], forward[i+1], batch_norm=True,
-                                 activation='relu', dropout=True)
-        self.mlp_out = new_layer
+        new_layer = self.fc('layer_in', self.X, self.n_in, self.n_hidden, batch_norm=True, activation='relu',
+                             dropout=True)
+        for i in range(self.n_highway):
+            new_layer = self.highway('layer%s'%i, new_layer, self.n_hidden, batch_norm=True)
+        self.highway_out = new_layer
     # end method add_forward_path
 
 
     def add_output_layer(self):
-        self.logits = self.fc('layer_out', self.mlp_out, self.hidden_unit_list[-1], self.n_out)
+        self.logits = self.fc('layer_out', self.highway_out, self.n_hidden, self.n_out)
     # end method add_output_layer
 
 
@@ -53,6 +53,24 @@ class MLPClassifier:
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.y,1)), tf.float32))
     # end method add_backward_path
+
+
+    def highway(self, name, X, size, carry_bias=-1.0, batch_norm=None):
+        W_T = tf.get_variable(name+'_wt', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+        b_T = tf.get_variable(name+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
+
+        W = tf.get_variable(name+'_w', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+        b = tf.get_variable(name+'_b', [size], tf.float32, tf.constant_initializer(0.1))
+
+        T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
+        H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
+        C = tf.subtract(1.0, T, name="carry_gate")
+
+        y = tf.add(tf.multiply(H, T), tf.multiply(X, C))
+        if batch_norm:
+            y = tf.contrib.layers.batch_norm(y)
+        return y
+    # end method fc (fully-connected)
 
 
     def fc(self, name, X, fan_in, fan_out, batch_norm=None, activation=None, dropout=None):

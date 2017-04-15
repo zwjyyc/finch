@@ -1,6 +1,6 @@
+from keras.datasets import mnist
 from utils import to_one_hot
-from keras.datasets import cifar10
-from rnn_clf import RNNClassifier
+from hn_mlp_clf import HighwayMLPClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -20,20 +20,18 @@ def plot(log, dir='./log'):
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
-
-    X_train = (X_train / 255.0).mean(axis=3) # rbg averaging to grayscale
-    X_test = (X_test / 255.0).mean(axis=3) # rgb averaging to grayscale
+    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    X_train = (X_train/255.0).reshape(-1, 28*28)
+    X_test = (X_test/255.0).reshape(-1, 28*28)
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = RNNClassifier(n_in=32, n_step=32, n_hidden=128, n_out=10, n_layer=3, sess=sess, stateful=False)
-    log = clf.fit(X_train, y_train, n_epoch=20, en_exp_decay=True, keep_prob_tuple=(0.5,1.0),
-                  val_data=(X_test,y_test))
+    clf = HighwayMLPClassifier(n_in=28*28, n_hidden=50, n_highway=20, n_out=10, sess=sess)
+    log = clf.fit(X_train, y_train, n_epoch=10, en_exp_decay=True, val_data=(X_test,y_test), dropout=0.5)
     pred = clf.predict(X_test)
     tf.reset_default_graph()
-    final_acc = np.equal(np.argmax(pred,1), np.argmax(y_test,1)).astype(float).mean()
+    final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test, 1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)
 
     plot(log)

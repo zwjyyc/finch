@@ -57,7 +57,9 @@ class HighwayConvClassifier:
         H = tf.nn.relu(tf.nn.conv2d(self.conv,W,[1,1,1,1],'SAME')+b)
         T = tf.sigmoid(tf.nn.conv2d(self.conv,W_T,[1,1,1,1],'SAME')+b_T, name='transform_gate')
         C = tf.subtract(1.0, T, name="carry_gate")
-        self.conv = tf.add(tf.multiply(H,T), tf.multiply(self.conv,C)) # y = (H * T) + (x * C)
+        
+        y = tf.add(tf.multiply(H,T), tf.multiply(self.conv,C)) # y = (H * T) + (x * C)
+        self.conv = tf.contrib.layers.batch_norm(y)
     # end method add_conv_highway
 
 

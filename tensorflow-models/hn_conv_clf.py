@@ -22,10 +22,11 @@ class HighwayConvClassifier:
             self.add_conv_highway('highway1', filter_shape=[3,3,32,32])
             self.add_conv_highway('highway2', filter_shape=[3,3,32,32])
             self.add_maxpool_layer(k=2)
-            self.add_conv_highway('highway3', filter_shape=[3,3,32,32])
-            self.add_conv_highway('highway4', filter_shape=[3,3,32,32])
+            self.add_conv_layer('conv2', filter_shape=[5,5,32,64])
+            self.add_conv_highway('highway3', filter_shape=[3,3,64,64])
+            self.add_conv_highway('highway4', filter_shape=[3,3,64,64])
             self.add_maxpool_layer(k=2)
-            self.add_fc_layer('fc1', [int(self.img_h/4)*int(self.img_w/4)*32,512], flatten_input=True)
+            self.add_fc_layer('fc1', [int(self.img_h/4)*int(self.img_w/4)*64,512], flatten_input=True)
         with tf.variable_scope('output_layer'):
             self.add_output_layer(in_dim=512)   
         with tf.name_scope('backward_path'):

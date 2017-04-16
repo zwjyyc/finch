@@ -120,9 +120,9 @@ class ConvClassifier:
             else:
                 X_train, y_train = X, y
             local_step = 1
+            
             for X_batch, y_batch in zip(self.gen_batch(X_train,batch_size),
                                         self.gen_batch(y_train,batch_size)): # batch training
-
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X:X_batch,
                     self.y:y_batch, self.lr:lr, self.keep_prob:keep_prob})

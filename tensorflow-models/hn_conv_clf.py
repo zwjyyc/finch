@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
+import sklearn
 from tensorflow.contrib.layers import batch_norm
 
 
@@ -122,7 +123,8 @@ class HighwayConvClassifier:
     # end method _b
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True):
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True,
+            en_shuffle=True):
         if val_data is None:
             print("Train %d samples" % len(X))
         else:
@@ -132,10 +134,15 @@ class HighwayConvClassifier:
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
+            if en_shuffle:
+                X_train, y_train = sklearn.utils.shuffle(X, y)
+            else:
+                X_train, y_train = X, y
             local_step = 1
-            for X_batch, y_batch in zip(self.gen_batch(X,batch_size),
-                                        self.gen_batch(y,batch_size)): # batch training
-                lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
+
+            for X_batch, y_batch in zip(self.gen_batch(X_train, batch_size),
+                                        self.gen_batch(y_train, batch_size)): # batch training
+                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X:X_batch,
                     self.y:y_batch, self.lr:lr, self.keep_prob:keep_prob})
                 local_step += 1
@@ -143,6 +150,7 @@ class HighwayConvClassifier:
                 if local_step % 50 == 0:
                     print ("Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f"
                            %(epoch+1, n_epoch, local_step, int(len(X)/batch_size), loss, acc, lr))
+
             if val_data is not None: # go through test dara, compute averaged validation loss and acc
                 val_loss_list, val_acc_list = [], []
                 for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
@@ -167,6 +175,7 @@ class HighwayConvClassifier:
                 print ("Epoch %d/%d | train_loss: %.4f | train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
                     "test_loss: %.4f | test_acc: %.4f |" % (val_loss, val_acc),
                     "lr: %.4f" % (lr) )
+
         return log
     # end method fit
 
@@ -186,7 +195,7 @@ class HighwayConvClassifier:
     # end method gen_batch
 
 
-    def adjust_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
+    def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
             max_lr = 0.003
             min_lr = 0.0001

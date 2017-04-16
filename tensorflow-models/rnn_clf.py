@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
+import sklearn
 
 
 class RNNClassifier:
@@ -75,7 +76,8 @@ class RNNClassifier:
     # end method add_backward_path
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, keep_prob_tuple=(1.0,1.0)):
+    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
+            keep_prob_tuple=(1.0,1.0)):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -85,10 +87,17 @@ class RNNClassifier:
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch): # batch training
+
+            if en_shuffle:
+                X_train, y_train = sklearn.utils.shuffle(X, y)
+            else:
+                X_train, y_train = X, y
             local_step = 1
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
-            for X_train_batch, y_train_batch in zip(self.gen_batch(X,batch_size), self.gen_batch(y,batch_size)):
-                lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
+
+            for X_train_batch, y_train_batch in zip(self.gen_batch(X_train, batch_size),
+                                                    self.gen_batch(y_train, batch_size)):
+                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 if self.stateful:
                     _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
                         feed_dict = {self.X:X_train_batch, self.y:y_train_batch, self.batch_size:batch_size,
@@ -103,6 +112,7 @@ class RNNClassifier:
                 if local_step % 50 == 0:
                     print ('Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f'
                            %(epoch+1, n_epoch, local_step, int(len(X)/batch_size), loss, acc, lr))
+
             if val_data is not None: # go through testing data, average validation loss and ac 
                 val_loss_list, val_acc_list = [], []
                 next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
@@ -134,6 +144,8 @@ class RNNClassifier:
             else:
                 print ("Epoch %d/%d | train_loss: %.4f | train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
                        "test_loss: %.4f | test_acc: %.4f |" % (val_loss, val_acc), "lr: %.4f" % (lr) )
+        # end "for epoch in range(n_epoch)"
+
         return log
     # end method fit
 
@@ -169,7 +181,7 @@ class RNNClassifier:
     # end method gen_batch
 
 
-    def adjust_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
+    def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
             max_lr = 0.003
             min_lr = 0.0001

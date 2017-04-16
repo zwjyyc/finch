@@ -1,6 +1,7 @@
 import tensorflow as tf
 import math
 import numpy as np
+import sklearn
 
 
 class RNNTextGen:
@@ -85,7 +86,7 @@ class RNNTextGen:
     # end method add_backward_path
 
 
-    def adjust_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):
+    def decrease_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):
         if en_exp_decay:
             max_lr = 0.003
             min_lr = 0.0001
@@ -97,17 +98,25 @@ class RNNTextGen:
     # end method adjust_lr
 
 
-    def fit(self, X_batch_list, Y_batch_list, n_epoch=10, batch_size=128, en_exp_decay=True, sample_pack=None):
+    def fit(self, X_batch_list, Y_batch_list, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
+            sample_pack=None):
         log = {'train_loss': []}
         global_step = 0
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         if sample_pack is not None:
             s_model, idx2word, word2idx, num, prime_texts = sample_pack
+        
         for epoch in range(n_epoch):
+
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
             batch_count = 1
-            for X_batch, Y_batch in zip(X_batch_list, Y_batch_list):
-                lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X_batch_list))
+            if en_shuffle:
+                X_train, Y_train = sklearn.utils.shuffle(X_batch_list, Y_batch_list)
+            else:
+                X_train, Y_train = X, y
+
+            for X_batch, Y_batch in zip(X_train, Y_train):
+                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X_batch_list))
                 _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                     feed_dict={self.X:X_batch, self.Y:Y_batch, self.init_state:next_state,
                                self.batch_size:batch_size, self.lr:lr})
@@ -117,9 +126,11 @@ class RNNTextGen:
                 log['train_loss'].append(loss)
                 batch_count += 1
                 global_step += 1
+            
             if sample_pack is not None:
                 for prime_text in prime_texts:
                     print(self.sample(s_model, idx2word, word2idx, num, prime_text))
+            
         return log
     # end method fit
 

@@ -68,7 +68,7 @@ class HighwayConvClassifier:
     def conv2d_wrapper(self, X, W, b, strides=1):
         conv = tf.nn.conv2d(X, W, strides=[1, strides, strides, 1], padding='SAME')
         conv = tf.nn.bias_add(conv, b)
-        conv = tf.contrib.layers.batch_norm(conv)
+        conv = batch_norm(conv)
         conv = tf.nn.relu(conv)
         return conv
     # end method conv2d

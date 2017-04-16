@@ -112,6 +112,7 @@ class ConvClassifier:
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
+
             local_step = 1
             for X_batch, y_batch in zip(self.gen_batch(X,batch_size),
                                         self.gen_batch(y,batch_size)): # batch training
@@ -132,7 +133,6 @@ class ConvClassifier:
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
-
             # append to log
             log['loss'].append(loss)
             log['acc'].append(acc)
@@ -147,6 +147,7 @@ class ConvClassifier:
                 print ("Epoch %d/%d | train_loss: %.4f | train_acc: %.4f |" % (epoch+1, n_epoch, loss, acc),
                     "test_loss: %.4f | test_acc: %.4f |" % (val_loss, val_acc),
                     "lr: %.4f" % (lr) )
+            
         return log
     # end method fit
 

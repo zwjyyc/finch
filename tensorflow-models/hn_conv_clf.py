@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
+from tensorflow.contrib.layers import batch_norm
 
 
 class HighwayConvClassifier:
@@ -55,12 +56,12 @@ class HighwayConvClassifier:
         W_T = tf.get_variable(name+'_wt', filter_shape, tf.float32, tf.truncated_normal_initializer(stddev=0.1))
         b_T = tf.get_variable(name+'_bt', filter_shape[-1], tf.float32, tf.constant_initializer(0.1))
 
-        H = tf.nn.relu(tf.nn.conv2d(self.conv,W,[1,1,1,1],'SAME')+b)
-        T = tf.sigmoid(tf.nn.conv2d(self.conv,W_T,[1,1,1,1],'SAME')+b_T, name='transform_gate')
+        H = tf.nn.relu(batch_norm(tf.nn.bias_add(tf.nn.conv2d(self.conv,W,[1,1,1,1],'SAME'), b)))
+        T = tf.sigmoid(batch_norm(tf.nn.bias_add(tf.nn.conv2d(self.conv,W_T,[1,1,1,1],'SAME'), b_T)),
+                       name='transform_gate')
         C = tf.subtract(1.0, T, name="carry_gate")
         
-        y = tf.add(tf.multiply(H,T), tf.multiply(self.conv,C)) # y = (H * T) + (x * C)
-        self.conv = tf.contrib.layers.batch_norm(y)
+        self.conv = tf.add(tf.multiply(H,T), tf.multiply(self.conv,C)) # y = (H * T) + (x * C)
     # end method add_conv_highway
 
 
@@ -91,7 +92,7 @@ class HighwayConvClassifier:
         else:
             fc = self.fc
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
-        fc = tf.contrib.layers.batch_norm(fc)
+        fc = batch_norm(fc)
         fc = tf.nn.relu(fc)
         self.fc = tf.nn.dropout(fc, self.keep_prob)
     # end method add_fully_connected_layer

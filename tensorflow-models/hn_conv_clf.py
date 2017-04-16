@@ -42,14 +42,6 @@ class HighwayConvClassifier:
     # end method add_input_layer
 
 
-    def add_conv_layer(self, name, filter_shape, in_layer=None):
-        if in_layer is None:
-            in_layer = self.conv
-        self.conv = self.conv2d_wrapper(in_layer, self._W(name+'_w', filter_shape),
-                                        self._b(name+'_b', [filter_shape[-1]]))
-    # end method add_conv_layer
-
-
     def add_conv_highway(self, name, filter_shape, carry_bias=-1.0):
         W = tf.get_variable(name+'_w', filter_shape, tf.float32, tf.truncated_normal_initializer(stddev=0.1))
         b = tf.get_variable(name+'_b', filter_shape[-1], tf.float32, tf.constant_initializer(carry_bias))
@@ -63,6 +55,14 @@ class HighwayConvClassifier:
         
         self.conv = tf.add(tf.multiply(H,T), tf.multiply(self.conv,C)) # y = (H * T) + (x * C)
     # end method add_conv_highway
+
+
+    def add_conv_layer(self, name, filter_shape, in_layer=None):
+        if in_layer is None:
+            in_layer = self.conv
+        self.conv = self.conv2d_wrapper(in_layer, self._W(name+'_w', filter_shape),
+                                        self._b(name+'_b', [filter_shape[-1]]))
+    # end method add_conv_layer
 
 
     def conv2d_wrapper(self, X, W, b, strides=1):

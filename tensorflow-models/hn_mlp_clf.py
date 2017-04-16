@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
+from tensorflow.contrib.layers import batch_norm
 
 
 class HighwayMLPClassifier:
@@ -34,10 +35,10 @@ class HighwayMLPClassifier:
 
 
     def add_forward_path(self):
-        new_layer = self.fc('layer_in', self.X, self.n_in, self.n_hidden, batch_norm=True, activation='relu',
-                             dropout=True)
+        new_layer = self.fc('layer_in', self.X, self.n_in, self.n_hidden, en_batch_norm=True, activation='relu',
+                             en_dropout=True)
         for i in range(self.n_highway):
-            new_layer = self.highway('layer%s'%i, new_layer, self.n_hidden, batch_norm=True)
+            new_layer = self.highway('layer%s'%i, new_layer, self.n_hidden, en_batch_norm=True)
         self.highway_out = new_layer
     # end method add_forward_path
 
@@ -55,33 +56,35 @@ class HighwayMLPClassifier:
     # end method add_backward_path
 
 
-    def highway(self, name, X, size, carry_bias=-1.0, batch_norm=None):
+    def highway(self, name, X, size, carry_bias=-1.0, en_batch_norm=None):
         W_T = tf.get_variable(name+'_wt', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
         b_T = tf.get_variable(name+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
 
         W = tf.get_variable(name+'_w', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
         b = tf.get_variable(name+'_b', [size], tf.float32, tf.constant_initializer(0.1))
 
-        T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
-        H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
+        if en_batch_norm:
+            T = tf.sigmoid(batch_norm(tf.nn.bias_add(tf.matmul(X, W_T), b_T)))
+            H = tf.nn.relu(batch_norm(tf.nn.bias_add(tf.matmul(X, W), b)))
+        else:
+            T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
+            H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
         C = tf.subtract(1.0, T, name="carry_gate")
 
         y = tf.add(tf.multiply(H, T), tf.multiply(X, C))
-        if batch_norm:
-            y = tf.contrib.layers.batch_norm(y)
         return y
     # end method fc (fully-connected)
 
 
-    def fc(self, name, X, fan_in, fan_out, batch_norm=None, activation=None, dropout=None):
+    def fc(self, name, X, fan_in, fan_out, en_batch_norm=None, activation=None, en_dropout=None):
         W = tf.get_variable(name+'_w', [fan_in, fan_out], tf.float32, tf.contrib.layers.variance_scaling_initializer())
         b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
         y = tf.nn.bias_add(tf.matmul(X, W), b)
-        if batch_norm:
-            y = tf.contrib.layers.batch_norm(y)
+        if en_batch_norm:
+            y = batch_norm(y)
         if activation == 'relu':
             y = tf.nn.relu(y)
-        if dropout:
+        if en_dropout:
             y = tf.nn.dropout(y, self.keep_prob)
         return y
     # end method fc (fully-connected)

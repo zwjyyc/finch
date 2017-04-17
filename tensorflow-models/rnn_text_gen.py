@@ -113,7 +113,7 @@ class RNNTextGen:
             if en_shuffle:
                 X_train, Y_train = sklearn.utils.shuffle(X_batch_list, Y_batch_list)
             else:
-                X_train, Y_train = X, y
+                X_train, Y_train = X_batch_list, Y_batch_list
 
             for X_batch, Y_batch in zip(X_train, Y_train):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X_batch_list))

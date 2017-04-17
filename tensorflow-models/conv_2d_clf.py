@@ -56,13 +56,8 @@ class ConvClassifier:
 
 
     def add_maxpool_layer(self, k=2):
-        self.conv = self.maxpool2d_wrapper(self.conv, k=k)
+        self.conv = tf.nn.max_pool(self.conv, ksize=[1,k,k,1], strides=[1,k,k,1], padding='SAME')
     # end method add_maxpool_layer
-
-
-    def maxpool2d_wrapper(self, X, k=2):
-        return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
-    # end method maxpool2d
 
 
     def add_fc_layer(self, name, w_shape, flatten_input=False):

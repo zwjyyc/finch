@@ -1,6 +1,6 @@
 from utils import to_one_hot
 from keras.datasets import cifar10
-from conv_clf import ConvClassifier
+from conv_2d_clf import ConvClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np

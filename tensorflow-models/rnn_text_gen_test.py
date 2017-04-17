@@ -12,7 +12,7 @@ import tensorflow as tf
 from rnn_text_gen import RNNTextGen
 
 
-batch_size = 100
+batch_size = 128
 training_seq_len = 50
 num_layers = 3
 prime_texts = ['thou art more', 'to be or not to', 'wherefore art thou']
@@ -135,6 +135,6 @@ if __name__ == '__main__':
                              sess=sess)
     with tf.variable_scope(tf.get_variable_scope(), reuse=True):
         sample_model = RNNTextGen(n_hidden=128, n_layers=num_layers, vocab_size=vocab_size, seq_len=1, sess=sess)
-    log = train_model.fit(X, y, n_epoch=5, batch_size=batch_size, en_exp_decay=True,
+    log = train_model.fit(X, y, n_epoch=10, batch_size=batch_size, en_exp_decay=True, en_shuffle=True,
                           sample_pack=(sample_model, idx2word, word2idx, 20, prime_texts))
     plot(log)

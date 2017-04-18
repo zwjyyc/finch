@@ -56,15 +56,28 @@ class RNNRegressor:
 
     def add_output_layer(self):
         # (batch * n_step, n_hidden) dot (n_hidden, n_out)
-        outputs = tf.nn.bias_add(tf.matmul(self.rnn_out, self.W), self.b)
-        self.time_seq_out = tf.reshape(outputs, [-1, self.n_step, self.n_out])
+        self.logits = tf.nn.bias_add(tf.matmul(self.rnn_out, self.W), self.b)
+        self.time_seq_out = tf.reshape(self.logits, [-1, self.n_step, self.n_out])
     # end method add_output_layer
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.square(self.time_seq_out - self.y))
+        losses = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
+            logits = [tf.reshape(self.logits, [-1])],
+            targets = [tf.reshape(self.y, [-1])],
+            weights = [tf.ones([self.batch_size * self.n_step])],
+            average_across_timesteps = True,
+            softmax_loss_function = self.mse,
+            name = 'losses'
+        )
+        self.loss = tf.reduce_sum(losses) / tf.cast(self.batch_size, tf.float32)
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
+
+
+    def mse(self, y_pred, y_target):
+        return tf.square(tf.subtract(y_pred, y_target))
+    # end method mse
 
 
     def fit(self, train_data, batch_size, test_data=None):

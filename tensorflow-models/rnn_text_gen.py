@@ -80,7 +80,7 @@ class RNNTextGen:
                 logits = [self.logits],
                 targets = [tf.reshape(self.Y, [-1])],
                 weights = [tf.ones([self.batch_size*self.seq_len])],
-                average_across_timesteps = self.vocab_size,
+                average_across_timesteps = True,
         )
         self.loss = tf.reduce_sum(losses) / (tf.cast(self.batch_size,tf.float32) * self.seq_len)
         self.lr = tf.placeholder(tf.float32)
@@ -90,7 +90,7 @@ class RNNTextGen:
 
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):
         if en_exp_decay:
-            max_lr = 0.001
+            max_lr = 0.003
             min_lr = 0.0001
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*nb_batch)
             lr = max_lr*math.exp(-decay_rate*global_step)
@@ -142,7 +142,7 @@ class RNNTextGen:
 
     def sample(self, s_model, idx2word, word2idx, num, prime_text):
         state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
-        # word_list = prime_text.split()
+        #word_list = prime_text.split()
         word_list = list(prime_text)
         for word in word_list[:-1]:
             x = np.zeros((1,1))
@@ -160,7 +160,7 @@ class RNNTextGen:
             if sample == 0:
                 break
             word = idx2word[sample]
-            # out_sentence = out_sentence + ' ' + word
+            #out_sentence = out_sentence + ' ' + word
             out_sentence = out_sentence + word
         return(out_sentence)
     # end method sample

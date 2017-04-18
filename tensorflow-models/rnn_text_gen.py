@@ -60,7 +60,7 @@ class RNNTextGen:
     def add_dynamic_rnn(self):
         self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
         self.rnn_out, self.final_state = tf.nn.dynamic_rnn(self.cells, self.embedding_out,
-                                                           initial_state=self.init_state, time_major=False)       
+                                                           initial_state=self.init_state, time_major=False)    
     # end method add_dynamic_rnn
 
 
@@ -76,29 +76,31 @@ class RNNTextGen:
 
 
     def add_backward_path(self):
-        losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
-                                                                labels=tf.reshape(self.Y, [-1]))
-        self.loss = tf.reduce_mean(losses)
+        losses = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
+                logits = [self.logits],
+                targets = [tf.reshape(self.Y, [-1])],
+                weights = [tf.ones([self.batch_size*self.seq_len])],
+                average_across_timesteps = self.vocab_size,
+        )
+        self.loss = tf.reduce_sum(losses) / (tf.cast(self.batch_size,tf.float32) * self.seq_len)
         self.lr = tf.placeholder(tf.float32)
-        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), 4.5)
-        optimizer = tf.train.AdamOptimizer(self.lr)
-        self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
 
 
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):
         if en_exp_decay:
-            max_lr = 0.003
+            max_lr = 0.001
             min_lr = 0.0001
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*nb_batch)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:
-            lr = 0.001
+            lr = 0.0005
         return lr
     # end method adjust_lr
 
 
-    def fit(self, X_batch_list, Y_batch_list, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
+    def fit(self, X_batch_list, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
             sample_pack=None):
         log = {'train_loss': []}
         global_step = 0
@@ -111,25 +113,28 @@ class RNNTextGen:
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
             batch_count = 1
             if en_shuffle:
-                X_train, Y_train = sklearn.utils.shuffle(X_batch_list, Y_batch_list)
+                X_train = sklearn.utils.shuffle(X_batch_list)
             else:
-                X_train, Y_train = X_batch_list, Y_batch_list
+                X_train = X_batch_list
+
+            Y_train = [np.roll(x, -1, axis=1) for x in X_train]
 
             for X_batch, Y_batch in zip(X_train, Y_train):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X_batch_list))
                 _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                     feed_dict={self.X:X_batch, self.Y:Y_batch, self.init_state:next_state,
                                self.batch_size:batch_size, self.lr:lr})
-                if batch_count % 50 == 0:
+                if batch_count % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f' % (epoch+1, n_epoch,
                         batch_count, len(X_batch_list), loss, lr))
                 log['train_loss'].append(loss)
                 batch_count += 1
                 global_step += 1
             
-            if sample_pack is not None:
-                for prime_text in prime_texts:
-                    print(self.sample(s_model, idx2word, word2idx, num, prime_text))
+                if sample_pack is not None:
+                    if batch_count % 50 == 0:
+                        for prime_text in prime_texts:
+                            print(self.sample(s_model, idx2word, word2idx, num, prime_text))
             
         return log
     # end method fit

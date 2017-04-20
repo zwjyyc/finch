@@ -23,6 +23,7 @@ val lines = sc.textFile("../ml-100k/u.data")
 ```scala
 val ratings = lines.map(x => x.toString().split("\t")(2))
 ```
+
 		3
 		3
 		1
@@ -33,7 +34,8 @@ val ratings = lines.map(x => x.toString().split("\t")(2))
 ```scala
 val results = ratings.countByValue()
 ```
-3 occurs 2 times, 1 occurs 2 times, 2 occurs 1 times 
+3 occurs 2 times, 1 occurs 2 times, 2 occurs 1 times
+
 	(3, 2)
 	(1, 2)
 	(2, 1)

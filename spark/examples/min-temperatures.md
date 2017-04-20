@@ -35,9 +35,9 @@ val minTempsByStation = stationTemps.reduceByKey( (x,y) => min(x,y) )
 val results = minTempsByStation.collect()
 
 for (result <- results.sorted) {
-val station = result._1
-val temp = result._2
-val formattedTemp = f"$temp%.2f F"
-println(s"$station minimum temperature: $formattedTemp") 
+	val station = result._1
+	val temp = result._2
+	val formattedTemp = f"$temp%.2f F"
+	println(s"$station minimum temperature: $formattedTemp") 
 }
 ```

@@ -7,6 +7,7 @@
 val sc = new SparkContext("local[*]", "RatingsCounter")
 ```
 2
+
 	user-id  movie-id  rating  timestamp
 	196      242       3       881250949
 	186      302       3       891717742

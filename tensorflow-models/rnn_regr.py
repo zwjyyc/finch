@@ -78,29 +78,4 @@ class RNNRegressor:
     def mse(self, y_pred, y_target):
         return tf.square(tf.subtract(y_pred, y_target))
     # end method mse
-
-
-    def fit(self, train_data, batch_size, test_data=None):
-        self.sess.run(tf.global_variables_initializer())
-        train_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
-        for train_idx, train_sample in enumerate(train_data):
-            seq, res = train_sample
-            _, train_loss, train_state = self.sess.run( [self.train_op, self.loss, self.final_state],
-                feed_dict={self.X: seq, self.y: res, self.init_state: train_state, self.batch_size: batch_size})
-            if test_data is None:
-                if train_idx % 20 == 0:
-                    print('train loss: %.4f' % (train_loss))
-            else:
-                test_loss_list = []
-                test_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
-                for test_idx, test_sample in enumerate(test_data):
-                    seq_test, res_test = test_sample
-                    test_loss, test_state = self.sess.run([self.loss, self.final_state],
-                        feed_dict={self.X: seq_test, self.y: res_test, self.init_state: test_state,
-                                   self.batch_size: batch_size})
-                    test_loss_list.append(test_loss)
-                if train_idx % 20 == 0:
-                    print('train loss: %.4f |' % (train_loss),
-                          'test loss: %.4f' % (sum(test_loss_list)/len(test_loss_list)) )
-    # end method fit
 # end class RNNRegressor

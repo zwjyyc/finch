@@ -104,8 +104,9 @@ class HighwayMLPClassifier:
             local_step = 1
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
-                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X: X_batch,
-                                              self.y: y_batch, self.lr: lr, self.keep_prob:dropout})
+                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
+                                              feed_dict={self.X: X_batch, self.y: y_batch,
+                                                         self.lr: lr, self.keep_prob:dropout})
                 local_step += 1
                 global_step += 1
                 if local_step % 100 == 0:

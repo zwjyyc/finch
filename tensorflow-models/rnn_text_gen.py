@@ -100,7 +100,7 @@ class RNNTextGen:
     # end method adjust_lr
 
 
-    def fit(self, X_batch_list, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
+    def fit(self, text_batch, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
             sample_pack=None):
         log = {'train_loss': []}
         global_step = 0
@@ -113,20 +113,21 @@ class RNNTextGen:
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
             batch_count = 1
             if en_shuffle:
-                X_train = sklearn.utils.shuffle(X_batch_list)
+                X_train = sklearn.utils.shuffle(text_batch)
             else:
-                X_train = X_batch_list
+                X_train = text_batch
 
             Y_train = [np.roll(x, -1, axis=1) for x in X_train]
 
             for X_batch, Y_batch in zip(X_train, Y_train):
-                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X_batch_list))
+                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(text_batch))
                 _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
-                    feed_dict={self.X:X_batch, self.Y:Y_batch, self.init_state:next_state,
-                               self.batch_size:batch_size, self.lr:lr})
+                                                     feed_dict={self.X:X_batch, self.Y:Y_batch,
+                                                                self.init_state:next_state,
+                                                                self.batch_size:batch_size, self.lr:lr})
                 if batch_count % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f' % (epoch+1, n_epoch,
-                        batch_count, len(X_batch_list), loss, lr))
+                           batch_count, len(text_batch), loss, lr))
                 log['train_loss'].append(loss)
                 batch_count += 1
                 global_step += 1
@@ -164,4 +165,4 @@ class RNNTextGen:
             out_sentence = out_sentence + word
         return(out_sentence)
     # end method sample
-# end class CharRNNModel
+# end class

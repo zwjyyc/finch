@@ -27,9 +27,9 @@ Conclusion
 * Map(): one-to-one relationship
 * flatMap(): one-to-all relationship
 
-## Word Count
+### Word Count
 
-Attempt 1
+#### Attempt 1
 ```scala
 import org.apache.spark._
 import org.apache.spark.SparkContext._
@@ -61,7 +61,7 @@ object WordCount {
 
 }
 ```
-Attempt 2 (adding regular expressions)
+#### Attempt 2 (adding regular expressions)
 * call split with two backslash `\\` in the case of regular expression
 * `W` means "I want words"
 * `+` means there could more than one of them
@@ -100,7 +100,7 @@ object WordCountBetter {
 }
 ```
 
-Attempt 3 (adding sorting in RDD)
+#### Attempt 3 (adding sorting in RDD)
 ```scala
 import org.apache.spark._
 import org.apache.spark.SparkContext._

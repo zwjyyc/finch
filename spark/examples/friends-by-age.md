@@ -58,11 +58,11 @@ val averagesByAge = totalsByAge.mapValues(x => x._1 / x._2)
 	(33, (387, 2) => (33, 193.5)
 
 4.
+Collect the results from the RDD
 ```scala
 val results = averagesByAge.collect()
 ```
-Collect the results from the RDD
+Sort and print the final results
 ```scala
 results.sorted.foreach(println)
 ```
-Sort and print the final results

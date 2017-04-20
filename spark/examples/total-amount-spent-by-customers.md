@@ -44,7 +44,7 @@ object TotalSpentByCustomer {
 
 }
 ```
-(Sorted) Find the Total Amount Spent By Customers
+(Sorted)
 ```scala
 import org.apache.spark._
 import org.apache.spark.SparkContext._

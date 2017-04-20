@@ -42,7 +42,7 @@ class ConvClassifier:
         if in_layer is None:
             in_layer = self.conv
         self.conv = self.conv2d_wrapper(in_layer, self._W(name+'_w', filter_shape),
-                                        self._b(name+'_b', [filter_shape[-1]]))
+                                                  self._b(name+'_b', [filter_shape[-1]]))
     # end method add_conv_layer
 
 

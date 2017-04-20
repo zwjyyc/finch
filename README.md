@@ -11,6 +11,7 @@
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
     * [Language Processing in Python](https://github.com/zhedongzheng/finch#language-processing-in-python)
 * [Database](https://github.com/zhedongzheng/finch#database)
+* [Distributed System](https://github.com/zhedongzheng/finch#distributed-system)
 ### Machine Learning
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp; 
 * Java &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java) &nbsp; | &nbsp; 
@@ -51,3 +52,6 @@
 * [Word Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-embedding.ipynb)
 ### Database
 * [SQL](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
+### Distributed System
+#### Spark
+* [examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)

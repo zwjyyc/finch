@@ -1,4 +1,4 @@
-### Contents
+## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
     * [Multilayer Perceptron](https://github.com/zhedongzheng/finch#multilayer-perceptron)

@@ -84,7 +84,9 @@ class RNNTextGen:
         )
         self.loss = tf.reduce_sum(losses) / (tf.cast(self.batch_size,tf.float32) * self.seq_len)
         self.lr = tf.placeholder(tf.float32)
-        self.train_op = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss)
+        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), 4.5)
+        optimizer = tf.train.AdamOptimizer(self.lr)
+        self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
     # end method add_backward_path
 
 
@@ -95,7 +97,7 @@ class RNNTextGen:
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*nb_batch)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:
-            lr = 0.003
+            lr = 0.0005
         return lr
     # end method adjust_lr
 

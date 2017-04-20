@@ -119,8 +119,9 @@ class ConvClassifier:
             for X_batch, y_batch in zip(self.gen_batch(X_train,batch_size),
                                         self.gen_batch(y_train,batch_size)): # batch training
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
-                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X:X_batch,
-                    self.y:y_batch, self.lr:lr, self.keep_prob:keep_prob})
+                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
+                                              feed_dict={self.X:X_batch, self.y:y_batch,
+                                                         self.lr:lr, self.keep_prob:keep_prob})
                 local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
@@ -131,8 +132,9 @@ class ConvClassifier:
                 val_loss_list, val_acc_list = [], []
                 for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
-                    v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict={self.X:X_test_batch,
-                        self.y:y_test_batch, self.keep_prob:1.0})
+                    v_loss, v_acc = self.sess.run([self.loss, self.acc],
+                                                   feed_dict={self.X:X_test_batch, self.y:y_test_batch,
+                                                              self.keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)

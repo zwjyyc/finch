@@ -43,10 +43,10 @@ rdd.mapValues(x=>(x, 1))
 	(33, 385) => (33, (385, 1))
 	(33, 2) => (33, (2, 1))
 	(55, 221) => (55, (221, 1))
+Adds up all values for each unique key
 ```scala
 reduceByKey( (x,y) => (x._1 + y._1, x._2 + y._2) )
 ```
-	Adds up all values for each unique key
 	  (33, (385, 1))
 	+ (33, (2, 1)) 
 	=> (33, (387, 2))

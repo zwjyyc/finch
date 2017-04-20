@@ -25,11 +25,11 @@ val lines = sc.textFile("../ml-100k/u.data")
 val ratings = lines.map(x => x.toString().split("\t")(2))
 ```
 
-		3
-		3
-		1
-		2
-		1
+	3
+	3
+	1
+	2
+	1
 
 4
 ```scala

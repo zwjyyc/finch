@@ -10,6 +10,7 @@ use flatMap()
 val lines = sc.textFile("redfox.txt")
 val words = lines.flatMap(x => x.split(" "))
 ```
+which leads to
 
 	The
 	quick

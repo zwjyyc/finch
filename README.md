@@ -1,6 +1,5 @@
 ### Contents
-* [Supervised Learning](https://github.com/zhedongzheng/finch#supervised-learning)
-    * [Linear Methods](https://github.com/zhedongzheng/finch#linear-methods)
+* [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
     * [Multilayer Perceptron](https://github.com/zhedongzheng/finch#multilayer-perceptron)
     * [Convolutional Neural Network](https://github.com/zhedongzheng/finch#convolutional-neural-network)
@@ -12,8 +11,7 @@
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
     * [Language Processing in Python](https://github.com/zhedongzheng/finch#language-processing-in-python)
 * [Database](https://github.com/zhedongzheng/finch#database)
-### Supervised Learning
-#### Linear Methods
+### Machine Learning
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp; 
 * Java &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java) &nbsp; | &nbsp; 
 * TensorFlow &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [OOP Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/svm_linear_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/svm_linear_clf_test.py) &nbsp; | &nbsp; 

@@ -54,7 +54,7 @@ object FriendsByAge {
 }
 ```
 
-1.
+##1.
 ```scala
  def parseLine(line: String) = {
      // Split by commas
@@ -87,7 +87,7 @@ to
 	55, 221,
 	40, 465
 
-2.
+##2.
 ```scala
 val totalsByAge = rdd.mapValues(x => (x, 1)).reduceByKey( (x,y) => (x._1 + y._1, x._2 + y._2) )
 ```
@@ -106,13 +106,13 @@ reduceByKey( (x,y) => (x._1 + y._1, x._2 + y._2) )
 	+ (33, (2, 1)) 
 	=> (33, (387, 2))
 
-3.
+##3.
 ```scala
 val averagesByAge = totalsByAge.mapValues(x => x._1 / x._2)
 ```
 	(33, (387, 2) => (33, 193.5)
 
-4.
+##4.
 Collect the results from the RDD
 ```scala
 val results = averagesByAge.collect()

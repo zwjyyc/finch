@@ -30,10 +30,10 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = Conv1DClassifier(seq_len=maxlen, vocab_size=max_features, embedding_dims=embedding_dims,
-                           filters=filters, kernel_size=kernel_size, hidden_dims=None, n_out=2,
+                           filters=filters, kernel_size=kernel_size, hidden_dims=hidden_dims, n_out=2,
                            sess=sess)
     log = clf.fit(X_train, y_train, n_epoch=10, batch_size=batch_size, en_exp_decay=True, en_shuffle=True,
-                    val_data=(X_test,y_test))
+                  keep_prob=0.8, val_data=(X_test,y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()
 

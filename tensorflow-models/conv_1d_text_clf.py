@@ -24,14 +24,10 @@ class Conv1DClassifier:
         with tf.variable_scope('forward_path'):
             self.add_word_embedding_layer()
             self.add_conv1d_layer('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.filters])
-            self.add_global_maxpool_layer(self.seq_len)
-            if self.hidden_dims is not None:
-                self.add_fc_layer('vanilla', [self.filters, self.hidden_dims])
+            self.add_global_maxpool_layer( self.seq_len-self.kernel_size+1 )
+            self.add_fc_layer('vanilla', [self.filters, self.hidden_dims])
         with tf.variable_scope('output_layer'):
-            if self.hidden_dims is None:
-                self.add_output_layer(in_dim=self.filters)
-            else:
-                self.add_output_layer(in_dim=self.hidden_dims)   
+            self.add_output_layer(in_dim=self.hidden_dims)   
         with tf.name_scope('backward_path'):
             self.add_backward_path()
     # end method build_graph
@@ -58,17 +54,16 @@ class Conv1DClassifier:
 
 
     def conv1d_wrapper(self, X, W, b, stride=1):
-        conv = tf.nn.conv1d(X, W, stride=stride, padding='SAME')
+        conv = tf.nn.conv1d(X, W, stride=stride, padding='VALID')
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
-        conv = tf.nn.dropout(conv, self.keep_prob)
         return conv
     # end method conv1d_wrapper
 
 
     def add_global_maxpool_layer(self, k):
         conv = tf.expand_dims(self.conv, 1)
-        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='SAME')
+        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='VALID')
         self.conv = tf.squeeze(conv)
     # end method add_global_maxpool_layer
 
@@ -84,7 +79,7 @@ class Conv1DClassifier:
 
     def add_output_layer(self, in_dim):
         self.logits = tf.nn.bias_add(tf.matmul(self.conv, self._W('w_out', [in_dim,self.n_out])),
-                                    self._b('b_out', [self.n_out]))
+                                     self._b('b_out', [self.n_out]))
     # end method add_output_layer
 
 
@@ -127,8 +122,9 @@ class Conv1DClassifier:
             for X_batch, y_batch in zip(self.gen_batch(X_train,batch_size),
                                         self.gen_batch(y_train,batch_size)): # batch training
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
-                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc], feed_dict={self.X:X_batch,
-                    self.y:y_batch, self.lr:lr, self.keep_prob:keep_prob})
+                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
+                                              feed_dict={self.X:X_batch, self.y:y_batch,
+                                                         self.lr:lr, self.keep_prob:keep_prob})
                 local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
@@ -138,9 +134,10 @@ class Conv1DClassifier:
             if val_data is not None: # go through test dara, compute averaged validation loss and acc
                 val_loss_list, val_acc_list = [], []
                 for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
-                                                    self.gen_batch(val_data[1], batch_size)):
-                    v_loss, v_acc = self.sess.run([self.loss, self.acc], feed_dict={self.X:X_test_batch,
-                        self.y:y_test_batch, self.keep_prob:1.0})
+                                                      self.gen_batch(val_data[1], batch_size)):
+                    v_loss, v_acc = self.sess.run([self.loss, self.acc],
+                                                   feed_dict={self.X:X_test_batch, self.y:y_test_batch,
+                                                              self.keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)

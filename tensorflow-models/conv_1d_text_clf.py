@@ -67,9 +67,9 @@ class Conv1DClassifier:
 
 
     def add_global_maxpool_layer(self, k):
-        self.conv = tf.expand_dims(self.conv, 1)
-        self.conv = tf.nn.max_pool(self.conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='SAME')
-        self.conv = tf.squeeze(self.conv)
+        conv = tf.expand_dims(self.conv, 1)
+        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='SAME')
+        self.conv = tf.squeeze(conv)
     # end method add_global_maxpool_layer
 
 

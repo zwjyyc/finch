@@ -1,6 +1,6 @@
 from keras.datasets import imdb
 from keras.preprocessing import sequence
-from conv_1d_clf import Conv1DClassifier
+from conv_1d_text_clf import Conv1DClassifier
 from utils import to_one_hot
 import tensorflow as tf
 

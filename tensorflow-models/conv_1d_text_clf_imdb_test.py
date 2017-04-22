@@ -1,7 +1,7 @@
 from keras.datasets import imdb
 from keras.preprocessing import sequence
+from keras.utils.np_utils import to_categorical as to_one_hot
 from conv_1d_text_clf import Conv1DClassifier
-from utils import to_one_hot
 import tensorflow as tf
 
 

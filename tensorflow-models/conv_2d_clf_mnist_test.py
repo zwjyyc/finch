@@ -1,5 +1,5 @@
 from keras.datasets import mnist
-from utils import to_one_hot
+from keras.utils.np_utils import to_categorical as to_one_hot
 from conv_2d_clf import ConvClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns

@@ -1,4 +1,4 @@
-from utils import to_one_hot
+from keras.utils.np_utils import to_categorical as to_one_hot
 from keras.datasets import cifar10
 from mlp_clf import MLPClassifier
 import matplotlib.pyplot as plt

@@ -6,7 +6,7 @@
     * [Recurrent Neural Network](https://github.com/zhedongzheng/finch#recurrent-neural-network)
     * [Recurrent Convolutional Network](https://github.com/zhedongzheng/finch#recurrent-convolutional-network)
     * [Autoencoder](https://github.com/zhedongzheng/finch#autoencoder)
-    * [Highway Networks](https://github.com/zhedongzheng/finch#highway-networks)
+    * [Highway Network](https://github.com/zhedongzheng/finch#highway-network)
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
     * [OpenCV in Python](https://github.com/zhedongzheng/finch#opencv-in-python)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
@@ -36,7 +36,7 @@
 #### Autoencoder
 * TensorFlow &nbsp; | &nbsp; Basic Model &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_mnist_test.py) &nbsp; | &nbsp; 
 * TensorFlow &nbsp; | &nbsp; Weights-tied Model &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_tied_w.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder_tied_w_mnist_test.py) &nbsp; | &nbsp; 
-#### Highway Networks
+#### Highway Network
 * TensorFlow &nbsp; | &nbsp; Highway MLP Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_cifar10_test.py) &nbsp; | &nbsp; 
 * TensorFlow &nbsp; | &nbsp; Highway CNN Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf_cifar10_keras_idg_test.py) &nbsp; | &nbsp;
 ## Computer Vision

@@ -50,7 +50,7 @@ class RNNClassifier:
     # end method add_rnn_cells
 
 
-    def add_dynamic_rnn(self):
+    def add_dynamic_rnn(self):      
         self.init_state = self.cells.zero_state(self.batch_size, tf.float32)        
         self.rnn_out, self.final_state = tf.nn.dynamic_rnn(self.cells, self.X, initial_state=self.init_state,
                                                            time_major=False)

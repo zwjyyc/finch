@@ -5,9 +5,20 @@ import sklearn
 
 
 class ConvClassifier:
-    def __init__(self, img_h, img_w, img_ch, n_out, sess):
-        self.img_h = img_h
-        self.img_w = img_w
+    def __init__(self, img_size, img_ch, n_out, sess):
+        """
+        Parameters:
+        -----------
+        img_size: set
+            Image size in set (height, width)
+        img_ch: int
+            Number of image channel
+        n_out: int
+            Output dimensions
+        sess: object
+            tf.Session() object 
+        """
+        self.img_size = img_size
         self.img_ch = img_ch
         self.n_out = n_out
         self.sess = sess
@@ -23,7 +34,7 @@ class ConvClassifier:
             self.add_maxpool_layer(k=2)
             self.add_conv_layer('conv2', filter_shape=[5,5,32,64])
             self.add_maxpool_layer(k=2)
-            self.add_fc_layer('fc1', [int(self.img_h/4)*int(self.img_w/4)*64,512], flatten_input=True)
+            self.add_fc_layer('fc1', [int(self.img_size[0]/4)*int(self.img_size[1]/4)*64,512], flatten_input=True)
         with tf.variable_scope('output_layer'):
             self.add_output_layer(in_dim=512)   
         with tf.name_scope('backward_path'):
@@ -32,7 +43,7 @@ class ConvClassifier:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.float32, [None, self.img_h, self.img_w, self.img_ch])
+        self.X = tf.placeholder(tf.float32, [None, self.img_size[0], self.img_size[1], self.img_ch])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
     # end method add_input_layer

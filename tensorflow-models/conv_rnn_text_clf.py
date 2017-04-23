@@ -5,11 +5,33 @@ import sklearn
 
 
 class ConvRNNClassifier:
-    def __init__(self, seq_len, vocab_size, embedding_dims, filters, kernel_size, pool_size, rnn_size, n_out, sess):
+    def __init__(self, seq_len, vocab_size, embedding_dims, n_filters, kernel_size, pool_size, rnn_size, n_out, sess):
+        """
+        Parameters:
+        -----------
+        seq_len: int
+            Sequence length
+        vocab_size: int
+            Vocabulary size
+        embedding_dims: int
+            Word embedding dimensions
+        n_filters: int
+            Number output of filters in the convolution
+        kernel_size: int
+            Size of the 1D convolution window
+        pool_size: int
+            Size of the max pooling windows
+        rnn_size: int
+            Number of units in the rnn cell
+        n_out: int
+            Output dimensions
+        sess: object
+            tf.Session() object 
+        """
         self.seq_len = seq_len
         self.vocab_size = vocab_size
         self.embedding_dims = embedding_dims
-        self.filters = filters
+        self.n_filters = n_filters
         self.kernel_size = kernel_size
         self.pool_size = pool_size
         self.rnn_size = rnn_size
@@ -24,7 +46,7 @@ class ConvRNNClassifier:
             self.add_input_layer()
         with tf.variable_scope('forward_path'):
             self.add_word_embedding_layer()
-            self.add_conv1d_layer('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.filters])
+            self.add_conv1d_layer('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
             self.add_maxpool_layer(k = self.pool_size)
             self.add_lstm_cells()
             self.add_dynamic_rnn()
@@ -74,7 +96,7 @@ class ConvRNNClassifier:
 
 
     def add_dynamic_rnn(self):
-        self.conv = tf.reshape(self.conv, [self.batch_size, int(self.seq_len/self.pool_size), self.filters])
+        self.conv = tf.reshape(self.conv, [self.batch_size, int(self.seq_len/self.pool_size), self.n_filters])
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)              
         self.rnn_out, final_state = tf.nn.dynamic_rnn(self.cell, self.conv, initial_state=self.init_state,
                                                       time_major=False)

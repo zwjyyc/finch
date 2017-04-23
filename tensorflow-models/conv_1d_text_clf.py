@@ -5,11 +5,31 @@ import sklearn
 
 
 class Conv1DClassifier:
-    def __init__(self, seq_len, vocab_size, embedding_dims, filters, kernel_size, hidden_dims, n_out, sess):
+    def __init__(self, seq_len, vocab_size, embedding_dims, n_filters, kernel_size, hidden_dims, n_out, sess):
+        """
+        Parameters:
+        -----------
+        seq_len: int
+            Sequence length
+        vocab_size: int
+            Vocabulary size
+        embedding_dims: int
+            Word embedding dimensions
+        n_filters: int
+            Number output of filters in the convolution
+        kernel_size: int
+            Size of the 1D convolution window
+        hidden_dims: int
+            Ouput dimensions of the fully-connected layer
+        n_out: int
+            Output dimensions
+        sess: object
+            tf.Session() object 
+        """
         self.seq_len = seq_len
         self.vocab_size = vocab_size
         self.embedding_dims = embedding_dims
-        self.filters = filters
+        self.n_filters = n_filters
         self.kernel_size = kernel_size
         self.hidden_dims = hidden_dims
         self.n_out = n_out
@@ -23,9 +43,9 @@ class Conv1DClassifier:
             self.add_input_layer()
         with tf.variable_scope('forward_path'):
             self.add_word_embedding_layer()
-            self.add_conv1d_layer('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.filters])
+            self.add_conv1d_layer('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
             self.add_global_maxpool_layer( self.seq_len-self.kernel_size+1 )
-            self.add_fc_layer('vanilla', [self.filters, self.hidden_dims])
+            self.add_fc_layer('fully_connected', [self.n_filters, self.hidden_dims])
         with tf.variable_scope('output_layer'):
             self.add_output_layer(in_dim=self.hidden_dims)   
         with tf.name_scope('backward_path'):

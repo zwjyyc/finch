@@ -21,7 +21,7 @@ if __name__ == '__main__':
     y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    model = ConvClassifier(32, 32, 3, 10, sess)
+    model = ConvClassifier(img_size=(32,32), img_ch=3, n_out=10, sess=sess)
 
     datagen = ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset
@@ -44,7 +44,7 @@ if __name__ == '__main__':
         for X_batch, y_batch in datagen.flow(X_train, y_train, batch_size=batch_size):
             if local_step > int(len(X_train)/batch_size):
                 break
-            lr = model.adjust_lr(True, global_step, n_epoch, len(X_train), batch_size) 
+            lr = model.decrease_lr(True, global_step, n_epoch, len(X_train), batch_size) 
             _, loss, acc = model.sess.run([model.train_op, model.loss, model.acc], feed_dict={model.X:X_batch,
                 model.y:y_batch, model.lr:lr, model.keep_prob:0.5})
             local_step += 1

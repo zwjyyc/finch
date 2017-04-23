@@ -5,10 +5,28 @@ import sklearn
 
 
 class RNNTextClassifier:
-    def __init__(self, seq_len, vocab_size, n_hidden, n_out, n_layer, sess, stateful=False):
+    def __init__(self, seq_len, vocab_size, rnn_size, n_out, n_layer, sess, stateful=False):
+        """
+        Parameters:
+        -----------
+        seq_len: int
+            Sequence length
+        vocab_size: int
+            Vocabulary size
+        rnn_size: int
+            Number of units in the rnn cell
+        n_out: int
+            Output dimensions
+        n_layer: int
+            Number of layers of stacked rnn cells
+        sess: object
+            tf.Session() object
+        stateful: boolean
+            If true, the final state for each batch will be used as the initial state for the next batch 
+        """
         self.seq_len = seq_len
         self.vocab_size = vocab_size
-        self.n_hidden = n_hidden
+        self.rnn_size = rnn_size
         self.n_out = n_out
         self.n_layer = n_layer
         self.sess = sess
@@ -36,7 +54,7 @@ class RNNTextClassifier:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.W = tf.get_variable('W', [self.n_hidden, self.n_out], tf.float32,
+        self.W = tf.get_variable('W', [self.rnn_size, self.n_out], tf.float32,
                                  tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
         self.in_keep_prob = tf.placeholder(tf.float32)
@@ -45,14 +63,14 @@ class RNNTextClassifier:
 
 
     def add_word_embedding_layer(self):
-        embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size, self.n_hidden], tf.float32,
+        embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size, self.rnn_size], tf.float32,
                                         tf.random_normal_initializer())
         self.embedding_out = tf.nn.embedding_lookup(embedding_mat, self.X)
     # end method add_word_embedding_layer
 
 
     def add_lstm_cells(self):
-        cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
+        cell = tf.contrib.rnn.BasicLSTMCell(self.rnn_size)
         cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
         self.cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)
     # end method add_rnn_cells

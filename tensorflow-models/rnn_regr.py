@@ -4,10 +4,24 @@ import matplotlib.pyplot as plt
 
 
 class RNNRegressor:
-    def __init__(self, n_in, n_step, n_hidden, n_out, sess):
+    def __init__(self, n_in, n_step, rnn_size, n_out, sess):
+        """
+        Parameters:
+        -----------
+        n_in: int
+            Input dimensions
+        n_step: int
+            Number of time steps
+        rnn_size: int
+            Number of units in the rnn cell
+        n_out: int
+            Output dimensions
+        sess: object
+            tf.Session() object
+        """
         self.n_in = n_in
         self.n_step = n_step
-        self.n_hidden = n_hidden
+        self.rnn_size = rnn_size
         self.n_out = n_out
         self.sess = sess
         self.build_graph()
@@ -30,14 +44,14 @@ class RNNRegressor:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_step, self.n_out])
-        self.W = tf.get_variable('W', [self.n_hidden, self.n_out], tf.float32,
+        self.W = tf.get_variable('W', [self.rnn_size, self.n_out], tf.float32,
                                  tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
     # end method add_input_layer
 
 
     def add_lstm_cells(self):
-        self.cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
+        self.cell = tf.contrib.rnn.BasicLSTMCell(self.rnn_size)
     # end method add_lstm_cells
 
 
@@ -50,7 +64,7 @@ class RNNRegressor:
 
     def reshape_rnn_out(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        self.rnn_out = tf.reshape(self.rnn_out, [-1, self.n_hidden]) # (batch * n_step, n_hidden)
+        self.rnn_out = tf.reshape(self.rnn_out, [-1, self.rnn_size]) # (batch * n_step, n_hidden)
     # end method add_rnn_out
 
 

@@ -28,7 +28,7 @@ if __name__ == '__main__':
     train_data = data[:1000]
     test_data = data[1000:]
     sess = tf.Session()
-    model = RNNRegressor(n_in=1, n_step=TIME_STEPS, n_hidden=16, n_out=1, sess=sess)
+    model = RNNRegressor(n_in=1, n_step=TIME_STEPS, rnn_size=16, n_out=1, sess=sess)
 
     model.sess.run(tf.global_variables_initializer())
     plt.ion()

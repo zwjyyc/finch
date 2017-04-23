@@ -5,6 +5,18 @@ import math
 
 class MLPClassifier:
     def __init__(self, n_in, hidden_unit_list, n_out, sess):
+        """
+        Parameters:
+        -----------
+        n_in: int
+            Input dimensions (number of features)
+        hidden_unit_list: list or sets
+            List of all hidden units between input and output (e.g. [100, 200, 100])
+        n_out: int
+            Output dimensions
+        sess: object
+            tf.Session() object 
+        """
         self.n_in = n_in
         self.hidden_unit_list = hidden_unit_list
         self.n_out = n_out

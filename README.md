@@ -1,5 +1,6 @@
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning)
+    * [Support Vector Machine](https://github.com/zhedongzheng/finch#support-vector-machine)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
     * [Multilayer Perceptron](https://github.com/zhedongzheng/finch#multilayer-perceptron)
     * [Convolutional Neural Network](https://github.com/zhedongzheng/finch#convolutional-neural-network)

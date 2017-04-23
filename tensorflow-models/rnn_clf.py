@@ -5,10 +5,28 @@ import sklearn
 
 
 class RNNClassifier:
-    def __init__(self, n_in, n_step, n_hidden, n_out, n_layer, sess, stateful=False):
+    def __init__(self, n_in, n_step, rnn_size, n_out, n_layer, sess, stateful=False):
+        """
+        Parameters:
+        -----------
+        n_in: int
+            Input dimensions
+        n_step: int
+            Number of time steps
+        rnn_size: int
+            Number of units in the rnn cell
+        n_out: int
+            Output dimensions
+        n_layer: int
+            Number of layers of stacked rnn cells
+        sess: object
+            tf.Session() object
+        stateful: boolean
+            If true, the final state for each batch will be used as the initial state for the next batch 
+        """
         self.n_in = n_in
         self.n_step = n_step
-        self.n_hidden = n_hidden
+        self.rnn_size = rnn_size
         self.n_out = n_out
         self.n_layer = n_layer
         self.sess = sess
@@ -35,7 +53,7 @@ class RNNClassifier:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.W = tf.get_variable('W', [self.n_hidden, self.n_out], tf.float32,
+        self.W = tf.get_variable('W', [self.rnn_size, self.n_out], tf.float32,
                                  tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
         self.in_keep_prob = tf.placeholder(tf.float32)
@@ -44,7 +62,7 @@ class RNNClassifier:
 
 
     def add_lstm_cells(self):
-        cell = tf.contrib.rnn.BasicLSTMCell(self.n_hidden)
+        cell = tf.contrib.rnn.BasicLSTMCell(self.rnn_size)
         cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
         self.cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)
     # end method add_rnn_cells

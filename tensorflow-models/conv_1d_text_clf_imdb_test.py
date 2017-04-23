@@ -9,7 +9,7 @@ batch_size = 32
 max_features = 5000
 maxlen = 400  # cut texts after this number of words (among top max_features most common words)
 embedding_dims = 50
-filters = 250
+n_filters = 250
 kernel_size = 3
 hidden_dims = 250
 
@@ -30,8 +30,8 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = Conv1DClassifier(seq_len=maxlen, vocab_size=max_features, embedding_dims=embedding_dims,
-                           filters=filters, kernel_size=kernel_size, hidden_dims=hidden_dims, n_out=2,
-                           sess=sess)
+                           n_filters=n_filters, kernel_size=kernel_size, hidden_dims=hidden_dims,
+                           n_out=2, sess=sess)
     log = clf.fit(X_train, y_train, n_epoch=10, batch_size=batch_size, en_exp_decay=True, en_shuffle=True,
                   keep_prob=0.8, val_data=(X_test,y_test))
     pred = clf.predict(X_test)

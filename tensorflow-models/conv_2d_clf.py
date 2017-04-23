@@ -5,14 +5,18 @@ import sklearn
 
 
 class ConvClassifier:
-    def __init__(self, img_size, img_ch, n_out, sess):
+    def __init__(self, img_size, img_ch, kernel_size, pool_size, n_out, sess):
         """
         Parameters:
         -----------
         img_size: set
-            Image size in set (height, width)
+            (height, width) of the image size
         img_ch: int
             Number of image channel
+        kernel_size: set
+            (height, width) of the 2D convolution window
+        pool_size: int
+            size of the max pooling windows (assumed square window)
         n_out: int
             Output dimensions
         sess: object
@@ -20,6 +24,8 @@ class ConvClassifier:
         """
         self.img_size = img_size
         self.img_ch = img_ch
+        self.kernel_size = kernel_size
+        self.pool_size = pool_size
         self.n_out = n_out
         self.sess = sess
         self.build_graph()
@@ -30,10 +36,11 @@ class ConvClassifier:
         with tf.name_scope('input_layer'):
             self.add_input_layer()
         with tf.variable_scope('forward_path'):
-            self.add_conv_layer('conv1', filter_shape=[5,5,self.img_ch,32], in_layer=self.X)
-            self.add_maxpool_layer(k=2)
-            self.add_conv_layer('conv2', filter_shape=[5,5,32,64])
-            self.add_maxpool_layer(k=2)
+            self.add_conv_layer('conv1', filter_shape=[self.kernel_size[0], self.kernel_size[1], self.img_ch, 32],
+                                in_layer=self.X)
+            self.add_maxpool_layer(k = self.pool_size)
+            self.add_conv_layer('conv2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 64])
+            self.add_maxpool_layer(k = self.pool_size)
             self.add_fc_layer('fc1', [int(self.img_size[0]/4)*int(self.img_size[1]/4)*64,512], flatten_input=True)
         with tf.variable_scope('output_layer'):
             self.add_output_layer(in_dim=512)   
@@ -66,7 +73,7 @@ class ConvClassifier:
     # end method conv2d
 
 
-    def add_maxpool_layer(self, k=2):
+    def add_maxpool_layer(self, k):
         self.conv = tf.nn.max_pool(self.conv, ksize=[1,k,k,1], strides=[1,k,k,1], padding='SAME')
     # end method add_maxpool_layer
 

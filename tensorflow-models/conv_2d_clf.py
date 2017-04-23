@@ -16,7 +16,7 @@ class ConvClassifier:
         kernel_size: set
             (height, width) of the 2D convolution window
         pool_size: int
-            size of the max pooling windows (assumed square window)
+            Size of the max pooling windows (assumed square window)
         n_out: int
             Output dimensions
         sess: object

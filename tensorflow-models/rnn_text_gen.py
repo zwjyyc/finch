@@ -5,7 +5,7 @@ import sklearn
 
 
 class RNNTextGen:
-    def __init__(self, seq_len, vocab_size, rnn_size, n_layers, sess):
+    def __init__(self, seq_len, vocab_size, cell_size, n_layers, sess):
         """
         Parameters:
         -----------
@@ -13,7 +13,7 @@ class RNNTextGen:
             Sequence length
         vocab_size: int
             Vocabulary size
-        rnn_size: int
+        cell_size: int
             Number of units in the rnn cell
         n_layers: int
             Number of layers of stacked rnn cells
@@ -22,7 +22,7 @@ class RNNTextGen:
         """
         self.seq_len = seq_len
         self.vocab_size = vocab_size
-        self.rnn_size = rnn_size
+        self.cell_size = cell_size
         self.n_layers = n_layers
         self.sess = sess
         self.build_graph()
@@ -48,7 +48,7 @@ class RNNTextGen:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.W = tf.get_variable('W', [self.rnn_size, self.vocab_size], tf.float32,
+        self.W = tf.get_variable('W', [self.cell_size, self.vocab_size], tf.float32,
                                  tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))
     # end method add_input_layer
@@ -59,14 +59,14 @@ class RNNTextGen:
         X from (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
         where each word in (batch_size, seq_len) is represented by a vector of length [n_hidden]
         """
-        embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size, self.rnn_size], tf.float32,
+        embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size, self.cell_size], tf.float32,
                                         tf.random_normal_initializer())
         self.embedding_out = tf.nn.embedding_lookup(embedding_mat, self.X)
     # end method add_word_embedding_layer
 
 
     def add_lstm_cells(self):
-        cell = tf.contrib.rnn.BasicLSTMCell(self.rnn_size)
+        cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
         self.cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layers)
     # end method add_rnn_cells
 
@@ -79,7 +79,7 @@ class RNNTextGen:
 
 
     def reshape_rnn_out(self):
-        self.rnn_out = tf.reshape(self.rnn_out, [-1, self.rnn_size])
+        self.rnn_out = tf.reshape(self.rnn_out, [-1, self.cell_size])
     # end method add_rnn_out
 
 

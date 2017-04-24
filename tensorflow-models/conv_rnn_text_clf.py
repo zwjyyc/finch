@@ -5,7 +5,7 @@ import sklearn
 
 
 class ConvRNNClassifier:
-    def __init__(self, seq_len, vocab_size, embedding_dims, n_filters, kernel_size, pool_size, rnn_size, n_out, sess):
+    def __init__(self, seq_len, vocab_size, embedding_dims, n_filters, kernel_size, pool_size, cell_size, n_out, sess):
         """
         Parameters:
         -----------
@@ -21,7 +21,7 @@ class ConvRNNClassifier:
             Size of the 1D convolution window
         pool_size: int
             Size of the max pooling windows
-        rnn_size: int
+        cell_size: int
             Number of units in the rnn cell
         n_out: int
             Output dimensions
@@ -34,7 +34,7 @@ class ConvRNNClassifier:
         self.n_filters = n_filters
         self.kernel_size = kernel_size
         self.pool_size = pool_size
-        self.rnn_size = rnn_size
+        self.cell_size = cell_size
         self.n_out = n_out
         self.sess = sess
         self.build_graph()
@@ -61,7 +61,7 @@ class ConvRNNClassifier:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.W = tf.get_variable('softmax_w', [self.rnn_size, self.n_out], tf.float32,
+        self.W = tf.get_variable('softmax_w', [self.cell_size, self.n_out], tf.float32,
                                   tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('softmax_b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
         self.batch_size = tf.placeholder(tf.int32)
@@ -91,7 +91,7 @@ class ConvRNNClassifier:
 
 
     def add_lstm_cells(self):
-        self.cell = tf.contrib.rnn.BasicLSTMCell(self.rnn_size)
+        self.cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
     # end method add_rnn_cells
 
 

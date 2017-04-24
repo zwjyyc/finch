@@ -27,7 +27,7 @@ if __name__ == '__main__':
     y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = RNNClassifier(n_in=28, n_step=28, rnn_size=128, n_out=10, n_layer=2, sess=sess, stateful=False)
+    clf = RNNClassifier(n_in=28, n_step=28, cell_size=128, n_out=10, n_layer=2, sess=sess, stateful=False)
     log = clf.fit(X_train, y_train, n_epoch=10, en_exp_decay=True, keep_prob_tuple=(0.5,1.0),
                   val_data=(X_test,y_test))
     pred = clf.predict(X_test)

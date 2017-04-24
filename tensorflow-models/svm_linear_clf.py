@@ -4,6 +4,16 @@ import numpy as np
 
 class LinearSVMClassifier:
     def __init__(self, C, n_in, sess):
+        """
+        Parameters:
+        -----------
+        C: float
+            Penalty parameter C of the error term
+        n_in: int
+            Input dimensions
+        sess: object
+            tf.Session() object 
+        """
         self.C = C
         self.n_in = n_in
         self.sess = sess

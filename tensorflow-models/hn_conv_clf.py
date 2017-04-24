@@ -6,10 +6,24 @@ from tensorflow.contrib.layers import batch_norm
 
 
 class HighwayConvClassifier:
-    def __init__(self, img_h, img_w, img_ch, n_out, sess):
-        self.img_h = img_h
-        self.img_w = img_w
+    def __init__(self, img_size, img_ch, pool_size, n_out, sess):
+        """
+        Parameters:
+        -----------
+        img_size: set
+            (height, width) of the image size
+        img_ch: int
+            Number of image channel
+        pool_size: int
+            Size of the max pooling windows (assumed square window)
+        n_out: int
+            Output dimensions
+        sess: object
+            tf.Session() object 
+        """
+        self.img_size = img_size
         self.img_ch = img_ch
+        self.pool_size = pool_size
         self.n_out = n_out
         self.sess = sess
         self.build_graph()
@@ -23,12 +37,12 @@ class HighwayConvClassifier:
             self.add_conv_layer('conv1', filter_shape=[5,5,self.img_ch,32], in_layer=self.X)
             self.add_conv_highway('highway1', filter_shape=[3,3,32,32])
             self.add_conv_highway('highway2', filter_shape=[3,3,32,32])
-            self.add_maxpool_layer(k=2)
+            self.add_maxpool_layer(k = self.pool_size)
             self.add_conv_layer('conv2', filter_shape=[5,5,32,64])
             self.add_conv_highway('highway3', filter_shape=[3,3,64,64])
             self.add_conv_highway('highway4', filter_shape=[3,3,64,64])
-            self.add_maxpool_layer(k=2)
-            self.add_fc_layer('fc1', [int(self.img_h/4)*int(self.img_w/4)*64,512], flatten_input=True)
+            self.add_maxpool_layer(k = self.pool_size)
+            self.add_fc_layer('fc1', [int(self.img_size[0]/4)*int(self.img_size[1]/4)*64,512], flatten_input=True)
         with tf.variable_scope('output_layer'):
             self.add_output_layer(in_dim=512)   
         with tf.name_scope('backward_path'):
@@ -37,7 +51,7 @@ class HighwayConvClassifier:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.float32, [None, self.img_h, self.img_w, self.img_ch])
+        self.X = tf.placeholder(tf.float32, [None, self.img_size[0], self.img_size[1], self.img_ch])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
     # end method add_input_layer

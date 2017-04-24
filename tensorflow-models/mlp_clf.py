@@ -10,7 +10,7 @@ class MLPClassifier:
         -----------
         n_in: int
             Input dimensions (number of features)
-        hidden_unit_list: list or sets
+        hidden_unit_list: list or tuple
             List of all hidden units between input and output (e.g. [100, 200, 100])
         n_out: int
             Output dimensions

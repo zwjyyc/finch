@@ -10,7 +10,7 @@ class HighwayConvClassifier:
         """
         Parameters:
         -----------
-        img_size: set
+        img_size: tuple
             (height, width) of the image size
         img_ch: int
             Number of image channel

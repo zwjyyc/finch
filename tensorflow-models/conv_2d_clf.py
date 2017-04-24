@@ -9,11 +9,11 @@ class ConvClassifier:
         """
         Parameters:
         -----------
-        img_size: set
+        img_size: tuple
             (height, width) of the image size
         img_ch: int
             Number of image channel
-        kernel_size: set
+        kernel_size: tuple
             (height, width) of the 2D convolution window
         pool_size: int
             Size of the max pooling windows (assumed square window)

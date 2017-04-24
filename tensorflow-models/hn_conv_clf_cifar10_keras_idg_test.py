@@ -21,7 +21,7 @@ if __name__ == '__main__':
     y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    model = HighwayConvClassifier(32, 32, 3, 10, sess)
+    model = HighwayConvClassifier(img_size=(32,32), img_ch=3, pool_size=2, n_out=10, sess=sess)
 
     datagen = ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset

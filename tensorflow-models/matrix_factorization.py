@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 class MatrixFactorization:
-    def __init__(self, n_user, n_item, n_hidden, sess, lda=0.001):
+    def __init__(self, n_user, n_item, n_hidden, sess, lamda=0.001):
         """
         Parameters:
         -----------
@@ -12,7 +12,7 @@ class MatrixFactorization:
             Dimensions of item (column of rating)
         n_hidden: int
             Number of hidden dimensions during factorization
-        lda: float
+        lamda: float
             Penalty parameter Lambda of the error term
         sess: object
             tf.Session() object
@@ -22,7 +22,7 @@ class MatrixFactorization:
         self.n_user = n_user
         self.n_item = n_item
         self.n_hidden = n_hidden
-        self.lda = lda
+        self.lamda = lamda
         self.sess = sess
         self.build_graph()
 
@@ -53,7 +53,7 @@ class MatrixFactorization:
         cost = tf.reduce_sum(tf.abs(tf.subtract(R_non_zero, R_pred_non_zero)))
 
         norm_sums = tf.add(tf.reduce_sum(tf.abs(self.U)),  tf.reduce_sum(tf.abs(self.I)))
-        regu = tf.multiply(norm_sums, self.lda)
+        regu = tf.multiply(norm_sums, self.lamda)
         
         self.loss = tf.add(cost, regu)
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)

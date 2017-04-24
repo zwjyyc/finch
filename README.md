@@ -2,7 +2,7 @@
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning)
     * [Linear Methods](https://github.com/zhedongzheng/finch#linear-methods)
     * [Support Vector Machine](https://github.com/zhedongzheng/finch#support-vector-machine)
-    * [Recommendation System](https://github.com/zhedongzheng/finch#recommendation-system)
+    * [Decomposition](https://github.com/zhedongzheng/finch#decomposition)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
     * [Multilayer Perceptron](https://github.com/zhedongzheng/finch#multilayer-perceptron)
     * [Convolutional Neural Network](https://github.com/zhedongzheng/finch#convolutional-neural-network)
@@ -23,7 +23,7 @@
 * [Theory](https://zhedongzheng.github.io/finch/svm.html)
 * Java &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java) &nbsp; | &nbsp; 
 * TensorFlow &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/svm_linear_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/svm_linear_clf_test.py) &nbsp; | &nbsp;
-#### Recommendation System
+#### Decomposition
 * TensorFlow &nbsp; | &nbsp; Matrix Factorization &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/matrix_factorization.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/matrix_factorization_test.py) &nbsp; | &nbsp;
 ## Deep Learning
 #### Multilayer Perceptron

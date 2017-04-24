@@ -60,6 +60,6 @@
 * [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
 * [Word Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-embedding.ipynb)
 ## Database
-* [SQL](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
+* [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Distributed System
 * [Spark Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)

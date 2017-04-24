@@ -33,11 +33,12 @@ class MatrixFactorization:
         self.non_zero_indices = tf.where(tf.not_equal(R_flatten, zeros))
         R_non_zero = tf.gather(R_flatten, self.non_zero_indices)
         R_pred_non_zero = tf.gather(R_pred_flatten, self.non_zero_indices)
-
         cost = tf.reduce_sum(tf.abs(tf.subtract(R_non_zero, R_pred_non_zero)))
+
         lda = tf.constant(.001)
         norm_sums = tf.add(tf.reduce_sum(tf.abs(self.U)),  tf.reduce_sum(tf.abs(self.I)))
         regu = tf.multiply(norm_sums, lda)
+        
         self.loss = tf.add(cost, regu)
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
 # end class

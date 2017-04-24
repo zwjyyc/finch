@@ -67,4 +67,4 @@
 ## Database
 * [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Distributed System
-* [Spark Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
+* [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)

@@ -2,6 +2,7 @@
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning)
     * [Linear Methods](https://github.com/zhedongzheng/finch#linear-methods)
     * [Support Vector Machine](https://github.com/zhedongzheng/finch#support-vector-machine)
+    * [Matrix Factorization](https://github.com/zhedongzheng/finch#matrix-factorization)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
     * [Multilayer Perceptron](https://github.com/zhedongzheng/finch#multilayer-perceptron)
     * [Convolutional Neural Network](https://github.com/zhedongzheng/finch#convolutional-neural-network)

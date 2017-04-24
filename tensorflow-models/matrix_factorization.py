@@ -2,10 +2,27 @@ import tensorflow as tf
 
 
 class MatrixFactorization:
-    def __init__(self, n_user, n_item, n_hidden, sess):
+    def __init__(self, n_user, n_item, n_hidden, sess, lda=0.001):
+        """
+        Parameters:
+        -----------
+        n_user: int
+            Dimensions of user (row of rating)
+        n_item: int
+            Dimensions of item (column of rating)
+        n_hidden: int
+            Number of hidden dimensions during factorization
+        lda: float
+            Penalty parameter Lambda of the error term
+        sess: object
+            tf.Session() object
+        stateful: boolean
+            If true, the final state for each batch will be used as the initial state for the next batch 
+        """
         self.n_user = n_user
         self.n_item = n_item
         self.n_hidden = n_hidden
+        self.lda = lda
         self.sess = sess
         self.build_graph()
 
@@ -35,9 +52,8 @@ class MatrixFactorization:
         R_pred_non_zero = tf.gather(R_pred_flatten, self.non_zero_indices)
         cost = tf.reduce_sum(tf.abs(tf.subtract(R_non_zero, R_pred_non_zero)))
 
-        lda = tf.constant(.001)
         norm_sums = tf.add(tf.reduce_sum(tf.abs(self.U)),  tf.reduce_sum(tf.abs(self.I)))
-        regu = tf.multiply(norm_sums, lda)
+        regu = tf.multiply(norm_sums, self.lda)
         
         self.loss = tf.add(cost, regu)
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)

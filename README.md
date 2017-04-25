@@ -1,6 +1,6 @@
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning)
-    * [Linear Methods](https://github.com/zhedongzheng/finch#linear-methods)
+    * [Linear Models](https://github.com/zhedongzheng/finch#linear-models)
     * [Support Vector Machine](https://github.com/zhedongzheng/finch#support-vector-machine)
     * [Decomposition](https://github.com/zhedongzheng/finch#decomposition)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
@@ -17,7 +17,7 @@
 * [Database](https://github.com/zhedongzheng/finch#database)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system)
 ## Machine Learning
-#### Linear Methods
+#### Linear Models
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp;
 #### Support Vector Machine
 * [Theory](https://zhedongzheng.github.io/finch/svm.html)

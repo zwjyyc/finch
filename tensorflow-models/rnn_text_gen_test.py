@@ -50,6 +50,13 @@ def load_text():
 # end function load_text()
 
 
+def clean_text(s_text):
+    s_text = re.sub(r'[{}]'.format(punctuation), ' ', s_text)
+    s_text = re.sub('\s+', ' ', s_text ).strip().lower()
+    return s_text
+# end function clean_text()
+
+
 def build_vocab(word_list, min_word_freq=5):
     word_counts = collections.Counter(word_list)
     word_counts = {key:val for key,val in word_counts.items() if val>min_word_freq}
@@ -59,13 +66,6 @@ def build_vocab(word_list, min_word_freq=5):
     idx2word = {val:key for key,val in word2idx.items()} # create index --> word mapping
     return(idx2word, word2idx)
 # end function build_vocab()
-
-
-def clean_text(s_text):
-    s_text = re.sub(r'[{}]'.format(punctuation), ' ', s_text)
-    s_text = re.sub('\s+', ' ', s_text ).strip().lower()
-    return s_text
-# end function clean_text()
 
 
 def convert_text_to_word_vecs(word_list, word2idx):

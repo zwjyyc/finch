@@ -38,7 +38,6 @@ class RNNTextGen:
         self.reshape_rnn_out()
 
         self.add_output_layer()
-        
         self.add_backward_path()
     # end method build_graph
 

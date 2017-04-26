@@ -118,10 +118,11 @@ if __name__ == '__main__':
     text_batch = create_batch(s_text_idx)
 
     sess = tf.Session()
-    train_model = RNNTextGen(cell_size=128, n_layers=num_layers,
-                             vocab_size=vocab_size, seq_len=training_seq_len,
-                             sess=sess)
-    with tf.variable_scope(tf.get_variable_scope(), reuse=True):
+    with tf.variable_scope('training'):
+        train_model = RNNTextGen(cell_size=128, n_layers=num_layers,
+                                 vocab_size=vocab_size, seq_len=training_seq_len,
+                                 sess=sess)
+    with tf.variable_scope('training', reuse=True):
         sample_model = RNNTextGen(cell_size=128, n_layers=num_layers,
                                   vocab_size=vocab_size, seq_len=1,
                                   sess=sess)

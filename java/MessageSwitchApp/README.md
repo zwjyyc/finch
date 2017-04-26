@@ -1,8 +1,7 @@
-## What is this project?
+## Problem Description
 [PDF](https://github.com/zhedongzheng/finch/blob/master/java/MessageSwitchApp/problem-description.pdf)
 
-## Run this project
-
+## Run this solution
 Step 1: run `MessageSwitchMT.java` in console 1, you will see:  
 > Server listening on port: 8888  
 

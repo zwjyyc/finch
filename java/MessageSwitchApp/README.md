@@ -2,26 +2,35 @@
 [PDF](https://github.com/zhedongzheng/finch/blob/master/java/MessageSwitchApp/problem-description.pdf)
 
 ### Command line Op
-* compile all java
-```
-javac *.java
-```
-
-java MessageSwitchMT
-```
-you will see:  
-```
-Server listening on port: 8888
-```
-
-Step 2: run `Client1.java` in console 2, you will see:
-> Client 1 successfully connected to host 127.0.0.1  
-> Please input message:  
-
-Step 3: run `Client2.java` in console 3, you will see:  
-> Client 2 successfully connected to host 127.0.0.1  
-> Please input message:  
-
-Now, you can type a message in `client 1 (console 2)` or `client 2 (console 3)`, and receive that message in the other one 
-
-`MessageSwitchMT` is the server which should not be terminated unless you want to exit
+* compile all .java
+  ```
+  javac *.java
+  ```
+* console 1
+  ```
+  java MessageSwitchMT
+  ```
+  console 1 displays:  
+  ```
+  Server listening on port: 8888
+  ```
+* console 2
+  ```
+  java Client1
+  ```
+  console 2 displays:
+  ```
+  Client 1 successfully connected to host 127.0.0.1  
+  Please input message: 
+  ```
+* console 3
+  ```
+  java Client2
+  ```
+  console 3 displays:
+  ```
+  Client 2 successfully connected to host 127.0.0.1  
+  Please input message:  
+  ```
+* Now, you can type a message in `Client 1 (console 2)` or `Client 2 (console 3)`, and receive the message in the other console 
+* `MessageSwitchMT` is the server which should not be terminated unless you want to exit

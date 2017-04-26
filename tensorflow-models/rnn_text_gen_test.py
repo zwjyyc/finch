@@ -83,7 +83,7 @@ def convert_text_to_word_vecs(word_list, word2idx):
 def create_batch(s_text_ix):
     # Create batches for each epoch
     num_batches = int(len(s_text_ix)/(batch_size * training_seq_len)) + 1
-    # Split up text indices into subarrays, of equal size
+    # Split up text indices into subarrays, of equal or nearly equal size
     batches = np.array_split(s_text_ix, num_batches)
     # Reshape each split into [batch_size, training_seq_len]
     batches = [np.resize(x, [batch_size, training_seq_len]) for x in batches]

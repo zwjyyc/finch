@@ -1,5 +1,5 @@
 ## What is this project?
-[please click here](https://github.com/zhedongzheng/MessageSwitchApp/blob/master/problem_description.pdf)<br>
+[please click here](https://github.com/zhedongzheng/finch/blob/master/java/MessageSwitchApp/problem-description.pdf)
 
 ## Run this project
 

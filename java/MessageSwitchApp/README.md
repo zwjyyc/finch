@@ -1,9 +1,12 @@
 ### Problem Description
 [PDF](https://github.com/zhedongzheng/finch/blob/master/java/MessageSwitchApp/problem-description.pdf)
 
-### Command line
+### Command line Op
+* compile all java
 ```
 javac *.java
+```
+
 java MessageSwitchMT
 ```
 you will see:  

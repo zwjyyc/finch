@@ -14,13 +14,10 @@ class Autoencoder:
 
 
     def build_graph(self):
-        with tf.name_scope('input_layer'):
-            self.X = tf.placeholder(tf.float32, [None, self.n_in])
-        with tf.variable_scope('forward_path'):
-            self.encoder_op = self.encoder(self.X, self.encoder_units)
-            self.decoder_op = self.decoder(self.encoder_op, self.decoder_units)
-        with tf.name_scope('backward_path'):
-            self.add_backward_path()
+        self.X = tf.placeholder(tf.float32, [None, self.n_in])
+        self.encoder_op = self.encoder(self.X, self.encoder_units)
+        self.decoder_op = self.decoder(self.encoder_op, self.decoder_units)
+        self.add_backward_path()
     # end method build_graph
 
 

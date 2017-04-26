@@ -34,22 +34,21 @@ class Conv1DClassifier:
         self.hidden_dims = hidden_dims
         self.n_out = n_out
         self.sess = sess
+        self.current_layer = None
         self.build_graph()
     # end constructor
  
  
     def build_graph(self):
-        with tf.name_scope('input_layer'):
-            self.add_input_layer()
-        with tf.variable_scope('forward_path'):
-            self.add_word_embedding_layer()
-            self.add_conv1d_layer('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-            self.add_global_maxpool_layer( self.seq_len-self.kernel_size+1 )
-            self.add_fc_layer('fully_connected', [self.n_filters, self.hidden_dims])
-        with tf.variable_scope('output_layer'):
-            self.add_output_layer(in_dim=self.hidden_dims)   
-        with tf.name_scope('backward_path'):
-            self.add_backward_path()
+        self.add_input_layer()
+
+        self.add_word_embedding()
+        self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
+        self.add_global_maxpool( self.seq_len-self.kernel_size+1 )
+        self.add_fc('fully_connected', [self.n_filters, self.hidden_dims])
+
+        self.add_output_layer(in_dim=self.hidden_dims)   
+        self.add_backward_path()
     # end method build_graph
  
  
@@ -57,48 +56,48 @@ class Conv1DClassifier:
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
+        self.current_layer = self.X
     # end method add_input_layer
 
 
-    def add_word_embedding_layer(self):
+    def add_word_embedding(self):
         embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size,self.embedding_dims], tf.float32,
                                         tf.random_normal_initializer())
-        self.embedding_out = tf.nn.embedding_lookup(embedding_mat, self.X)
+        embedding_out = tf.nn.embedding_lookup(embedding_mat, self.current_layer)
+        self.current_layer = embedding_out
     # end method add_word_embedding_layer
 
 
-    def add_conv1d_layer(self, name, filter_shape):
-        self.conv = self.conv1d_wrapper(self.embedding_out, self._W(name+'_w', filter_shape),
-                                        self._b(name+'_b', [filter_shape[-1]]))
+    def add_conv1d(self, name, filter_shape, stride=1):
+        W = self._W(name+'_w', filter_shape)
+        b = self._b(name+'_b', [filter_shape[-1]])
+        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding='VALID')
+        conv = tf.nn.bias_add(conv, b)
+        conv = tf.nn.relu(conv)
+        self.current_layer = conv
     # end method add_conv1d_layer
 
 
-    def conv1d_wrapper(self, X, W, b, stride=1):
-        conv = tf.nn.conv1d(X, W, stride=stride, padding='VALID')
-        conv = tf.nn.bias_add(conv, b)
-        conv = tf.nn.relu(conv)
-        return conv
-    # end method conv1d_wrapper
-
-
-    def add_global_maxpool_layer(self, k):
-        conv = tf.expand_dims(self.conv, 1)
+    def add_global_maxpool(self, k):
+        conv = tf.expand_dims(self.current_layer, 1)
         conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='VALID')
-        self.conv = tf.squeeze(conv)
+        conv = tf.squeeze(conv)
+        self.current_layer = conv
     # end method add_global_maxpool_layer
 
 
-    def add_fc_layer(self, name, w_shape):
+    def add_fc(self, name, w_shape):
         W = self._W(name+'_w', w_shape)
         b = self._b(name+'_b', [w_shape[-1]])
-        fc = tf.nn.bias_add(tf.matmul(self.conv, W), b)
+        fc = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
         fc = tf.nn.relu(fc)
-        self.conv = tf.nn.dropout(fc, self.keep_prob)
+        fc = tf.nn.dropout(fc, self.keep_prob)
+        self.current_layer = fc
     # end method add_fc_layer
 
 
     def add_output_layer(self, in_dim):
-        self.logits = tf.nn.bias_add(tf.matmul(self.conv, self._W('w_out', [in_dim,self.n_out])),
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self._W('w_out', [in_dim,self.n_out])),
                                      self._b('b_out', [self.n_out]))
     # end method add_output_layer
 

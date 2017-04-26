@@ -1,8 +1,8 @@
 import tensorflow as tf
+from tensorflow.contrib.layers import batch_norm
 import numpy as np
 import math
 import sklearn
-from tensorflow.contrib.layers import batch_norm
 
 
 class HighwayConvClassifier:
@@ -26,27 +26,28 @@ class HighwayConvClassifier:
         self.pool_size = pool_size
         self.n_out = n_out
         self.sess = sess
+        self.current_layer = None
         self.build_graph()
     # end constructor
 
 
     def build_graph(self):
-        with tf.name_scope('input_layer'):
-            self.add_input_layer()
-        with tf.variable_scope('forward_path'):
-            self.add_conv_layer('conv1', filter_shape=[5,5,self.img_ch,32], in_layer=self.X)
-            self.add_conv_highway('highway1', filter_shape=[3,3,32,32])
-            self.add_conv_highway('highway2', filter_shape=[3,3,32,32])
-            self.add_maxpool_layer(k = self.pool_size)
-            self.add_conv_layer('conv2', filter_shape=[5,5,32,64])
-            self.add_conv_highway('highway3', filter_shape=[3,3,64,64])
-            self.add_conv_highway('highway4', filter_shape=[3,3,64,64])
-            self.add_maxpool_layer(k = self.pool_size)
-            self.add_fc_layer('fc1', [int(self.img_size[0]/4)*int(self.img_size[1]/4)*64,512], flatten_input=True)
-        with tf.variable_scope('output_layer'):
-            self.add_output_layer(in_dim=512)   
-        with tf.name_scope('backward_path'):
-            self.add_backward_path()
+        self.add_input_layer()
+
+        self.add_conv('conv1', filter_shape=[5,5,self.img_ch,32])
+        self.add_highway('highway1', filter_shape=[3,3,32,32])
+        self.add_highway('highway2', filter_shape=[3,3,32,32])
+        self.add_maxpool(k = self.pool_size)
+
+        self.add_conv('conv2', filter_shape=[5,5,32,64])
+        self.add_highway('highway3', filter_shape=[3,3,64,64])
+        self.add_highway('highway4', filter_shape=[3,3,64,64])
+        self.add_maxpool(k = self.pool_size)
+
+        self.add_fc('fc1', [int(self.img_size[0]/4)*int(self.img_size[1]/4)*64,512], flatten_input=True)
+
+        self.add_output_layer(in_dim=512)   
+        self.add_backward_path()
     # end method build_graph
 
 
@@ -54,67 +55,56 @@ class HighwayConvClassifier:
         self.X = tf.placeholder(tf.float32, [None, self.img_size[0], self.img_size[1], self.img_ch])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
+        self.current_layer = self.X
     # end method add_input_layer
 
 
-    def add_conv_highway(self, name, filter_shape, carry_bias=-1.0):
+    def add_conv(self, name, filter_shape, strides=1):
+        W = self._W(name+'_w', filter_shape)
+        b = self._b(name+'_b', [filter_shape[-1]])
+        conv = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding='SAME')
+        conv = tf.nn.bias_add(conv, b)
+        conv = batch_norm(conv)
+        conv = tf.nn.relu(conv)
+        self.current_layer = conv
+    # end method add_conv_layer
+
+
+    def add_highway(self, name, filter_shape, carry_bias=-1.0):
         W = tf.get_variable(name+'_w', filter_shape, tf.float32, tf.truncated_normal_initializer(stddev=0.1))
         b = tf.get_variable(name+'_b', filter_shape[-1], tf.float32, tf.constant_initializer(carry_bias))
         W_T = tf.get_variable(name+'_wt', filter_shape, tf.float32, tf.truncated_normal_initializer(stddev=0.1))
         b_T = tf.get_variable(name+'_bt', filter_shape[-1], tf.float32, tf.constant_initializer(0.1))
 
-        H = tf.nn.relu(batch_norm(tf.nn.bias_add(tf.nn.conv2d(self.conv,W,[1,1,1,1],'SAME'), b)))
-        T = tf.sigmoid(batch_norm(tf.nn.bias_add(tf.nn.conv2d(self.conv,W_T,[1,1,1,1],'SAME'), b_T)),
+        H = tf.nn.relu(batch_norm(tf.nn.bias_add(tf.nn.conv2d(self.current_layer,W,[1,1,1,1],'SAME'), b)))
+        T = tf.sigmoid(batch_norm(tf.nn.bias_add(tf.nn.conv2d(self.current_layer,W_T,[1,1,1,1],'SAME'), b_T)),
                        name='transform_gate')
         C = tf.subtract(1.0, T, name="carry_gate")
         
-        self.conv = tf.add(tf.multiply(H,T), tf.multiply(self.conv,C)) # y = (H * T) + (x * C)
+        self.current_layer = tf.add(tf.multiply(H,T), tf.multiply(self.current_layer,C)) # y = (H * T) + (x * C)
     # end method add_conv_highway
 
 
-    def add_conv_layer(self, name, filter_shape, in_layer=None):
-        if in_layer is None:
-            in_layer = self.conv
-        self.conv = self.conv2d_wrapper(in_layer, self._W(name+'_w', filter_shape),
-                                        self._b(name+'_b', [filter_shape[-1]]))
-    # end method add_conv_layer
+    def add_maxpool(self, k=2):
+        self.current_layer = tf.nn.max_pool(self.current_layer, ksize=[1, k, k, 1], strides=[1, k, k, 1],
+                                            padding='SAME')
+    # end method add_maxpool
 
 
-    def conv2d_wrapper(self, X, W, b, strides=1):
-        conv = tf.nn.conv2d(X, W, strides=[1, strides, strides, 1], padding='SAME')
-        conv = tf.nn.bias_add(conv, b)
-        conv = batch_norm(conv)
-        conv = tf.nn.relu(conv)
-        return conv
-    # end method conv2d
-
-
-    def add_maxpool_layer(self, k=2):
-        self.conv = self.maxpool2d_wrapper(self.conv, k=k)
-    # end method add_maxpool_layer
-
-
-    def maxpool2d_wrapper(self, X, k=2):
-        return tf.nn.max_pool(X, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding='SAME')
-    # end method maxpool2d
-
-
-    def add_fc_layer(self, name, w_shape, flatten_input=False):
+    def add_fc(self, name, w_shape, flatten_input=False):
         W = self._W(name+'_w', w_shape)
         b = self._b(name+'_b', [w_shape[-1]])
-        if flatten_input:
-            fc = tf.reshape(self.conv, [-1, w_shape[0]])
-        else:
-            fc = self.fc
+        fc = tf.reshape(self.current_layer, [-1, w_shape[0]]) if flatten_input else self.current_layer
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
         fc = batch_norm(fc)
         fc = tf.nn.relu(fc)
-        self.fc = tf.nn.dropout(fc, self.keep_prob)
+        fc = tf.nn.dropout(fc, self.keep_prob)
+        self.current_layer = fc
     # end method add_fully_connected_layer
 
 
     def add_output_layer(self, in_dim):
-        self.logits = tf.nn.bias_add(tf.matmul(self.fc, self._W('w_out', [in_dim,self.n_out])),
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self._W('w_out', [in_dim,self.n_out])),
                                      self._b('b_out', [self.n_out]))
     # end method add_output_layer
 

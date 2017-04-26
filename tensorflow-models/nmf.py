@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 
-class MatrixFactorization:
+class NMF:
     def __init__(self, n_user, n_item, n_hidden, sess, lamda=0.001):
         """
         Parameters:
@@ -25,22 +25,27 @@ class MatrixFactorization:
         self.lamda = lamda
         self.sess = sess
         self.build_graph()
+    # end constructor
 
     
     def build_graph(self):
         self.add_input_layer()
         self.add_output_layer()
         self.add_backward_path()
+    # end method build_graph
 
 
     def add_input_layer(self):
         self.R = tf.placeholder(tf.float32, [self.n_user, self.n_item])
         self.U = tf.Variable(tf.truncated_normal([self.n_user, self.n_hidden]))
         self.I = tf.Variable(tf.truncated_normal([self.n_hidden, self.n_item]))
+        self.lr = tf.placeholder(tf.float32)
+    # end method add_input_layer
 
 
     def add_output_layer(self):
         self.R_pred = tf.matmul(self.U, self.I)
+    # end method add_output_layer
 
 
     def add_backward_path(self):
@@ -52,9 +57,10 @@ class MatrixFactorization:
         R_pred_non_zero = tf.gather(R_pred_flatten, self.non_zero_indices)
         cost = tf.reduce_sum(tf.abs(tf.subtract(R_non_zero, R_pred_non_zero)))
 
-        norm_sums = tf.add(tf.reduce_sum(tf.abs(self.U)),  tf.reduce_sum(tf.abs(self.I)))
+        norm_sums = tf.reduce_sum(tf.abs(self.U)) + tf.reduce_sum(tf.abs(self.I))
         regu = tf.multiply(norm_sums, self.lamda)
         
         self.loss = tf.add(cost, regu)
-        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+    # end method add_backward_path
 # end class

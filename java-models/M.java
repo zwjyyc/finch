@@ -43,14 +43,14 @@ public class M {
                 temp[r][c-colStart] = input[r][c];
         }
         return temp;
-    } // end method parseDoubleMatrix
+    } // end method subMatrix
 
     public static double[] getRowVal (double[][] matrix, int rowNum) {
         double[] rowVal = new double[matrix[0].length];
         for (int c=0; c<matrix[0].length; c++)
                 rowVal[c] = matrix[rowNum][c];
         return rowVal;
-    } // end method getColVal
+    } // end method getRowVal
 
     public static double[] getColVal (double[][] matrix, int colNum) {
         double[] colVal = new double[matrix.length];
@@ -65,7 +65,7 @@ public class M {
             for (int j = 0; j < m[0].length; j++)
                 temp[j][i] = m[i][j];
         return temp;
-    }
+    } // end method transpose
 
     public static double[][] ones(int rowLen, int colLen){
         double[][] temp = new double[rowLen][colLen];
@@ -73,7 +73,7 @@ public class M {
             for (int j = 0; j < colLen; j++)
                 temp[i][j] = 1;
         return temp;
-    }
+    } // end method ones
 
     public static double evaluate(double[] y_pred, double[] y_test) {
         if (y_pred.length != y_test.length)
@@ -85,5 +85,5 @@ public class M {
                 count += 1;
         }
         return count / total;
-    }
+    } // end method evaluate
 } // end class MatrixUtil

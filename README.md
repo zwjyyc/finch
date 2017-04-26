@@ -63,7 +63,7 @@
 ## Natural Language Processing
 #### Language Processing in Python
 * [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
-* [Word Embedding](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-embedding.ipynb)
+* [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-indexing.ipynb)
 ## Database
 * [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Distributed System

@@ -37,24 +37,23 @@ class ConvRNNClassifier:
         self.cell_size = cell_size
         self.n_out = n_out
         self.sess = sess
+        self.current_layer = None
         self.build_graph()
     # end constructor
  
  
     def build_graph(self):
-        with tf.name_scope('input_layer'):
-            self.add_input_layer()
-        with tf.variable_scope('forward_path'):
-            self.add_word_embedding_layer()
-            self.add_conv1d_layer('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-            self.add_maxpool_layer(k = self.pool_size)
-            self.add_lstm_cells()
-            self.add_dynamic_rnn()
-            self.reshape_rnn_out()
-        with tf.variable_scope('output_layer'):
-            self.add_output_layer()   
-        with tf.name_scope('backward_path'):
-            self.add_backward_path()
+        self.add_input_layer()
+
+        self.add_word_embedding()
+        self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
+        self.add_maxpool(k = self.pool_size)
+        self.add_lstm_cells()
+        self.add_dynamic_rnn()
+        self.reshape_rnn_out()
+
+        self.add_output_layer()   
+        self.add_backward_path()
     # end method build_graph
  
  
@@ -66,27 +65,34 @@ class ConvRNNClassifier:
         self.b = tf.get_variable('softmax_b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
         self.batch_size = tf.placeholder(tf.int32)
         self.keep_prob = tf.placeholder(tf.float32)
+        self.current_layer = self.X
     # end method add_input_layer
 
 
-    def add_word_embedding_layer(self):
+    def add_word_embedding(self):
         embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size,self.embedding_dims], tf.float32,
                                         tf.random_normal_initializer())
-        embedding_out = tf.nn.embedding_lookup(embedding_mat, self.X)
-        self.embedding_out = tf.nn.dropout(embedding_out, self.keep_prob)
+        embedding_out = tf.nn.embedding_lookup(embedding_mat, self.current_layer)
+        embedding_out = tf.nn.dropout(embedding_out, self.keep_prob)
+        self.current_layer = embedding_out
     # end method add_word_embedding_layer
 
 
-    def add_conv1d_layer(self, name, filter_shape):
-        self.conv = self.conv1d_wrapper(self.embedding_out, self._W(name+'_w', filter_shape),
-                                        self._b(name+'_b', [filter_shape[-1]]))
+    def add_conv1d(self, name, filter_shape, stride=1):
+        W = self._W(name+'_w', filter_shape)
+        b = self._b(name+'_b', [filter_shape[-1]])                                
+        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding='SAME')
+        conv = tf.nn.bias_add(conv, b)
+        conv = tf.nn.relu(conv)
+        self.current_layer = conv
     # end method add_conv1d_layer
 
 
-    def add_maxpool_layer(self, k=2):
-        conv = tf.expand_dims(self.conv, 1)
+    def add_maxpool(self, k=2):
+        conv = tf.expand_dims(self.current_layer, 1)
         conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='SAME')
-        self.conv = tf.squeeze(conv)
+        conv = tf.squeeze(conv)
+        self.current_layer = conv
     # end method add_global_maxpool_layer
 
 
@@ -96,21 +102,22 @@ class ConvRNNClassifier:
 
 
     def add_dynamic_rnn(self):
-        self.conv = tf.reshape(self.conv, [self.batch_size, int(self.seq_len/self.pool_size), self.n_filters])
+        rnn_in = tf.reshape(self.current_layer, [self.batch_size, int(self.seq_len/self.pool_size), self.n_filters])
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)              
-        self.rnn_out, final_state = tf.nn.dynamic_rnn(self.cell, self.conv, initial_state=self.init_state,
-                                                      time_major=False)
+        self.rnn_out, final_state = tf.nn.dynamic_rnn(self.cell, rnn_in, initial_state=self.init_state,
+                                                 time_major=False)
     # end method add_dynamic_rnn
 
 
     def reshape_rnn_out(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         self.rnn_out = tf.unstack(tf.transpose(self.rnn_out, [1,0,2]))
+        self.current_layer = self.rnn_out[-1]
     # end method add_rnn_out
 
 
     def add_output_layer(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.rnn_out[-1], self.W), self.b)
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
     # end method add_output_layer
 
 
@@ -120,14 +127,6 @@ class ConvRNNClassifier:
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.y, 1)), tf.float32))
     # end method add_backward_path
-
-
-    def conv1d_wrapper(self, X, W, b, stride=1):
-        conv = tf.nn.conv1d(X, W, stride=stride, padding='SAME')
-        conv = tf.nn.bias_add(conv, b)
-        conv = tf.nn.relu(conv)
-        return conv
-    # end method conv1d_wrapper
 
 
     def _W(self, name, shape):

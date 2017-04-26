@@ -33,19 +33,15 @@ class ConvClassifier:
 
 
     def build_graph(self):
-        with tf.name_scope('input_layer'):
-            self.add_input_layer()
-        with tf.variable_scope('forward_path'):
-            self.add_conv_layer('conv1', filter_shape=[self.kernel_size[0], self.kernel_size[1], self.img_ch, 32],
-                                in_layer=self.X)
-            self.add_maxpool_layer(k = self.pool_size)
-            self.add_conv_layer('conv2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 64])
-            self.add_maxpool_layer(k = self.pool_size)
-            self.add_fc_layer('fc1', [int(self.img_size[0]/4)*int(self.img_size[1]/4)*64,512], flatten_input=True)
-        with tf.variable_scope('output_layer'):
-            self.add_output_layer(in_dim=512)   
-        with tf.name_scope('backward_path'):
-            self.add_backward_path()
+        self.add_input_layer()
+        self.add_conv_layer('conv1', filter_shape=[self.kernel_size[0], self.kernel_size[1], self.img_ch, 32],
+                            in_layer=self.X)
+        self.add_maxpool_layer(k = self.pool_size)
+        self.add_conv_layer('conv2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 64])
+        self.add_maxpool_layer(k = self.pool_size)
+        self.add_fc_layer('fc1', [int(self.img_size[0]/4)*int(self.img_size[1]/4)*64,512], flatten_input=True)
+        self.add_output_layer(in_dim=512)   
+        self.add_backward_path()
     # end method build_graph
 
 

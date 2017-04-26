@@ -2,8 +2,14 @@
 [PDF](https://github.com/zhedongzheng/finch/blob/master/java/MessageSwitchApp/problem-description.pdf)
 
 ### Command line
-Step 1: run `MessageSwitchMT.java` in console 1, you will see:  
-> Server listening on port: 8888  
+```
+javac *.java
+java MessageSwitchMT
+```
+you will see:  
+```
+Server listening on port: 8888
+```
 
 Step 2: run `Client1.java` in console 2, you will see:
 > Client 1 successfully connected to host 127.0.0.1  

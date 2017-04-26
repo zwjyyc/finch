@@ -36,16 +36,14 @@ class RNNClassifier:
 
 
     def build_graph(self):
-        with tf.variable_scope('input_layer'):
-            self.add_input_layer()
-        with tf.name_scope('forward_path'):
-            self.add_lstm_cells()
-            self.add_dynamic_rnn()
-            self.reshape_rnn_out()
-        with tf.name_scope('output_layer'):
-            self.add_output_layer()
-        with tf.name_scope('backward_path'):
-            self.add_backward_path()
+        self.add_input_layer()
+
+        self.add_lstm_cells()
+        self.add_dynamic_rnn()
+        self.reshape_rnn_out()
+
+        self.add_output_layer()
+        self.add_backward_path()
     # end method build_graph
 
 

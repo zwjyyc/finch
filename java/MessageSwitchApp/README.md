@@ -6,26 +6,26 @@
   ```
   javac *.java
   ```
-* console 1
+* console 1 types:
   ```
   java MessageSwitchMT
   ```
-  console 1 displays:  
+  displays:  
   > Server listening on port: 8888
   
-* console 2
+* console 2 types:
   ```
   java Client1
   ```
-  console 2 displays:
+  displays:
   > Client 1 successfully connected to host 127.0.0.1  
   > Please input message: 
   
-* console 3
+* console 3 types
   ```
   java Client2
   ```
-  console 3 displays:
+  displays:
   > Client 2 successfully connected to host 127.0.0.1  
   > Please input message:  
   

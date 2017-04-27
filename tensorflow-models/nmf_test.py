@@ -21,11 +21,10 @@ if __name__ == '__main__':
     nmf = NMF(n_user=R.shape[0], n_item=R.shape[1], n_hidden=100, sess=sess)
     
     nmf.sess.run(tf.global_variables_initializer())
-    for step in range(5000):
-        lr = 0.001
+    for step in range(10000):
+        lr = 0.005
         _, loss = nmf.sess.run([nmf.train_op,nmf.loss], feed_dict={nmf.R:R.values,nmf.lr:lr})
         if step % 100 == 0:
             print(step, loss)
-    print("The prediction of", ans1, " is", sess.run(nmf.R_pred)[2][1])
-    print("The prediction of", ans2, " is", sess.run(nmf.R_pred)[200][940])
-    print("The prediction of", ans3, " is", sess.run(nmf.R_pred)[900][931])
+            print(ans1, '：', sess.run(nmf.R_pred)[2][1], ' | ', ans2, ': ', sess.run(nmf.R_pred)[200][940],
+                  ' | ', ans3, ': ', sess.run(nmf.R_pred)[900][931])

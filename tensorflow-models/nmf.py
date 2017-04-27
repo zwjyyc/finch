@@ -37,8 +37,8 @@ class NMF:
 
     def add_input_layer(self):
         self.R = tf.placeholder(tf.float32, [self.n_user, self.n_item])
-        self.U = tf.Variable(tf.truncated_normal([self.n_user, self.n_hidden]))
-        self.I = tf.Variable(tf.truncated_normal([self.n_hidden, self.n_item]))
+        self.U = tf.Variable(tf.random_normal([self.n_user, self.n_hidden]))
+        self.I = tf.Variable(tf.random_normal([self.n_hidden, self.n_item]))
         self.lr = tf.placeholder(tf.float32)
     # end method add_input_layer
 

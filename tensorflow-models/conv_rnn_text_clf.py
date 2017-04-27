@@ -102,22 +102,23 @@ class ConvRNNClassifier:
 
 
     def add_dynamic_rnn(self):
-        rnn_in = tf.reshape(self.current_layer, [self.batch_size, int(self.seq_len/self.pool_size), self.n_filters])
+        self.current_layer = tf.reshape(self.current_layer,
+                                        [self.batch_size, int(self.seq_len/self.pool_size), self.n_filters])
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)              
-        self.rnn_out, final_state = tf.nn.dynamic_rnn(self.cell, rnn_in, initial_state=self.init_state,
-                                                 time_major=False)
+        self.current_layer, final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
+                                                            initial_state=self.init_state,
+                                                            time_major=False)
     # end method add_dynamic_rnn
 
 
     def reshape_rnn_out(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        self.rnn_out = tf.unstack(tf.transpose(self.rnn_out, [1,0,2]))
-        self.current_layer = self.rnn_out[-1]
+        self.current_layer = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
     # end method add_rnn_out
 
 
     def add_output_layer(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer[-1], self.W), self.b)
     # end method add_output_layer
 
 

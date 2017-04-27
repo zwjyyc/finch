@@ -24,6 +24,7 @@ class RNNRegressor:
         self.cell_size = cell_size
         self.n_out = n_out
         self.sess = sess
+        self.current_layer = None
         self.build_graph()
     # end constructor
 
@@ -45,6 +46,7 @@ class RNNRegressor:
         self.W = tf.get_variable('W', [self.cell_size, self.n_out], tf.float32,
                                  tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
+        self.current_layer = self.X
     # end method add_input_layer
 
 
@@ -55,20 +57,20 @@ class RNNRegressor:
 
     def add_dynamic_rnn(self):
         self.init_state = self.cell.zero_state(self.batch_size, dtype=tf.float32)
-        self.rnn_out, self.final_state = tf.nn.dynamic_rnn(self.cell, self.X, initial_state=self.init_state,
-                                                           time_major=False)
+        self.current_layer, self.final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
+                                                                 initial_state=self.init_state,
+                                                                 time_major=False)
     # end method add_dynamic_rnn
 
 
     def reshape_rnn_out(self):
-        # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        self.rnn_out = tf.reshape(self.rnn_out, [-1, self.cell_size]) # (batch * n_step, n_hidden)
+        self.current_layer = tf.reshape(self.current_layer, [-1, self.cell_size]) # (batch * n_step, n_hidden)
     # end method add_rnn_out
 
 
     def add_output_layer(self):
         # (batch * n_step, n_hidden) dot (n_hidden, n_out)
-        self.logits = tf.nn.bias_add(tf.matmul(self.rnn_out, self.W), self.b)
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
         self.time_seq_out = tf.reshape(self.logits, [-1, self.n_step, self.n_out])
     # end method add_output_layer
 

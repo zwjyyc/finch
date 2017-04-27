@@ -25,6 +25,7 @@ class RNNTextGen:
         self.cell_size = cell_size
         self.n_layers = n_layers
         self.sess = sess
+        self.current_layer = None
         self.build_graph()
     # end constructor
 
@@ -49,6 +50,7 @@ class RNNTextGen:
         self.W = tf.get_variable('W', [self.cell_size, self.vocab_size], tf.float32,
                                  tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))
+        self.current_layer = self.X
     # end method add_input_layer
 
 
@@ -59,7 +61,8 @@ class RNNTextGen:
         """
         embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size, self.cell_size], tf.float32,
                                         tf.random_normal_initializer())
-        self.embedding_out = tf.nn.embedding_lookup(embedding_mat, self.X)
+        embedding_out = tf.nn.embedding_lookup(embedding_mat, self.current_layer)
+        self.current_layer = embedding_out
     # end method add_word_embedding_layer
 
 
@@ -71,19 +74,19 @@ class RNNTextGen:
 
     def add_dynamic_rnn(self):
         self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
-        self.rnn_out, self.final_state = tf.nn.dynamic_rnn(self.cells, self.embedding_out,
-                                                           initial_state=self.init_state, time_major=False)    
+        self.current_layer, self.final_state = tf.nn.dynamic_rnn(self.cells, self.current_layer,
+                                                                 initial_state=self.init_state,
+                                                                 time_major=False)    
     # end method add_dynamic_rnn
 
 
     def reshape_rnn_out(self):
-        self.rnn_out = tf.reshape(self.rnn_out, [-1, self.cell_size])
+        self.current_layer = tf.reshape(self.current_layer, [-1, self.cell_size])
     # end method add_rnn_out
 
 
     def add_output_layer(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.rnn_out, self.W), self.b)
-        self.softmax_out = tf.nn.softmax(self.logits)
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
     # end method add_output_layer
 
 
@@ -170,9 +173,9 @@ class RNNTextGen:
         for n in range(num):
             x = np.zeros([1,1])
             x[0,0] = word2idx[word]
-            softmax_out, next_state = self.sess.run([s_model.softmax_out, s_model.final_state],
+            logits, next_state = self.sess.run([s_model.logits, s_model.final_state],
                                                      feed_dict={s_model.X:x, s_model.init_state:next_state})
-            idx = np.argmax(softmax_out[0])
+            idx = np.argmax(logits[0])
             if idx == 0:
                 break
             word = idx2word[idx]

@@ -31,6 +31,7 @@ class RNNTextClassifier:
         self.n_layer = n_layer
         self.sess = sess
         self.stateful = stateful
+        self.current_layer = None
         self.build_graph()
     # end constructor
 
@@ -57,13 +58,15 @@ class RNNTextClassifier:
         self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
         self.in_keep_prob = tf.placeholder(tf.float32)
         self.out_keep_prob = tf.placeholder(tf.float32)
+        self.current_layer = self.X
     # end method add_input_layer
 
 
     def add_word_embedding_layer(self):
         embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size, self.cell_size], tf.float32,
                                         tf.random_normal_initializer())
-        self.embedding_out = tf.nn.embedding_lookup(embedding_mat, self.X)
+        embedding_out = tf.nn.embedding_lookup(embedding_mat, self.current_layer)
+        self.current_layer = embedding_out
     # end method add_word_embedding_layer
 
 
@@ -76,19 +79,20 @@ class RNNTextClassifier:
 
     def add_dynamic_rnn(self):
         self.init_state = self.cells.zero_state(self.batch_size, tf.float32)        
-        self.rnn_out, self.final_state = tf.nn.dynamic_rnn(self.cells, self.embedding_out,
-                                                           initial_state=self.init_state, time_major=False)
+        self.current_layer, self.final_state = tf.nn.dynamic_rnn(self.cells, self.current_layer,
+                                                                 initial_state=self.init_state,
+                                                                 time_major=False)
     # end method add_dynamic_rnn
 
 
     def reshape_rnn_out(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        self.rnn_out = tf.unstack(tf.transpose(self.rnn_out, [1,0,2]))
+        self.current_layer = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
     # end method add_rnn_out
 
 
     def add_output_layer(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.rnn_out[-1], self.W), self.b)
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer[-1], self.W), self.b)
     # end method add_output_layer
 
 

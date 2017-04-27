@@ -128,5 +128,5 @@ if __name__ == '__main__':
                                   sess=sess)
     log = train_model.fit(text_batch, n_epoch=20, batch_size=batch_size,
                           en_exp_decay=False, en_shuffle=True,
-                          sample_pack=(sample_model, idx2word, word2idx, 10, prime_texts))
+                          sample_pack=(sample_model, idx2word, word2idx, 30, prime_texts))
     plot(log)

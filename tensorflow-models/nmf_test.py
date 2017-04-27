@@ -18,12 +18,11 @@ if __name__ == '__main__':
     R[900][931] = 0
 
     sess = tf.Session()
-    nmf = NMF(n_user=R.shape[0], n_item=R.shape[1], n_hidden=100, sess=sess)
+    nmf = NMF(n_user=R.shape[0], n_item=R.shape[1], n_hidden=100, lamda=0.001, sess=sess)
     
     nmf.sess.run(tf.global_variables_initializer())
-    for step in range(10000):
-        lr = 0.005
-        _, loss = nmf.sess.run([nmf.train_op,nmf.loss], feed_dict={nmf.R:R.values,nmf.lr:lr})
+    for step in range(50000):
+        _, loss = nmf.sess.run([nmf.train_op,nmf.loss], feed_dict={nmf.R:R.values,nmf.lr:0.005})
         if step % 100 == 0:
             print(step, loss)
             print(ans1, '：', sess.run(nmf.R_pred)[2][1], ' | ', ans2, ': ', sess.run(nmf.R_pred)[200][940],

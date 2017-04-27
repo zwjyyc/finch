@@ -156,25 +156,26 @@ class RNNTextGen:
 
 
     def sample(self, s_model, idx2word, word2idx, num, prime_text):
-        state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
+        next_state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
         #word_list = prime_text.split()
         word_list = list(prime_text)
         for word in word_list[:-1]:
-            x = np.zeros((1,1))
+            x = np.zeros([1,1])
             x[0,0] = word2idx[word] 
-            state = self.sess.run(s_model.final_state, feed_dict={s_model.X:x, s_model.init_state:state})
+            next_state = self.sess.run(s_model.final_state, feed_dict={s_model.X:x,
+                                                                       s_model.init_state:next_state})
 
         out_sentence = prime_text
         word = word_list[-1]
         for n in range(num):
-            x = np.zeros((1,1))
+            x = np.zeros([1,1])
             x[0,0] = word2idx[word]
-            softmax_out, state = self.sess.run([s_model.softmax_out, s_model.final_state],
-                                                feed_dict={s_model.X:x, s_model.init_state:state})
-            sample = np.argmax(softmax_out[0])
-            if sample == 0:
+            softmax_out, next_state = self.sess.run([s_model.softmax_out, s_model.final_state],
+                                                     feed_dict={s_model.X:x, s_model.init_state:next_state})
+            idx = np.argmax(softmax_out[0])
+            if idx == 0:
                 break
-            word = idx2word[sample]
+            word = idx2word[idx]
             #out_sentence = out_sentence + ' ' + word
             out_sentence = out_sentence + word
         return(out_sentence)

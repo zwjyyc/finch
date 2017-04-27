@@ -21,11 +21,8 @@ if __name__ == '__main__':
     nmf = NMF(n_user=R.shape[0], n_item=R.shape[1], n_hidden=100, sess=sess)
     
     nmf.sess.run(tf.global_variables_initializer())
-    for step in range(8000):
-        if step < 5000:
-            lr = 0.01
-        else:
-            lr = 0.001
+    for step in range(5000):
+        lr = 0.001
         _, loss = nmf.sess.run([nmf.train_op,nmf.loss], feed_dict={nmf.R:R.values,nmf.lr:lr})
         if step % 100 == 0:
             print(step, loss)

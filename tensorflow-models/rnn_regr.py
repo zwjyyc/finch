@@ -4,25 +4,25 @@ import matplotlib.pyplot as plt
 
 
 class RNNRegressor:
-    def __init__(self, n_in, n_step, cell_size, n_out, sess):
+    def __init__(self, n_step, n_in, n_out, cell_size, sess):
         """
         Parameters:
         -----------
-        n_in: int
-            Input dimensions
         n_step: int
             Number of time steps
-        cell_size: int
-            Number of units in the rnn cell
+        n_in: int
+            Input dimensions
         n_out: int
             Output dimensions
+        cell_size: int
+            Number of units in the rnn cell
         sess: object
             tf.Session() object
         """
-        self.n_in = n_in
         self.n_step = n_step
-        self.cell_size = cell_size
+        self.n_in = n_in
         self.n_out = n_out
+        self.cell_size = cell_size
         self.sess = sess
         self.current_layer = None
         self.build_graph()
@@ -81,15 +81,14 @@ class RNNRegressor:
             targets = [tf.reshape(self.y, [-1])],
             weights = [tf.ones([self.batch_size * self.n_step])],
             average_across_timesteps = True,
-            softmax_loss_function = self.mse,
-            name = 'losses'
+            softmax_loss_function = self.squared_error,
         )
         self.loss = tf.reduce_sum(losses) / tf.cast(self.batch_size, tf.float32)
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 
 
-    def mse(self, y_pred, y_target):
+    def squared_error(self, y_pred, y_target):
         return tf.square(tf.subtract(y_pred, y_target))
-    # end method mse
+    # end method squared_error
 # end class RNNRegressor

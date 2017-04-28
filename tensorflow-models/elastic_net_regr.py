@@ -28,7 +28,6 @@ class ElasticNetRegression:
 
 
     def add_input_layer(self):
-        self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(shape=(None, self.n_in), dtype=tf.float32)
         self.y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
         self.W = tf.Variable(tf.random_normal([self.n_in, 1]))
@@ -57,15 +56,13 @@ class ElasticNetRegression:
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), # batch training
                                         self.gen_batch(y, batch_size)):
                 _, loss= self.sess.run([self.train_op, self.loss], feed_dict={self.X:X_batch,
-                                                                              self.y:y_batch,
-                                                                              self.batch_size:len(X_batch)})
+                                                                              self.y:y_batch})
 
             val_loss_list = []
             for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                   self.gen_batch(val_data[1], batch_size)):
                 v_loss = self.sess.run(self.loss, feed_dict={self.X:X_test_batch,
-                                                               self.y:y_test_batch,
-                                                               self.batch_size:len(X_test_batch)})
+                                                             self.y:y_test_batch})
                 val_loss_list.append(v_loss)
             val_loss = self.list_avg(val_loss_list)
 
@@ -73,14 +70,10 @@ class ElasticNetRegression:
     # end method fit
 
 
-    def predict(self, X_test, batch_size=100):
-        if batch_size is None:
-            batch_size = len(X_test)
-        
+    def predict(self, X_test, batch_size=100):        
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X:X_test_batch,
-                                                             self.batch_size:len(X_test_batch)})
+            batch_pred = self.sess.run(self.pred, feed_dict={self.X:X_test_batch})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

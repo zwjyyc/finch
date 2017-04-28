@@ -11,6 +11,7 @@ class HighwayMLPClassifier:
         self.n_highway = n_highway
         self.n_out = n_out
         self.sess = sess
+        self.current_layer = None
         self.build_graph()
     # end constructor
 
@@ -27,20 +28,21 @@ class HighwayMLPClassifier:
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
+        self.current_layer = self.X
     # end method add_input_layer
 
 
     def add_forward_path(self):
-        new_layer = self.fc('layer_in', self.X, self.n_in, self.n_hidden, en_batch_norm=True, activation='relu',
-                             en_dropout=True)
+        new_layer = self.fc('layer_in', self.current_layer, self.n_in, self.n_hidden, en_batch_norm=True,
+                             activation='relu', en_dropout=True)
         for i in range(self.n_highway):
             new_layer = self.highway('layer%s'%i, new_layer, self.n_hidden, en_batch_norm=True)
-        self.highway_out = new_layer
+        self.current_layer = new_layer
     # end method add_forward_path
 
 
     def add_output_layer(self):
-        self.logits = self.fc('layer_out', self.highway_out, self.n_hidden, self.n_out)
+        self.logits = self.fc('layer_out', self.current_layer, self.n_hidden, self.n_out)
     # end method add_output_layer
 
 

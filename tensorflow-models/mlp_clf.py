@@ -21,6 +21,7 @@ class MLPClassifier:
         self.hidden_unit_list = hidden_unit_list
         self.n_out = n_out
         self.sess = sess
+        self.current_layer = None
         self.build_graph()
     # end constructor
 
@@ -37,21 +38,22 @@ class MLPClassifier:
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
+        self.current_layer = self.X
     # end method add_input_layer
 
 
     def add_forward_path(self):
-        new_layer = self.X
+        new_layer = self.current_layer
         forward = [self.n_in] + self.hidden_unit_list
         for i in range( len(forward)-1 ):
             new_layer = self.fc('layer%s'%i, new_layer, forward[i], forward[i+1], batch_norm=True,
                                  activation='relu', dropout=True)
-        self.mlp_out = new_layer
+        self.current_layer = new_layer
     # end method add_forward_path
 
 
     def add_output_layer(self):
-        self.logits = self.fc('layer_out', self.mlp_out, self.hidden_unit_list[-1], self.n_out)
+        self.logits = self.fc('layer_out', self.current_layer, self.hidden_unit_list[-1], self.n_out)
     # end method add_output_layer
 
 

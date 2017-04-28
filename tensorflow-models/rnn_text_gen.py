@@ -91,13 +91,14 @@ class RNNTextGen:
 
 
     def add_backward_path(self):
-        losses = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
-                logits = [self.logits],
-                targets = [tf.reshape(self.Y, [-1])],
-                weights = [tf.ones([self.batch_size*self.seq_len])],
-                average_across_timesteps = True,
+        losses = tf.contrib.seq2seq.sequence_loss(
+            logits = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.vocab_size]),
+            targets = self.Y,
+            weights = tf.ones([self.batch_size, self.seq_len]),
+            average_across_timesteps = True,
+            average_across_batch = True,
         )
-        self.loss = tf.reduce_sum(losses) / (tf.cast(self.batch_size,tf.float32) * self.seq_len)
+        self.loss = tf.reduce_sum(losses)
         self.lr = tf.placeholder(tf.float32)
         gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), 4.5)
         optimizer = tf.train.AdamOptimizer(self.lr)

@@ -89,12 +89,13 @@ class LinearSVMClassifier:
     # end method fit
 
 
-    def predict(self, X_test, batch_size=None):
+    def predict(self, X_test, batch_size=100):
         if batch_size is None:
             batch_size = len(X_test)
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X:X_test, self.batch_size:len(X_test_batch)})
+            batch_pred = self.sess.run(self.pred, feed_dict={self.X:X_test_batch,
+                                                             self.batch_size:len(X_test_batch)})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

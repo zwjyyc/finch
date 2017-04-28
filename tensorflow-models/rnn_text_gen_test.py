@@ -126,7 +126,7 @@ if __name__ == '__main__':
         sample_model = RNNTextGen(cell_size=128, n_layers=num_layers,
                                   vocab_size=vocab_size, seq_len=1,
                                   sess=sess)
-    log = train_model.fit(text_batch, n_epoch=20, batch_size=batch_size,
-                          en_exp_decay=False, en_shuffle=True,
+    log = train_model.fit(text_batch, n_epoch=10, batch_size=batch_size,
+                          en_exp_decay=True, en_shuffle=True,
                           sample_pack=(sample_model, idx2word, word2idx, 30, prime_texts))
     plot(log)

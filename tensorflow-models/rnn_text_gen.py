@@ -118,34 +118,31 @@ class RNNTextGen:
     # end method adjust_lr
 
 
-    def fit(self, text_batch, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
-            sample_pack=None):
+    def fit(self, X, n_epoch=10, batch_size=128, en_exp_decay=True, sample_pack=None):
         log = {'train_loss': []}
         global_step = 0
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         if sample_pack is not None:
-            s_model, idx2word, word2idx, num, prime_texts = sample_pack
+            s_model, idx2word, word2idx, num_pred, prime_texts = sample_pack
         
         for epoch in range(n_epoch):
-
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
             batch_count = 1
-            if en_shuffle:
-                X_train = sklearn.utils.shuffle(text_batch)
-            else:
-                X_train = text_batch
-
-            Y_train = [np.roll(x, -1, axis=1) for x in X_train]
-
-            for X_batch, Y_batch in zip(X_train, Y_train):
-                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(text_batch))
-                _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
-                                                     feed_dict={self.X:X_batch, self.Y:Y_batch,
-                                                                self.init_state:next_state,
-                                                                self.batch_size:batch_size, self.lr:lr})
+            for X_batch in self.gen_batch(X, batch_size):
+                Y_batch = np.roll(X_batch, -1, axis=1)
+                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, int(len(X)/batch_size))
+                if len(X_batch) == batch_size:
+                    _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
+                                                         feed_dict={self.X:X_batch, self.Y:Y_batch,
+                                                                    self.init_state:next_state,
+                                                                    self.batch_size:len(X_batch), self.lr:lr})
+                else:
+                    _, loss = self.sess.run([self.train_op, self.loss],
+                                             feed_dict={self.X:X_batch, self.Y:Y_batch,
+                                                        self.batch_size:len(X_batch), self.lr:lr})
                 if batch_count % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f' % (epoch+1, n_epoch,
-                           batch_count, len(text_batch), loss, lr))
+                    batch_count, (len(X)/batch_size), loss, lr))
                 log['train_loss'].append(loss)
                 batch_count += 1
                 global_step += 1
@@ -153,13 +150,13 @@ class RNNTextGen:
                 if sample_pack is not None:
                     if batch_count % 50 == 0:
                         for prime_text in prime_texts:
-                            print(self.sample(s_model, idx2word, word2idx, num, prime_text))
+                            print(self.sample(s_model, idx2word, word2idx, num_pred, prime_text))
             
         return log
     # end method fit
 
 
-    def sample(self, s_model, idx2word, word2idx, num, prime_text):
+    def sample(self, s_model, idx2word, word2idx, num_pred, prime_text):
         next_state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
         #word_list = prime_text.split()
         word_list = list(prime_text)
@@ -171,7 +168,7 @@ class RNNTextGen:
 
         out_sentence = prime_text
         word = word_list[-1]
-        for n in range(num):
+        for n in range(num_pred):
             x = np.zeros([1,1])
             x[0,0] = word2idx[word]
             logits, next_state = self.sess.run([s_model.logits, s_model.final_state],
@@ -184,4 +181,9 @@ class RNNTextGen:
             out_sentence = out_sentence + word
         return(out_sentence)
     # end method sample
+
+    def gen_batch(self, arr, batch_size):
+        for i in range(0, len(arr), batch_size):
+            yield arr[i : i+batch_size]
+    # end method gen_batch
 # end class

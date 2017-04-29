@@ -12,9 +12,10 @@ import tensorflow as tf
 from rnn_text_gen import RNNTextGen
 
 
-batch_size = 100
-training_seq_len = 50
-num_layers = 3
+BATCH_SIZE = 100
+SEQ_LEN = 50
+NUM_LAYER = 3
+CELL_SIZE = 128
 prime_texts = ['thou art more', 'to be or not to', 'wherefore art thou']
 
 
@@ -50,10 +51,10 @@ def load_text():
 # end function load_text()
 
 
-def clean_text(s_text):
-    s_text = re.sub(r'[{}]'.format(punctuation), ' ', s_text)
-    s_text = re.sub('\s+', ' ', s_text ).strip().lower()
-    return s_text
+def clean_text(text):
+    text = re.sub(r'[{}]'.format(punctuation), ' ', text)
+    text = re.sub('\s+', ' ', text ).strip().lower()
+    return text
 # end function clean_text()
 
 
@@ -68,27 +69,15 @@ def build_vocab(word_list, min_word_freq=5):
 # end function build_vocab()
 
 
-def convert_text_to_word_vecs(word_list, word2idx):
-    s_text_idx = []
-    for word in word_list:
+def convert_text_to_word_vec(all_word_list, word2idx):
+    all_word_idx = []
+    for word in all_word_list:
         try:
-            s_text_idx.append(word2idx[word])
+            all_word_idx.append(word2idx[word])
         except:
-            s_text_idx.append(0)
-    s_text_idx = np.array(s_text_idx)
-    return s_text_idx
+            all_word_idx.append(0)
+    return np.array(all_word_idx)
 # end function convert_text_to_word_vecs()
-
-
-def create_batch(s_text_ix):
-    # Create batches for each epoch
-    num_batches = int(len(s_text_ix)/(batch_size * training_seq_len)) + 1
-    # Split up text indices into subarrays, of equal or nearly equal size
-    batches = np.array_split(s_text_ix, num_batches)
-    # Reshape each split into [batch_size, training_seq_len]
-    batches = [np.resize(x, [batch_size, training_seq_len]) for x in batches]
-    return batches
-# end function create_batch()
 
 
 def plot(log, dir='./log'):
@@ -102,31 +91,31 @@ def plot(log, dir='./log'):
 
 
 if __name__ == '__main__':
-    s_text = load_text()
+    text = load_text()
     print('Cleaning Text')
-    s_text = clean_text(s_text)
-    #word_list = s_text.split()
-    word_list = list(s_text)
+    text = clean_text(text)
+    all_word_list = list(text) # now we are doing char-level, use .split() for word-level
 
     print('Building Shakespeare Vocab by Characters')
-    idx2word, word2idx = build_vocab(word_list)
+    idx2word, word2idx = build_vocab(all_word_list)
     vocab_size = len(idx2word)
     print('Vocabulary Length = {}'.format(vocab_size))
     assert len(idx2word) == len(word2idx), "len(idx2word) is not equal to len(word2idx)" # sanity Check
 
-    s_text_idx = convert_text_to_word_vecs(word_list, word2idx)
-    text_batch = create_batch(s_text_idx)
-
+    all_word_idx = convert_text_to_word_vec(all_word_list, word2idx)
+    X = np.resize(all_word_idx, [int(len(all_word_idx)/SEQ_LEN), SEQ_LEN])
+    
     sess = tf.Session()
     with tf.variable_scope('training'):
-        train_model = RNNTextGen(cell_size=128, n_layers=num_layers,
-                                 vocab_size=vocab_size, seq_len=training_seq_len,
+        train_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
+                                 vocab_size=vocab_size, seq_len=SEQ_LEN,
                                  sess=sess)
     with tf.variable_scope('training', reuse=True):
-        sample_model = RNNTextGen(cell_size=128, n_layers=num_layers,
+        sample_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
                                   vocab_size=vocab_size, seq_len=1,
                                   sess=sess)
-    log = train_model.fit(text_batch, n_epoch=10, batch_size=batch_size,
-                          en_exp_decay=True, en_shuffle=True,
+    log = train_model.fit(X, n_epoch=10, batch_size=BATCH_SIZE,
+                          en_exp_decay=True,
                           sample_pack=(sample_model, idx2word, word2idx, 30, prime_texts))
     plot(log)
+    

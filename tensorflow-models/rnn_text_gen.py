@@ -5,7 +5,7 @@ import sklearn
 
 
 class RNNTextGen:
-    def __init__(self, seq_len, vocab_size, cell_size, n_layers, sess):
+    def __init__(self, seq_len, vocab_size, cell_size, n_layers, resolution, sess):
         """
         Parameters:
         -----------
@@ -17,6 +17,8 @@ class RNNTextGen:
             Number of units in the rnn cell
         n_layers: int
             Number of layers of stacked rnn cells
+        resolution: string
+            word-level or char-level
         sess: object
             tf.Session() object 
         """
@@ -24,6 +26,7 @@ class RNNTextGen:
         self.vocab_size = vocab_size
         self.cell_size = cell_size
         self.n_layers = n_layers
+        self.resolution = resolution
         self.sess = sess
         self.current_layer = None
         self.build_graph()
@@ -149,7 +152,7 @@ class RNNTextGen:
             
             if sample_pack is not None:
                 for prime_text in prime_texts:
-                    print(self.sample(s_model, idx2word, word2idx, num_pred, prime_text), end='\n')
+                    print(self.sample(s_model, idx2word, word2idx, num_pred, prime_text), end='\n\n')
             
         return log
     # end method fit
@@ -157,8 +160,10 @@ class RNNTextGen:
 
     def sample(self, s_model, idx2word, word2idx, num_pred, prime_text):
         next_state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
-        #word_list = prime_text.split()
-        word_list = list(prime_text)
+        if self.resolution == 'word':
+            word_list = prime_text.split()
+        if self.resolution == 'char':
+            word_list = list(prime_text)
         for word in word_list[:-1]:
             x = np.zeros([1,1])
             x[0,0] = word2idx[word] 
@@ -176,8 +181,10 @@ class RNNTextGen:
             if idx == 0:
                 break
             word = idx2word[idx]
-            #out_sentence = out_sentence + ' ' + word
-            out_sentence = out_sentence + word
+            if self.resolution == 'word':
+                out_sentence = out_sentence + ' ' + word
+            if self.resolution == 'char':
+                out_sentence = out_sentence + word
         return(out_sentence)
     # end method sample
 

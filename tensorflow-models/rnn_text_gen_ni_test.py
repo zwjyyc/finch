@@ -9,7 +9,11 @@ BATCH_SIZE = 128
 SEQ_LEN = 40
 NUM_LAYER = 3
 CELL_SIZE = 128
-prime_texts = ['your desire to', 'it seems to me', 'there are']
+prime_texts = [
+    'the falseness of an opinion is not for us any objection to it',
+    'that which causes philosophers to be regarded half-distrustfully',
+    'it has gradually become clear to me what every great philosophy up till now'
+]
 
 
 if __name__ == '__main__':
@@ -41,5 +45,5 @@ if __name__ == '__main__':
                                   sess=sess)
     log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
                           en_exp_decay=True,
-                          sample_pack=(sample_model, idx2word, word2idx, 20, prime_texts))
+                          sample_pack=(sample_model, idx2word, word2idx, 100, prime_texts))
     

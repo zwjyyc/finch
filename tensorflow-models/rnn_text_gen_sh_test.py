@@ -67,7 +67,7 @@ if __name__ == '__main__':
         sample_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
                                   vocab_size=vocab_size, seq_len=1,
                                   sess=sess)
-    log = train_model.fit(X, n_epoch=10, batch_size=BATCH_SIZE,
+    log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
                           en_exp_decay=True,
                           sample_pack=(sample_model, idx2word, word2idx, 30, prime_texts))
     

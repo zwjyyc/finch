@@ -147,9 +147,9 @@ class RNNTextGen:
                 batch_count += 1
                 global_step += 1
             
-                if sample_pack is not None:
-                    for prime_text in prime_texts:
-                        print(self.sample(s_model, idx2word, word2idx, num_pred, prime_text), end='\n')
+            if sample_pack is not None:
+                for prime_text in prime_texts:
+                    print(self.sample(s_model, idx2word, word2idx, num_pred, prime_text), end='\n')
             
         return log
     # end method fit

@@ -6,10 +6,10 @@ from rnn_text_gen import RNNTextGen
 
 
 BATCH_SIZE = 32
-SEQ_LEN = 20
+SEQ_LEN = 40
 NUM_LAYER = 3
 CELL_SIZE = 128
-RESOL = 'word'
+RESOL = 'char'
 prime_texts = [
     'an opinion is',
     'that which causes',
@@ -39,15 +39,15 @@ if __name__ == '__main__':
     print('X shape: ', X.shape)
     
     sess = tf.Session()
-    with tf.variable_scope('training'):
+    with tf.variable_scope('train_model'):
         train_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
                                  vocab_size=vocab_size, seq_len=SEQ_LEN, resolution=RESOL,
                                  sess=sess)
-    with tf.variable_scope('training', reuse=True):
+    with tf.variable_scope('train_model', reuse=True):
         sample_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
                                   vocab_size=vocab_size, seq_len=1, resolution=RESOL,
                                   sess=sess)
     log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
-                          en_exp_decay=True,
-                          sample_pack=(sample_model, idx2word, word2idx, 10, prime_texts))
+                          en_exp_decay=True, en_shuffle=False,
+                          sample_pack=(sample_model, idx2word, word2idx, 20, prime_texts))
     

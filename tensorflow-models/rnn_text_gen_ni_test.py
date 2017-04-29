@@ -9,6 +9,7 @@ BATCH_SIZE = 32
 SEQ_LEN = 20
 NUM_LAYER = 3
 CELL_SIZE = 128
+RESOL = 'word'
 prime_texts = [
     'an opinion is',
     'that which causes',
@@ -22,7 +23,9 @@ if __name__ == '__main__':
 
     print('Cleaning Text')
     text = clean_text(text)
+    if RESOL == 'char':
         all_word_list = list(text)
+    if RESOL == 'word':
         all_word_list = text.split()
 
     print('Building Nietzsche Vocab by Characters')
@@ -38,9 +41,11 @@ if __name__ == '__main__':
     sess = tf.Session()
     with tf.variable_scope('training'):
         train_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
+                                 vocab_size=vocab_size, seq_len=SEQ_LEN, resolution=RESOL,
                                  sess=sess)
     with tf.variable_scope('training', reuse=True):
         sample_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
+                                  vocab_size=vocab_size, seq_len=1, resolution=RESOL,
                                   sess=sess)
     log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
                           en_exp_decay=True,

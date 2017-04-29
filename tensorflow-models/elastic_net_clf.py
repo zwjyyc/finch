@@ -32,24 +32,24 @@ class ElasticNetClassifier:
 
     def add_input_layer(self):
         self.X = tf.placeholder(shape=(None, self.n_in), dtype=tf.float32)
-        self.y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-        self.W = tf.Variable(tf.random_normal([self.n_in, 1]))
-        self.b = tf.Variable(tf.constant(0.1, shape=[1]))
+        self.y = tf.placeholder(shape=[None, self.n_out], dtype=tf.float32)
+        self.W = tf.Variable(tf.random_normal([self.n_in, self.n_out]))
+        self.b = tf.Variable(tf.constant(0.1, shape=[self.n_out]))
     # end method add_input_layer
 
 
     def add_output_layer(self):
-        self.pred = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
+        self.pred = tf.nn.softmax(tf.nn.bias_add(tf.matmul(self.X, self.W), self.b))
     # end method add_output_layer
 
 
     def add_backward_path(self):
-        regr_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.pred, labels=self.y))
+        regr_loss = tf.reduce_mean(-tf.reduce_sum(self.y*tf.log(self.pred), axis=1))
         l1_loss = tf.reduce_mean(tf.abs(self.W))
         l2_loss = tf.reduce_mean(tf.square(self.W))
         self.loss = regr_loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.pred,1),tf.argmax(self.y,1)), tf.float32))
-        self.train_op = tf.train.GradientDescentOptimizer(0.001).minimize(self.loss)
+        self.train_op = tf.train.GradientDescentOptimizer(0.005).minimize(self.loss)
     # end method add_backward_path
 
 

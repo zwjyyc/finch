@@ -18,7 +18,7 @@
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system)
 ## Machine Learning
 #### Linear Model
-* TensorFlow &nbsp; | &nbsp; Elastic Net Regressor &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr_test.py) &nbsp; | &nbsp; Elastic Net Classifier &nbsp &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Elastic Net Regressor &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr_test.py) &nbsp; | &nbsp; Elastic Net Classifier &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf_test.py) &nbsp; | &nbsp;
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp;
 #### Support Vector Machine
 * [Theory](https://zhedongzheng.github.io/finch/svm.html)

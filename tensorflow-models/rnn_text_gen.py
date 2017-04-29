@@ -182,8 +182,8 @@ class RNNTextGen:
             logits, next_state = self.sess.run([sample_model.logits, sample_model.final_state],
                                                 feed_dict={sample_model.X:x,
                                                            sample_model.init_state:next_state})
-            unnormalized_probs = np.exp((logits - np.max(logits)) / temperature)
-            probs = unnormalized_probs / np.sum(unnormalized_probs)
+            unnorm_probs = np.exp((logits - np.max(logits)) / temperature)
+            probs = unnorm_probs / np.sum(unnorm_probs)
             idx = np.argmax(probs[0])
             if idx == 0:
                 break

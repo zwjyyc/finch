@@ -1,3 +1,5 @@
+import os
+import requests
 import re
 import string
 import collections
@@ -33,3 +35,31 @@ def convert_text_to_idx(all_word_list, word2idx):
             all_word_idx.append(0)
     return np.array(all_word_idx)
 # end function convert_text_to_idx()
+
+
+def load_shakespeare_text():
+    data_dir = 'temp'
+    data_file = 'shakespeare.txt'
+    model_path = 'shakespeare_model'
+    full_model_dir = os.path.join(data_dir, model_path)
+    if not os.path.exists(full_model_dir):
+        os.makedirs(full_model_dir)
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+    print('Loading Shakespeare Data')
+    if not os.path.isfile(os.path.join(data_dir, data_file)): # check if file is downloaded
+        print('Not found, downloading Shakespeare texts from www.gutenberg.org')
+        shakespeare_url = 'http://www.gutenberg.org/cache/epub/100/pg100.txt'
+        response = requests.get(shakespeare_url) # get Shakespeare text
+        shakespeare_file = response.content
+        s_text = shakespeare_file.decode('utf-8') # decode binary into string
+        s_text = s_text[7675:] # drop first few descriptive paragraphs
+        s_text = s_text.replace('\r\n', ' ') # remove newlines
+        s_text = s_text.replace('\n', ' ') # remove newlines
+        with open(os.path.join(data_dir, data_file), 'w') as out_conn: # write to file
+            out_conn.write(s_text)
+    else:
+        with open(os.path.join(data_dir, data_file), 'r') as file_conn: # If file has been saved, load from that file
+            s_text = file_conn.read().replace('\n', ' ')
+    return s_text
+# end function load_shakespeare_text()

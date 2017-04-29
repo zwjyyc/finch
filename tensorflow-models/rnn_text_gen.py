@@ -121,7 +121,7 @@ class RNNTextGen:
     # end method adjust_lr
 
 
-    def fit(self, X, n_epoch=10, batch_size=128, en_exp_decay=True, sample_pack=None):
+    def fit(self, X, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, sample_pack=None):
         log = {'train_loss': []}
         global_step = 0
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
@@ -131,6 +131,8 @@ class RNNTextGen:
         for epoch in range(n_epoch):
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
             batch_count = 1
+            if en_shuffle:
+                X = sklearn.utils.shuffle(X)
             for X_batch in self.gen_batch(X, batch_size):
                 Y_batch = np.roll(X_batch, -1, axis=1)
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, int(len(X)/batch_size))
@@ -158,8 +160,9 @@ class RNNTextGen:
     # end method fit
 
 
-    def sample(self, s_model, idx2word, word2idx, num_pred, prime_text):
-        next_state = self.sess.run(s_model.init_state, feed_dict={s_model.batch_size:1})
+    def sample(self, sample_model, idx2word, word2idx, num_pred, prime_text, temperature=1.0):
+        # warming up
+        next_state = self.sess.run(sample_model.init_state, feed_dict={sample_model.batch_size:1})
         if self.resolution == 'word':
             word_list = prime_text.split()
         if self.resolution == 'char':
@@ -167,17 +170,21 @@ class RNNTextGen:
         for word in word_list[:-1]:
             x = np.zeros([1,1])
             x[0,0] = word2idx[word] 
-            next_state = self.sess.run(s_model.final_state, feed_dict={s_model.X:x,
-                                                                       s_model.init_state:next_state})
+            next_state = self.sess.run(sample_model.final_state, feed_dict={sample_model.X:x,
+                                                                            sample_model.init_state:next_state})
+        # end warming up
 
         out_sentence = prime_text
         word = word_list[-1]
         for n in range(num_pred):
             x = np.zeros([1,1])
             x[0,0] = word2idx[word]
-            logits, next_state = self.sess.run([s_model.logits, s_model.final_state],
-                                                     feed_dict={s_model.X:x, s_model.init_state:next_state})
-            idx = np.argmax(logits[0])
+            logits, next_state = self.sess.run([sample_model.logits, sample_model.final_state],
+                                                feed_dict={sample_model.X:x,
+                                                           sample_model.init_state:next_state})
+            unnormalized_probs = np.exp((logits - np.max(logits)) / temperature)
+            probs = unnormalized_probs / np.sum(unnormalized_probs)
+            idx = np.argmax(probs[0])
             if idx == 0:
                 break
             word = idx2word[idx]
@@ -187,6 +194,7 @@ class RNNTextGen:
                 out_sentence = out_sentence + word
         return(out_sentence)
     # end method sample
+
 
     def gen_batch(self, arr, batch_size):
         for i in range(0, len(arr), batch_size):

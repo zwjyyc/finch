@@ -18,22 +18,21 @@ prime_texts = [
 
 if __name__ == '__main__':
     text = load_shakespeare_text()
-    print('Cleaning Text')
+    print('Cleaning text...')
     text = clean_text(text)
     if RESOL == 'char':
         all_word_list = list(text)
     if RESOL == 'word':
         all_word_list = text.split()
 
-    print('Building Shakespeare Vocab by Characters')
     idx2word, word2idx = build_vocab(all_word_list)
     vocab_size = len(idx2word)
-    print('Vocabulary Length = {}'.format(vocab_size))
+    print('Vocabulary length:', vocab_size)
     assert len(idx2word) == len(word2idx), "len(idx2word) is not equal to len(word2idx)" # sanity Check
 
     all_word_idx = convert_text_to_idx(all_word_list, word2idx)
     X = np.resize(all_word_idx, [int(len(all_word_idx)/SEQ_LEN), SEQ_LEN])
-    print('X shape: ', X.shape)
+    print('X shape:', X.shape)
     
     sess = tf.Session()
     with tf.variable_scope('train_model'):

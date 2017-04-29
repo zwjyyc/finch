@@ -42,9 +42,9 @@ class ElasticNetRegression:
 
     def add_backward_path(self):
         regr_loss = tf.reduce_mean(tf.square(self.pred - self.y))
-        l1_loss = tf.reduce_mean(tf.abs(self.W)) * self.l1_ratio
-        l2_loss = tf.reduce_mean(tf.square(self.W)) * (1 - self.l1_ratio)
-        self.loss = regr_loss + l1_loss + l2_loss
+        l1_loss = tf.reduce_mean(tf.abs(self.W))
+        l2_loss = tf.reduce_mean(tf.square(self.W))
+        self.loss = regr_loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
         self.train_op = tf.train.GradientDescentOptimizer(0.001).minimize(self.loss)
     # end method add_backward_path
 

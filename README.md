@@ -70,3 +70,5 @@
 ## Distributed System
 * [Java Multi-threading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
+## Web Framework
+* [Django Stock Image Example]()

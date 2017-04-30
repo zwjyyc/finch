@@ -66,7 +66,7 @@ class MLPClassifier:
 
 
     def fc(self, name, X, fan_in, fan_out, batch_norm=None, activation=None, dropout=None):
-        W = tf.get_variable(name+'_w', [fan_in, fan_out], tf.float32, tf.contrib.layers.variance_scaling_initializer())
+        W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32, tf.contrib.layers.variance_scaling_initializer())
         b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
         y = tf.nn.bias_add(tf.matmul(X, W), b)
         if batch_norm:

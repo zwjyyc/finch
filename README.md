@@ -55,7 +55,7 @@
 #### Highway Network
 * TensorFlow &nbsp; | &nbsp; Highway MLP Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_cifar10_test.py) &nbsp; | &nbsp; 
 * TensorFlow &nbsp; | &nbsp; Highway CNN Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf_cifar10_keras_idg_test.py) &nbsp; | &nbsp;
-## Computer Vision
+### Computer Vision
 #### OpenCV in Python
 * Basic Operations
   * [Resize](https://github.com/zhedongzheng/finch/blob/master/computer-vision/resize.ipynb)
@@ -66,14 +66,14 @@
 * Detection
   * [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
   * [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)
-## Natural Language Processing
+### Natural Language Processing
 #### Language Processing in Python
 * [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
 * [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-indexing.ipynb)
-## Database
+### Database
 * [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
-## Distributed System
+### Distributed System
 * [Java Multi-threading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
-## Web Framework
+### Web Framework
 * [Django Example - Dynamically Generating Stock Image from Matplotlib](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)

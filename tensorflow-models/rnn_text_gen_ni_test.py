@@ -5,15 +5,15 @@ from utils import clean_text, build_vocab, convert_text_to_idx
 from rnn_text_gen import RNNTextGen
 
 
-BATCH_SIZE = 32
-SEQ_LEN = 40
+BATCH_SIZE = 128
+SEQ_LEN = 30
 NUM_LAYER = 3
 CELL_SIZE = 128
 RESOL = 'char'
 prime_texts = [
-    'an opinion is',
-    'that which causes',
-    'it has gradually become clear'
+    'having kept a sharp eye on philosophers',
+    'it seems to me that there is everywhere an',
+    'it has gradually become clear to me what every'
 ]
 
 

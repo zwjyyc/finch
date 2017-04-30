@@ -174,7 +174,7 @@ class RNNTextGen:
                                                                             sample_model.init_state:next_state})
         # end warming up
 
-        out_sentence = prime_text
+        out_sentence = prime_text + '|'
         word = word_list[-1]
         for n in range(num_pred):
             x = np.zeros([1,1])

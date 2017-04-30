@@ -24,7 +24,7 @@ def build_vocab(word_list, min_word_freq=5):
     word2idx = {key:(idx+1) for idx,key in enumerate(words)} # create word --> index mapping
     word2idx['_unknown'] = 0 # add unknown key --> 0 index
     idx2word = {val:key for key,val in word2idx.items()} # create index --> word mapping
-    return(idx2word, word2idx)
+    return(word2idx, idx2word)
 # end function build_vocab()
 
 

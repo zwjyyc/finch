@@ -3,21 +3,7 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import numpy as np
-import os, sys
-import matplotlib.pyplot as plt
-import seaborn as sns
 import tensorflow as tf
-
-
-def plot(log, dir='./log'):
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-    sns.set(style='white')
-    plt.plot(log['loss'], label='train_loss')
-    plt.plot(log['val_loss'], label='test_loss')
-    plt.legend(loc='best')
-    plt.savefig(os.path.join(dir, sys.argv[0][:-3]))
-    print("Figure created !")
 
 
 if __name__ == '__main__':
@@ -32,8 +18,6 @@ if __name__ == '__main__':
     y_pred = clf.predict(X_test)
     print("linear svm (tensorflow):", np.equal(y_pred.ravel(), y_test).astype(float).mean())
     tf.reset_default_graph()
-
-    plot(log)
 
     clf = SVC(kernel='linear')
     y_pred = clf.fit(X_train, y_train).predict(X_test)

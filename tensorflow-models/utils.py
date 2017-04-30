@@ -4,6 +4,8 @@ import re
 import string
 import collections
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def clean_text(text):
@@ -63,3 +65,15 @@ def load_shakespeare_text():
             s_text = file_conn.read().replace('\n', ' ')
     return s_text
 # end function load_shakespeare_text()
+
+
+def plot(log, dir='./log'):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    sns.set(style='white')
+    plt.plot(log['loss'], label='train_loss')
+    plt.plot(log['val_loss'], label='test_loss')
+    plt.legend(loc='best')
+    plt.savefig(os.path.join(dir, sys.argv[0][:-3]))
+    print("Figure created !")
+# end function plot()

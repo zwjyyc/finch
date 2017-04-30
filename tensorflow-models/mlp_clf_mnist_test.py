@@ -1,22 +1,8 @@
 from keras.datasets import mnist
 from keras.utils.np_utils import to_categorical as to_one_hot
 from mlp_clf import MLPClassifier
-import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
-import os, sys
 import tensorflow as tf
-
-
-def plot(log, dir='./log'):
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-    sns.set(style='white')
-    plt.plot(log['loss'], label='train_loss')
-    plt.plot(log['val_loss'], label='test_loss')
-    plt.legend(loc='best')
-    plt.savefig(os.path.join(dir, sys.argv[0][:-3]))
-    print("Figure created !")
 
 
 if __name__ == '__main__':
@@ -33,5 +19,3 @@ if __name__ == '__main__':
     tf.reset_default_graph()
     final_acc = np.equal(np.argmax(pred, 1), np.argmax(y_test, 1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)
-
-    plot(log)

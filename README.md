@@ -16,6 +16,7 @@
     * [Language Processing in Python](https://github.com/zhedongzheng/finch#language-processing-in-python)
 * [Database](https://github.com/zhedongzheng/finch#database)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system)
+* [Web Framework](https://github.com/zhedongzheng/finch#web-framework)
 ## Machine Learning
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Elastic Net Regressor &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr.py) &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr_test.py) &nbsp; | &nbsp; Elastic Net Classifier &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf.py) &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf_test.py) &nbsp; | &nbsp;
@@ -71,4 +72,4 @@
 * [Java Multi-threading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
 ## Web Framework
-* [Django Stock Image Example]()
+* [Django Updating Stock Image Example](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)

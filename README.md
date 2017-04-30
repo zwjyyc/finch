@@ -24,7 +24,7 @@
 * [Database](https://github.com/zhedongzheng/finch#database)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system)
 * [Web Framework](https://github.com/zhedongzheng/finch#web-framework)
-## Machine Learning
+### Machine Learning
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Elastic Net Regressor &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr.py) &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr_test.py) &nbsp; | &nbsp; Elastic Net Classifier &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf.py) &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf_test.py) &nbsp; | &nbsp;
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp;
@@ -33,7 +33,7 @@
 * Java &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java) &nbsp; | &nbsp; 
 #### Decomposition
 * TensorFlow &nbsp; | &nbsp; Non-negative Matrix Factorization &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/nmf.py) &nbsp; | &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/nmf_movielens_test.py) &nbsp; | &nbsp;
-## Deep Learning
+### Deep Learning
 #### Multilayer Perceptron
 * TensorFlow &nbsp; | &nbsp; MLP Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp_clf_cifar10_test.py) &nbsp; | &nbsp; 
 * PyTorch &nbsp; | &nbsp; MLP Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/torch-models/mlp_clf_test.py) &nbsp; | &nbsp; 

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     if RESOL == 'word':
         all_word_list = text.split()
 
-    idx2word, word2idx = build_vocab(all_word_list)
+    word2idx, idx2word = build_vocab(all_word_list)
     vocab_size = len(idx2word)
     print('Vocabulary length:', vocab_size)
     assert len(idx2word) == len(word2idx), "len(idx2word) is not equal to len(word2idx)" # sanity Check
@@ -38,12 +38,12 @@ if __name__ == '__main__':
     with tf.variable_scope('train_model'):
         train_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
                                  vocab_size=vocab_size, seq_len=SEQ_LEN, resolution=RESOL,
-                                 sess=sess)
+                                 word2idx=word2idx, idx2word=idx2word, sess=sess)
     with tf.variable_scope('train_model', reuse=True):
-        sample_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER, resolution=RESOL,
-                                  vocab_size=vocab_size, seq_len=1,
-                                  sess=sess)
+        sample_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
+                                  vocab_size=vocab_size, seq_len=1, resolution=RESOL,
+                                  word2idx=word2idx, idx2word=idx2word, sess=sess)
     log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
                           en_exp_decay=True, en_shuffle=False,
-                          sample_pack=(sample_model, idx2word, word2idx, 30, prime_texts))
+                          sample_model=sample_model, prime_texts=prime_texts, num_gen=30)
     

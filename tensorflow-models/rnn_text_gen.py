@@ -5,7 +5,7 @@ import sklearn
 
 
 class RNNTextGen:
-    def __init__(self, seq_len, vocab_size, cell_size, n_layers, resolution, sess):
+    def __init__(self, seq_len, vocab_size, cell_size, n_layers, resolution, word2idx, idx2word, sess):
         """
         Parameters:
         -----------
@@ -19,6 +19,10 @@ class RNNTextGen:
             Number of layers of stacked rnn cells
         resolution: string
             word-level or char-level
+        word2idx: dict
+            {word: index}
+        idx2word: dict
+            {index: word}
         sess: object
             tf.Session() object 
         """
@@ -27,6 +31,8 @@ class RNNTextGen:
         self.cell_size = cell_size
         self.n_layers = n_layers
         self.resolution = resolution
+        self.word2idx = word2idx
+        self.idx2word = idx2word
         self.sess = sess
         self.current_layer = None
         self.build_graph()
@@ -121,12 +127,11 @@ class RNNTextGen:
     # end method adjust_lr
 
 
-    def fit(self, X, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, sample_pack=None):
-        log = {'train_loss': []}
+    def fit(self, X, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=False,
+            sample_model=None, prime_texts=None, num_gen=None):
+        log = {'loss': []}
         global_step = 0
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
-        if sample_pack is not None:
-            s_model, idx2word, word2idx, num_pred, prime_texts = sample_pack
         
         for epoch in range(n_epoch):
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
@@ -148,19 +153,19 @@ class RNNTextGen:
                 if batch_count % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f' % (epoch+1, n_epoch,
                     batch_count, (len(X)/batch_size), loss, lr))
-                log['train_loss'].append(loss)
+                log['loss'].append(loss)
                 batch_count += 1
                 global_step += 1
             
-            if sample_pack is not None:
+            if sample_model is not None:
                 for prime_text in prime_texts:
-                    print(self.sample(s_model, idx2word, word2idx, num_pred, prime_text), end='\n\n')
+                    print(self.sample(sample_model, prime_text, num_gen), end='\n\n')
             
         return log
     # end method fit
 
 
-    def sample(self, sample_model, idx2word, word2idx, num_pred, prime_text, temperature=1.0):
+    def sample(self, sample_model, prime_text, num_gen, temperature=1.0):
         # warming up
         next_state = self.sess.run(sample_model.init_state, feed_dict={sample_model.batch_size:1})
         if self.resolution == 'word':
@@ -169,16 +174,16 @@ class RNNTextGen:
             word_list = list(prime_text)
         for word in word_list[:-1]:
             x = np.zeros([1,1])
-            x[0,0] = word2idx[word] 
+            x[0,0] = self.word2idx[word] 
             next_state = self.sess.run(sample_model.final_state, feed_dict={sample_model.X:x,
                                                                             sample_model.init_state:next_state})
         # end warming up
 
         out_sentence = prime_text + '|'
         word = word_list[-1]
-        for n in range(num_pred):
+        for n in range(num_gen):
             x = np.zeros([1,1])
-            x[0,0] = word2idx[word]
+            x[0,0] = self.word2idx[word]
             logits, next_state = self.sess.run([sample_model.logits, sample_model.final_state],
                                                 feed_dict={sample_model.X:x,
                                                            sample_model.init_state:next_state})
@@ -187,7 +192,7 @@ class RNNTextGen:
             idx = np.argmax(probs[0])
             if idx == 0:
                 break
-            word = idx2word[idx]
+            word = self.idx2word[idx]
             if self.resolution == 'word':
                 out_sentence = out_sentence + ' ' + word
             if self.resolution == 'char':

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import os, sys
+import time
 import tensorflow as tf
 
 
@@ -27,12 +28,14 @@ if __name__ == '__main__':
     y_train = to_one_hot(y_train)
     y_test = to_one_hot(y_test)
 
+    t0 = time.time()
+
     sess = tf.Session()
     clf = HighwayMLPClassifier(n_in=32*32, n_hidden=16*16, n_highway=20, n_out=10, sess=sess)
-    log = clf.fit(X_train, y_train, n_epoch=20, en_exp_decay=True, val_data=(X_test,y_test), dropout=1.0)
+    log = clf.fit(X_train, y_train, n_epoch=1, en_exp_decay=False, val_data=(X_test,y_test), dropout=1.0)
     pred = clf.predict(X_test)
     tf.reset_default_graph()
     final_acc = np.equal(np.argmax(pred,1), np.argmax(y_test,1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)
 
-    #plot(log)
+    print("total time:", time.time()-t0)

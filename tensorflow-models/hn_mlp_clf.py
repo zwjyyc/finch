@@ -55,10 +55,10 @@ class HighwayMLPClassifier:
 
 
     def highway(self, name, X, size, carry_bias=-1.0, en_batch_norm=None):
-        W_T = tf.get_variable(name+'_wt', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+        W_T = tf.get_variable(name+'_wt', [size,size], tf.float32, tf.contrib.layers.variance_scaling_initializer())
         b_T = tf.get_variable(name+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
 
-        W = tf.get_variable(name+'_w', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+        W = tf.get_variable(name+'_w', [size,size], tf.float32, tf.contrib.layers.variance_scaling_initializer())
         b = tf.get_variable(name+'_b', [size], tf.float32, tf.constant_initializer(0.1))
 
         if en_batch_norm:

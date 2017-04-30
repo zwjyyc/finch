@@ -1,29 +1,29 @@
 ## Contents
-* Theory
-    * Machine Learning
-        * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
-    * Deep Learning
-        * [Convolutional Network](https://zhedongzheng.github.io/finch/conv.html)
-        * [Recurrent Network](https://zhedongzheng.github.io/finch/rnn.html)
-* Practice
-    * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning)
-        * [Linear Model](https://github.com/zhedongzheng/finch#linear-model)
-        * [Support Vector Machine](https://github.com/zhedongzheng/finch#support-vector-machine)
-        * [Decomposition](https://github.com/zhedongzheng/finch#decomposition)
-    * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
-        * [Multilayer Perceptron](https://github.com/zhedongzheng/finch#multilayer-perceptron)
-        * [Convolutional Network](https://github.com/zhedongzheng/finch#convolutional-network)
-        * [Recurrent Network](https://github.com/zhedongzheng/finch#recurrent-network)
-        * [Recurrent Convolutional Network](https://github.com/zhedongzheng/finch#recurrent-convolutional-network)
-        * [Autoencoder](https://github.com/zhedongzheng/finch#autoencoder)
-        * [Highway Network](https://github.com/zhedongzheng/finch#highway-network)
-    * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
-        * [OpenCV in Python](https://github.com/zhedongzheng/finch#opencv-in-python)
-    * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
-        * [Language Processing in Python](https://github.com/zhedongzheng/finch#language-processing-in-python)
-    * [Database](https://github.com/zhedongzheng/finch#database)
-    * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system)
-    * [Web Framework](https://github.com/zhedongzheng/finch#web-framework)
+#### Theory
+* Machine Learning
+  * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
+* Deep Learning
+  * [Convolutional Network](https://zhedongzheng.github.io/finch/conv.html)
+  * [Recurrent Network](https://zhedongzheng.github.io/finch/rnn.html)
+#### Practice
+* [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning)
+  * [Linear Model](https://github.com/zhedongzheng/finch#linear-model)
+  * [Support Vector Machine](https://github.com/zhedongzheng/finch#support-vector-machine)
+  * [Decomposition](https://github.com/zhedongzheng/finch#decomposition)
+* [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning)
+  * [Multilayer Perceptron](https://github.com/zhedongzheng/finch#multilayer-perceptron)
+  * [Convolutional Network](https://github.com/zhedongzheng/finch#convolutional-network)
+  * [Recurrent Network](https://github.com/zhedongzheng/finch#recurrent-network)
+  * [Recurrent Convolutional Network](https://github.com/zhedongzheng/finch#recurrent-convolutional-network)
+  * [Autoencoder](https://github.com/zhedongzheng/finch#autoencoder)
+  * [Highway Network](https://github.com/zhedongzheng/finch#highway-network)
+* [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision)
+  * [OpenCV in Python](https://github.com/zhedongzheng/finch#opencv-in-python)
+* [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing)
+  * [Language Processing in Python](https://github.com/zhedongzheng/finch#language-processing-in-python)
+* [Database](https://github.com/zhedongzheng/finch#database)
+* [Distributed System](https://github.com/zhedongzheng/finch#distributed-system)
+* [Web Framework](https://github.com/zhedongzheng/finch#web-framework)
 ## Machine Learning
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Elastic Net Regressor &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr.py) &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_regr_test.py) &nbsp; | &nbsp; Elastic Net Classifier &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf.py) &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/elastic_net_clf_test.py) &nbsp; | &nbsp;

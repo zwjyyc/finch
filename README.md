@@ -72,4 +72,4 @@
 * [Java Multi-threading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
 ## Web Framework
-* [Django Example - Dynamically Creating Stock Image by Matplotlib](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)
+* [Django Example - Dynamically Generating Stock Image from Matplotlib](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)

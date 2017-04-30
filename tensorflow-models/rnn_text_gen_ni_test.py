@@ -5,15 +5,15 @@ from utils import clean_text, build_vocab, convert_text_to_idx
 from rnn_text_gen import RNNTextGen
 
 
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 SEQ_LEN = 30
 NUM_LAYER = 3
 CELL_SIZE = 128
 RESOL = 'char'
 prime_texts = [
-    'having kept a sharp eye on philosophers',
-    'it seems to me that there is everywhere an',
-    'it has gradually become clear to me what every'
+    'having kept a sharp',
+    'it seems to me',
+    'it has gradually'
 ]
 
 
@@ -48,5 +48,5 @@ if __name__ == '__main__':
                                   sess=sess)
     log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
                           en_exp_decay=True, en_shuffle=False,
-                          sample_pack=(sample_model, idx2word, word2idx, 20, prime_texts))
+                          sample_pack=(sample_model, idx2word, word2idx, 30, prime_texts))
     

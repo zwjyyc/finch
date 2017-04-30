@@ -45,5 +45,5 @@ if __name__ == '__main__':
                                   sess=sess)
     log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
                           en_exp_decay=True, en_shuffle=False,
-                          sample_pack=(sample_model, idx2word, word2idx, 20, prime_texts))
+                          sample_pack=(sample_model, idx2word, word2idx, 30, prime_texts))
     

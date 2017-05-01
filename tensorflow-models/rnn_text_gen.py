@@ -96,6 +96,7 @@ class RNNTextGen:
 
     def add_output_layer(self):
         self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
+        self.softmax_out = tf.nn.softmax(self.logits)
     # end method add_output_layer
 
 
@@ -184,12 +185,10 @@ class RNNTextGen:
         for n in range(num_gen):
             x = np.zeros([1,1])
             x[0,0] = self.word2idx[word]
-            logits, next_state = self.sess.run([sample_model.logits, sample_model.final_state],
-                                                feed_dict={sample_model.X:x,
-                                                           sample_model.init_state:next_state})
-            unnorm_probs = np.exp((logits - np.max(logits)) / temperature)
-            probs = unnorm_probs / np.sum(unnorm_probs)
-            idx = np.argmax(probs[0])
+            softmax_out, next_state = self.sess.run([sample_model.softmax_out, sample_model.final_state],
+                                                     feed_dict={sample_model.X:x,
+                                                                sample_model.init_state:next_state})
+            idx = self.infer_idx(softmax_out[0], temperature)
             if idx == 0:
                 break
             word = self.idx2word[idx]
@@ -199,6 +198,16 @@ class RNNTextGen:
                 out_sentence = out_sentence + word
         return(out_sentence)
     # end method sample
+
+
+    def infer_idx(self, preds, temperature=1.0): # helper function to sample an index from a probability array
+        preds = np.asarray(preds).astype('float64')
+        preds = np.log(preds) / temperature
+        exp_preds = np.exp(preds)
+        preds = exp_preds / np.sum(exp_preds)
+        probas = np.random.multinomial(1, preds, 1)
+        return np.argmax(probas)
+    # end method infer_idx
 
 
     def gen_batch(self, arr, batch_size):

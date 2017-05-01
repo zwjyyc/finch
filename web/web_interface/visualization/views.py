@@ -20,7 +20,6 @@ def plot(request):
         company = request.POST['company']
         end_date = request.POST['end_date']
         start_date = request.POST['start_date']
-
     code_dict = {'S&P 500': '^GSPC',
                  'Technology SPDR': 'XLK', 'Finance SPDR': 'XLF',
                  'Apple': 'AAPL', 'Google': 'GOOG', 'Goldman Sachs': 'GS', 'JP Morgan': 'JPM'}

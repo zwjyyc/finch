@@ -34,7 +34,7 @@ if __name__ == '__main__':
     for train_idx, train_sample in enumerate(train_data):
         seq, res = train_sample
         _, train_loss, train_state = model.sess.run([model.train_op, model.loss, model.final_state],
-                                                     feed_dict={model.X:seq, model.y:res,
+                                                     feed_dict={model.X:seq, model.Y:res,
                                                                 model.init_state:train_state,
                                                                 model.batch_size:BATCH_SIZE})
         if test_data is None:
@@ -46,7 +46,7 @@ if __name__ == '__main__':
             for test_idx, test_sample in enumerate(test_data):
                 seq_test, res_test = test_sample
                 test_loss, test_state = model.sess.run([model.loss, model.final_state],
-                                                        feed_dict={model.X:seq_test, model.y:res_test,
+                                                        feed_dict={model.X:seq_test, model.Y:res_test,
                                                                    model.init_state:test_state,
                                                                    model.batch_size:BATCH_SIZE})
                 test_loss_list.append(test_loss)

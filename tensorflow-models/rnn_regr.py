@@ -42,7 +42,7 @@ class RNNRegressor:
     def add_input_layer(self):
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
-        self.y = tf.placeholder(tf.float32, [None, self.n_step, self.n_out])
+        self.Y = tf.placeholder(tf.float32, [None, self.n_step, self.n_out])
         self.W = tf.get_variable('W', [self.cell_size, self.n_out], tf.float32,
                                  tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
@@ -78,7 +78,7 @@ class RNNRegressor:
     def add_backward_path(self):
         losses = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
             logits = [tf.reshape(self.logits, [-1])],
-            targets = [tf.reshape(self.y, [-1])],
+            targets = [tf.reshape(self.Y, [-1])],
             weights = [tf.ones([self.batch_size * self.n_step])],
             average_across_timesteps = True,
             softmax_loss_function = self.squared_error,
@@ -88,7 +88,7 @@ class RNNRegressor:
     # end method add_backward_path
 
 
-    def squared_error(self, y_pred, y_target):
-        return tf.square(tf.subtract(y_pred, y_target))
+    def squared_error(self, pred, target):
+        return tf.square(tf.subtract(pred, target))
     # end method squared_error
 # end class RNNRegressor

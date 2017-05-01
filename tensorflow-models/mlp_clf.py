@@ -36,7 +36,7 @@ class MLPClassifier:
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
-        self.y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
@@ -59,27 +59,27 @@ class MLPClassifier:
 
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y))
+        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.y,1)), tf.float32))
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
     # end method add_backward_path
 
 
     def fc(self, name, X, fan_in, fan_out, batch_norm=None, activation=None, dropout=None):
         W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32, tf.contrib.layers.variance_scaling_initializer())
         b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
-        y = tf.nn.bias_add(tf.matmul(X, W), b)
+        Y = tf.nn.bias_add(tf.matmul(X, W), b)
         if batch_norm:
-            y = tf.contrib.layers.batch_norm(y)
+            Y = tf.contrib.layers.batch_norm(Y)
         if activation == 'relu':
-            y = tf.nn.relu(y)
+            Y = tf.nn.relu(Y)
         if dropout:
-            y = tf.nn.dropout(y, self.keep_prob)
-        return y
+            Y = tf.nn.dropout(Y, self.keep_prob)
+        return Y
     # end method fc (fully-connected)
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, dropout=1.0):
+    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, dropout=1.0):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -89,12 +89,11 @@ class MLPClassifier:
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
-            # batch training
             local_step = 1
-            for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
+            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                              feed_dict={self.X: X_batch, self.y: y_batch,
+                                              feed_dict={self.X: X_batch, self.Y: Y_batch,
                                                          self.lr: lr, self.keep_prob:dropout})
                 local_step += 1
                 global_step += 1
@@ -104,10 +103,10 @@ class MLPClassifier:
             if val_data is not None:
                 # compute validation loss and acc
                 val_loss_list, val_acc_list = [], []
-                for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
+                for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                     self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                                   feed_dict={self.X:X_test_batch, self.y:y_test_batch,
+                                                   feed_dict={self.X:X_test_batch, self.Y:Y_test_batch,
                                                               self.keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)

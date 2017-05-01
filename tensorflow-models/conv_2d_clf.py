@@ -37,8 +37,12 @@ class ConvClassifier:
         self.add_input_layer()
 
         self.add_conv('conv1', filter_shape=[self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
+        self.add_conv('conv1_1', filter_shape=[3,3,32,32])
+        self.add_conv('conv1_2', filter_shape=[3,3,32,32])
         self.add_maxpool(k = self.pool_size)
         self.add_conv('conv2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 64])
+        self.add_conv('conv2_1', filter_shape=[3,3,64,64])
+        self.add_conv('conv2_2', filter_shape=[3,3,64,64])
         self.add_maxpool(k = self.pool_size)
         self.add_fc('fc', [int(self.img_size[0]/4)*int(self.img_size[1]/4)*64,512], flatten_input=True)
 

@@ -56,7 +56,7 @@
 #### Highway Network
 * TensorFlow &nbsp; | &nbsp; Highway MLP Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_mlp_clf_cifar10_test.py) &nbsp; | &nbsp; 
 * TensorFlow &nbsp; | &nbsp; Highway CNN Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/hn_conv_clf_cifar10_keras_idg_test.py) &nbsp; | &nbsp;
-## Computer Vision Practice
+## Computer Vision (Practice)
 #### Basic Operations
   * [Resize](https://github.com/zhedongzheng/finch/blob/master/computer-vision/resize.ipynb)
   * [Rotations](https://github.com/zhedongzheng/finch/blob/master/computer-vision/rotations.ipynb)
@@ -66,13 +66,13 @@
 #### Detection
   * [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
   * [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)
-## Natural Language Processing Practice
+## Natural Language Processing (Practice)
 * [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
 * [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-indexing.ipynb)
-## Database System Practice
+## Database System (Practice)
 * [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
-## Distributed System Practice
+## Distributed System (Practice)
 * [Java Multithreading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
-## Web Framework Practice
+## Web Framework (Practice)
 * [Django Example - Dynamically Updating Stock Image](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)

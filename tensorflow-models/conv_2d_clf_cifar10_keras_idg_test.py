@@ -14,8 +14,8 @@ if __name__ == '__main__':
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
     X_train = X_train / 255.0
     X_test = X_test / 255.0
-    y_train = to_one_hot(y_train)
-    y_test = to_one_hot(y_test)
+    Y_train = to_one_hot(y_train)
+    Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
     model = ConvClassifier(img_size=(32,32), img_ch=3, kernel_size=(5,5), pool_size=2, n_out=10, sess=sess)
@@ -38,12 +38,12 @@ if __name__ == '__main__':
     for epoch in range(n_epoch):
 
         local_step = 1
-        for X_batch, y_batch in datagen.flow(X_train, y_train, batch_size=batch_size):
+        for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=batch_size):
             if local_step > int(len(X_train)/batch_size):
                 break
             lr = model.decrease_lr(True, global_step, n_epoch, len(X_train), batch_size) 
             _, loss, acc = model.sess.run([model.train_op, model.loss, model.acc],
-                                          feed_dict={model.X:X_batch, model.y:y_batch,
+                                          feed_dict={model.X:X_batch, model.Y:Y_batch,
                                                      model.lr:lr, model.keep_prob:0.5})
             local_step += 1
             global_step += 1
@@ -52,10 +52,10 @@ if __name__ == '__main__':
                         %(epoch+1, n_epoch, local_step, int(len(X_train)/batch_size), loss, acc, lr))
 
         val_loss_list, val_acc_list = [], []
-        for X_test_batch, y_test_batch in zip(model.gen_batch(X_test, batch_size),
-                                              model.gen_batch(y_test, batch_size)):
+        for X_test_batch, Y_test_batch in zip(model.gen_batch(X_test, batch_size),
+                                              model.gen_batch(Y_test, batch_size)):
             v_loss, v_acc = model.sess.run([model.loss, model.acc],
-                                            feed_dict={model.X:X_test_batch, model.y:y_test_batch,
+                                            feed_dict={model.X:X_test_batch, model.Y:Y_test_batch,
                                                        model.keep_prob:1.0})
             val_loss_list.append(v_loss)
             val_acc_list.append(v_acc)

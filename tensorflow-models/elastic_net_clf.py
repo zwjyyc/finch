@@ -32,7 +32,7 @@ class ElasticNetClassifier:
 
     def add_input_layer(self):
         self.X = tf.placeholder(shape=(None, self.n_in), dtype=tf.float32)
-        self.y = tf.placeholder(shape=[None, self.n_out], dtype=tf.float32)
+        self.Y = tf.placeholder(shape=[None, self.n_out], dtype=tf.float32)
         self.W = tf.Variable(tf.random_normal([self.n_in, self.n_out]))
         self.b = tf.Variable(tf.constant(0.1, shape=[self.n_out]))
     # end method add_input_layer
@@ -44,29 +44,29 @@ class ElasticNetClassifier:
 
 
     def add_backward_path(self):
-        regr_loss = tf.reduce_mean(-tf.reduce_sum(self.y*tf.log(self.pred), axis=1))
+        regr_loss = tf.reduce_mean(-tf.reduce_sum(self.Y*tf.log(self.pred), axis=1))
         l1_loss = tf.reduce_mean(tf.abs(self.W))
         l2_loss = tf.reduce_mean(tf.square(self.W))
         self.loss = regr_loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.pred,1), tf.argmax(self.y,1)), tf.float32))
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.pred,1), tf.argmax(self.Y,1)), tf.float32))
         self.train_op = tf.train.GradientDescentOptimizer(0.005).minimize(self.loss)
     # end method add_backward_path
 
 
-    def fit(self, X, y, val_data, n_epoch=100, batch_size=100):
+    def fit(self, X, Y, val_data, n_epoch=100, batch_size=100):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
-            for X_batch, y_batch in zip(self.gen_batch(X, batch_size), # batch training
-                                        self.gen_batch(y, batch_size)):
+            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), # batch training
+                                        self.gen_batch(Y, batch_size)):
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                              feed_dict={self.X:X_batch, self.y:y_batch})
+                                              feed_dict={self.X:X_batch, self.Y:Y_batch})
 
             val_loss_list, val_acc_list = [], []
-            for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
+            for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                   self.gen_batch(val_data[1], batch_size)):
                 v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                               feed_dict={self.X:X_test_batch, self.y:y_test_batch})
+                                               feed_dict={self.X:X_test_batch, self.Y:Y_test_batch})
                 val_loss_list.append(v_loss)
                 val_acc_list.append(v_acc)
             val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)

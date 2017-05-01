@@ -49,7 +49,7 @@ class ConvClassifier:
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.float32, [None, self.img_size[0], self.img_size[1], self.img_ch])
-        self.y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
@@ -91,9 +91,9 @@ class ConvClassifier:
 
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y))
+        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.y, 1)), tf.float32))
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.Y, 1)), tf.float32))
     # end method add_backward_path
 
 
@@ -107,7 +107,7 @@ class ConvClassifier:
     # end method _b
 
 
-    def fit(self, X, y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True,
+    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True,
             en_shuffle=True):
         if val_data is None:
             print("Train %d samples" % len(X))
@@ -118,18 +118,15 @@ class ConvClassifier:
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
-
             if en_shuffle:
-                X_train, y_train = sklearn.utils.shuffle(X, y)
-            else:
-                X_train, y_train = X, y
+                X, Y = sklearn.utils.shuffle(X, Y)
             local_step = 1
             
-            for X_batch, y_batch in zip(self.gen_batch(X_train,batch_size),
-                                        self.gen_batch(y_train,batch_size)): # batch training
+            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size),
+                                        self.gen_batch(Y, batch_size)): # batch training
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                              feed_dict={self.X:X_batch, self.y:y_batch,
+                                              feed_dict={self.X:X_batch, self.Y:Y_batch,
                                                          self.lr:lr, self.keep_prob:keep_prob})
                 local_step += 1
                 global_step += 1
@@ -139,10 +136,10 @@ class ConvClassifier:
 
             if val_data is not None: # go through test dara, compute averaged validation loss and acc
                 val_loss_list, val_acc_list = [], []
-                for X_test_batch, y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
+                for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                                   feed_dict={self.X:X_test_batch, self.y:y_test_batch,
+                                                   feed_dict={self.X:X_test_batch, self.Y:Y_test_batch,
                                                               self.keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)

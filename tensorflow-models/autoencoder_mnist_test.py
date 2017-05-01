@@ -1,4 +1,3 @@
-from keras.datasets import mnist
 from autoencoder import Autoencoder
 from keras.datasets import mnist
 import matplotlib.pyplot as plt

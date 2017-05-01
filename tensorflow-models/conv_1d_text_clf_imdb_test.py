@@ -25,17 +25,17 @@ if __name__ == '__main__':
     X_test = sequence.pad_sequences(X_test, maxlen=maxlen)
     print('x_train shape:', X_train.shape)
     print('x_test shape:', X_test.shape)
-    y_train = to_one_hot(y_train)
-    y_test = to_one_hot(y_test)
+    Y_train = to_one_hot(y_train)
+    Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
     clf = Conv1DClassifier(seq_len=maxlen, vocab_size=max_features, embedding_dims=embedding_dims,
                            n_filters=n_filters, kernel_size=kernel_size, hidden_dims=hidden_dims,
                            n_out=2, sess=sess)
-    log = clf.fit(X_train, y_train, n_epoch=10, batch_size=batch_size, en_exp_decay=True, en_shuffle=True,
-                  keep_prob=0.8, val_data=(X_test,y_test))
+    log = clf.fit(X_train, Y_train, n_epoch=10, batch_size=batch_size, en_exp_decay=True, en_shuffle=True,
+                  keep_prob=0.8, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()
 
-    final_acc = np.equal(np.argmax(pred,1), np.argmax(y_test,1)).astype(float).mean()
+    final_acc = np.equal(np.argmax(pred,1), np.argmax(Y_test,1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)

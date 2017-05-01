@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = ElasticNetClassifier(l1_ratio=0.15, n_in=X.shape[1], n_out=2, sess=sess)
-    clf.fit(X_train, Y_train, n_epoch=500, val_data=(X_test, Y_test))
+    clf.fit(X_train, Y_train, n_epoch=100, val_data=(X_test, Y_test))
     Y_pred = clf.predict(X_test)
     final_acc = np.equal(np.argmax(Y_pred,1), np.argmax(Y_test,1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)

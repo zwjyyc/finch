@@ -35,7 +35,7 @@ def convert_text_to_idx(all_word_list, word2idx):
             all_word_idx.append(word2idx[word])
         except:
             all_word_idx.append(0)
-    return np.array(all_word_idx)
+    return all_word_idx
 # end function convert_text_to_idx()
 
 

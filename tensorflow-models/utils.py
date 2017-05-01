@@ -42,10 +42,6 @@ def convert_text_to_idx(all_word_list, word2idx):
 def load_shakespeare_text():
     data_dir = 'temp'
     data_file = 'shakespeare.txt'
-    model_path = 'shakespeare_model'
-    full_model_dir = os.path.join(data_dir, model_path)
-    if not os.path.exists(full_model_dir):
-        os.makedirs(full_model_dir)
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
     print('Loading Shakespeare Data')

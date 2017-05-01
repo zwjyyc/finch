@@ -72,7 +72,7 @@
 ## Database System Practice
 * [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Distributed System Practice
-* [Java Multi-threading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
+* [Java Multithreading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
 ## Web Framework Practice
-* [Django Example - Dynamically Generating Stock Image at the Back End](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)
+* [Django Example - Dynamically Updating Stock Image](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)

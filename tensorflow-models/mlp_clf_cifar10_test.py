@@ -15,7 +15,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = MLPClassifier(n_in=32*32, hidden_unit_list=[14*14]*100, n_out=10, sess=sess)
+    clf = MLPClassifier(n_in=32*32, hidden_unit_list=[16*16]*5, n_out=10, sess=sess)
 
     t0 = time.time()
     

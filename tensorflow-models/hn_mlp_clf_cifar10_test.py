@@ -15,7 +15,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = HighwayMLPClassifier(n_in=32*32, n_hidden=16*16, n_highway=100, n_out=10, sess=sess)
+    clf = HighwayMLPClassifier(n_in=32*32, n_hidden=16*16, n_highway=5, n_out=10, sess=sess)
 
     t0 = time.time()
     

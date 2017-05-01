@@ -41,7 +41,7 @@ if __name__ == '__main__':
         for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=batch_size):
             if local_step > int(len(X_train)/batch_size):
                 break
-            lr = model.adjust_lr(True, global_step, n_epoch, len(X_train), batch_size) 
+            lr = model.decrease_lr(True, global_step, n_epoch, len(X_train), batch_size) 
             _, loss, acc = model.sess.run([model.train_op, model.loss, model.acc],
                                            feed_dict={model.X:X_batch, model.Y:Y_batch,
                                                       model.lr:lr, model.keep_prob:0.5})

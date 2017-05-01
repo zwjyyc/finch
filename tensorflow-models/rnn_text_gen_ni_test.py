@@ -5,11 +5,12 @@ from utils import clean_text, build_vocab, convert_text_to_idx
 from rnn_text_gen import RNNTextGen
 
 
-BATCH_SIZE = 32
-SEQ_LEN = 30
+BATCH_SIZE = 128
+SEQ_LEN = 40
 NUM_LAYER = 3
 CELL_SIZE = 128
 RESOL = 'char'
+text_iter_step = 3
 prime_texts = [
     'having kept a sharp',
     'it seems to me',
@@ -34,7 +35,10 @@ if __name__ == '__main__':
     assert len(idx2word) == len(word2idx), "len(idx2word) is not equal to len(word2idx)" # sanity Check
 
     all_word_idx = convert_text_to_idx(all_word_list, word2idx)
-    X = np.resize(all_word_idx, [int(len(all_word_idx)/SEQ_LEN), SEQ_LEN])
+    X = []
+    for i in range(0, len(all_word_idx)-SEQ_LEN, text_iter_step):
+        X.append(all_word_idx[i:i+SEQ_LEN])
+    X = np.array(X)
     print('X shape:', X.shape)
     
     sess = tf.Session()

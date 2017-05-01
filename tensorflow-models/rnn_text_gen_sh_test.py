@@ -9,10 +9,10 @@ SEQ_LEN = 50
 NUM_LAYER = 3
 CELL_SIZE = 128
 RESOL = 'char'
-prime_texts = [
-    'look in thy glass and tell the face thou viewest now is the time that face should form another',
-    'those hours that with gentle work did frame the lovely gaze where every eye doth dwell will play the tyrants',
-]
+text_iter_step = 25
+prime_texts = ['thou art more',
+               'to be or not to',
+               'wherefore art thou']
 
 
 if __name__ == '__main__':
@@ -30,7 +30,10 @@ if __name__ == '__main__':
     assert len(idx2word) == len(word2idx), "len(idx2word) is not equal to len(word2idx)" # sanity Check
 
     all_word_idx = convert_text_to_idx(all_word_list, word2idx)
-    X = np.resize(all_word_idx, [int(len(all_word_idx)/SEQ_LEN), SEQ_LEN])
+    X = []
+    for i in range(0, len(all_word_idx)-SEQ_LEN, text_iter_step):
+        X.append(all_word_idx[i:i+SEQ_LEN])
+    X = np.array(X)
     print('X shape:', X.shape)
     
     sess = tf.Session()

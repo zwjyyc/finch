@@ -10,9 +10,8 @@ NUM_LAYER = 3
 CELL_SIZE = 128
 RESOL = 'char'
 prime_texts = [
-    'thou art more',
-    'to be or not to',
-    'wherefore art thou'
+    'look in thy glass and tell the face thou viewest now is the time that face should form another',
+    'those hours that with gentle work did frame the lovely gaze where every eye doth dwell will play the tyrants',
 ]
 
 
@@ -45,5 +44,5 @@ if __name__ == '__main__':
                                   word2idx=word2idx, idx2word=idx2word, sess=sess)
     log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
                           en_exp_decay=True, en_shuffle=False,
-                          sample_model=sample_model, prime_texts=prime_texts, num_gen=30)
+                          sample_model=sample_model, prime_texts=prime_texts, num_gen=50)
     

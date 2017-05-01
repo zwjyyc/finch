@@ -1,8 +1,8 @@
 ## Contents
 ### Theory
-* Machine Learning Theory
+* Machine Learning
     * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
-* Deep Learning Theory
+* Deep Learning
     * [Convolutional Network](https://zhedongzheng.github.io/finch/conv.html)
     * [Recurrent Network](https://zhedongzheng.github.io/finch/rnn.html)
 ### Practice

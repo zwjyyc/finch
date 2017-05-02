@@ -129,7 +129,7 @@ class RNNTextGen:
 
 
     def fit(self, X, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=False,
-            sample_model=None, prime_texts=None, num_gen=None):
+            sample_model=None, prime_texts=None, num_gen=None, temperature=1.0):
         log = {'loss': []}
         global_step = 0
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
@@ -160,13 +160,13 @@ class RNNTextGen:
             
             if sample_model is not None:
                 for prime_text in prime_texts:
-                    print(self.sample(sample_model, prime_text, num_gen), end='\n\n')
+                    print(self.sample(sample_model, prime_text, num_gen, temperature), end='\n\n')
             
         return log
     # end method fit
 
 
-    def sample(self, sample_model, prime_text, num_gen, temperature=1.0):
+    def sample(self, sample_model, prime_text, num_gen, temperature):
         # warming up
         next_state = self.sess.run(sample_model.init_state, feed_dict={sample_model.batch_size:1})
         if self.resolution == 'word':
@@ -200,7 +200,7 @@ class RNNTextGen:
     # end method sample
 
 
-    def infer_idx(self, preds, temperature=1.0): # helper function to sample an index from a probability array
+    def infer_idx(self, preds, temperature): # helper function to sample an index from a probability array
         preds = np.asarray(preds).astype('float64')
         preds = np.log(preds) / temperature
         exp_preds = np.exp(preds)

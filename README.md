@@ -23,7 +23,7 @@
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
 * [Web Framework](https://github.com/zhedongzheng/finch#web-framework-practice)
 ## Machine Learning (Theory)
-* [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy.html)
+* [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
 ## Deep Learning (Theory)
 * [Convolutional Network](https://zhedongzheng.github.io/finch/conv.html)

@@ -2,7 +2,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
 from sklearn.svm import SVC
 from keras.utils.np_utils import to_categorical as to_one_hot
-from elastic_net_clf import ElasticNetClassifier
+from logistic import Logistic
 import tensorflow as tf
 import numpy as np
 
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = ElasticNetClassifier(l1_ratio=0.15, n_in=X.shape[1], n_out=2, sess=sess)
+    clf = Logistic(l1_ratio=0.15, n_in=X.shape[1], n_out=2, sess=sess)
     clf.fit(X_train, Y_train, n_epoch=100, val_data=(X_test, Y_test))
     Y_pred = clf.predict(X_test)
     final_acc = np.equal(np.argmax(Y_pred,1), np.argmax(Y_test,1)).astype(float).mean()

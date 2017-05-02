@@ -2,7 +2,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 from sklearn.datasets import make_regression
 from sklearn.linear_model import LinearRegression
-from elastic_net_regr import ElasticNetRegression
+from linear_regr import LinearRegression as LR
 import tensorflow as tf
 
 
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     Y_test = y_test.reshape(-1, 1)
 
     sess = tf.Session()
-    regr = ElasticNetRegression(l1_ratio=0.15, n_in=X.shape[1], sess=sess)
+    regr = LR(l1_ratio=0.15, n_in=X.shape[1], sess=sess)
     regr.fit(X_train, Y_train, val_data=(X_test, Y_test))
     Y_pred = regr.predict(X_test)
     print("Tensorflow R2: ", r2_score(Y_pred.ravel(), Y_test.ravel()))

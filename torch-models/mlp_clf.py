@@ -5,38 +5,32 @@ import numpy as np
 
 
 class MLPClassifier(nn.Module):
-    def __init__(self, input_size, hidden_1_size, hidden_2_size, hidden_3_size, num_classes):
+    def __init__(self, n_in, hidden_units, n_out):
         super(MLPClassifier, self).__init__()
-        self.input_size = input_size
-        self.hidden_1_size = hidden_1_size
-        self.hidden_2_size = hidden_2_size
-        self.hidden_3_size = hidden_3_size
-        self.num_classes = num_classes
+        self.n_in = n_in
+        self.hidden_units = hidden_units
+        self.n_out = n_out
         self.build_model()
     # end constructor
 
 
     def build_model(self):
-        self.fc1 = nn.Linear(self.input_size, self.hidden_1_size) 
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(self.hidden_1_size, self.hidden_2_size)
-        self.relu = nn.ReLU()
-        self.fc3 = nn.Linear(self.hidden_2_size, self.hidden_3_size)
-        self.relu = nn.ReLU()
-        self.fc4 = nn.Linear(self.hidden_3_size, self.num_classes)
+        self.fc = nn.Sequential(
+            nn.Linear(self.n_in, self.hidden_units[0]),
+            nn.ReLU(),
+            nn.Linear(self.hidden_units[0], self.hidden_units[1]),
+            nn.ReLU(),
+            nn.Linear(self.hidden_units[1], self.hidden_units[2]),
+            nn.ReLU(),
+            nn.Linear(self.hidden_units[2], self.n_out),
+        )
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
     # end method build_model    
 
 
     def forward(self, x):
-        out = self.fc1(x)
-        out = self.relu(out)
-        out = self.fc2(out)
-        out = self.relu(out)
-        out = self.fc3(out)
-        out = self.relu(out)
-        out = self.fc4(out)
+        out = self.fc(x)
         return out
     # end method forward
 
@@ -48,16 +42,17 @@ class MLPClassifier(nn.Module):
                                                     self.gen_batch(y, batch_size)):
                 images = Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
                 labels = Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
-                # forward + backward + optimize
-                self.optimizer.zero_grad()
-                outputs = self.forward(images)
-                loss = self.criterion(outputs, labels)
-                loss.backward()
-                self.optimizer.step()
-                i+=1
+
+                pred = self.forward(images)             # rnn output
+                loss = self.criterion(pred, labels)     # cross entropy loss
+                self.optimizer.zero_grad()              # clear gradients for this training step
+                loss.backward()                         # backpropagation, compute gradients
+                self.optimizer.step()                   # apply gradients
+                i+=1 
+                acc = np.equal(torch.max(pred,1)[1].data.numpy().squeeze(), y_train_batch).astype(float).mean()
                 if (i+1) % 100 == 0:
-                    print ('Epoch [%d/%d], Step [%d/%d], Loss: %.5f'
-                           %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0]))
+                    print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
+                           %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
     # end method fit
 
 

@@ -1,3 +1,4 @@
+![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 ## Contents
 ### Theory
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-theory)

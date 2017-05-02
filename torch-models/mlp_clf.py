@@ -14,23 +14,26 @@ class MLPClassifier(nn.Module):
     # end constructor
 
 
-    def build_model(self):
-        self.fc = nn.Sequential(
-            nn.Linear(self.n_in, self.hidden_units[0]),
-            nn.ReLU(),
-            nn.Linear(self.hidden_units[0], self.hidden_units[1]),
-            nn.ReLU(),
-            nn.Linear(self.hidden_units[1], self.hidden_units[2]),
-            nn.ReLU(),
-            nn.Linear(self.hidden_units[2], self.n_out),
-        )
+    def build_model(self):            
+        self.mlp = nn.Sequential(*self._dense())
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
     # end method build_model    
 
 
+    def _dense(self):
+        dense = []
+        forward = [self.n_in] + self.hidden_units
+        for i in range(len(forward)-1):
+            dense.append(nn.Linear(forward[i], forward[i+1]))
+            dense.append(nn.ReLU())
+        dense.append(nn.Linear(self.hidden_units[-1], self.n_out))
+        return dense
+    # end method _dense         
+    
+
     def forward(self, x):
-        out = self.fc(x)
+        out = self.mlp(x)
         return out
     # end method forward
 

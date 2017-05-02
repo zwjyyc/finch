@@ -26,8 +26,8 @@ class RNNClassifier(nn.Module):
     def forward(self, x):
         h_0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size)) # set initial states  
         c_0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size)) # set initial states 
-        out, (h_n, c_n) = self.lstm(x, (h_0, c_0)) # forward propagate
-        out = self.fc(out[:, -1, :]) # decode hidden state of last time step
+        out, (h_n, c_n) = self.lstm(x, (h_0, c_0))                                # forward propagate
+        out = self.fc(out[:, -1, :])                                              # decode hidden state of last time step
         return out
     # end method forward
 
@@ -40,11 +40,11 @@ class RNNClassifier(nn.Module):
                 images = Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
                 labels = Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
                 
-                pred = self.forward(images) # rnn output
-                loss = self.criterion(pred, labels) # cross entropy loss
-                self.optimizer.zero_grad() # clear gradients for this training step
-                loss.backward() # backpropagation, compute gradients
-                self.optimizer.step() # apply gradients
+                pred = self.forward(images)             # rnn output
+                loss = self.criterion(pred, labels)     # cross entropy loss
+                self.optimizer.zero_grad()              # clear gradients for this training step
+                loss.backward()                         # backpropagation, compute gradients
+                self.optimizer.step()                   # apply gradients
                 i+=1 
                 acc = np.equal(torch.max(pred,1)[1].data.numpy().squeeze(), y_train_batch).astype(float).mean()
                 if (i+1) % 100 == 0:

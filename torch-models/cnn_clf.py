@@ -5,39 +5,46 @@ import numpy as np
 
 
 class CNNClassifier(nn.Module):
-    def __init__(self, img_h, img_w, num_classes):
+    def __init__(self, img_size, img_ch, kernel_size, pool_size, n_out):
         super(CNNClassifier, self).__init__()
-        self.img_h = img_h
-        self.img_w = img_w
-        self.num_classes = num_classes
+        self.img_size = img_size
+        self.img_ch = img_ch
+        self.kernel_size = kernel_size
+        self.pool_size = pool_size
+        self.n_out = n_out
         self.build_model()
     # end constructor
 
 
     def build_model(self):
-        self.layer1 = nn.Sequential(
-            nn.Conv2d(1, 16, kernel_size=5, padding=2),
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(self.img_ch, 16, kernel_size=self.kernel_size, padding=2),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.MaxPool2d(2))
-        self.layer2 = nn.Sequential(
-            nn.Conv2d(16, 32, kernel_size=5, padding=2),
+            nn.MaxPool2d(self.pool_size))
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(16, 32, kernel_size=self.kernel_size, padding=2),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.MaxPool2d(2))
-        self.fc = nn.Linear(int(self.img_h/4)*int(self.img_h/4)*32, self.num_classes)
+            nn.MaxPool2d(self.pool_size))
+        self.fc = nn.Linear(int(self.img_size[0]/4)*int(self.img_size[1]/4)*32, self.n_out)
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
     # end method build_model
 
 
     def forward(self, x):
-        out = self.layer1(x)
-        out = self.layer2(out)
-        out = out.view(out.size(0), -1)
+        out = self.conv1(x)
+        out = self.conv2(out)
+        out = self.flatten(out)
         out = self.fc(out)
         return out
     # end method forward
+
+
+    def flatten(self, x):
+        return x.view(x.size(0), -1)
+    # end method flatten
 
 
     def fit(self, X, y, num_epochs, batch_size):
@@ -47,16 +54,17 @@ class CNNClassifier(nn.Module):
                                                     self.gen_batch(y, batch_size)):
                 images = Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
                 labels = Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
-                # forward + backward + optimize
-                self.optimizer.zero_grad()
-                outputs = self.forward(images)
-                loss = self.criterion(outputs, labels)
-                loss.backward()
-                self.optimizer.step()
-                i+=1
+
+                pred = self.forward(images)             # rnn output
+                loss = self.criterion(pred, labels)     # cross entropy loss
+                self.optimizer.zero_grad()              # clear gradients for this training step
+                loss.backward()                         # backpropagation, compute gradients
+                self.optimizer.step()                   # apply gradients
+                i+=1 
+                acc = np.equal(torch.max(pred,1)[1].data.numpy().squeeze(), y_train_batch).astype(float).mean()
                 if (i+1) % 100 == 0:
-                    print ('Epoch [%d/%d], Step [%d/%d], Loss: %.5f'
-                           %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0]))
+                    print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
+                           %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
     # end method fit
 
 

@@ -72,12 +72,7 @@ class MLPClassifier(nn.Module):
 
 
     def gen_batch(self, arr, batch_size):
-        if len(arr) % batch_size != 0:
-            new_len = len(arr) - len(arr) % batch_size
-            for i in range(0, new_len, batch_size):
-                yield arr[i : i + batch_size]
-        else:
-            for i in range(0, len(arr), batch_size):
-                yield arr[i : i + batch_size]
+        for i in range(0, len(arr), batch_size):
+            yield arr[i : i + batch_size]
     # end method gen_batch
 # end class RNNClassifier

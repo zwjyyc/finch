@@ -6,7 +6,7 @@ n_in = 28
 cell_size = 128
 n_layer = 2
 n_out = 10
-batch_size = 100
+batch_size = 128
 n_epoch = 2
 
 

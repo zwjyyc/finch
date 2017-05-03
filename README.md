@@ -3,6 +3,7 @@
 ### Theory
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-theory)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning-theory)
+* [Database System](https://github.com/zhedongzheng/finch#database-system-theory)
 ### Practice
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-practice)
   * [Linear Model](https://github.com/zhedongzheng/finch#linear-model)
@@ -20,7 +21,6 @@
   * [Image Segmentation](https://github.com/zhedongzheng/finch#image-segmentation)
   * [Detection](https://github.com/zhedongzheng/finch#detection)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing-practice)
-* [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
 * [Web Framework](https://github.com/zhedongzheng/finch#web-framework-practice)
 ## Machine Learning (Theory)
@@ -29,6 +29,8 @@
 ## Deep Learning (Theory)
 * [Convolutional Network](https://zhedongzheng.github.io/finch/conv.html)
 * [Recurrent Network](https://zhedongzheng.github.io/finch/rnn.html)
+## Database System (Theory)
+* [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Machine Learning (Practice)
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_regr_test.py) &nbsp; | &nbsp;
@@ -74,8 +76,6 @@
 ## Natural Language Processing (Practice)
 * [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
 * [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-indexing.ipynb)
-## Database System (Practice)
-* [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Distributed System (Practice)
 * [Java Multithreading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)

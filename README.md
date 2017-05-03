@@ -1,4 +1,5 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
+This project contains a wide range of my implementations on machine intelligence topics based on existing libraries (e.g. TensorFlow)
 If you have any question or suggestion, you are more than welcome to send message to zhedongzheng@outlook.com
 ## Contents
 ### Theory

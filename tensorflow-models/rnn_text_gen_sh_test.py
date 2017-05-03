@@ -30,10 +30,7 @@ if __name__ == '__main__':
     assert len(idx2word) == len(word2idx), "len(idx2word) is not equal to len(word2idx)" # sanity Check
 
     all_word_idx = convert_text_to_idx(all_word_list, word2idx)
-    X = []
-    for i in range(0, len(all_word_idx)-SEQ_LEN, text_iter_step):
-        X.append(all_word_idx[i:i+SEQ_LEN])
-    X = np.array(X)
+    X = np.array([all_word_idx[i : i+SEQ_LEN] for i in range(0, len(all_word_idx)-SEQ_LEN, text_iter_step)])
     print('X shape:', X.shape)
     
     sess = tf.Session()

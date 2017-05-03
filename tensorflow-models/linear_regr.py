@@ -45,7 +45,7 @@ class LinearRegression:
         l1_loss = tf.reduce_mean(tf.abs(self.W))
         l2_loss = tf.reduce_mean(tf.square(self.W))
         self.loss = regr_loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
-        self.train_op = tf.train.GradientDescentOptimizer(0.001).minimize(self.loss)
+        self.train_op = tf.train.GradientDescentOptimizer(0.01).minimize(self.loss)
     # end method add_backward_path
 
 

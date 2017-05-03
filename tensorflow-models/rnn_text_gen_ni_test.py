@@ -11,6 +11,7 @@ NUM_LAYER = 3
 CELL_SIZE = 128
 RESOL = 'char'
 text_iter_step = 3
+num_gen = 200
 prime_texts = [
     'having kept a sharp',
     'it seems to me',
@@ -49,5 +50,5 @@ if __name__ == '__main__':
                                   word2idx=word2idx, idx2word=idx2word, sess=sess)
     log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
                           en_exp_decay=True, en_shuffle=False,
-                          sample_model=sample_model, prime_texts=prime_texts, num_gen=50)
+                          sample_model=sample_model, prime_texts=prime_texts, num_gen=num_gen)
     

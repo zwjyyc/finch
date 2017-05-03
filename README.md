@@ -1,7 +1,7 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 This project contains a wide range of my implementations on topics around machine learning (ML) based on existing libraries (e.g. TensorFlow, PyTorch)
 
-Some topics (e.g. database) is not a strictly ML topic, however you would require that in the cycle of developing a ML application
+Some topics (e.g. database) is not a strictly ML topic, however you would require that in the cycle of developing a ML project
 
 If you have any question or suggestion, you are more than welcome to send message to zhedongzheng@outlook.com
 ## Contents

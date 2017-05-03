@@ -1,5 +1,5 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
-> All the code and documents are written by myself. If you have any question or suggestion, you are more than welcome to send message to me. (zhedongzheng@outlook.com)
+> If you have any question or suggestion, you are more than welcome to send message to me. (zhedongzheng@outlook.com)
 ## Contents
 ### Theory
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-theory)

@@ -130,6 +130,7 @@ class RNNTextGen:
 
     def fit(self, X, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=False,
             sample_model=None, prime_texts=None, num_gen=None, temperature=1.0):
+        print('Training', len(X), 'samples')
         log = {'loss': []}
         global_step = 0
         self.sess.run(tf.global_variables_initializer()) # initialize all variables

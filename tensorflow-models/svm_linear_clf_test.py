@@ -8,7 +8,7 @@ import tensorflow as tf
 
 if __name__ == '__main__':
     X, y = make_classification(5000)
-    y = np.array([1 if y_==1 else -1 for y_ in y])
+    y = np.array([1 if label == 1 else -1 for label in y])
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     Y_train = y_train.reshape(-1, 1)
     Y_test = y_test.reshape(-1, 1)

@@ -1,6 +1,5 @@
-import numpy as np
 import tensorflow as tf
-from utils import clean_text, build_vocab, convert_text_to_idx, load_shakespeare_text
+from utils import load_shakespeare_text
 from rnn_text_gen import RNNTextGen
 
 

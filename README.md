@@ -4,6 +4,7 @@ This project contains a wide range of my understanding and implementation of mac
 Some topics (e.g. database) is not a ML topic, however you would require that in the cycle of developing a ML project
 
 If you have any question or suggestion, you are more than welcome to send message to zhedongzheng@outlook.com
+
 ![ml](https://raw.githubusercontent.com/zhedongzheng/finch/master/assets/ml.png)
 ## Contents
 ### Theory

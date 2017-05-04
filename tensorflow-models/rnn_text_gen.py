@@ -14,8 +14,6 @@ class RNNTextGen:
             tf.Session() object
         text: string
             corpus
-        text_iter_step: int
-            Used to significantly increase sample numbers
         seq_len: int
             Sequence length
         cell_size: int
@@ -29,15 +27,16 @@ class RNNTextGen:
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.current_layer = None
-        if text is not None:
+
+        if self.text is not None:
             self.text_preprocessing()
         self.build_graph()
     # end constructor
 
 
     def text_preprocessing(self):
-        text = clean_text(self.text)
-        all_word_list = list(text)
+        self.text = clean_text(self.text)
+        all_word_list = list(self.text)
         self.word2idx, self.idx2word = build_vocab(all_word_list)
         self.vocab_size = len(self.idx2word)
         print('Vocabulary length:', self.vocab_size)
@@ -140,7 +139,7 @@ class RNNTextGen:
     # end method adjust_lr
 
 
-    def fit(self, sample_model, prime_texts, text_iter_step=3, num_gen=200, temperature=1.0, 
+    def fit(self, sample_model, prime_texts=None, text_iter_step=3, num_gen=200, temperature=1.0, 
             n_epoch=25, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=1.0):
         
         X = np.array([self.all_word_idx[i:i+self.seq_len] for i in range(
@@ -149,6 +148,12 @@ class RNNTextGen:
         Y[np.arange(len(X)-1), -1] = X[np.arange(1,len(X)), 0]
         print('Training', len(X), 'samples')
         print('X shape:', X.shape, 'Y shape:', Y.shape)
+
+        if prime_texts is None:
+            prime_texts = []
+            for _ in range(3):
+                random_start = np.random.randint(0, len(self.text)-1-self.seq_len)
+                prime_texts.append(self.text[random_start: random_start + self.seq_len])
         
         log = {'loss': []}
         global_step = 0

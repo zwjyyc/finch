@@ -3,13 +3,6 @@ from rnn_text_gen import RNNTextGen
 import tensorflow as tf
 
 
-prime_texts = [
-    'having kept a',
-    'it seems to me',
-    'it has gradually'
-]
-
-
 if __name__ == '__main__':
     path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
     text = open(path).read()
@@ -19,5 +12,5 @@ if __name__ == '__main__':
         train_model = RNNTextGen(sess, text)
     with tf.variable_scope('train_model', reuse=True):
         sample_model = RNNTextGen(sess, text=None, seq_len=1)
-    log = train_model.fit(sample_model, prime_texts)
+    log = train_model.fit(sample_model)
     

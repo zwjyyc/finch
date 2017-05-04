@@ -9,6 +9,7 @@ import seaborn as sns
 
 
 def clean_text(text):
+    text = text.replace('\n', ' ')
     punctuation = string.punctuation
     punctuation = ''.join([x for x in punctuation if x not in ['-', "'"]])
     text = re.sub(r'[{}]'.format(punctuation), ' ', text)
@@ -17,13 +18,14 @@ def clean_text(text):
 # end function clean_text()
 
 
-def build_vocab(word_list, min_word_freq=5):
+def build_vocab(word_list, min_word_freq=None):
     word_counts = collections.Counter(word_list)
-    word_counts = {key:val for key,val in word_counts.items() if val>min_word_freq}
+    if min_word_freq is not None:
+        word_counts = {key:val for key,val in word_counts.items() if val > min_word_freq}
     words = word_counts.keys()
-    word2idx = {key:(idx+1) for idx,key in enumerate(words)} # create word --> index mapping
-    word2idx['_unknown'] = 0 # add unknown key --> 0 index
-    idx2word = {val:key for key,val in word2idx.items()} # create index --> word mapping
+    word2idx = {key:(idx+1) for idx,key in enumerate(words)} # create word -> index mapping
+    word2idx['_unknown'] = 0 # add unknown key -> 0 index
+    idx2word = {val:key for key,val in word2idx.items()} # create index -> word mapping
     return(word2idx, idx2word)
 # end function build_vocab()
 

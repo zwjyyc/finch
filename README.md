@@ -37,7 +37,7 @@ If you have any question or suggestion, you are more than welcome to send messag
 ## Database System (Theory)
 * [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Machine Learning (Practice)
-[ml](https://raw.githubusercontent.com/zhedongzheng/zhedongzheng.github.io/master/img/svm.png)
+![ml](https://raw.githubusercontent.com/zhedongzheng/zhedongzheng.github.io/master/img/svm.png)
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_regr_test.py) &nbsp; | &nbsp;
 * TensorFlow &nbsp; | &nbsp; Logistic Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/logistic.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/logistic_test.py) &nbsp; | &nbsp;

@@ -2,41 +2,48 @@ import tensorflow as tf
 import math
 import numpy as np
 import sklearn
+from utils import clean_text, build_vocab, convert_text_to_idx
 
 
 class RNNTextGen:
-    def __init__(self, seq_len, vocab_size, cell_size, n_layers, word2idx, idx2word, sess, resolution='char'):
+    def __init__(self, sess, text, seq_len=50, cell_size=128, n_layer=3):
         """
         Parameters:
         -----------
+        sess: object
+            tf.Session() object
+        text: string
+            corpus
+        text_iter_step: int
+            Used to significantly increase sample numbers
         seq_len: int
             Sequence length
-        vocab_size: int
-            Vocabulary size
         cell_size: int
             Number of units in the rnn cell
         n_layers: int
             Number of layers of stacked rnn cells
-        word2idx: dict
-            {word: index}
-        idx2word: dict
-            {index: word}
-        sess: object
-            tf.Session() object
-        resolution: string
-            char-level or word-level 
         """
-        self.seq_len = seq_len
-        self.vocab_size = vocab_size
-        self.cell_size = cell_size
-        self.n_layers = n_layers
-        self.word2idx = word2idx
-        self.idx2word = idx2word
         self.sess = sess
-        self.resolution = resolution
+        self.text = text
+        self.seq_len = seq_len
+        self.cell_size = cell_size
+        self.n_layer = n_layer
         self.current_layer = None
+        if text is not None:
+            self.text_preprocessing()
         self.build_graph()
     # end constructor
+
+
+    def text_preprocessing(self):
+        text = clean_text(self.text)
+        all_word_list = list(text)
+        self.word2idx, self.idx2word = build_vocab(all_word_list)
+        self.vocab_size = len(self.idx2word)
+        print('Vocabulary length:', self.vocab_size)
+        assert len(self.idx2word) == len(self.word2idx), "len(idx2word) is not equal to len(word2idx)"
+        self.all_word_idx = convert_text_to_idx(all_word_list, self.word2idx)
+    # end method text_preprocessing
 
 
     def build_graph(self):
@@ -48,7 +55,8 @@ class RNNTextGen:
         self.reshape_rnn_out()
 
         self.add_output_layer()
-        self.add_backward_path()
+        if self.text is not None:
+            self.add_backward_path()
     # end method build_graph
 
 
@@ -56,9 +64,10 @@ class RNNTextGen:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.W = tf.get_variable('W', [self.cell_size, self.vocab_size], tf.float32,
-                                 tf.contrib.layers.variance_scaling_initializer())
-        self.b = tf.get_variable('b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))
+        self.W = tf.get_variable('W') if self.text is None else tf.get_variable(
+            'W', [self.cell_size, self.vocab_size], tf.float32, tf.contrib.layers.variance_scaling_initializer())
+        self.b = tf.get_variable('b') if self.text is None else tf.get_variable(
+            'b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))   
         self.in_keep_prob = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
@@ -69,8 +78,8 @@ class RNNTextGen:
         X from (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
         where each word in (batch_size, seq_len) is represented by a vector of length [n_hidden]
         """
-        embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size, self.cell_size], tf.float32,
-                                        tf.random_normal_initializer())
+        embedding_mat = tf.get_variable('embedding_mat') if self.text is None else tf.get_variable(
+            'embedding_mat', [self.vocab_size, self.cell_size], tf.float32, tf.random_normal_initializer())
         embedding_out = tf.nn.embedding_lookup(embedding_mat, self.current_layer)
         self.current_layer = embedding_out
     # end method add_word_embedding_layer
@@ -79,7 +88,7 @@ class RNNTextGen:
     def add_lstm_cells(self):
         cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
         cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob)
-        self.cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layers)
+        self.cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)
     # end method add_rnn_cells
 
 
@@ -131,9 +140,16 @@ class RNNTextGen:
     # end method adjust_lr
 
 
-    def fit(self, X, Y, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=1.0,
-            sample_model=None, prime_texts=None, num_gen=None, temperature=1.0):
+    def fit(self, sample_model, prime_texts, text_iter_step=3, num_gen=200, temperature=1.0, 
+            n_epoch=25, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=1.0):
+        
+        X = np.array([self.all_word_idx[i:i+self.seq_len] for i in range(
+            0, len(self.all_word_idx)-self.seq_len, text_iter_step)])
+        Y = np.roll(X, -1, axis=1)
+        Y[np.arange(len(X)-1), -1] = X[np.arange(1,len(X)), 0]
         print('Training', len(X), 'samples')
+        print('X shape:', X.shape, 'Y shape:', Y.shape)
+        
         log = {'loss': []}
         global_step = 0
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
@@ -142,7 +158,7 @@ class RNNTextGen:
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
             batch_count = 1
             if en_shuffle:
-                X = sklearn.utils.shuffle(X)
+                X, Y = sklearn.utils.shuffle(X, Y)
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, int(len(X)/batch_size))
                 if len(X_batch) == batch_size:
@@ -174,10 +190,7 @@ class RNNTextGen:
     def sample(self, sample_model, prime_text, num_gen, temperature):
         # warming up
         next_state = self.sess.run(sample_model.init_state, feed_dict={sample_model.batch_size:1})
-        if self.resolution == 'word':
-            word_list = prime_text.split()
-        if self.resolution == 'char':
-            word_list = list(prime_text)
+        word_list = list(prime_text)
         for word in word_list[:-1]:
             x = np.zeros([1,1])
             x[0,0] = self.word2idx[word] 
@@ -199,10 +212,7 @@ class RNNTextGen:
             if idx == 0:
                 break
             word = self.idx2word[idx]
-            if self.resolution == 'word':
-                out_sentence = out_sentence + ' ' + word
-            if self.resolution == 'char':
-                out_sentence = out_sentence + word
+            out_sentence = out_sentence + word
         return(out_sentence)
     # end method sample
 

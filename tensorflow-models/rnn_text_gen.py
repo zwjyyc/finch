@@ -6,7 +6,7 @@ from utils import clean_text, build_vocab, convert_text_to_idx
 
 
 class RNNTextGen:
-    def __init__(self, sess, text, seq_len=50, cell_size=128, n_layer=3):
+    def __init__(self, sess, text, seq_len=50, cell_size=128, n_layer=3, stateful=True):
         """
         Parameters:
         -----------
@@ -26,6 +26,7 @@ class RNNTextGen:
         self.seq_len = seq_len
         self.cell_size = cell_size
         self.n_layer = n_layer
+        self.stateful = stateful
         self.current_layer = None
 
         if self.text is not None:
@@ -146,7 +147,6 @@ class RNNTextGen:
             0, len(self.all_word_idx)-self.seq_len, text_iter_step)])
         Y = np.roll(X, -1, axis=1)
         Y[np.arange(len(X)-1), -1] = X[np.arange(1,len(X)), 0]
-        print('Training', len(X), 'samples')
         print('X shape:', X.shape, 'Y shape:', Y.shape)
 
         if prime_texts is None:
@@ -166,7 +166,7 @@ class RNNTextGen:
                 X, Y = sklearn.utils.shuffle(X, Y)
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, int(len(X)/batch_size))
-                if len(X_batch) == batch_size:
+                if (self.stateful) and (len(X_batch) == batch_size):
                     _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                                                          feed_dict={self.X:X_batch, self.Y:Y_batch,
                                                                     self.init_state:next_state,

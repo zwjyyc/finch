@@ -4,12 +4,11 @@ import matplotlib
 matplotlib.use('Agg')
 import seaborn as sns
 sns.set_style('whitegrid')
-import matplotlib.pyplot as plt
 import base64
+import matplotlib.pyplot as plt
 import pandas_datareader.data as d
 
 
-# Create your views here.
 def home(request):
     return render(request, 'visualization/index.html')
 

@@ -10,7 +10,6 @@ It is still at the early stage, and many things need to be done in future
 ### Theory
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-theory)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning-theory)
-* [Database System](https://github.com/zhedongzheng/finch#database-system-theory)
 ### Practice
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-practice)
   * [Linear Model](https://github.com/zhedongzheng/finch#linear-model)
@@ -29,6 +28,7 @@ It is still at the early stage, and many things need to be done in future
   * [Detection](https://github.com/zhedongzheng/finch#detection)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing-practice)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
+* [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
 * [Web Framework](https://github.com/zhedongzheng/finch#web-framework-practice)
 ## Machine Learning (Theory)
 * [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
@@ -36,8 +36,6 @@ It is still at the early stage, and many things need to be done in future
 ## Deep Learning (Theory)
 * [Convolutional Network](https://zhedongzheng.github.io/finch/conv.html)
 * [Recurrent Network](https://zhedongzheng.github.io/finch/rnn.html)
-## Database System (Theory)
-* [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Machine Learning (Practice)
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_regr_test.py) &nbsp; | &nbsp;
@@ -86,5 +84,7 @@ It is still at the early stage, and many things need to be done in future
 ## Distributed System (Practice)
 * [Java Multithreading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
+## Database System (Theory)
+* [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Web Framework (Practice)
-* [Django Example - Dynamically Updating Stock Image](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)
+* [Django Example - Ploting Stock Image](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)

@@ -54,13 +54,11 @@ def load_shakespeare_text():
         shakespeare_file = response.content
         s_text = shakespeare_file.decode('utf-8') # decode binary into string
         s_text = s_text[7675:] # drop first few descriptive paragraphs
-        s_text = s_text.replace('\r\n', ' ') # remove newlines
-        s_text = s_text.replace('\n', ' ') # remove newlines
         with open(os.path.join(data_dir, data_file), 'w') as out_conn: # write to file
             out_conn.write(s_text)
     else:
         with open(os.path.join(data_dir, data_file), 'r') as file_conn: # If file has been saved, load from that file
-            s_text = file_conn.read().replace('\n', ' ')
+            s_text = file_conn.read()
     return s_text
 # end function load_shakespeare_text()
 

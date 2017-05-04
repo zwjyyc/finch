@@ -47,18 +47,18 @@ def load_shakespeare_text():
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
     print('Loading Shakespeare Data')
-    if not os.path.isfile(os.path.join(data_dir, data_file)): # check if file is downloaded
+    if not os.path.isfile(os.path.join(data_dir, data_file)):   # check if file is downloaded
         print('Not found, downloading Shakespeare texts from www.gutenberg.org')
         shakespeare_url = 'http://www.gutenberg.org/cache/epub/100/pg100.txt'
-        response = requests.get(shakespeare_url) # get Shakespeare text
+        response = requests.get(shakespeare_url)
         shakespeare_file = response.content
-        s_text = shakespeare_file.decode('utf-8') # decode binary into string
-        s_text = s_text[7675:] # drop first few descriptive paragraphs
-        with open(os.path.join(data_dir, data_file), 'w') as out_conn: # write to file
-            out_conn.write(s_text)
+        s_text = shakespeare_file.decode('utf-8')               # decode binary -> string
+        s_text = s_text[7675:]                                  # drop first few descriptive paragraphs
+        with open(os.path.join(data_dir, data_file), 'w') as f: # write to file
+            f.write(s_text)
     else:
-        with open(os.path.join(data_dir, data_file), 'r') as file_conn: # If file has been saved, load from that file
-            s_text = file_conn.read()
+        with open(os.path.join(data_dir, data_file), 'r') as f: # if file has been saved, load from that file
+            s_text = f.read()
     return s_text
 # end function load_shakespeare_text()
 

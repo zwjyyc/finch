@@ -29,7 +29,6 @@ It is still at the early stage, and many things need to be done in future
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing-practice)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
 * [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
-* [Web Framework](https://github.com/zhedongzheng/finch#web-framework-practice)
 ## Machine Learning (Theory)
 * [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
@@ -86,5 +85,3 @@ It is still at the early stage, and many things need to be done in future
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
 ## Database System (Practice)
 * [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
-## Web Framework (Practice)
-* [Django Example - Ploting Stock Image](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)

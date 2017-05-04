@@ -32,18 +32,20 @@ if __name__ == '__main__':
 
     all_word_idx = convert_text_to_idx(all_word_list, word2idx)
     X = np.array([all_word_idx[i : i+SEQ_LEN] for i in range(0, len(all_word_idx)-SEQ_LEN, text_iter_step)])
-    print('X shape:', X.shape)
+    Y = np.roll(X, -1, axis=1)
+    Y[np.arange(len(X)-1), -1] = X[np.arange(1,len(X)), 0]
+    print('X shape:', X.shape, 'Y shape:', Y.shape)
     
     sess = tf.Session()
     with tf.variable_scope('train_model'):
         train_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
-                                 vocab_size=vocab_size, seq_len=SEQ_LEN, resolution=RESOL,
+                                 vocab_size=vocab_size, seq_len=SEQ_LEN,
                                  word2idx=word2idx, idx2word=idx2word, sess=sess)
     with tf.variable_scope('train_model', reuse=True):
         sample_model = RNNTextGen(cell_size=CELL_SIZE, n_layers=NUM_LAYER,
-                                  vocab_size=vocab_size, seq_len=1, resolution=RESOL,
+                                  vocab_size=vocab_size, seq_len=1,
                                   word2idx=word2idx, idx2word=idx2word, sess=sess)
-    log = train_model.fit(X, n_epoch=25, batch_size=BATCH_SIZE,
-                          en_exp_decay=True, en_shuffle=False,
+    log = train_model.fit(X, Y, n_epoch=25, batch_size=BATCH_SIZE,
+                          en_exp_decay=True, en_shuffle=False, keep_prob=1.0,
                           sample_model=sample_model, prime_texts=prime_texts, num_gen=num_gen)
     

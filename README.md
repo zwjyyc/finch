@@ -2,9 +2,9 @@
 
 This project aims to contain a wide range of my understanding and implementation of machine learning (ML) topics based on existing libraries (e.g. TensorFlow, PyTorch)
 
-It is still at the early stage, and many things need to be done
-
 Some topics (e.g. database) is not a ML topic, however you would require that in the cycle of developing a ML project
+
+It is still at the early stage, and many things need to be done in future
 
 ## Contents
 ### Theory

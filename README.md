@@ -6,8 +6,6 @@ Some topics (e.g. database) is not a ML topic, however you would require that in
 
 If you have any question or suggestion, you are more than welcome to send message to zhedongzheng@outlook.com
 
-![logo](https://raw.githubusercontent.com/zhedongzheng/finch/master/assets/_logo.jpg)
-
 ## Contents
 ### Theory
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-theory)

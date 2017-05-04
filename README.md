@@ -84,7 +84,7 @@ It is still at the early stage, and many things need to be done in future
 ## Distributed System (Practice)
 * [Java Multithreading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
-## Database System (Theory)
+## Database System (Practice)
 * [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
 ## Web Framework (Practice)
 * [Django Example - Ploting Stock Image](https://github.com/zhedongzheng/finch/tree/master/web/web_interface)

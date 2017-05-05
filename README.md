@@ -21,7 +21,6 @@ It is still at the early stage, and many things need to be done in future
   * [Recurrent Network](https://github.com/zhedongzheng/finch#recurrent-network)
   * [Recurrent Convolutional Network](https://github.com/zhedongzheng/finch#recurrent-convolutional-network)
   * [Autoencoder](https://github.com/zhedongzheng/finch#autoencoder)
-  * [Highway Network](https://github.com/zhedongzheng/finch#highway-network)
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision-practice)
   * [Basic Operations](https://github.com/zhedongzheng/finch#basic-operations)
   * [Image Segmentation](https://github.com/zhedongzheng/finch#image-segmentation)

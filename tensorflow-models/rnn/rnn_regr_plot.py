@@ -11,12 +11,10 @@ BATCH_SIZE = 50
 
 def get_data_batch(return_x=False):
     global BATCH_START, TIME_STEPS
-    # xs shape (50batch, 20steps)
     xs = np.arange(BATCH_START, BATCH_START+TIME_STEPS*BATCH_SIZE).reshape((BATCH_SIZE, TIME_STEPS)) / (10*np.pi)
     seq = np.sin(xs)
     res = np.cos(xs)
     BATCH_START += TIME_STEPS*BATCH_SIZE
-    # returned seq, res: shape (batch, step, input)
     if return_x:
         return [seq[:, :, np.newaxis], res[:, :, np.newaxis], xs]
     else:
@@ -28,7 +26,11 @@ if __name__ == '__main__':
     train_data = data[:1000]
     test_data = data[1000:]
     sess = tf.Session()
-    model = RNNRegressor(sess, TIME_STEPS, 1, 1, cell_size=16)
+    model = RNNRegressor(sess,
+                         n_step = TIME_STEPS,
+                         n_in = 1,
+                         n_out = 1,
+                         cell_size = 16)
 
     model.sess.run(tf.global_variables_initializer())
     plt.ion()

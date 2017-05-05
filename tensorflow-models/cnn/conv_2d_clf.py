@@ -5,7 +5,7 @@ import sklearn
 
 
 class ConvClassifier:
-    def __init__(self, img_size, img_ch, kernel_size, pool_size, n_out, sess):
+    def __init__(self, sess, img_size, img_ch, n_out, kernel_size=(5,5), pool_size=2):
         """
         Parameters:
         -----------

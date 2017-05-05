@@ -3,7 +3,7 @@ import numpy as np
 
 
 class LinearSVMClassifier:
-    def __init__(self, C, n_in, sess):
+    def __init__(self, sess, n_in, C=1.0):
         """
         Parameters:
         -----------

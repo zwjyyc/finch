@@ -4,11 +4,11 @@ import math
 
 
 class Autoencoder:
-    def __init__(self, n_in, encoder_units, decoder_units, sess):
+    def __init__(self, sess, n_in, encoder_units, decoder_units):
+        self.sess = sess
         self.n_in = n_in
         self.encoder_units = encoder_units
         self.decoder_units = decoder_units
-        self.sess = sess
         self.build_graph()
     # end constructor
 

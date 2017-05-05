@@ -4,8 +4,8 @@ import math
 import sklearn
 
 
-class ConvRNNClassifier:
-    def __init__(self, seq_len, vocab_size, embedding_dims, n_filters, kernel_size, pool_size, cell_size, n_out, sess):
+class Conv1DClassifier:
+    def __init__(self, sess, seq_len, vocab_size, n_out, embedding_dims=50, n_filters=250, kernel_size=3, hidden_dims=250):
         """
         Parameters:
         -----------
@@ -19,10 +19,8 @@ class ConvRNNClassifier:
             Number output of filters in the convolution
         kernel_size: int
             Size of the 1D convolution window
-        pool_size: int
-            Size of the max pooling windows
-        cell_size: int
-            Number of units in the rnn cell
+        hidden_dims: int
+            Ouput dimensions of the fully-connected layer
         n_out: int
             Output dimensions
         sess: object
@@ -33,8 +31,7 @@ class ConvRNNClassifier:
         self.embedding_dims = embedding_dims
         self.n_filters = n_filters
         self.kernel_size = kernel_size
-        self.pool_size = pool_size
-        self.cell_size = cell_size
+        self.hidden_dims = hidden_dims
         self.n_out = n_out
         self.sess = sess
         self.current_layer = None
@@ -47,12 +44,10 @@ class ConvRNNClassifier:
 
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-        self.add_maxpool(k = self.pool_size)
-        self.add_lstm_cells()
-        self.add_dynamic_rnn()
-        self.reshape_rnn_out()
+        self.add_global_maxpool( self.seq_len-self.kernel_size+1 )
+        self.add_fc('fully_connected', [self.n_filters, self.hidden_dims])
 
-        self.add_output_layer()   
+        self.add_output_layer(in_dim=self.hidden_dims)   
         self.add_backward_path()
     # end method build_graph
  
@@ -60,10 +55,6 @@ class ConvRNNClassifier:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.W = tf.get_variable('softmax_w', [self.cell_size, self.n_out], tf.float32,
-                                  tf.contrib.layers.variance_scaling_initializer())
-        self.b = tf.get_variable('softmax_b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
-        self.batch_size = tf.placeholder(tf.int32)
         self.keep_prob = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
@@ -73,52 +64,41 @@ class ConvRNNClassifier:
         embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size,self.embedding_dims], tf.float32,
                                         tf.random_normal_initializer())
         embedding_out = tf.nn.embedding_lookup(embedding_mat, self.current_layer)
-        embedding_out = tf.nn.dropout(embedding_out, self.keep_prob)
         self.current_layer = embedding_out
     # end method add_word_embedding_layer
 
 
     def add_conv1d(self, name, filter_shape, stride=1):
         W = self._W(name+'_w', filter_shape)
-        b = self._b(name+'_b', [filter_shape[-1]])                                
-        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding='SAME')
+        b = self._b(name+'_b', [filter_shape[-1]])
+        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding='VALID')
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
         self.current_layer = conv
     # end method add_conv1d_layer
 
 
-    def add_maxpool(self, k=2):
+    def add_global_maxpool(self, k):
         conv = tf.expand_dims(self.current_layer, 1)
-        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='SAME')
+        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='VALID')
         conv = tf.squeeze(conv)
         self.current_layer = conv
     # end method add_global_maxpool_layer
 
 
-    def add_lstm_cells(self):
-        self.cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
-    # end method add_rnn_cells
+    def add_fc(self, name, w_shape):
+        W = self._W(name+'_w', w_shape)
+        b = self._b(name+'_b', [w_shape[-1]])
+        fc = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
+        fc = tf.nn.relu(fc)
+        fc = tf.nn.dropout(fc, self.keep_prob)
+        self.current_layer = fc
+    # end method add_fc_layer
 
 
-    def add_dynamic_rnn(self):
-        self.current_layer = tf.reshape(self.current_layer,
-                                        [self.batch_size, int(self.seq_len/self.pool_size), self.n_filters])
-        self.init_state = self.cell.zero_state(self.batch_size, tf.float32)              
-        self.current_layer, final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
-                                                            initial_state=self.init_state,
-                                                            time_major=False)
-    # end method add_dynamic_rnn
-
-
-    def reshape_rnn_out(self):
-        # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        self.current_layer = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
-    # end method add_rnn_out
-
-
-    def add_output_layer(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer[-1], self.W), self.b)
+    def add_output_layer(self, in_dim):
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self._W('w_out', [in_dim,self.n_out])),
+                                     self._b('b_out', [self.n_out]))
     # end method add_output_layer
 
 
@@ -159,8 +139,8 @@ class ConvRNNClassifier:
                                         self.gen_batch(Y, batch_size)): # batch training
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                              feed_dict={self.X:X_batch, self.Y:Y_batch, self.lr:lr,
-                                                         self.batch_size:len(X_batch), self.keep_prob:keep_prob})
+                                              feed_dict={self.X:X_batch, self.Y:Y_batch,
+                                                         self.lr:lr, self.keep_prob:keep_prob})
                 local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
@@ -173,7 +153,6 @@ class ConvRNNClassifier:
                                                       self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
                                                    feed_dict={self.X:X_test_batch, self.Y:Y_test_batch,
-                                                              self.batch_size:len(X_test_batch),
                                                               self.keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
@@ -202,9 +181,7 @@ class ConvRNNClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch,
-                                                               self.batch_size:len(X_test_batch),
-                                                               self.keep_prob:1.0})
+            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

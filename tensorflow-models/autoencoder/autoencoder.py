@@ -4,11 +4,11 @@ import math
 
 
 class Autoencoder:
-    def __init__(self, n_in, encoder_units, decoder_units, sess):
+    def __init__(self, sess, n_in, encoder_units, decoder_units):
+        self.sess = sess
         self.n_in = n_in
         self.encoder_units = encoder_units
         self.decoder_units = decoder_units
-        self.sess = sess
         self.build_graph()
     # end constructor
 
@@ -57,7 +57,7 @@ class Autoencoder:
     # end method fc
 
 
-    def fit_transform(self, X_train, n_epoch=10, batch_size=32):
+    def fit_transform(self, X_train, n_epoch=10, batch_size=128):
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         global_step = 0
         for epoch in range(n_epoch):

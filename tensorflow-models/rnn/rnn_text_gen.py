@@ -20,6 +20,8 @@ class RNNTextGen:
             Number of units in the rnn cell
         n_layers: int
             Number of layers of stacked rnn cells
+        stateful: boolean
+            Whether state will be shared
         """
         self.sess = sess
         self.text = text
@@ -29,8 +31,7 @@ class RNNTextGen:
         self.stateful = stateful
         self.current_layer = None
 
-        if self.text is not None:
-            self.text_preprocessing()
+        self.text_preprocessing()
         self.build_graph()
     # end constructor
 
@@ -38,25 +39,27 @@ class RNNTextGen:
     def text_preprocessing(self):
         self.text = clean_text(self.text)
         all_word_list = list(self.text)
+
         self.word2idx, self.idx2word = build_vocab(all_word_list)
         self.vocab_size = len(self.idx2word)
         print('Vocabulary length:', self.vocab_size)
         assert len(self.idx2word) == len(self.word2idx), "len(idx2word) is not equal to len(word2idx)"
+
         self.all_word_idx = convert_text_to_idx(all_word_list, self.word2idx)
     # end method text_preprocessing
 
 
     def build_graph(self):
-        self.add_input_layer()
-                    
-        self.add_word_embedding_layer()
-        self.add_lstm_cells()
-        self.add_dynamic_rnn()
-        self.reshape_rnn_out()
-
-        self.add_output_layer()
-        if self.text is not None:
+        with tf.variable_scope('main_model'):
+            self.add_input_layer()       
+            self.add_word_embedding_layer()
+            self.add_lstm_cells()
+            self.add_dynamic_rnn()
+            self.reshape_rnn_out()
+            self.add_output_layer()
             self.add_backward_path()
+        with tf.variable_scope('main_model', reuse=True):
+            self.add_sample_model()
     # end method build_graph
 
 
@@ -64,24 +67,18 @@ class RNNTextGen:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.W = tf.get_variable('W') if self.text is None else tf.get_variable(
-            'W', [self.cell_size, self.vocab_size], tf.float32, tf.contrib.layers.variance_scaling_initializer())
-        self.b = tf.get_variable('b') if self.text is None else tf.get_variable(
-            'b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))   
+        self.W = tf.get_variable('W', [self.cell_size, self.vocab_size], tf.float32,
+                                  tf.contrib.layers.variance_scaling_initializer())
+        self.b = tf.get_variable('b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))   
         self.in_keep_prob = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
 
 
     def add_word_embedding_layer(self):
-        """
-        X from (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
-        where each word in (batch_size, seq_len) is represented by a vector of length [n_hidden]
-        """
-        embedding_mat = tf.get_variable('embedding_mat') if self.text is None else tf.get_variable(
-            'embedding_mat', [self.vocab_size, self.cell_size], tf.float32, tf.random_normal_initializer())
-        embedding_out = tf.nn.embedding_lookup(embedding_mat, self.current_layer)
-        self.current_layer = embedding_out
+        # (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
+        E = tf.get_variable('E', [self.vocab_size, self.cell_size], tf.float32, tf.random_normal_initializer())
+        self.current_layer = tf.nn.embedding_lookup(E, self.current_layer)
     # end method add_word_embedding_layer
 
 
@@ -107,7 +104,6 @@ class RNNTextGen:
 
     def add_output_layer(self):
         self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
-        self.softmax_out = tf.nn.softmax(self.logits)
     # end method add_output_layer
 
 
@@ -128,6 +124,21 @@ class RNNTextGen:
     # end method add_backward_path
 
 
+    def add_sample_model(self):
+        self._X = tf.placeholder(tf.int32, [None, 1])
+        _W = tf.get_variable('W')
+        _b = tf.get_variable('b')
+        _E = tf.nn.embedding_lookup(tf.get_variable('E'), self._X)
+        self._init_state = self.cells.zero_state(self.batch_size, tf.float32)
+        rnn_out, self._final_state = tf.nn.dynamic_rnn(self.cells, _E,
+                                                       initial_state=self._init_state,
+                                                       time_major=False)
+        rnn_out = tf.reshape(rnn_out, [-1, self.cell_size])
+        logits = tf.nn.bias_add(tf.matmul(rnn_out, _W), _b)
+        self._softmax_out = tf.nn.softmax(logits)
+    # end add_sample_model
+
+
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):
         if en_exp_decay:
             max_lr = 0.003
@@ -140,8 +151,8 @@ class RNNTextGen:
     # end method adjust_lr
 
 
-    def fit(self, sample_model, prime_texts=None, text_iter_step=3, num_gen=200, temperature=1.0, 
-            n_epoch=25, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=1.0):
+    def learn(self, prime_texts=None, text_iter_step=3, num_gen=200, temperature=1.0, 
+              n_epoch=25, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=1.0):
         
         X = np.array([self.all_word_idx[i:i+self.seq_len] for i in range(
             0, len(self.all_word_idx)-self.seq_len, text_iter_step)])
@@ -184,24 +195,23 @@ class RNNTextGen:
                 batch_count += 1
                 global_step += 1
             
-            if sample_model is not None:
-                for prime_text in prime_texts:
-                    print(self.sample(sample_model, prime_text, num_gen, temperature), end='\n\n')
+            for prime_text in prime_texts:
+                print(self.sample(prime_text, num_gen, temperature), end='\n\n')
             
         return log
     # end method fit
 
 
-    def sample(self, sample_model, prime_text, num_gen, temperature):
+    def sample(self, prime_text, num_gen, temperature):
         # warming up
-        next_state = self.sess.run(sample_model.init_state, feed_dict={sample_model.batch_size:1})
+        next_state = self.sess.run(self._init_state, feed_dict={self.batch_size:1})
         word_list = list(prime_text)
         for word in word_list[:-1]:
             x = np.zeros([1,1])
             x[0,0] = self.word2idx[word] 
-            next_state = self.sess.run(sample_model.final_state, feed_dict={sample_model.X:x,
-                                                                            sample_model.init_state:next_state,
-                                                                            sample_model.in_keep_prob:1.0})
+            next_state = self.sess.run(self._final_state, feed_dict={self._X:x,
+                                                                     self._init_state:next_state,
+                                                                     self.in_keep_prob:1.0})
         # end warming up
 
         out_sentence = prime_text + '|'
@@ -209,10 +219,10 @@ class RNNTextGen:
         for n in range(num_gen):
             x = np.zeros([1,1])
             x[0,0] = self.word2idx[word]
-            softmax_out, next_state = self.sess.run([sample_model.softmax_out, sample_model.final_state],
-                                                     feed_dict={sample_model.X:x,
-                                                                sample_model.init_state:next_state,
-                                                                sample_model.in_keep_prob:1.0})
+            softmax_out, next_state = self.sess.run([self._softmax_out, self._final_state],
+                                                     feed_dict={self._X:x,
+                                                                self._init_state:next_state,
+                                                                self.in_keep_prob:1.0})
             idx = self.infer_idx(softmax_out[0], temperature)
             if idx == 0:
                 break

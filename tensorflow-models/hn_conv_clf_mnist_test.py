@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = HighwayConvClassifier(img_size=(28,28), img_ch=1, pool_size=2, n_out=10, sess=sess)
-    log = clf.fit(X_train, Y_train, n_epoch=10, keep_prob=0.5, val_data=(X_test,Y_test), en_exp_decay=True)
+    log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()
     final_acc = np.equal(np.argmax(pred,1), np.argmax(Y_test,1)).astype(float).mean()

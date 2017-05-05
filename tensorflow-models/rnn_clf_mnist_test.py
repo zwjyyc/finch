@@ -14,8 +14,7 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = RNNClassifier(n_in=28, n_step=28, cell_size=128, n_out=10, n_layer=2, sess=sess, stateful=True)
-    log = clf.fit(X_train, Y_train, n_epoch=1, en_exp_decay=True, keep_prob_tuple=(0.5,1.0),
-                  val_data=(X_test,Y_test))
+    log = clf.fit(X_train, Y_train, keep_prob_tuple=(0.5,1.0), val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()
 

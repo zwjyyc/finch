@@ -18,8 +18,7 @@ if __name__ == '__main__':
 
     t0 = time.time()
 
-    log = clf.fit(X_train, Y_train, n_epoch=1, keep_prob=1.0, val_data=(X_test,Y_test),
-                  en_exp_decay=False)
+    log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()
     final_acc = np.equal(np.argmax(pred,1), np.argmax(Y_test,1)).astype(float).mean()

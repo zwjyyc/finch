@@ -27,7 +27,7 @@ if __name__ == '__main__':
     train_data = data[:1500]
     test_data = data[1500:]
     sess = tf.Session()
-    model = RNNRegressor(n_step=TIME_STEPS, n_in=1, n_out=1, cell_size=16, sess=sess)
+    model = RNNRegressor(sess, TIME_STEPS, 1, 1, cell_size=16)
 
     model.sess.run(tf.global_variables_initializer())
     train_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})

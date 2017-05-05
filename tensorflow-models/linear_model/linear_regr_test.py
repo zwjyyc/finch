@@ -13,7 +13,7 @@ if __name__ == '__main__':
     Y_test = y_test.reshape(-1, 1)
 
     sess = tf.Session()
-    regr = LR(l1_ratio=0.15, n_in=X.shape[1], sess=sess)
+    regr = LR(sess, X.shape[1])
     regr.fit(X_train, Y_train, val_data=(X_test, Y_test))
     Y_pred = regr.predict(X_test)
     print("Tensorflow R2: ", r2_score(Y_pred.ravel(), Y_test.ravel()))

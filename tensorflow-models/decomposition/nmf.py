@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 class NMF:
-    def __init__(self, n_user, n_item, n_hidden, sess, lamda):
+    def __init__(self, sess, n_user, n_item, n_hidden=100, lamda=0.001):
         """
         Parameters:
         -----------

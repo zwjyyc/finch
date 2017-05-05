@@ -13,7 +13,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = MLPClassifier(n_in=28*28, hidden_unit_list=[14*14,7*7,3*3], n_out=10, sess=sess)
+    clf = MLPClassifier(sess, 28*28, 10)
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()

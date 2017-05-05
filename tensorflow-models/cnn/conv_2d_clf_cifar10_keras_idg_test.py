@@ -18,7 +18,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    model = ConvClassifier(img_size=(32,32), img_ch=3, kernel_size=(5,5), pool_size=2, n_out=10, sess=sess)
+    model = ConvClassifier(sess, (32,32), 3, 10)
 
     datagen = ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset

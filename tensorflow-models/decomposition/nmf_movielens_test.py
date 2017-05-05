@@ -18,7 +18,7 @@ if __name__ == '__main__':
     R[900][931] = 0
 
     sess = tf.Session()
-    nmf = NMF(n_user=R.shape[0], n_item=R.shape[1], n_hidden=100, lamda=0.001, sess=sess)
+    nmf = NMF(sess, R.shape[0], R.shape[1])
     
     nmf.sess.run(tf.global_variables_initializer())
     for step in range(50000):

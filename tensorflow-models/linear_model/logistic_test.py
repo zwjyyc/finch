@@ -14,7 +14,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = Logistic(l1_ratio=0.15, n_in=X.shape[1], n_out=2, sess=sess)
+    clf = Logistic(sess, X.shape[1], 2)
     clf.fit(X_train, Y_train, n_epoch=100, val_data=(X_test, Y_test))
     Y_pred = clf.predict(X_test)
     final_acc = np.equal(np.argmax(Y_pred,1), np.argmax(Y_test,1)).astype(float).mean()

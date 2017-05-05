@@ -5,7 +5,8 @@ import sklearn
 
 
 class Conv1DClassifier:
-    def __init__(self, sess, seq_len, vocab_size, n_out, embedding_dims=50, n_filters=250, kernel_size=3, hidden_dims=250):
+    def __init__(self, sess, seq_len, vocab_size, n_out,
+                 embedding_dims=50, n_filters=250, kernel_size=3, hidden_dims=250):
         """
         Parameters:
         -----------

@@ -3,7 +3,7 @@ import numpy as np
 
 
 class LinearRegression:
-    def __init__(self, l1_ratio, n_in, sess):
+    def __init__(self, sess, n_in, l1_raio=0.15):
         """
         Parameters:
         -----------

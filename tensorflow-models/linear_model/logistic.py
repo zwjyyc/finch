@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Logistic:
-    def __init__(self, l1_ratio, n_in, n_out, sess):
+    def __init__(self, sess, n_in, n_out, l1_ratio=0.15):
         """
         Parameters:
         -----------

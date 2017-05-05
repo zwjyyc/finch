@@ -8,9 +8,6 @@ if __name__ == '__main__':
     text = open(path).read()
     
     sess = tf.Session()
-    with tf.variable_scope('main_model'):
-        train_model = RNNTextGen(sess, text)
-    with tf.variable_scope('main_model', reuse=True):
-        sample_model = RNNTextGen(sess, text=None, seq_len=1)
-    log = train_model.fit(sample_model)
+    train_model = RNNTextGen(sess, text)
+    log = train_model.learn()
     

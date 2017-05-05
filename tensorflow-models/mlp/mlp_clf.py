@@ -4,7 +4,7 @@ import math
 
 
 class MLPClassifier:
-    def __init__(self, sess, n_in, n_out, hidden_unit_list=[100, 200, 100]):
+    def __init__(self, sess, n_in, n_out, hidden_unit_list=[100,200,100]):
         """
         Parameters:
         -----------
@@ -38,6 +38,7 @@ class MLPClassifier:
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
+        self.train_flag = tf.placeholder(tf.bool)
         self.current_layer = self.X
     # end method add_input_layer
 
@@ -93,8 +94,8 @@ class MLPClassifier:
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                              feed_dict={self.X: X_batch, self.Y: Y_batch,
-                                                         self.lr: lr, self.keep_prob:dropout})
+                                              feed_dict={self.X: X_batch, self.Y: Y_batch, self.lr: lr,
+                                                         self.keep_prob:dropout})
                 local_step += 1
                 global_step += 1
                 if local_step % 100 == 0:

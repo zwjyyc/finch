@@ -13,7 +13,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = HighwayMLPClassifier(n_in=28*28, n_hidden=14*14, n_highway=5, n_out=10, sess=sess)
+    clf = HighwayMLPClassifier(sess, n_in=28*28, n_hidden=14*14, n_highway=5, n_out=10)
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()

@@ -6,7 +6,7 @@ import sklearn
 
 
 class HighwayConvClassifier:
-    def __init__(self, img_size, img_ch, pool_size, n_out, sess):
+    def __init__(self, sess, img_size, img_ch, n_out, pool_size=2):
         """
         Parameters:
         -----------

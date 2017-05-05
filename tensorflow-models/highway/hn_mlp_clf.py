@@ -5,7 +5,7 @@ from tensorflow.contrib.layers import batch_norm
 
 
 class HighwayMLPClassifier:
-    def __init__(self, n_in, n_hidden, n_highway, n_out, sess):
+    def __init__(self, sess, n_in, n_hidden, n_highway, n_out):
         self.n_in = n_in
         self.n_hidden = n_hidden
         self.n_highway = n_highway

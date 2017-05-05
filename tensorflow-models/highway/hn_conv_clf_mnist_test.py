@@ -13,7 +13,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = HighwayConvClassifier(img_size=(28,28), img_ch=1, pool_size=2, n_out=10, sess=sess)
+    clf = HighwayConvClassifier(sess, (28,28), 1, 10)
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()

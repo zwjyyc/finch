@@ -14,7 +14,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = HighwayConvClassifier(img_size=(32,32), img_ch=3, pool_size=2, n_out=10, sess=sess)
+    clf = HighwayConvClassifier(sess, (32,32), 3, 10)
 
     t0 = time.time()
 

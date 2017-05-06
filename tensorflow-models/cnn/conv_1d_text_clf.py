@@ -6,7 +6,7 @@ import sklearn
 
 class Conv1DClassifier:
     def __init__(self, sess, seq_len, vocab_size, n_out,
-                 embedding_dims=50, n_filters=250, kernel_size=3, hidden_dims=250):
+                 embedding_dims=50, n_filters=250, kernel_size=3, padding='VALID', hidden_dims=250):
         """
         Parameters:
         -----------
@@ -32,6 +32,7 @@ class Conv1DClassifier:
         self.embedding_dims = embedding_dims
         self.n_filters = n_filters
         self.kernel_size = kernel_size
+        self.padding = padding
         self.hidden_dims = hidden_dims
         self.n_out = n_out
         self.sess = sess
@@ -45,10 +46,10 @@ class Conv1DClassifier:
 
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-        self.add_global_maxpool( self.seq_len-self.kernel_size+1 )
+        self.add_global_maxpool()
         self.add_fc('fully_connected', [self.n_filters, self.hidden_dims])
 
-        self.add_output_layer(in_dim=self.hidden_dims)   
+        self.add_output_layer(self.hidden_dims)   
         self.add_backward_path()
     # end method build_graph
  
@@ -62,26 +63,29 @@ class Conv1DClassifier:
 
 
     def add_word_embedding(self):
-        embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size,self.embedding_dims], tf.float32,
-                                        tf.random_normal_initializer())
-        embedding_out = tf.nn.embedding_lookup(embedding_mat, self.current_layer)
-        self.current_layer = embedding_out
+        E = tf.get_variable('E', [self.vocab_size,self.embedding_dims], tf.float32, tf.random_normal_initializer())
+        self.current_layer = tf.nn.embedding_lookup(E, self.current_layer)
     # end method add_word_embedding_layer
 
 
     def add_conv1d(self, name, filter_shape, stride=1):
         W = self._W(name+'_w', filter_shape)
         b = self._b(name+'_b', [filter_shape[-1]])
-        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding='VALID')
+        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
         self.current_layer = conv
+        if self.padding == 'VALID':
+            self.current_seq_len = self.seq_len - self.kernel_size + 1
+        if self.padding == 'SAME':
+            self.current_seq_len = self.seq_len
     # end method add_conv1d_layer
 
 
-    def add_global_maxpool(self, k):
+    def add_global_maxpool(self):
+        k = self.current_seq_len
         conv = tf.expand_dims(self.current_layer, 1)
-        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='VALID')
+        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
         conv = tf.squeeze(conv)
         self.current_layer = conv
     # end method add_global_maxpool_layer

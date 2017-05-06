@@ -16,35 +16,27 @@ class Autoencoder:
     def build_graph(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         with tf.variable_scope('forward_path') as scope:
-            self.encoder_op = self.encoder(self.X, self.encoder_units)
+            self.encoder_op = self.add_forward_path(self.X, self.encoder_units, 'encoder')
             scope.reuse_variables()
-            self.decoder_op = self.decoder(self.encoder_op, self.decoder_units)
+            self.decoder_op = self.add_forward_path(self.encoder_op, self.decoder_units, 'decoder')
         self.add_backward_path()
     # end method build_graph
 
 
-    def encoder(self, X, encoder_units):
+    def add_forward_path(self, X, units, mode):
         new_layer = X
-        forward = [self.n_in] + encoder_units
-        names = ['layer%s'%i for i in range(len(forward)-1)]
+        if mode == 'encoder':
+            forward = [self.n_in] + units
+            names = ['layer%s'%i for i in range(len(forward)-1)]
+        if mode == 'decoder':
+            forward = units + [self.n_in]
+            names = list(reversed(['layer%s'%i for i in range(len(forward)-1)]))
         for i in range(len(forward)-2):
-            new_layer = self.fc(names[i], new_layer, forward[i], forward[i+1])
+            new_layer = self.fc(names[i], new_layer, forward[i], forward[i+1], mode)
             new_layer = tf.nn.relu(new_layer)
-        new_layer = self.fc(names[-1], new_layer, forward[-2], forward[-1])
+        new_layer = self.fc(names[-1], new_layer, forward[-2], forward[-1], mode)
         return new_layer
-    # end method encoder
-
-
-    def decoder(self, X, decoder_units):
-        new_layer = X
-        forward = decoder_units + [self.n_in]
-        names = list(reversed(['layer%s'%i for i in range(len(forward)-1)]))
-        for i in range(len(forward)-2):
-            new_layer = self._fc(names[i], new_layer, forward[i], forward[i+1])
-            new_layer = tf.nn.relu(new_layer)
-        new_layer = self._fc(names[-1], new_layer, forward[-2], forward[-1])
-        return new_layer
-    # end method decoder
+    # end method add_forward_path
 
 
     def add_backward_path(self):
@@ -53,19 +45,15 @@ class Autoencoder:
     # end method add_backward_path
 
 
-    def fc(self, name, X, fan_in, fan_out):
-        W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32,
-                            tf.contrib.layers.variance_scaling_initializer())
+    def fc(self, name, X, fan_in, fan_out, mode):
+        if mode == 'encoder':
+            W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32,
+                                tf.contrib.layers.variance_scaling_initializer())
+        if mode == 'decoder':
+            W = tf.transpose(tf.get_variable(name+'_w'))
         b = tf.Variable(tf.constant(0.1, shape=[fan_out]))
         return tf.nn.bias_add(tf.matmul(X, W), b)
     # end method fc
-
-
-    def _fc(self, name, X, fan_in, fan_out):
-        W = tf.transpose(tf.get_variable(name+'_w'))
-        b = tf.Variable(tf.constant(0.1, shape=[fan_out]))
-        return tf.nn.bias_add(tf.matmul(X, W), b)
-    # end method _fc
 
 
     def fit_transform(self, X_train, n_epoch=10, batch_size=32):

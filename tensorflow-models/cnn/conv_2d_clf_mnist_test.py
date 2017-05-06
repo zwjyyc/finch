@@ -1,6 +1,6 @@
 from keras.datasets import mnist
 from keras.utils.np_utils import to_categorical as to_one_hot
-from conv_2d_clf import ConvClassifier
+from conv_2d_clf import Conv2DClassifier
 import numpy as np
 import tensorflow as tf
 
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = ConvClassifier(sess, (28,28), 1, 10)
+    clf = Conv2DClassifier(sess, (28,28), 1, 10)
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()

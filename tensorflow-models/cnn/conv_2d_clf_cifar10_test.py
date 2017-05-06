@@ -1,6 +1,6 @@
 from keras.utils.np_utils import to_categorical as to_one_hot
 from keras.datasets import cifar10
-from conv_2d_clf import ConvClassifier
+from conv_2d_clf import Conv2DClassifier
 import time
 import numpy as np
 import tensorflow as tf
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = ConvClassifier(sess, (32,32), 3, 10)
+    clf = Conv2DClassifier(sess, (32,32), 3, 10)
 
     t0 = time.time()
 

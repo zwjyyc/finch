@@ -4,7 +4,7 @@ import math
 import sklearn
 
 
-class ConvClassifier:
+class Conv2DClassifier:
     def __init__(self, sess, img_size, img_ch, n_out, kernel_size=(5,5), pool_size=2, padding='VALID'):
         """
         Parameters:

@@ -5,7 +5,7 @@ import sklearn
 
 
 class ConvClassifier:
-    def __init__(self, sess, img_size, img_ch, n_out, kernel_size=(5,5), pool_size=2):
+    def __init__(self, sess, img_size, img_ch, n_out, kernel_size=(5,5), pool_size=2, padding='VALID'):
         """
         Parameters:
         -----------
@@ -26,9 +26,13 @@ class ConvClassifier:
         self.img_ch = img_ch
         self.kernel_size = kernel_size
         self.pool_size = pool_size
+        self.padding = padding
         self.n_out = n_out
         self.sess = sess
         self.current_layer = None
+        self.current_img_h = self.img_size[0]
+        self.current_img_w = self.img_size[1]
+        self.current_n_filter = None
         self.build_graph()
     # end constructor
 
@@ -37,16 +41,11 @@ class ConvClassifier:
         self.add_input_layer()
 
         self.add_conv('conv1', filter_shape=[self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
-        self.add_conv('conv1_1', filter_shape=[3,3,32,32])
-        self.add_conv('conv1_2', filter_shape=[3,3,32,32])
         self.add_maxpool(k = self.pool_size)
         self.add_conv('conv2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 64])
-        self.add_conv('conv2_1', filter_shape=[3,3,64,64])
-        self.add_conv('conv2_2', filter_shape=[3,3,64,64])
         self.add_maxpool(k = self.pool_size)
-        self.add_fc('fc', [int(self.img_size[0]/4)*int(self.img_size[1]/4)*64,512], flatten_input=True)
-
-        self.add_output_layer(in_dim=512)   
+        self.add_fully_connected('fc', 512)
+        self.add_output_layer(512)   
         self.add_backward_path()
     # end method build_graph
 
@@ -62,29 +61,38 @@ class ConvClassifier:
     def add_conv(self, name, filter_shape, strides=1):
         W = self._W(name+'_w', filter_shape)
         b = self._b(name+'_b', [filter_shape[-1]])
-        conv = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding='SAME')
+        conv = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
         conv = tf.contrib.layers.batch_norm(conv)
         conv = tf.nn.relu(conv)
         self.current_layer = conv
+        self.current_n_filter = filter_shape[-1]
     # end method add_conv_layer
 
 
     def add_maxpool(self, k):
-        self.current_layer = tf.nn.max_pool(self.current_layer, ksize=[1,k,k,1], strides=[1,k,k,1], padding='SAME')
+        self.current_layer = tf.nn.max_pool(self.current_layer, ksize=[1,k,k,1], strides=[1,k,k,1],
+                                            padding=self.padding)
+        if self.padding == 'VALID':
+            self.current_img_h = int((self.current_img_h-self.kernel_size[0]+1) / k)
+            self.current_img_w = int((self.current_img_w-self.kernel_size[1]+1) / k)
+        if self.padding == 'SAME':
+            self.current_img_h = int(self.current_img_h / k)
+            self.current_img_w = int(self.current_img_w / k)
     # end method add_maxpool_layer
 
 
-    def add_fc(self, name, w_shape, flatten_input=False):
+    def add_fully_connected(self, name, out_dim):
+        w_shape = [self.current_img_h * self.current_img_h * self.current_n_filter, out_dim]
         W = self._W(name+'_w', w_shape)
         b = self._b(name+'_b', [w_shape[-1]])
-        fc = tf.reshape(self.current_layer, [-1, w_shape[0]]) if flatten_input else self.current_layer
+        fc = tf.reshape(self.current_layer, [-1, w_shape[0]])
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
         fc = tf.contrib.layers.batch_norm(fc)
         fc = tf.nn.relu(fc)
         fc = tf.nn.dropout(fc, self.keep_prob)
         self.current_layer = fc
-    # end method add_fully_connected_layer
+    # end method add_fully_connected
 
 
     def add_output_layer(self, in_dim):

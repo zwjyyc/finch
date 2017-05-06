@@ -6,7 +6,7 @@ import sklearn
 
 class ConvRNNClassifier:
     def __init__(self, sess, seq_len, vocab_size, n_out,
-                 embedding_dims=128, n_filters=64, kernel_size=5, pool_size=4, cell_size=128):
+                 embedding_dims=128, n_filters=64, kernel_size=5, pool_size=4, padding='VALID', cell_size=128):
         """
         Parameters:
         -----------
@@ -35,6 +35,7 @@ class ConvRNNClassifier:
         self.n_filters = n_filters
         self.kernel_size = kernel_size
         self.pool_size = pool_size
+        self.padding = padding
         self.cell_size = cell_size
         self.n_out = n_out
         self.sess = sess
@@ -48,7 +49,7 @@ class ConvRNNClassifier:
 
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-        self.add_maxpool(k = self.pool_size)
+        self.add_maxpool(self.pool_size)
         self.add_lstm_cells()
         self.add_dynamic_rnn()
         self.reshape_rnn_out()
@@ -71,18 +72,16 @@ class ConvRNNClassifier:
 
 
     def add_word_embedding(self):
-        embedding_mat = tf.get_variable('embedding_mat', [self.vocab_size,self.embedding_dims], tf.float32,
-                                        tf.random_normal_initializer())
-        embedding_out = tf.nn.embedding_lookup(embedding_mat, self.current_layer)
-        embedding_out = tf.nn.dropout(embedding_out, self.keep_prob)
-        self.current_layer = embedding_out
+        E = tf.get_variable('E', [self.vocab_size,self.embedding_dims], tf.float32, tf.random_normal_initializer())
+        E = tf.nn.embedding_lookup(E, self.current_layer)
+        self.current_layer = tf.nn.dropout(E, self.keep_prob)
     # end method add_word_embedding_layer
 
 
     def add_conv1d(self, name, filter_shape, stride=1):
         W = self._W(name+'_w', filter_shape)
         b = self._b(name+'_b', [filter_shape[-1]])                                
-        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding='SAME')
+        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
         self.current_layer = conv
@@ -91,7 +90,7 @@ class ConvRNNClassifier:
 
     def add_maxpool(self, k=2):
         conv = tf.expand_dims(self.current_layer, 1)
-        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding='SAME')
+        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
         conv = tf.squeeze(conv)
         self.current_layer = conv
     # end method add_global_maxpool_layer
@@ -103,8 +102,11 @@ class ConvRNNClassifier:
 
 
     def add_dynamic_rnn(self):
-        self.current_layer = tf.reshape(self.current_layer,
-                                        [self.batch_size, int(self.seq_len/self.pool_size), self.n_filters])
+        if self.padding == 'VALID':
+            current_seq_len = int((self.seq_len-self.kernel_size+1) / self.pool_size)
+        if self.padding == 'SAME':
+            current_seq_len = int(self.seq_len / self.pool_size)
+        self.current_layer = tf.reshape(self.current_layer, [self.batch_size, current_seq_len, self.n_filters])
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)              
         self.current_layer, final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
                                                             initial_state=self.init_state,

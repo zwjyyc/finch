@@ -26,6 +26,7 @@ It is still at the early stage, and many things need to be done in future
   * [Image Segmentation](https://github.com/zhedongzheng/finch#image-segmentation)
   * [Detection](https://github.com/zhedongzheng/finch#detection)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing-practice)
+  * [Preprocessing](https://github.com/zhedongzheng/finch#preprocessing)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
 * [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
 ## Machine Learning (Theory)
@@ -74,7 +75,8 @@ It is still at the early stage, and many things need to be done in future
   * OpenCV &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/computer-vision/face-eye-detection.ipynb)
   * OpenCV &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)
 ## Natural Language Processing (Practice)
-* Python &nbsp; | &nbsp; [Text Preprocessing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
+#### Preprocessing
+* Python &nbsp; | &nbsp; [Text Cleaning](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-indexing.ipynb)
 ## Distributed System (Practice)
 * [Java Multithreading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)

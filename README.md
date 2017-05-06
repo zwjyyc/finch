@@ -2,7 +2,7 @@
 
 A wide range of my understanding and implementation of machine learning (ML) topics for public use
 
-It is still at the early stage, and many things need to be done in future
+Still at the early stage, and many things need to be done in future
 
 ## Contents
 ### Theory

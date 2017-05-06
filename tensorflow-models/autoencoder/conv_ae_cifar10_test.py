@@ -1,5 +1,5 @@
 from keras.datasets import cifar10
-from conv_ae import Autoencoder
+from conv_ae import ConvAE
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
@@ -10,8 +10,10 @@ if __name__ == '__main__':
     X_test = (X_test/255.0).reshape(-1, 32, 32, 3)
 
     sess = tf.Session()
-    auto = Autoencoder(sess, (32, 32), 3)
-    X_test_2d = auto.fit_transform(X_test)
+    auto = ConvAE(sess, (32, 32), 3)
+    X_test_pred = auto.fit_transform(X_test, n_epoch=3)
     
-    plt.scatter(X_test_2d[:, 0], X_test_2d[:, 1], c=y_test)
+    plt.imshow(X_test[21].reshape(32,32,3))
+    plt.show()
+    plt.imshow(X_test_pred[21].reshape(32,32,3))
     plt.show()

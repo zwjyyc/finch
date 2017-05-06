@@ -3,7 +3,7 @@ import numpy as np
 import math
 
 
-class Autoencoder:
+class ConvAE:
     def __init__(self, sess, img_size, img_ch, kernel_size=(5,5), pool_size=2):
         self.img_size = img_size
         self.img_ch = img_ch
@@ -52,7 +52,8 @@ class Autoencoder:
 
         res = []
         for X_batch in self.gen_batch(X_train, batch_size):
-            res.append(self.sess.run(self.encoder_op, feed_dict={self.X: X_batch}))
+            res.append(self.sess.run(self.decoder_op, feed_dict={self.X: X_batch,
+                                                                 self.batch_size:len(X_batch)}))
         return np.concatenate(res)
     # end method fit_transform
 

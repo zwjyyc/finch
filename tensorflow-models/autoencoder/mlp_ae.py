@@ -56,7 +56,7 @@ class Autoencoder:
     # end method fc
 
 
-    def fit_transform(self, X_train, n_epoch=10, batch_size=32):
+    def fit_transform(self, X_train, n_epoch=10, batch_size=128):
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         global_step = 0
         for epoch in range(n_epoch):
@@ -70,10 +70,13 @@ class Autoencoder:
                            %(epoch+1, n_epoch, local_step+1, int(len(X_train)/batch_size), loss))
                 global_step += 1
 
-        res = []
+        reduced = []
+        reconstructed = []
         for X_batch in self.gen_batch(X_train, batch_size):
-            res.append(self.sess.run(self.encoder_op, feed_dict={self.X: X_batch}))
-        return np.concatenate(res)
+            red, rec = self.sess.run([self.encoder_op, self.decoder_op], feed_dict={self.X: X_batch})
+            reduced.append(red)
+            reconstructed.append(rec)
+        return (np.concatenate(reduced), np.concatenate(reconstructed))
     # end method fit_transform
 
 

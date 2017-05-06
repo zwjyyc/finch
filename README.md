@@ -76,7 +76,7 @@ It is still at the early stage, and many things need to be done in future
   * OpenCV &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/computer-vision/car-walker-detection.ipynb)
 ## Natural Language Processing (Practice)
 #### Preprocessing
-* Python &nbsp; | &nbsp; [Text Cleaning](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-preprocessing.ipynb)
+* Python &nbsp; | &nbsp; [Text Cleaning](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-cleaning.ipynb)
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-indexing.ipynb)
 ## Distributed System (Practice)
 * [Java Multithreading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)

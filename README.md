@@ -25,7 +25,7 @@ Still at the early stage, and many things need to be done in future
   * [Detection](https://github.com/zhedongzheng/finch#detection)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing-practice)
   * [Preprocessing](https://github.com/zhedongzheng/finch#preprocessing)
-  * [Deep NLP](https://github.com/zhedongzheng/finch#deep-nlp)
+  * [Deep NLP](https://github.com/zhedongzheng/finch#deep-nlp)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
 * [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
 ## Machine Learning (Theory)
@@ -78,7 +78,8 @@ Still at the early stage, and many things need to be done in future
 * Python &nbsp; | &nbsp; [Text Cleaning](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/text-cleaning.ipynb)
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/natural-language-processing/word-indexing.ipynb)
 #### Deep NLP
-* TensorFlow &nbsp; | &nbsp; LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp; 
+* TensorFlow &nbsp; | &nbsp; LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Conv1D Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_1d_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_1d_text_clf_imdb_test.py) &nbsp; | &nbsp; 
 * TensorFlow &nbsp; | &nbsp; LSTM Text Generator &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Shakespeare Texts Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_sh_test.py) &nbsp; | &nbsp; [Nietzsche Texts Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_ni_test.py) &nbsp; | &nbsp; 
 ## Distributed System (Practice)
 * [Java Multithreading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)

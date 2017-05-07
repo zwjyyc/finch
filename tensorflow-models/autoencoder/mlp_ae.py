@@ -15,7 +15,7 @@ class Autoencoder:
 
     def build_graph(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
-        with tf.variable_scope('forward_path') as scope:
+        with tf.variable_scope('weights_tied') as scope:
             self.encoder_op = self.add_forward_path(self.X, self.encoder_units, 'encoder')
             scope.reuse_variables()
             self.decoder_op = self.add_forward_path(self.encoder_op, self.decoder_units, 'decoder')

@@ -14,6 +14,7 @@ if __name__ == '__main__':
     ae.fit(X_train, X_test, n_epoch=3)
     X_test_pred = ae.predict(X_test)
     
+    print("Plotting...")
     plt.imshow(X_test[21].reshape(32,32,3))
     plt.show()
     plt.imshow(X_test_pred[21].reshape(32,32,3))

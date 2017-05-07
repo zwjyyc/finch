@@ -4,11 +4,10 @@ import math
 
 
 class ConvAE:
-    def __init__(self, sess, img_size, img_ch, kernel_size=(5,5), pool_size=2):
+    def __init__(self, sess, img_size, img_ch, kernel_size=(5,5)):
         self.img_size = img_size
         self.img_ch = img_ch
         self.kernel_size = kernel_size
-        self.pool_size = pool_size
         self.sess = sess
         self.current_layer=None
         self.build_graph()

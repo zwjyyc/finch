@@ -42,12 +42,8 @@ class ConvAE:
 
     def add_deconv(self, name, output_shape, strides=1):
         W = tf.get_variable(name)
-        self.current_layer = tf.nn.conv2d_transpose(
-            self.current_layer, W,
-            output_shape,
-            [1,strides,strides,1],
-            'SAME'
-        )
+        self.current_layer = tf.nn.conv2d_transpose(self.current_layer, W, output_shape, [1,strides,strides,1],
+                                                    'SAME')
     # end method add_deconv
 
 

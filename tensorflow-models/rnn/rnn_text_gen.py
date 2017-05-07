@@ -2,7 +2,9 @@ import tensorflow as tf
 import math
 import numpy as np
 import sklearn
-from utils import clean_text, build_vocab, convert_text_to_idx
+import string
+import re
+import collections
 
 
 class RNNTextGen:
@@ -37,15 +39,15 @@ class RNNTextGen:
 
 
     def text_preprocessing(self):
-        self.text = clean_text(self.text)
+        self.text = self.clean_text(self.text)
         all_word_list = list(self.text)
 
-        self.word2idx, self.idx2word = build_vocab(all_word_list)
+        self.word2idx, self.idx2word = self.build_vocab(all_word_list)
         self.vocab_size = len(self.idx2word)
         print('Vocabulary length:', self.vocab_size)
         assert len(self.idx2word) == len(self.word2idx), "len(idx2word) is not equal to len(word2idx)"
 
-        self.all_word_idx = convert_text_to_idx(all_word_list, self.word2idx)
+        self.all_word_idx = self.convert_text_to_idx(all_word_list, self.word2idx)
     # end method text_preprocessing
 
 
@@ -149,6 +151,39 @@ class RNNTextGen:
             lr = 0.0005
         return lr
     # end method adjust_lr
+
+
+    def clean_text(self, text):
+        text = text.replace('\n', ' ')
+        punctuation = string.punctuation
+        punctuation = ''.join([x for x in punctuation if x not in ['-', "'"]])
+        text = re.sub(r'[{}]'.format(punctuation), ' ', text)
+        text = re.sub('\s+', ' ', text ).strip().lower()
+        return text
+    # end method clean_text()
+
+
+    def build_vocab(self, word_list, min_word_freq=None):
+        word_counts = collections.Counter(word_list)
+        if min_word_freq is not None:
+            word_counts = {key:val for key,val in word_counts.items() if val > min_word_freq}
+        words = word_counts.keys()
+        word2idx = {key:(idx+1) for idx,key in enumerate(words)} # create word -> index mapping
+        word2idx['_unknown'] = 0 # add unknown key -> 0 index
+        idx2word = {val:key for key,val in word2idx.items()} # create index -> word mapping
+        return(word2idx, idx2word)
+    # end method build_vocab()
+
+
+    def convert_text_to_idx(self, all_word_list, word2idx):
+        all_word_idx = []
+        for word in all_word_list:
+            try:
+                all_word_idx.append(word2idx[word])
+            except:
+                all_word_idx.append(0)
+        return all_word_idx
+    # end method convert_text_to_idx()
 
 
     def learn(self, prime_texts=None, text_iter_step=3, num_gen=200, temperature=1.0, 

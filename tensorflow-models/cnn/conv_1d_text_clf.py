@@ -64,7 +64,8 @@ class Conv1DClassifier:
 
     def add_word_embedding(self):
         E = tf.get_variable('E', [self.vocab_size,self.embedding_dims], tf.float32, tf.random_normal_initializer())
-        self.current_layer = tf.nn.embedding_lookup(E, self.current_layer)
+        E = tf.nn.embedding_lookup(E, self.current_layer)
+        self.current_layer = E
     # end method add_word_embedding_layer
 
 
@@ -76,9 +77,9 @@ class Conv1DClassifier:
         conv = tf.nn.relu(conv)
         self.current_layer = conv
         if self.padding == 'VALID':
-            self.current_seq_len = self.seq_len - self.kernel_size + 1
+            self.current_seq_len = int(self.seq_len - self.kernel_size + 1 / stride)
         if self.padding == 'SAME':
-            self.current_seq_len = self.seq_len
+            self.current_seq_len = int(self.seq_len / stride)
     # end method add_conv1d_layer
 
 
@@ -95,8 +96,8 @@ class Conv1DClassifier:
         W = self._W(name+'_w', w_shape)
         b = self._b(name+'_b', [w_shape[-1]])
         fc = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
-        fc = tf.nn.relu(fc)
         fc = tf.nn.dropout(fc, self.keep_prob)
+        fc = tf.nn.relu(fc)
         self.current_layer = fc
     # end method add_fc_layer
 

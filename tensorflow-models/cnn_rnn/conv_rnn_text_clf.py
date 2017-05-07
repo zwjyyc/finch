@@ -40,6 +40,7 @@ class ConvRNNClassifier:
         self.n_out = n_out
         self.sess = sess
         self.current_layer = None
+        self.current_seq_len = self.seq_len
         self.build_graph()
     # end constructor
  
@@ -85,6 +86,10 @@ class ConvRNNClassifier:
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
         self.current_layer = conv
+        if self.padding == 'VALID':
+            self.current_seq_len = int((self.current_seq_len-self.kernel_size+1) / stride)
+        if self.padding == 'SAME':
+            self.current_seq_len = int(self.current_seq_len / stride)
     # end method add_conv1d_layer
 
 
@@ -93,6 +98,7 @@ class ConvRNNClassifier:
         conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
         conv = tf.squeeze(conv)
         self.current_layer = conv
+        self.current_seq_len = int(self.current_seq_len / k)
     # end method add_global_maxpool_layer
 
 
@@ -102,11 +108,7 @@ class ConvRNNClassifier:
 
 
     def add_dynamic_rnn(self):
-        if self.padding == 'VALID':
-            current_seq_len = int((self.seq_len-self.kernel_size+1) / self.pool_size)
-        if self.padding == 'SAME':
-            current_seq_len = int(self.seq_len / self.pool_size)
-        self.current_layer = tf.reshape(self.current_layer, [self.batch_size, current_seq_len, self.n_filters])
+        self.current_layer = tf.reshape(self.current_layer, [self.batch_size, self.current_seq_len, self.n_filters])
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)              
         self.current_layer, final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
                                                             initial_state=self.init_state,

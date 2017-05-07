@@ -41,9 +41,9 @@ class Conv2DClassifier:
         self.add_input_layer()
 
         self.add_conv('conv1', filter_shape=[self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
-        self.add_maxpool(k = self.pool_size)
+        self.add_maxpool(self.pool_size)
         self.add_conv('conv2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 64])
-        self.add_maxpool(k = self.pool_size)
+        self.add_maxpool(self.pool_size)
         self.add_fully_connected('fc', 512)
         self.add_output_layer(512)   
         self.add_backward_path()
@@ -67,18 +67,20 @@ class Conv2DClassifier:
         conv = tf.nn.relu(conv)
         self.current_layer = conv
         self.current_n_filter = filter_shape[-1]
+        if self.padding == 'VALID':
+            self.current_img_h = int((self.current_img_h-self.kernel_size[0]+1) / strides)
+            self.current_img_w = int((self.current_img_w-self.kernel_size[1]+1) / strides)
+        if self.padding == 'SAME':
+            self.current_img_h = int(self.current_img_h / strides)
+            self.current_img_w = int(self.current_img_w / strides)
     # end method add_conv_layer
 
 
     def add_maxpool(self, k):
         self.current_layer = tf.nn.max_pool(self.current_layer, ksize=[1,k,k,1], strides=[1,k,k,1],
                                             padding=self.padding)
-        if self.padding == 'VALID':
-            self.current_img_h = int((self.current_img_h-self.kernel_size[0]+1) / k)
-            self.current_img_w = int((self.current_img_w-self.kernel_size[1]+1) / k)
-        if self.padding == 'SAME':
-            self.current_img_h = int(self.current_img_h / k)
-            self.current_img_w = int(self.current_img_w / k)
+        self.current_img_h = int(self.current_img_h / k)
+        self.current_img_w = int(self.current_img_w / k)
     # end method add_maxpool_layer
 
 

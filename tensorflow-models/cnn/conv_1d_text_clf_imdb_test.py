@@ -3,6 +3,7 @@ from keras.preprocessing import sequence
 from keras.utils.np_utils import to_categorical as to_one_hot
 from conv_1d_text_clf import Conv1DClassifier
 import tensorflow as tf
+import numpy as np
 
 
 max_features = 5000
@@ -26,7 +27,8 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = Conv1DClassifier(sess, maxlen, max_features, n_out)
-    log = clf.fit(X_train, Y_train, batch_size=32, keep_prob=0.8, val_data=(X_test,Y_test))
+    log = clf.fit(X_train, Y_train, n_epoch=10, batch_size=32, keep_prob=0.8, en_exp_decay=True,
+                  val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()
 

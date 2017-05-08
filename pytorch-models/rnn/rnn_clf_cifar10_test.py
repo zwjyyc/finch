@@ -7,7 +7,7 @@ cell_size = 128
 n_layer = 1
 n_out = 10
 batch_size = 128
-n_epoch = 2
+n_epoch = 5
 
 
 if __name__ == '__main__':

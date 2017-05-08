@@ -5,27 +5,27 @@ import numpy as np
 
 
 class RNNClassifier(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, num_classes):
+    def __init__(self, n_in, cell_size, n_layer, n_out):
         super(RNNClassifier, self).__init__()
-        self.input_size = input_size
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        self.num_classes = num_classes
+        self.n_in = n_in
+        self.cell_size = cell_size
+        self.n_layer = n_layer
+        self.n_out = n_out
         self.build_model()
     # end constructor
 
 
     def build_model(self):
-        self.lstm = nn.LSTM(self.input_size, self.hidden_size, self.num_layers, batch_first=True)
-        self.fc = nn.Linear(self.hidden_size, self.num_classes)
+        self.lstm = nn.LSTM(self.n_in, self.cell_size, self.n_layer, batch_first=True)
+        self.fc = nn.Linear(self.cell_size, self.n_out)
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
     # end method build_model    
 
 
     def forward(self, x):
-        h_0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size)) # set initial states  
-        c_0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size)) # set initial states 
+        h_0 = Variable(torch.zeros(self.n_layer, x.size(0), self.cell_size)) # set initial states  
+        c_0 = Variable(torch.zeros(self.n_layer, x.size(0), self.cell_size)) # set initial states 
         out, (h_n, c_n) = self.lstm(x, (h_0, c_0))                                # forward propagate
         out = self.fc(out[:, -1, :])                                              # decode hidden state of last time step
         return out

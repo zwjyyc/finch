@@ -33,8 +33,8 @@ class CNNClassifier(nn.Module):
     # end method build_model
 
 
-    def forward(self, x):
-        out = self.conv1(x)
+    def forward(self, X):
+        out = self.conv1(X)
         out = self.conv2(out)
         out = self.flatten(out)
         out = self.fc(out)
@@ -42,8 +42,8 @@ class CNNClassifier(nn.Module):
     # end method forward
 
 
-    def flatten(self, x):
-        return x.view(x.size(0), -1)
+    def flatten(self, X):
+        return X.view(X.size(0), -1)
     # end method flatten
 
 

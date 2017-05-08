@@ -32,8 +32,8 @@ class MLPClassifier(nn.Module):
     # end method _dense         
     
 
-    def forward(self, x):
-        out = self.mlp(x)
+    def forward(self, X):
+        out = self.mlp(X)
         return out
     # end method forward
 

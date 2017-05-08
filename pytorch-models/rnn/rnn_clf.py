@@ -23,10 +23,10 @@ class RNNClassifier(nn.Module):
     # end method build_model    
 
 
-    def forward(self, x):
-        h_0 = Variable(torch.zeros(self.n_layer, x.size(0), self.cell_size)) # set initial states  
-        c_0 = Variable(torch.zeros(self.n_layer, x.size(0), self.cell_size)) # set initial states 
-        out, (h_n, c_n) = self.lstm(x, (h_0, c_0))                                # forward propagate
+    def forward(self, X):
+        h_0 = Variable(torch.zeros(self.n_layer, X.size(0), self.cell_size)) # set initial states  
+        c_0 = Variable(torch.zeros(self.n_layer, X.size(0), self.cell_size)) # set initial states 
+        out, (h_n, c_n) = self.lstm(X, (h_0, c_0))                                # forward propagate
         out = self.fc(out[:, -1, :])                                              # decode hidden state of last time step
         return out
     # end method forward

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     Y_test = to_one_hot(y_test)
 
     sess = tf.Session()
-    clf = RNNTextClassifier(sess, seq_len=maxlen, vocab_size=max_features, n_out=2)
+    clf = RNNTextClassifier(sess, maxlen, max_features, 2)
     log = clf.fit(X_train, Y_train, batch_size=batch_size, keep_prob_tuple=(0.8,1.0), val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()

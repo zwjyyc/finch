@@ -16,6 +16,6 @@ if __name__ == '__main__':
     X_test = (X_test / 255.0).mean(axis=3)              # rgb averaging to grayscale
     y_train = y_train.ravel()
     y_test = y_test.ravel()
-    rnn = RNNClassifier(n_in, cell_size, n_layer, n_out)
+    rnn = RNNClassifier(n_in, n_out, cell_size, n_layer)
     rnn.fit(X_train, y_train, n_epoch, batch_size)
     rnn.evaluate(X_test, y_test, batch_size)

@@ -5,12 +5,13 @@ import numpy as np
 
 
 class RNNClassifier(nn.Module):
-    def __init__(self, n_in, cell_size, n_layer, n_out):
+    def __init__(self, n_in, n_out, cell_size=128, n_layer=2, stateful=False):
         super(RNNClassifier, self).__init__()
         self.n_in = n_in
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.n_out = n_out
+        self.stateful = stateful
         self.build_model()
     # end constructor
 
@@ -23,30 +24,38 @@ class RNNClassifier(nn.Module):
     # end method build_model    
 
 
-    def forward(self, X):
-        h_0 = Variable(torch.zeros(self.n_layer, X.size(0), self.cell_size)) # set initial states  
-        c_0 = Variable(torch.zeros(self.n_layer, X.size(0), self.cell_size)) # set initial states 
-        out, (h_n, c_n) = self.lstm(X, (h_0, c_0))                                # forward propagate
-        out = self.fc(out[:, -1, :])                                              # decode hidden state of last time step
-        return out
+    def forward(self, X, init_state=None):
+        """
+        h_0 = Variable(torch.zeros(self.n_layer, X.size(0), self.cell_size))
+        c_0 = Variable(torch.zeros(self.n_layer, X.size(0), self.cell_size))
+        """
+        out, final_state = self.lstm(X, init_state) # forward propagate
+        out = self.fc(out[:, -1, :])                # decode hidden state of last time step
+        return out, final_state
     # end method forward
 
 
     def fit(self, X, y, num_epochs, batch_size):
         for epoch in range(num_epochs):
             i = 0
-            for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size),
+            state = None
+            for X_batch, y_batch in zip(self.gen_batch(X, batch_size),
                                                     self.gen_batch(y, batch_size)):
-                images = Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
-                labels = Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
+                X_train_batch = Variable(torch.from_numpy(X_batch.astype(np.float32)))
+                y_train_batch = Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
-                pred = self.forward(images)             # rnn output
-                loss = self.criterion(pred, labels)     # cross entropy loss
-                self.optimizer.zero_grad()              # clear gradients for this training step
-                loss.backward()                         # backpropagation, compute gradients
-                self.optimizer.step()                   # apply gradients
+                if (self.stateful) and (len(X_batch) == batch_size):
+                    y_pred_batch, state = self.forward(X_train_batch, state)
+                    state = (Variable(state[0].data), Variable(state[1].data))
+                else:
+                    y_pred_batch, _ = self.forward(X_train_batch)
+
+                loss = self.criterion(y_pred_batch, y_train_batch)     # cross entropy loss
+                self.optimizer.zero_grad()                             # clear gradients for this training step
+                loss.backward()                                        # backpropagation, compute gradients
+                self.optimizer.step()                                  # apply gradients
                 i+=1 
-                acc = np.equal(torch.max(pred,1)[1].data.numpy().squeeze(), y_train_batch).astype(float).mean()
+                acc = np.equal(torch.max(y_pred_batch,1)[1].data.numpy().squeeze(), y_batch).astype(float).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
                            %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
@@ -56,14 +65,21 @@ class RNNClassifier(nn.Module):
     def evaluate(self, X_test, y_test, batch_size):
         correct = 0
         total = 0
-        for X_test_batch, y_test_batch in zip(self.gen_batch(X_test, batch_size),
+        state = None
+        for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size),
                                               self.gen_batch(y_test, batch_size)):
-            images = Variable(torch.from_numpy(X_test_batch.astype(np.float32)))
-            labels = torch.from_numpy(y_test_batch.astype(np.int64))
-            outputs = self.forward(images)
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum()
+            X_test_batch = Variable(torch.from_numpy(X_batch.astype(np.float32)))
+            y_test_batch = torch.from_numpy(y_batch.astype(np.int64))
+
+            if (self.stateful) and (len(X_batch) == batch_size):
+                y_pred_batch, state = self.forward(X_test_batch, state)
+                state = (Variable(state[0].data), Variable(state[1].data))
+            else:
+                y_pred_batch, _ = self.forward(X_test_batch)
+
+            _, y_pred_batch = torch.max(y_pred_batch.data, 1)
+            total += y_test_batch.size(0)
+            correct += (y_pred_batch == y_test_batch).sum()
         print('Test Accuracy of the model on the 10000 test images: %d %%' % (100 * correct / total)) 
     # end method evaluate
 

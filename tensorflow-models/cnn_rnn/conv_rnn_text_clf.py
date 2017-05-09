@@ -39,8 +39,8 @@ class ConvRNNClassifier:
         self.cell_size = cell_size
         self.n_out = n_out
         self.sess = sess
-        self.current_layer = None
-        self.current_seq_len = self.seq_len
+        self.current_layer = None               # used to point to the forefront of neural network
+        self.current_seq_len = self.seq_len     # used to record the current sequence length (after pooling)
         self.build_graph()
     # end constructor
  

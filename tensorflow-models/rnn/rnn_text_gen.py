@@ -76,9 +76,9 @@ class RNNTextGen:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.W = tf.get_variable('W', [self.cell_size, self.vocab_size], tf.float32,
+        self.W = tf.get_variable('logits_W', [self.cell_size, self.vocab_size], tf.float32,
                                   tf.contrib.layers.variance_scaling_initializer())
-        self.b = tf.get_variable('b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))   
+        self.b = tf.get_variable('logits_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))   
         self.in_keep_prob = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
@@ -131,8 +131,8 @@ class RNNTextGen:
 
     def add_sample_model(self):
         self._X = tf.placeholder(tf.int32, [None, 1])
-        _W = tf.get_variable('W')
-        _b = tf.get_variable('b')
+        _W = tf.get_variable('logits_W')
+        _b = tf.get_variable('logits_b')
         _E = tf.nn.embedding_lookup(tf.get_variable('E'), self._X)
         self._init_state = self.cells.zero_state(self.batch_size, tf.float32)
         rnn_out, self._final_state = tf.nn.dynamic_rnn(self.cells, _E,
@@ -183,7 +183,7 @@ class RNNTextGen:
                                                                       text_iter_step)])
         Y = np.roll(X, -1, axis=1)
         Y[np.arange(len(X)-1), -1] = X[np.arange(1,len(X)), 0]
-        print('X shape:', X.shape, 'Y shape:', Y.shape)
+        print('X shape:', X.shape, '|', 'Y shape:', Y.shape)
 
         if prime_texts is None:
             prime_texts = []

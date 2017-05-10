@@ -18,6 +18,8 @@ class RNNTextGen:
             corpus
         seq_len: int
             Sequence length
+        min_freq: int
+            The minimum char occurence in text to be saved in vocabulary
         cell_size: int
             Number of units in the rnn cell
         n_layers: int

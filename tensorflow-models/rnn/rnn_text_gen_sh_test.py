@@ -28,12 +28,12 @@ def load_shakespeare_text():
         with open(os.path.join(data_dir, data_file), 'r') as f: # if file has been saved, load from that file
             s_text = f.read()
     return s_text
-# end function load_shakespeare_text()
+# end function load_shakespeare_text
 
 
 if __name__ == '__main__':
     text = load_shakespeare_text()
 
     sess = tf.Session()
-    train_model = RNNTextGen(sess, text)
-    log = train_model.learn(text_iter_step=25)
+    train_model = RNNTextGen(sess, text, min_freq=1000)
+    log = train_model.learn(prime_texts=prime_texts, text_iter_step=25)

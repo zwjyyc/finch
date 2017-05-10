@@ -17,11 +17,9 @@ class ConvAE:
     def build_graph(self):
         self.add_input_layer()
         with tf.variable_scope('weights_tied') as scope:
-            self.add_conv('encoder_W1', [self.kernel_size[0], self.kernel_size[1], self.img_ch, 16])
-            self.add_conv('encoder_W2', [self.kernel_size[0], self.kernel_size[1], 16, 32])
+            self.add_conv('encoder1', [self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
             scope.reuse_variables()
-            self.add_deconv('encoder_W2', [self.batch_size, self.img_size[0], self.img_size[1], 16])
-            self.add_deconv('encoder_W1', [self.batch_size, self.img_size[0], self.img_size[1], self.img_ch])
+            self.add_deconv('encoder1', [self.batch_size, self.img_size[0], self.img_size[1], self.img_ch])
         self.decoder_op = self.current_layer
         self.add_backward_path()
     # end method build_graph

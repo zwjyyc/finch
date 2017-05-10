@@ -41,12 +41,12 @@ class RNNTextGen:
     def text_preprocessing(self):
         self.text = self.clean_text(self.text)
         all_word_list = list(self.text)
-
+        # indexing words
         self.word2idx, self.idx2word = self.build_vocab(all_word_list)
         self.vocab_size = len(self.idx2word)
         print('Vocabulary length:', self.vocab_size)
         assert len(self.idx2word) == len(self.word2idx), "len(idx2word) is not equal to len(word2idx)"
-
+        # replace all words with their index
         self.all_word_idx = self.convert_text_to_idx(all_word_list, self.word2idx)
     # end method text_preprocessing
 
@@ -57,7 +57,6 @@ class RNNTextGen:
             self.add_word_embedding_layer()
             self.add_lstm_cells()
             self.add_dynamic_rnn()
-            self.reshape_rnn_out()
             self.add_output_layer()
             self.add_backward_path()
         with tf.variable_scope('main_model', reuse=True):
@@ -99,13 +98,9 @@ class RNNTextGen:
     # end method add_dynamic_rnn
 
 
-    def reshape_rnn_out(self):
-        self.current_layer = tf.reshape(self.current_layer, [-1, self.cell_size])
-    # end method add_rnn_out
-
-
     def add_output_layer(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
+        reshaped = tf.reshape(self.current_layer, [-1, self.cell_size])
+        self.logits = tf.nn.bias_add(tf.matmul(reshaped, self.W), self.b)
     # end method add_output_layer
 
 

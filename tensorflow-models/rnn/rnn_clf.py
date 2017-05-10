@@ -38,11 +38,8 @@ class RNNClassifier:
 
     def build_graph(self):
         self.add_input_layer()
-
         self.add_lstm_cells()
         self.add_dynamic_rnn()
-        self.reshape_rnn_out()
-
         self.add_output_layer()
         self.add_backward_path()
     # end method build_graph
@@ -76,14 +73,10 @@ class RNNClassifier:
     # end method add_dynamic_rnn
 
 
-    def reshape_rnn_out(self):
-        # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        self.current_layer = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
-    # end method add_rnn_out
-
-
     def add_output_layer(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer[-1], self.W), self.b)
+        # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
+        time_major = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
+        self.logits = tf.nn.bias_add(tf.matmul(time_major[-1], self.W), self.b)
     # end method add_output_layer
 
 

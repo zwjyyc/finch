@@ -30,11 +30,8 @@ class RNNRegressor:
 
     def build_graph(self):
         self.add_input_layer()
-
         self.add_lstm_cells()
         self.add_dynamic_rnn()
-        self.reshape_rnn_out()
-
         self.add_output_layer() 
         self.add_backward_path()
     # end method build_graph
@@ -63,14 +60,10 @@ class RNNRegressor:
     # end method add_dynamic_rnn
 
 
-    def reshape_rnn_out(self):
-        self.current_layer = tf.reshape(self.current_layer, [-1, self.cell_size]) # (batch * n_step, n_hidden)
-    # end method add_rnn_out
-
-
     def add_output_layer(self):
+        reshaped = tf.reshape(self.current_layer, [-1, self.cell_size]) # (batch * n_step, n_hidden)
         # (batch * n_step, n_hidden) dot (n_hidden, n_out)
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
+        self.logits = tf.nn.bias_add(tf.matmul(reshaped, self.W), self.b)
         self.time_seq_out = tf.reshape(self.logits, [-1, self.n_step, self.n_out])
     # end method add_output_layer
 

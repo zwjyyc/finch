@@ -1,6 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-My personal notes and code implementation on machine learning (ML) topics
+My personal notes, models, and tests written on machine learning (ML) topics
 
 Still at the early stage, many things to be done in future
 

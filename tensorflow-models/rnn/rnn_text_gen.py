@@ -8,7 +8,7 @@ import collections
 
 
 class RNNTextGen:
-    def __init__(self, sess, text, seq_len=50, cell_size=128, n_layer=3, stateful=True):
+    def __init__(self, sess, text, seq_len=50, min_freq=500, cell_size=128, n_layer=3, stateful=True):
         """
         Parameters:
         -----------
@@ -28,6 +28,7 @@ class RNNTextGen:
         self.sess = sess
         self.text = text
         self.seq_len = seq_len
+        self.min_freq = min_freq
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.stateful = stateful
@@ -39,15 +40,20 @@ class RNNTextGen:
 
 
     def text_preprocessing(self):
-        self.text = self.clean_text(self.text)
-        all_word_list = list(self.text)
-        # indexing words
-        self.word2idx, self.idx2word = self.build_vocab(all_word_list)
-        self.vocab_size = len(self.idx2word)
-        print('Vocabulary length:', self.vocab_size)
-        assert len(self.idx2word) == len(self.word2idx), "len(idx2word) is not equal to len(word2idx)"
-        # replace all words with their index
-        self.all_word_idx = self.convert_text_to_idx(all_word_list, self.word2idx)
+        self.clean_text(self.text)
+        chars = list(self.text)
+
+        self.build_vocab(chars)
+        assert len(self.idx2char) == len(self.char2idx), "len(idx2char) != len(char2idx)"
+        self.vocab_size = len(self.idx2char)
+        print('Vocabulary size:', self.vocab_size)
+
+        self.indices = []
+        for char in chars:
+            try:
+                self.indices.append(self.char2idx[char])
+            except:
+                self.indices.append(0)
     # end method text_preprocessing
 
 
@@ -150,42 +156,29 @@ class RNNTextGen:
 
     def clean_text(self, text):
         text = text.replace('\n', ' ')
-        punctuation = string.punctuation
-        punctuation = ''.join([x for x in punctuation if x not in ['-', "'"]])
+        punctuation = ''.join([x for x in string.punctuation if x not in ['-', "'"]])
         text = re.sub(r'[{}]'.format(punctuation), ' ', text)
         text = re.sub('\s+', ' ', text ).strip().lower()
-        return text
-    # end method clean_text()
+        self.text = text
+    # end method clean_text
 
 
-    def build_vocab(self, word_list, min_word_freq=None):
-        word_counts = collections.Counter(word_list)
-        if min_word_freq is not None:
-            word_counts = {key:val for key,val in word_counts.items() if val > min_word_freq}
-        words = word_counts.keys()
-        word2idx = {key:(idx+1) for idx,key in enumerate(words)} # create word -> index mapping
-        word2idx['_unknown'] = 0 # add unknown key -> 0 index
-        idx2word = {val:key for key,val in word2idx.items()} # create index -> word mapping
-        return(word2idx, idx2word)
-    # end method build_vocab()
-
-
-    def convert_text_to_idx(self, all_word_list, word2idx):
-        all_word_idx = []
-        for word in all_word_list:
-            try:
-                all_word_idx.append(word2idx[word])
-            except:
-                all_word_idx.append(0)
-        return all_word_idx
-    # end method convert_text_to_idx()
+    def build_vocab(self, chars):
+        char_freqs = collections.Counter(chars)
+        char_freqs = {char:freq for char,freq in char_freqs.items() if freq > self.min_freq}
+        print(char_freqs)
+        chars = char_freqs.keys()
+        self.char2idx = {char:(idx+1) for idx,char in enumerate(chars)} # create word -> index mapping
+        self.char2idx['_unknown'] = 0 # add unknown key -> 0 index
+        self.idx2char = {idx:char for char,idx in self.char2idx.items()} # create index -> word mapping
+    # end method build_vocab
 
 
     def learn(self, prime_texts=None, text_iter_step=3, num_gen=200, temperature=1.0, 
               n_epoch=25, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=1.0):
         
-        X = np.array([self.all_word_idx[i:i+self.seq_len] for i in range(
-            0, len(self.all_word_idx)-self.seq_len, text_iter_step)])
+        X = np.array([self.indices[i : i+self.seq_len] for i in range(0, len(self.indices)-self.seq_len,
+                                                                      text_iter_step)])
         Y = np.roll(X, -1, axis=1)
         Y[np.arange(len(X)-1), -1] = X[np.arange(1,len(X)), 0]
         print('X shape:', X.shape, 'Y shape:', Y.shape)
@@ -235,20 +228,20 @@ class RNNTextGen:
     def sample(self, prime_text, num_gen, temperature):
         # warming up
         next_state = self.sess.run(self._init_state, feed_dict={self.batch_size:1})
-        word_list = list(prime_text)
-        for word in word_list[:-1]:
+        char_list = list(prime_text)
+        for char in char_list[:-1]:
             x = np.zeros([1,1])
-            x[0,0] = self.word2idx[word] 
+            x[0,0] = self.char2idx[char] 
             next_state = self.sess.run(self._final_state, feed_dict={self._X:x,
                                                                      self._init_state:next_state,
                                                                      self.in_keep_prob:1.0})
         # end warming up
 
         out_sentence = prime_text + '|'
-        word = word_list[-1]
+        char = char_list[-1]
         for n in range(num_gen):
             x = np.zeros([1,1])
-            x[0,0] = self.word2idx[word]
+            x[0,0] = self.char2idx[char]
             softmax_out, next_state = self.sess.run([self._softmax_out, self._final_state],
                                                      feed_dict={self._X:x,
                                                                 self._init_state:next_state,
@@ -256,8 +249,8 @@ class RNNTextGen:
             idx = self.infer_idx(softmax_out[0], temperature)
             if idx == 0:
                 break
-            word = self.idx2word[idx]
-            out_sentence = out_sentence + word
+            char = self.idx2char[idx]
+            out_sentence = out_sentence + char
         return(out_sentence)
     # end method sample
 

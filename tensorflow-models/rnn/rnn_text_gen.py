@@ -8,7 +8,8 @@ import collections
 
 
 class RNNTextGen:
-    def __init__(self, sess, text, seq_len=50, min_freq=500, cell_size=128, n_layer=3, stateful=True):
+    def __init__(self, sess, text, seq_len=50, min_freq=500, cell_size=128, n_layer=3, stateful=True,
+                 stopwords=None):
         """
         Parameters:
         -----------
@@ -26,6 +27,8 @@ class RNNTextGen:
             Number of layers of stacked rnn cells
         stateful: boolean
             Whether state will be shared
+        stopwords: list of characters
+            all the stopwords which will be removed from text
         """
         self.sess = sess
         self.text = text
@@ -34,8 +37,8 @@ class RNNTextGen:
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.stateful = stateful
+        self.stopwords = stopwords
         self.current_layer = None
-
         self.text_preprocessing()
         self.build_graph()
     # end constructor
@@ -158,8 +161,9 @@ class RNNTextGen:
 
     def clean_text(self, text):
         text = text.replace('\n', ' ')
-        punctuation = ''.join([x for x in string.punctuation if x not in ['-', "'"]])
-        text = re.sub(r'[{}]'.format(punctuation), ' ', text)
+        if self.stopwords is None:
+            self.stopwords = [x for x in string.punctuation if x not in ['-', "'"]]
+        text = re.sub(r'[{}]'.format(''.join(self.stopwords)), ' ', text)
         text = re.sub('\s+', ' ', text ).strip().lower()
         self.text = text
     # end method clean_text

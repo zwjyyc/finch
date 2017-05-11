@@ -45,7 +45,7 @@ class Conv2DClassifier:
         self.add_conv('conv2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 64])
         self.add_maxpool(self.pool_size)
         self.add_fully_connected('fc', 512)
-        self.add_output_layer(512)   
+        self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
 
@@ -97,7 +97,8 @@ class Conv2DClassifier:
     # end method add_fully_connected
 
 
-    def add_output_layer(self, in_dim):
+    def add_output_layer(self):
+        in_dim = self.current_layer.get_shape().as_list()[1]
         self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self._W('w_out', [in_dim,self.n_out])),
                                      self._b('b_out', [self.n_out]))
     # end method add_output_layer

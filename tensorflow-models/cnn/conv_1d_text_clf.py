@@ -43,13 +43,11 @@ class Conv1DClassifier:
  
     def build_graph(self):
         self.add_input_layer()
-
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
         self.add_global_maxpool()
-        self.add_fc('fully_connected', [self.n_filters, self.hidden_dims])
-
-        self.add_output_layer(self.hidden_dims)   
+        self.add_fc('fully_connected', self.hidden_dims)
+        self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
  
@@ -92,9 +90,10 @@ class Conv1DClassifier:
     # end method add_global_maxpool_layer
 
 
-    def add_fc(self, name, w_shape):
-        W = self._W(name+'_w', w_shape)
-        b = self._b(name+'_b', [w_shape[-1]])
+    def add_fc(self, name, out_dim):
+        in_dim = self.n_filters
+        W = self._W(name+'_w', [in_dim, out_dim])
+        b = self._b(name+'_b', [out_dim])
         fc = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
         fc = tf.nn.dropout(fc, self.keep_prob)
         fc = tf.nn.relu(fc)
@@ -102,7 +101,8 @@ class Conv1DClassifier:
     # end method add_fc_layer
 
 
-    def add_output_layer(self, in_dim):
+    def add_output_layer(self):
+        in_dim = self.current_layer.get_shape().as_list()[1]
         self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self._W('w_out', [in_dim,self.n_out])),
                                      self._b('b_out', [self.n_out]))
     # end method add_output_layer

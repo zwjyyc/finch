@@ -133,17 +133,15 @@ class RNNTextGen:
 
 
     def add_sample_model(self):
-        self._X = tf.placeholder(tf.int32, [None, 1])
-        _W = tf.get_variable('logits_W')
-        _b = tf.get_variable('logits_b')
-        _E = tf.nn.embedding_lookup(tf.get_variable('E'), self._X)
-        self._init_state = self.cells.zero_state(self.batch_size, tf.float32)
-        rnn_out, self._final_state = tf.nn.dynamic_rnn(self.cells, _E,
-                                                       initial_state=self._init_state,
-                                                       time_major=False)
+        self.s_X = tf.placeholder(tf.int32, [None, 1])
+        self.s_init_state = self.cells.zero_state(self.batch_size, tf.float32)
+        rnn_in = tf.nn.embedding_lookup(tf.get_variable('E'), self.s_X)
+        rnn_out, self.s_final_state = tf.nn.dynamic_rnn(self.cells, rnn_in,
+                                                        initial_state=self.s_init_state,
+                                                        time_major=False)
         rnn_out = tf.reshape(rnn_out, [-1, self.cell_size])
-        logits = tf.nn.bias_add(tf.matmul(rnn_out, _W), _b)
-        self._softmax_out = tf.nn.softmax(logits)
+        logits = tf.nn.bias_add(tf.matmul(rnn_out, tf.get_variable('logits_W')), tf.get_variable('logits_b'))
+        self.s_out = tf.nn.softmax(logits)
     # end add_sample_model
 
 
@@ -233,14 +231,14 @@ class RNNTextGen:
 
     def sample(self, prime_text, num_gen, temperature):
         # warming up
-        next_state = self.sess.run(self._init_state, feed_dict={self.batch_size:1})
+        next_state = self.sess.run(self.s_init_state, feed_dict={self.batch_size:1})
         char_list = list(prime_text)
         for char in char_list[:-1]:
             x = np.zeros([1,1])
             x[0,0] = self.char2idx[char] 
-            next_state = self.sess.run(self._final_state, feed_dict={self._X:x,
-                                                                     self._init_state:next_state,
-                                                                     self.in_keep_prob:1.0})
+            next_state = self.sess.run(self.s_final_state, feed_dict={self.s_X:x,
+                                                                      self.s_init_state:next_state,
+                                                                      self.in_keep_prob:1.0})
         # end warming up
 
         out_sentence = prime_text + '|'
@@ -248,9 +246,9 @@ class RNNTextGen:
         for n in range(num_gen):
             x = np.zeros([1,1])
             x[0,0] = self.char2idx[char]
-            softmax_out, next_state = self.sess.run([self._softmax_out, self._final_state],
-                                                     feed_dict={self._X:x,
-                                                                self._init_state:next_state,
+            softmax_out, next_state = self.sess.run([self.s_out, self.s_final_state],
+                                                     feed_dict={self.s_X:x,
+                                                                self.s_init_state:next_state,
                                                                 self.in_keep_prob:1.0})
             idx = self.infer_idx(softmax_out[0], temperature)
             if idx == 0:

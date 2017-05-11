@@ -61,7 +61,12 @@ class MLPClassifier:
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        
+        # batch_norm requires update_ops
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(update_ops):
+            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
     # end method add_backward_path
 
@@ -71,7 +76,7 @@ class MLPClassifier:
         b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
         Y = tf.nn.bias_add(tf.matmul(X, W), b)
         if batch_norm:
-            Y = tf.contrib.layers.batch_norm(Y)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag)
         if activation == 'relu':
             Y = tf.nn.relu(Y)
         if dropout:
@@ -95,7 +100,8 @@ class MLPClassifier:
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                               feed_dict={self.X: X_batch, self.Y: Y_batch, self.lr: lr,
-                                                         self.keep_prob:dropout})
+                                                         self.keep_prob:dropout,
+                                                         self.train_flag:True})
                 local_step += 1
                 global_step += 1
                 if local_step % 100 == 0:
@@ -108,7 +114,8 @@ class MLPClassifier:
                                                     self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
                                                    feed_dict={self.X:X_test_batch, self.Y:Y_test_batch,
-                                                              self.keep_prob:1.0})
+                                                              self.keep_prob:1.0,
+                                                              self.train_flag:False})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -135,7 +142,9 @@ class MLPClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
+            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch,
+                                                               self.keep_prob:1.0,
+                                                               self.train_flag:False})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

@@ -39,12 +39,13 @@ class Conv2DClassifier:
 
     def build_graph(self):
         self.add_input_layer()
-
         self.add_conv('conv1', filter_shape=[self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
+        self.add_conv('conv1.1', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 32])
         self.add_maxpool(self.pool_size)
         self.add_conv('conv2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 64])
+        self.add_conv('conv2.2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 64, 64])
         self.add_maxpool(self.pool_size)
-        self.add_fully_connected('fc', 512)
+        self.add_fully_connected('fc', 1024)
         self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
@@ -54,6 +55,7 @@ class Conv2DClassifier:
         self.X = tf.placeholder(tf.float32, [None, self.img_size[0], self.img_size[1], self.img_ch])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
+        self.train_flag = tf.placeholder(tf.bool)
         self.current_layer = self.X
     # end method add_input_layer
 
@@ -63,7 +65,7 @@ class Conv2DClassifier:
         b = self._b(name+'_b', [filter_shape[-1]])
         conv = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
-        conv = tf.contrib.layers.batch_norm(conv)
+        conv = tf.layers.batch_normalization(conv, training=self.train_flag)
         conv = tf.nn.relu(conv)
         self.current_layer = conv
         self.current_n_filter = filter_shape[-1]
@@ -90,7 +92,7 @@ class Conv2DClassifier:
         b = self._b(name+'_b', [w_shape[-1]])
         fc = tf.reshape(self.current_layer, [-1, w_shape[0]])
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
-        fc = tf.contrib.layers.batch_norm(fc)
+        fc = tf.layers.batch_normalization(fc, training=self.train_flag)
         fc = tf.nn.relu(fc)
         fc = tf.nn.dropout(fc, self.keep_prob)
         self.current_layer = fc
@@ -107,7 +109,12 @@ class Conv2DClassifier:
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        
+        # batch_norm requires update_ops
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(update_ops):
+            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.Y, 1)), tf.float32))
     # end method add_backward_path
 
@@ -142,7 +149,8 @@ class Conv2DClassifier:
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                               feed_dict={self.X:X_batch, self.Y:Y_batch,
-                                                         self.lr:lr, self.keep_prob:keep_prob})
+                                                         self.lr:lr, self.keep_prob:keep_prob,
+                                                         self.train_flag:True})
                 local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
@@ -155,7 +163,7 @@ class Conv2DClassifier:
                                                       self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
                                                    feed_dict={self.X:X_test_batch, self.Y:Y_test_batch,
-                                                              self.keep_prob:1.0})
+                                                              self.keep_prob:1.0, self.train_flag:False})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -183,7 +191,9 @@ class Conv2DClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
+            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch,
+                                                               self.keep_prob:1.0,
+                                                               self.train_flag:False})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

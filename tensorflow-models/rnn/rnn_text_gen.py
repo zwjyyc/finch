@@ -16,20 +16,21 @@ class RNNTextGen:
         sess: object
             tf.Session() object
         text: string
-            corpus
+            corpus in one long string, usually obtained by file.read()
         seq_len: int
             Sequence length
         min_freq: int or None
             The minimum char occurence in text required to be saved in vocabulary
+            For example, if you pass 10, any char whose occurence below 10 will be indexed as 0
             If you don't want to filter out any word, pass None
         cell_size: int
-            Number of units in the rnn cell
+            Number of units in the rnn cell, default to 128
         n_layers: int
             Number of layers of stacked rnn cells
         stateful: boolean
-            Whether state will be shared
+            Whether the final state of each training batch will be provided as the initial state of next batch
         stopwords: list of characters
-            all the stopwords which will be removed from text
+            all the stopwords which will be removed from text, usually punctuations
         """
         self.sess = sess
         self.text = text

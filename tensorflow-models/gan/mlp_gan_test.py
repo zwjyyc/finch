@@ -17,7 +17,7 @@ def load_data():
 
 
 if __name__ == '__main__':
-    GAN = MLP_GAN(n_D_in, n_G_in)
+    GAN = MLP_GAN(n_G_in, n_D_in)
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 

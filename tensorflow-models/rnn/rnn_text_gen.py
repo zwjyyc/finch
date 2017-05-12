@@ -19,8 +19,9 @@ class RNNTextGen:
             corpus
         seq_len: int
             Sequence length
-        min_freq: int
-            The minimum char occurence in text to be saved in vocabulary
+        min_freq: int or None
+            The minimum char occurence in text required to be saved in vocabulary
+            If you don't want to filter out any word, pass None
         cell_size: int
             Number of units in the rnn cell
         n_layers: int
@@ -169,7 +170,8 @@ class RNNTextGen:
 
     def build_vocab(self, chars):
         char_freqs = collections.Counter(chars)
-        char_freqs = {char:freq for char,freq in char_freqs.items() if freq > self.min_freq}
+        if self.min_freq is not None:
+            char_freqs = {char:freq for char,freq in char_freqs.items() if freq > self.min_freq}
         print(char_freqs)
         chars = char_freqs.keys()
         self.char2idx = {char:(idx+1) for idx,char in enumerate(chars)} # create word -> index mapping

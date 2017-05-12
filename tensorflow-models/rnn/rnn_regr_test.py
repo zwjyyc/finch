@@ -40,8 +40,7 @@ if __name__ == '__main__':
                                                                 model.init_state:train_state,
                                                                 model.batch_size:BATCH_SIZE})
         if test_data is None:
-            if train_idx % 20 == 0:
-                print('train loss: %.4f' % (train_loss))
+            print('train loss: %.4f' % (train_loss))
         else:
             test_loss_list = []
             test_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})

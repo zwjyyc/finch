@@ -56,5 +56,4 @@ if __name__ == '__main__':
         plt.draw()
         plt.pause(0.3)
 
-        if train_idx % 20 == 0:
-            print('train loss: %.4f | test loss: %.4f' % (train_loss, test_loss)) 
+        print('train loss: %.4f | test loss: %.4f' % (train_loss, test_loss)) 

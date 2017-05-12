@@ -12,6 +12,7 @@ class MLP_GAN:
 
 
     def build_graph(self):
+        self.add_input_layer()
         with tf.variable_scope('G'):
             self.add_Generator()
         with tf.variable_scope('D'):
@@ -20,15 +21,18 @@ class MLP_GAN:
     # end method build_graph
 
 
+    def add_input_layer(self):
+        self.G_in = tf.placeholder(tf.float32, [None, self.n_G_in]) # random data
+        self.D_in = tf.placeholder(tf.float32, [None, self.n_D_in]) # real data
+
+
     def add_Generator(self):
-        self.G_in = tf.placeholder(tf.float32, [None, self.n_G_in])
         G_hidden = tf.layers.dense(self.G_in, 128, tf.nn.relu)
         self.G_out = tf.layers.dense(G_hidden, self.n_D_in)
     # end method add_Generator
 
 
     def add_Discriminator(self):
-        self.D_in = tf.placeholder(tf.float32, [None, self.n_D_in]) # real data
         D_hidden = tf.layers.dense(self.D_in, 128, tf.nn.relu, name='hidden')
         self.D_prob = tf.layers.dense(D_hidden, 1, tf.nn.sigmoid, name='out')
         D_hidden = tf.layers.dense(self.G_out, 128, tf.nn.relu, name='hidden', reuse=True)

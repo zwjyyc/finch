@@ -34,9 +34,9 @@ Still at the early stage, many things to be done in future
 * [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
 ## Deep Learning (Theory)
-#### Convolutional Network
+#### Convolutional
 * [CNN](https://zhedongzheng.github.io/finch/conv.html)
-#### Recurrent Network
+#### Recurrent
 * [RNN](https://zhedongzheng.github.io/finch/rnn.html)
 * [LSTM](https://zhedongzheng.github.io/finch/lstm.html)
 ## Machine Learning (Practice)

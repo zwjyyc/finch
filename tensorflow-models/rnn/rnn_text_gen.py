@@ -162,7 +162,7 @@ class RNNTextGen:
     def clean_text(self, text):
         text = text.replace('\n', ' ')
         if self.stopwords is None:
-            self.stopwords = [x for x in string.punctuation if x not in ['-', "'"]]
+            self.stopwords = string.punctuation
         text = re.sub(r'[{}]'.format(''.join(self.stopwords)), ' ', text)
         text = re.sub('\s+', ' ', text ).strip().lower()
         self.text = text

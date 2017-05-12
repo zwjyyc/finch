@@ -1,9 +1,11 @@
 import tensorflow as tf
 import os
 import requests
+import string
 from rnn_text_gen import RNNTextGen
 
 
+stopwords = [x for x in string.punctuation if x not in ['-', "'"]]
 prime_texts = ['thou art more',
                'to be or not to',
                'wherefore art thou']
@@ -35,5 +37,5 @@ if __name__ == '__main__':
     text = load_shakespeare_text()
 
     sess = tf.Session()
-    train_model = RNNTextGen(sess, text, min_freq=1000)
-    log = train_model.learn(prime_texts=prime_texts, text_iter_step=25)
+    train_model = RNNTextGen(sess, text, min_freq=1000, stopwords=stopwords)
+    log = train_model.learn(prime_texts, text_iter_step=25)

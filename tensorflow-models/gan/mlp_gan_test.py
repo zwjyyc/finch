@@ -26,8 +26,8 @@ if __name__ == '__main__':
     
     for step in range(5000):
         G_out, D_prob, D_loss, _, _ = sess.run([GAN.G_out, GAN.D_prob, GAN.D_loss, GAN.D_train, GAN.G_train],
-                                        {GAN.G_in: np.random.randn(batch_size, n_G_in),
-                                         GAN.D_in: load_data()})
+                                               {GAN.G_in: np.random.randn(batch_size, n_G_in),
+                                                GAN.D_in: load_data()})
         if step % 50 == 0:
             plt.cla()
             plt.plot(x_range[0], G_out[0], c='#4AD631', lw=3, label='generated',)

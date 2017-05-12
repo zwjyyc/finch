@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 
 
 batch_size = 64
-n_D_in = 15
+n_X_in = 15
 n_G_in = 5
-x_range = np.vstack([np.linspace(-1, 1, n_D_in) for _ in range(batch_size)])
+x_range = np.vstack([np.linspace(-1, 1, n_X_in) for _ in range(batch_size)])
 
 
 def load_data():
@@ -17,7 +17,7 @@ def load_data():
 
 
 if __name__ == '__main__':
-    GAN = MLP_GAN(n_G_in, n_D_in)
+    GAN = MLP_GAN(n_G_in, n_X_in)
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
@@ -25,9 +25,9 @@ if __name__ == '__main__':
     plt.show()
     
     for step in range(5000):
-        G_out, D_prob, D_loss, _, _ = sess.run([GAN.G_out, GAN.D_prob, GAN.D_loss, GAN.D_train, GAN.G_train],
+        G_out, D_prob, D_loss, _, _ = sess.run([GAN.G_out, GAN.D_X_prob, GAN.D_loss, GAN.D_train, GAN.G_train],
                                                {GAN.G_in: np.random.randn(batch_size, n_G_in),
-                                                GAN.D_in: load_data()})
+                                                GAN.X_in: load_data()})
         if step % 50 == 0:
             plt.cla()
             plt.plot(x_range[0], G_out[0], c='#4AD631', lw=3, label='generated',)

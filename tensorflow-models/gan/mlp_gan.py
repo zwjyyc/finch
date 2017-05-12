@@ -2,9 +2,9 @@ import tensorflow as tf
 
 
 class MLP_GAN:
-    def __init__(self, n_G_in, n_D_in, lr_G=1e-4, lr_D=1e-4):
+    def __init__(self, n_G_in, n_X_in, lr_G=1e-4, lr_D=1e-4):
         self.n_G_in = n_G_in
-        self.n_D_in = n_D_in
+        self.n_X_in = n_X_in
         self.lr_G = lr_G
         self.lr_D = lr_D
         self.build_graph()
@@ -23,26 +23,26 @@ class MLP_GAN:
 
     def add_input_layer(self):
         self.G_in = tf.placeholder(tf.float32, [None, self.n_G_in]) # random data
-        self.D_in = tf.placeholder(tf.float32, [None, self.n_D_in]) # real data
+        self.X_in = tf.placeholder(tf.float32, [None, self.n_X_in]) # real data
 
 
     def add_Generator(self):
         G_hidden = tf.layers.dense(self.G_in, 128, tf.nn.relu)
-        self.G_out = tf.layers.dense(G_hidden, self.n_D_in)
+        self.G_out = tf.layers.dense(G_hidden, self.n_X_in)
     # end method add_Generator
 
 
     def add_Discriminator(self):
-        D_hidden = tf.layers.dense(self.D_in, 128, tf.nn.relu, name='hidden')
-        self.D_prob = tf.layers.dense(D_hidden, 1, tf.nn.sigmoid, name='out')
+        D_hidden = tf.layers.dense(self.X_in, 128, tf.nn.relu, name='hidden')
+        self.D_X_prob = tf.layers.dense(D_hidden, 1, tf.nn.sigmoid, name='out')
         D_hidden = tf.layers.dense(self.G_out, 128, tf.nn.relu, name='hidden', reuse=True)
-        self.G_prob = tf.layers.dense(D_hidden, 1, tf.nn.sigmoid, name='out', reuse=True)
+        self.D_G_prob = tf.layers.dense(D_hidden, 1, tf.nn.sigmoid, name='out', reuse=True)
     # end method add_Discriminator
 
 
     def add_backward_path(self):
-        self.G_loss = tf.reduce_mean(tf.log(1 - self.G_prob))
-        self.D_loss = - tf.reduce_mean(tf.log(self.D_prob) + tf.log(1 - self.G_prob))
+        self.G_loss = tf.reduce_mean(tf.log(1 - self.D_G_prob))
+        self.D_loss = - tf.reduce_mean(tf.log(self.D_X_prob) + tf.log(1 - self.D_G_prob))
         self.G_train = tf.train.AdamOptimizer(self.lr_G).minimize(self.G_loss,
             var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='G'))
         self.D_train = tf.train.AdamOptimizer(self.lr_D).minimize(self.D_loss,

@@ -19,6 +19,7 @@ Still at the early stage, many things to be done in future
   * [Recurrent Network](https://github.com/zhedongzheng/finch#recurrent-network)
   * [Recurrent Convolutional Network](https://github.com/zhedongzheng/finch#recurrent-convolutional-network)
   * [Autoencoder](https://github.com/zhedongzheng/finch#autoencoder)
+  * [Generative Adversarial Network](https://github.com/zhedongzheng/finch#autoencoder)
 * [Computer Vision](https://github.com/zhedongzheng/finch#computer-vision-practice)
   * [Basic Operations](https://github.com/zhedongzheng/finch#basic-operations)
   * [Image Segmentation](https://github.com/zhedongzheng/finch#image-segmentation)
@@ -67,6 +68,8 @@ Still at the early stage, many things to be done in future
 #### Autoencoder
 * TensorFlow &nbsp; | &nbsp; MLP Autoencoder &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder/mlp_ae.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder/mlp_ae_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder/mlp_ae_cifar10_test.py) &nbsp; | &nbsp;
 * TensorFlow &nbsp; | &nbsp; Conv2D Autoencoder &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder/conv_ae.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder/conv_ae_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder/conv_ae_cifar10_test.py) &nbsp; | &nbsp;
+#### Generative Adversarial Network
+* TensorFlow &nbsp; | &nbsp; MLP GAN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/mlp_gan.py) &nbsp; | &nbsp; [Painting Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/mlp_gan_test.py) &nbsp; | &nbsp;
 ## Computer Vision (Practice)
 #### Basic Operations
   * OpenCV &nbsp; | &nbsp; [Resize](https://github.com/zhedongzheng/finch/blob/master/computer-vision/resize.ipynb)

@@ -40,7 +40,7 @@ Still at the early stage, many things to be done in future
 #### Recurrent Network
 * [Recurrent Structure](https://zhedongzheng.github.io/finch/rnn.html)
 * [Long Short-Term Memory](https://zhedongzheng.github.io/finch/lstm.html)
-* [Practical Issues](https://zhedongzheng.github.io/finch/rnn-practical.html)
+* [Variable Length Input Sequence](https://zhedongzheng.github.io/finch/rnn-practical.html)
 ## Machine Learning (Practice)
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr_test.py) &nbsp; | &nbsp;

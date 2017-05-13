@@ -97,9 +97,11 @@ class RNNTextGen:
 
 
     def add_lstm_cells(self):
-        cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
-        cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob)
-        self.cells = tf.contrib.rnn.MultiRNNCell([cell] * self.n_layer)
+        def cell():
+            cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
+            cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob)
+            return cell
+        self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
     # end method add_rnn_cells
 
 

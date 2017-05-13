@@ -32,10 +32,8 @@ Still at the early stage, many things to be done in future
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
 * [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
 ## Machine Learning (Notes)
-* Loss
-    * [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
-* Model
-    * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
+* [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
+* [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
 ## Deep Learning (Notes)
 * Convolutional Network
     * [Overview](https://zhedongzheng.github.io/finch/conv.html)

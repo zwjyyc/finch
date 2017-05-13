@@ -5,11 +5,9 @@ My personal notes, models, and tests written on machine learning (ML) topics
 Still at the early stage, many things to be done in future
 
 ## Contents
-### Theory
-* [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-theory)
-* [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning-theory)
-  * [Convolutional Network](https://github.com/zhedongzheng/finch#convolutional-network)
-  * [Recurrent Network](https://github.com/zhedongzheng/finch#recurrent-network)
+### Notes
+* [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-notes)
+* [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning-notes)
 
 ### Practice
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-practice)
@@ -18,8 +16,8 @@ Still at the early stage, many things to be done in future
   * [Decomposition](https://github.com/zhedongzheng/finch#decomposition)
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning-practice)
   * [Multilayer Perceptron](https://github.com/zhedongzheng/finch#multilayer-perceptron)
-  * [Convolutional Network](https://github.com/zhedongzheng/finch#convolutional-network-1)
-  * [Recurrent Network](https://github.com/zhedongzheng/finch#recurrent-network-1)
+  * [Convolutional Network](https://github.com/zhedongzheng/finch#convolutional-network)
+  * [Recurrent Network](https://github.com/zhedongzheng/finch#recurrent-network)
   * [Recurrent Convolutional Network](https://github.com/zhedongzheng/finch#recurrent-convolutional-network)
   * [Autoencoder](https://github.com/zhedongzheng/finch#autoencoder)
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch#generative-adversarial-network)
@@ -33,17 +31,18 @@ Still at the early stage, many things to be done in future
   * [Deep NLP](https://github.com/zhedongzheng/finch#deep-nlp)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
 * [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
-## Machine Learning (Theory)
+## Machine Learning (Notes)
 * [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
+#### Linear Model
 * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
-## Deep Learning (Theory)
-#### Convolutional Network
-* [Overview](https://zhedongzheng.github.io/finch/conv.html)
-* [Pooling](https://zhedongzheng.github.io/finch/pooling.html)
-#### Recurrent Network
-* [Recurrent Structure](https://zhedongzheng.github.io/finch/rnn.html)
-* [Long Short-Term Memory](https://zhedongzheng.github.io/finch/lstm.html)
-* [Variable Length Input Sequence](https://zhedongzheng.github.io/finch/rnn-practical.html)
+## Deep Learning (Notes)
+* Convolutional Network
+    * [Overview](https://zhedongzheng.github.io/finch/conv.html)
+    * [Pooling](https://zhedongzheng.github.io/finch/pooling.html)
+* Recurrent Network
+    * [Recurrent Structure](https://zhedongzheng.github.io/finch/rnn.html)
+    * [Long Short-Term Memory](https://zhedongzheng.github.io/finch/lstm.html)
+    * [Variable Length Input Sequence](https://zhedongzheng.github.io/finch/rnn-practical.html)
 ## Machine Learning (Practice)
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr_test.py) &nbsp; | &nbsp;

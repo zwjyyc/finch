@@ -46,7 +46,7 @@ class Conv1DClassifier:
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
         self.add_global_maxpool()
-        self.add_fc('fully_connected', self.hidden_dims)
+        self.add_fc('fc', self.hidden_dims)
         self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
@@ -73,6 +73,7 @@ class Conv1DClassifier:
         conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
+        conv = tf.nn.dropout(conv, self.keep_prob)
         self.current_layer = conv
         if self.padding == 'VALID':
             self.current_seq_len = int(self.seq_len - self.kernel_size + 1 / stride)
@@ -95,8 +96,8 @@ class Conv1DClassifier:
         W = self._W(name+'_w', [in_dim, out_dim])
         b = self._b(name+'_b', [out_dim])
         fc = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
-        fc = tf.nn.dropout(fc, self.keep_prob)
         fc = tf.nn.relu(fc)
+        fc = tf.nn.dropout(fc, self.keep_prob)
         self.current_layer = fc
     # end method add_fc_layer
 
@@ -110,7 +111,8 @@ class Conv1DClassifier:
 
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
+        fn = tf.nn.sigmoid_cross_entropy_with_logits if self.n_out == 2 else tf.nn.softmax_cross_entropy_with_logits
+        self.loss = tf.reduce_mean(fn(logits=self.logits, labels=self.Y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.Y, 1)), tf.float32))
     # end method add_backward_path

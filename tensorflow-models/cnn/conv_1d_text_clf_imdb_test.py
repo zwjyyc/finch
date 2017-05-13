@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = Conv1DClassifier(sess, maxlen, max_features, n_out)
-    log = clf.fit(X_train, Y_train, n_epoch=10, batch_size=32, keep_prob=0.8, en_exp_decay=True,
+    log = clf.fit(X_train, Y_train, n_epoch=10, batch_size=32, keep_prob=0.9, en_exp_decay=True,
                   val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
     tf.reset_default_graph()

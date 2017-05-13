@@ -10,6 +10,7 @@ Still at the early stage, many things to be done in future
 * [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning-theory)
   * [Convolutional Network](https://github.com/zhedongzheng/finch#convolutional-network)
   * [Recurrent Network](https://github.com/zhedongzheng/finch#recurrent-network)
+
 ### Practice
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-practice)
   * [Linear Model](https://github.com/zhedongzheng/finch#linear-model)

@@ -106,19 +106,13 @@ class Conv1DClassifier:
         in_dim = self.current_layer.get_shape().as_list()[1]
         self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self._W('w_out', [in_dim,self.n_out])),
                                      self._b('b_out', [self.n_out]))
-        if self.n_out == 1:
-            self.binary_out = tf.round(tf.nn.sigmoid(self.logits))
     # end method add_output_layer
 
 
     def add_backward_path(self):
-        fn = tf.nn.sigmoid_cross_entropy_with_logits if self.n_out == 1 else tf.nn.softmax_cross_entropy_with_logits
-        self.loss = tf.reduce_mean(fn(logits=self.logits, labels=self.Y))
+        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        if self.n_out == 1:
-            self.acc = tf.reduce_mean(tf.cast(tf.equal(self.binary_out, self.Y), tf.float32))
-        else:
-            self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.Y, 1)), tf.float32))
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.Y, 1)), tf.float32))
     # end method add_backward_path
 
 
@@ -193,8 +187,7 @@ class Conv1DClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            output = self.binary_out if self.n_out == 1 else self.logits
-            batch_pred = self.sess.run(output, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
+            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

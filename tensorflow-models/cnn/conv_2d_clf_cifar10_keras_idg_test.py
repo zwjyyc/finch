@@ -1,6 +1,3 @@
-from keras.utils.np_utils import to_categorical as to_one_hot
-from keras.datasets import cifar10
-from keras.preprocessing.image import ImageDataGenerator
 from conv_2d_clf import Conv2DClassifier
 import numpy as np
 import tensorflow as tf
@@ -11,16 +8,16 @@ n_epoch = 20
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.cifar10.load_data()
     X_train = X_train / 255.0
     X_test = X_test / 255.0
-    Y_train = to_one_hot(y_train)
-    Y_test = to_one_hot(y_test)
+    Y_train = tf.contrib.keras.utils.to_categorical(y_train)
+    Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
     sess = tf.Session()
     model = Conv2DClassifier(sess, (32,32), 3, 10)
 
-    datagen = ImageDataGenerator(
+    datagen = tf.contrib.keras.preprocessing.image.ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset
         samplewise_center=False,  # set each sample mean to 0
         featurewise_std_normalization=False,  # divide inputs by std of the dataset
@@ -44,7 +41,8 @@ if __name__ == '__main__':
             lr = model.decrease_lr(True, global_step, n_epoch, len(X_train), batch_size) 
             _, loss, acc = model.sess.run([model.train_op, model.loss, model.acc],
                                           feed_dict={model.X:X_batch, model.Y:Y_batch,
-                                                     model.lr:lr, model.keep_prob:0.5})
+                                                     model.lr:lr, model.keep_prob:0.5,
+                                                     model.train_flag:True})
             local_step += 1
             global_step += 1
             if local_step % 50 == 0:
@@ -56,7 +54,7 @@ if __name__ == '__main__':
                                               model.gen_batch(Y_test, batch_size)):
             v_loss, v_acc = model.sess.run([model.loss, model.acc],
                                             feed_dict={model.X:X_test_batch, model.Y:Y_test_batch,
-                                                       model.keep_prob:1.0})
+                                                       model.keep_prob:1.0, model.train_flag:False})
             val_loss_list.append(v_loss)
             val_acc_list.append(v_acc)
         val_loss, val_acc = model.list_avg(val_loss_list), model.list_avg(val_acc_list)

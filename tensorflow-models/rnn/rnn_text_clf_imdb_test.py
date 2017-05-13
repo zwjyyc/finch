@@ -1,6 +1,3 @@
-from keras.datasets import imdb
-from keras.preprocessing import sequence
-from keras.utils.np_utils import to_categorical as to_one_hot
 from rnn_text_clf import RNNTextClassifier
 import tensorflow as tf
 
@@ -12,17 +9,17 @@ batch_size = 32
 
 if __name__ == '__main__':
     print('Loading data...')
-    (X_train, y_train), (X_test, y_test) = imdb.load_data(num_words=max_features)
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.imdb.load_data(num_words=max_features)
     print(len(X_train), 'train sequences')
     print(len(X_test), 'test sequences')
 
     print('Pad sequences (samples x time)')
-    X_train = sequence.pad_sequences(X_train, maxlen=maxlen)
-    X_test = sequence.pad_sequences(X_test, maxlen=maxlen)
+    X_train = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=maxlen)
+    X_test = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=maxlen)
     print('x_train shape:', X_train.shape)
     print('x_test shape:', X_test.shape)
-    Y_train = to_one_hot(y_train)
-    Y_test = to_one_hot(y_test)
+    Y_train = tf.contrib.keras.utils.to_categorical(y_train)
+    Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
     sess = tf.Session()
     clf = RNNTextClassifier(sess, maxlen, max_features, 2)

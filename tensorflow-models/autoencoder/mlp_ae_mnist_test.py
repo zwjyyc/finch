@@ -1,11 +1,10 @@
-from keras.datasets import mnist
 from mlp_ae import Autoencoder
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.mnist.load_data()
     X_train = (X_train/255.0).reshape(-1, 28*28)
     X_test = (X_test/255.0).reshape(-1, 28*28)
 

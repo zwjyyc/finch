@@ -1,17 +1,15 @@
-from keras.utils.np_utils import to_categorical as to_one_hot
-from keras.datasets import cifar10
 from rnn_clf import RNNClassifier
 import numpy as np
 import tensorflow as tf
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.cifar10.load_data()
 
     X_train = (X_train / 255.0).mean(axis=3) # rbg averaging to grayscale
     X_test = (X_test / 255.0).mean(axis=3) # rgb averaging to grayscale
-    Y_train = to_one_hot(y_train)
-    Y_test = to_one_hot(y_test)
+    Y_train = tf.contrib.keras.utils.to_categorical(y_train)
+    Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
     sess = tf.Session()
     clf = RNNClassifier(sess, n_in=32, n_step=32, n_out=10)

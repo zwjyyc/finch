@@ -1,16 +1,14 @@
-from keras.datasets import mnist
-from keras.utils.np_utils import to_categorical as to_one_hot
 from conv_2d_clf import Conv2DClassifier
 import numpy as np
 import tensorflow as tf
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.mnist.load_data()
     X_train = (X_train / 255.0)[:, :, :, np.newaxis]
     X_test = (X_test / 255.0)[:, :, :, np.newaxis]
-    Y_train = to_one_hot(y_train)
-    Y_test = to_one_hot(y_test)
+    Y_train = tf.contrib.keras.utils.to_categorical(y_train)
+    Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
     sess = tf.Session()
     clf = Conv2DClassifier(sess, (28,28), 1, 10)

@@ -1,16 +1,14 @@
-from keras.datasets import mnist
-from keras.utils.np_utils import to_categorical as to_one_hot
 from rnn_clf import RNNClassifier
 import numpy as np
 import tensorflow as tf
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.mnist.load_data()
     X_train = X_train / 255.0
     X_test = X_test / 255.0
-    Y_train = to_one_hot(y_train)
-    Y_test = to_one_hot(y_test)
+    Y_train = tf.contrib.keras.utils.to_categorical(y_train)
+    Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
     sess = tf.Session()
     clf = RNNClassifier(sess, n_in=28, n_step=28, n_out=10)

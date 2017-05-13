@@ -11,5 +11,5 @@ if __name__ == '__main__':
     
     sess = tf.Session()
     model = RNNTextGen(sess, text, stopwords=stopwords)
-    log = model.learn()
+    log = model.fit_text()
     

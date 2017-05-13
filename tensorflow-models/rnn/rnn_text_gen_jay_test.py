@@ -11,5 +11,5 @@ if __name__ == '__main__':
         text = f.read()
     
     sess = tf.Session()
-    train_model = RNNTextGen(sess, text, n_layer=2, min_freq=10)
-    log = train_model.learn(prime_texts, text_iter_step=1, num_gen=20)
+    model = RNNTextGen(sess, text, n_layer=2, min_freq=10)
+    log = model.fit_text(prime_texts, text_iter_step=1, num_gen=20)

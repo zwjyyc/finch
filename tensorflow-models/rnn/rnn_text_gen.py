@@ -184,7 +184,7 @@ class RNNTextGen:
     # end method build_vocab
 
 
-    def fit_text(self, prime_texts=None, text_iter_step=3, num_gen=200, temperature=1.0, 
+    def fit_text(self, prime_texts=None, text_iter_step=3, temperature=1.0, 
                  n_epoch=25, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=(1.0, 1.0) ):
         
         X = np.array([self.indices[i : i+self.seq_len] for i in range(0, len(self.indices)-self.seq_len,
@@ -194,10 +194,8 @@ class RNNTextGen:
         print('X shape:', X.shape, '|', 'Y shape:', Y.shape)
 
         if prime_texts is None:
-            prime_texts = []
-            for _ in range(3):
-                random_start = np.random.randint(0, len(self.text)-1-self.seq_len)
-                prime_texts.append(self.text[random_start: random_start + self.seq_len])
+            random_start = np.random.randint(0, len(self.text)-1-self.seq_len)
+            prime_texts = [self.text[random_start: random_start + self.seq_len]]
         
         log = {'loss': []}
         global_step = 0
@@ -230,13 +228,13 @@ class RNNTextGen:
                 global_step += 1
             
             for prime_text in prime_texts:
-                print(self.sample(prime_text, num_gen, temperature), end='\n\n')
+                print(self.sample(prime_text, temperature), end='\n\n')
             
         return log
     # end method fit
 
 
-    def sample(self, prime_text, num_gen, temperature):
+    def sample(self, prime_text, temperature):
         # warming up
         next_state = self.sess.run(self.s_init_state, feed_dict={self.batch_size:1})
         char_list = list(prime_text)
@@ -249,7 +247,7 @@ class RNNTextGen:
 
         out_sentence = prime_text + '|'
         char = char_list[-1]
-        for n in range(num_gen):
+        while True:
             x = np.zeros([1,1])
             x[0,0] = self.char2idx[char]
             softmax_out, next_state = self.sess.run([self.s_out, self.s_final_state],

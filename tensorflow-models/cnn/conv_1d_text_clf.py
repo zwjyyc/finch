@@ -56,6 +56,7 @@ class Conv1DClassifier:
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
+        self.lr = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
 
@@ -63,7 +64,7 @@ class Conv1DClassifier:
     def add_word_embedding(self):
         E = tf.get_variable('E', [self.vocab_size,self.embedding_dims], tf.float32, tf.random_normal_initializer())
         E = tf.nn.embedding_lookup(E, self.current_layer)
-        self.current_layer = E
+        self.current_layer = tf.nn.dropout(E, self.keep_prob)
     # end method add_word_embedding_layer
 
 
@@ -73,7 +74,6 @@ class Conv1DClassifier:
         conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
-        conv = tf.nn.dropout(conv, self.keep_prob)
         self.current_layer = conv
         if self.padding == 'VALID':
             self.current_seq_len = int(self.seq_len - self.kernel_size + 1 / stride)
@@ -96,8 +96,8 @@ class Conv1DClassifier:
         W = self._W(name+'_w', [in_dim, out_dim])
         b = self._b(name+'_b', [out_dim])
         fc = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
-        fc = tf.nn.relu(fc)
         fc = tf.nn.dropout(fc, self.keep_prob)
+        fc = tf.nn.relu(fc)
         self.current_layer = fc
     # end method add_fc_layer
 
@@ -106,15 +106,19 @@ class Conv1DClassifier:
         in_dim = self.current_layer.get_shape().as_list()[1]
         self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self._W('w_out', [in_dim,self.n_out])),
                                      self._b('b_out', [self.n_out]))
+        if self.n_out == 1:
+            self.binary_out = tf.round(tf.nn.sigmoid(self.logits))
     # end method add_output_layer
 
 
     def add_backward_path(self):
-        self.lr = tf.placeholder(tf.float32)
-        fn = tf.nn.sigmoid_cross_entropy_with_logits if self.n_out == 2 else tf.nn.softmax_cross_entropy_with_logits
+        fn = tf.nn.sigmoid_cross_entropy_with_logits if self.n_out == 1 else tf.nn.softmax_cross_entropy_with_logits
         self.loss = tf.reduce_mean(fn(logits=self.logits, labels=self.Y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.Y, 1)), tf.float32))
+        if self.n_out == 1:
+            self.acc = tf.reduce_mean(tf.cast(tf.equal(self.binary_out, self.Y), tf.float32))
+        else:
+            self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.Y, 1)), tf.float32))
     # end method add_backward_path
 
 
@@ -189,7 +193,8 @@ class Conv1DClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
+            output = self.binary_out if self.n_out == 1 else self.logits
+            batch_pred = self.sess.run(output, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict
@@ -203,8 +208,8 @@ class Conv1DClassifier:
 
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
-            max_lr = 0.003
-            min_lr = 0.0001
+            max_lr = 0.005
+            min_lr = 0.001
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:

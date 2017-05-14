@@ -49,12 +49,7 @@ class RNNTextGen:
     def text_preprocessing(self):
         self.clean_text(self.text)
         chars = list(self.text)
-
         self.build_vocab(chars)
-        assert len(self.idx2char) == len(self.char2idx), "len(idx2char) != len(char2idx)"
-        self.vocab_size = len(self.idx2char)
-        print('Vocabulary size:', self.vocab_size)
-
         self.indices = []
         for char in chars:
             try:
@@ -157,7 +152,7 @@ class RNNTextGen:
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*nb_batch)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:
-            lr = 0.0005
+            lr = 0.001
         return lr
     # end method adjust_lr
 
@@ -174,18 +169,21 @@ class RNNTextGen:
 
     def build_vocab(self, chars):
         char_freqs = collections.Counter(chars)
+        n_total = len(char_freqs)
         if self.min_freq is not None:
             char_freqs = {char:freq for char,freq in char_freqs.items() if freq > self.min_freq}
-        print(char_freqs)
         chars = char_freqs.keys()
         self.char2idx = {char:(idx+1) for idx,char in enumerate(chars)} # create word -> index mapping
         self.char2idx['_unknown'] = 0 # add unknown key -> 0 index
         self.idx2char = {idx:char for char,idx in self.char2idx.items()} # create index -> word mapping
+        assert len(self.idx2char) == len(self.char2idx), "len(idx2char) != len(char2idx)"
+        self.vocab_size = len(self.idx2char)
+        print('Vocabulary size:', self.vocab_size, '/', n_total)
     # end method build_vocab
 
 
-    def fit_text(self, prime_texts=None, text_iter_step=3, temperature=1.0, 
-                 n_epoch=25, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=(1.0, 1.0) ):
+    def fit_text(self, prime_texts=None, text_iter_step=3, temperature=1.0, n_gen=100,
+                 n_epoch=50, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=(1.0, 1.0) ):
         
         X = np.array([self.indices[i : i+self.seq_len] for i in range(0, len(self.indices)-self.seq_len,
                                                                       text_iter_step)])
@@ -228,13 +226,13 @@ class RNNTextGen:
                 global_step += 1
             
             for prime_text in prime_texts:
-                print(self.sample(prime_text, temperature), end='\n\n')
+                print(self.sample(prime_text, temperature, n_gen), end='\n\n')
             
         return log
     # end method fit
 
 
-    def sample(self, prime_text, temperature):
+    def sample(self, prime_text, temperature, n_gen):
         # warming up
         next_state = self.sess.run(self.s_init_state, feed_dict={self.batch_size:1})
         char_list = list(prime_text)
@@ -247,7 +245,7 @@ class RNNTextGen:
 
         out_sentence = prime_text + '|'
         char = char_list[-1]
-        while True:
+        for _ in range(n_gen):
             x = np.zeros([1,1])
             x[0,0] = self.char2idx[char]
             softmax_out, next_state = self.sess.run([self.s_out, self.s_final_state],

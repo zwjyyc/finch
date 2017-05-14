@@ -8,7 +8,7 @@ import collections
 
 
 class RNNTextGen:
-    def __init__(self, sess, text, seq_len=50, min_freq=500, cell_size=128, n_layer=3, stateful=True,
+    def __init__(self, sess, text, seq_len=50, min_freq=None, cell_size=128, n_layer=3, stateful=True,
                  stopwords=None):
         """
         Parameters:

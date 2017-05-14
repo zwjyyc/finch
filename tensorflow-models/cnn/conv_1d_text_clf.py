@@ -46,7 +46,8 @@ class Conv1DClassifier:
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
         self.add_global_maxpool()
-        self.add_fc('fc', self.hidden_dims)
+        # self.add_fc('fc', self.hidden_dims)
+        self.add_highway('highway')
         self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
@@ -89,6 +90,24 @@ class Conv1DClassifier:
         conv = tf.squeeze(conv)
         self.current_layer = conv
     # end method add_global_maxpool_layer
+
+
+    def add_highway(self, name, carry_bias=-1.0, en_batch_norm=None):
+        X = self.current_layer
+        size = self.n_filters
+
+        W_T = tf.get_variable(name+'_wt', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+        b_T = tf.get_variable(name+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
+        W = tf.get_variable(name+'_w', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+        b = tf.get_variable(name+'_b', [size], tf.float32, tf.constant_initializer(0.1))
+
+        T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
+        H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
+        C = tf.subtract(1.0, T, name="carry_gate")
+
+        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C))
+        self.current_layer = tf.reshape(Y, [-1, size])
+    # end method add_highway
 
 
     def add_fc(self, name, out_dim):
@@ -145,8 +164,8 @@ class Conv1DClassifier:
                                         self.gen_batch(Y, batch_size)): # batch training
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                              feed_dict={self.X:X_batch, self.Y:Y_batch,
-                                                         self.lr:lr, self.keep_prob:keep_prob})
+                                             {self.X:X_batch, self.Y:Y_batch,
+                                              self.lr:lr, self.keep_prob:keep_prob})
                 local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
@@ -158,8 +177,8 @@ class Conv1DClassifier:
                 for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                                   feed_dict={self.X:X_test_batch, self.Y:Y_test_batch,
-                                                              self.keep_prob:1.0})
+                                                  {self.X:X_test_batch, self.Y:Y_test_batch,
+                                                   self.keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -187,7 +206,7 @@ class Conv1DClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch, self.keep_prob:1.0})
+            batch_pred = self.sess.run(self.logits, {self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

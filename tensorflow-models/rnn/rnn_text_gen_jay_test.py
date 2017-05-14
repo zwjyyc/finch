@@ -1,6 +1,5 @@
 from rnn_text_gen import RNNTextGen
 import tensorflow as tf
-import string
 
 
 prime_texts = ['你要离开我知道很']
@@ -11,5 +10,5 @@ if __name__ == '__main__':
         text = f.read()
     
     sess = tf.Session()
-    model = RNNTextGen(sess, text, n_layer=3, min_freq=20)
-    log = model.fit_text(prime_texts, text_iter_step=1)
+    model = RNNTextGen(sess, text, n_layer=2)
+    log = model.fit_text(prime_texts, text_iter_step=1, en_exp_decay=True)

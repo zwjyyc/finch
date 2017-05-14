@@ -5,10 +5,6 @@ My personal notes, models, and tests written on machine learning (ML) topics
 Still at the early stage, many things to be done in future
 
 ## Contents
-### Notes
-* [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-notes)
-* [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning-notes)
-
 ### Practice
 * [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-practice)
   * [Linear Model](https://github.com/zhedongzheng/finch#linear-model)
@@ -31,17 +27,9 @@ Still at the early stage, many things to be done in future
   * [Deep NLP](https://github.com/zhedongzheng/finch#deep-nlp)
 * [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
 * [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
-## Machine Learning (Notes)
-* [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
-* [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
-## Deep Learning (Notes)
-* Convolutional Network
-    * [Overview](https://zhedongzheng.github.io/finch/conv.html)
-    * [Pooling](https://zhedongzheng.github.io/finch/pooling.html)
-* Recurrent Network
-    * [Recurrent Structure](https://zhedongzheng.github.io/finch/rnn.html)
-    * [Long Short-Term Memory](https://zhedongzheng.github.io/finch/lstm.html)
-    * [Variable Length Input Sequence](https://zhedongzheng.github.io/finch/rnn-practical.html)
+### Notes
+* [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-notes)
+* [Deep Learning](https://github.com/zhedongzheng/finch#deep-learning-notes)
 ## Machine Learning (Practice)
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr_test.py) &nbsp; | &nbsp;
@@ -103,3 +91,14 @@ Still at the early stage, many things to be done in future
 * [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
 ## Database System (Practice)
 * [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)
+## Machine Learning (Notes)
+* [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
+* [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
+## Deep Learning (Notes)
+* Convolutional Network
+    * [Overview](https://zhedongzheng.github.io/finch/conv.html)
+    * [Pooling](https://zhedongzheng.github.io/finch/pooling.html)
+* Recurrent Network
+    * [Recurrent Structure](https://zhedongzheng.github.io/finch/rnn.html)
+    * [Long Short-Term Memory](https://zhedongzheng.github.io/finch/lstm.html)
+    * [Variable Length Input Sequence](https://zhedongzheng.github.io/finch/rnn-practical.html)

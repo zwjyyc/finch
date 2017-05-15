@@ -32,6 +32,7 @@ Still at the early stage, many things to be done in future
     * [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
     * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
 * Deep Learning
+    * [Optimization](https://zhedongzheng.github.io/finch/nn-optimization.html) 
     * Convolutional Network
         * [Overview](https://zhedongzheng.github.io/finch/conv.html)
         * [Pooling](https://zhedongzheng.github.io/finch/pooling.html)

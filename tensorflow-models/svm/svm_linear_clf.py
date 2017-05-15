@@ -65,14 +65,14 @@ class LinearSVMClassifier:
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), # batch training
                                         self.gen_batch(Y, batch_size)):
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                              feed_dict={self.X:X_batch, self.Y:Y_batch,
-                                                         self.batch_size:len(X_batch)})
+                                             {self.X:X_batch, self.Y:Y_batch,
+                                              self.batch_size:len(X_batch)})
             val_loss_list, val_acc_list = [], [] # compute validation loss and acc
             for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                   self.gen_batch(val_data[1], batch_size)):
                 v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                               feed_dict={self.X:X_test_batch, self.Y:Y_test_batch,
-                                                          self.batch_size:len(X_test_batch)})
+                                              {self.X:X_test_batch, self.Y:Y_test_batch,
+                                               self.batch_size:len(X_test_batch)})
                 val_loss_list.append(v_loss)
                 val_acc_list.append(v_acc)
             val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -96,8 +96,7 @@ class LinearSVMClassifier:
             batch_size = len(X_test)
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X:X_test_batch,
-                                                             self.batch_size:len(X_test_batch)})
+            batch_pred = self.sess.run(self.pred, {self.X:X_test_batch, self.batch_size:len(X_test_batch)})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

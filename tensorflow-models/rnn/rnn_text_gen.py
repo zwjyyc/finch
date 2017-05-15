@@ -234,7 +234,7 @@ class RNNTextGen:
 
     def sample(self, prime_text, temperature, n_gen):
         # warming up
-        next_state = self.sess.run(self.s_init_state, feed_dict={self.batch_size:1})
+        next_state = self.sess.run(self.s_init_state, {self.batch_size:1})
         char_list = list(prime_text)
         for char in char_list[:-1]:
             x = np.zeros([1,1])

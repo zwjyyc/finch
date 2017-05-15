@@ -157,8 +157,8 @@ class ConvRNNClassifier:
                                         self.gen_batch(Y, batch_size)): # batch training
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                              feed_dict={self.X:X_batch, self.Y:Y_batch, self.lr:lr,
-                                                         self.batch_size:len(X_batch), self.keep_prob:keep_prob})
+                                             {self.X:X_batch, self.Y:Y_batch, self.lr:lr,
+                                              self.batch_size:len(X_batch), self.keep_prob:keep_prob})
                 local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
@@ -170,9 +170,8 @@ class ConvRNNClassifier:
                 for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                                   feed_dict={self.X:X_test_batch, self.Y:Y_test_batch,
-                                                              self.batch_size:len(X_test_batch),
-                                                              self.keep_prob:1.0})
+                                                  {self.X:X_test_batch, self.Y:Y_test_batch,
+                                                   self.batch_size:len(X_test_batch), self.keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -200,9 +199,8 @@ class ConvRNNClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.logits, feed_dict={self.X:X_test_batch,
-                                                               self.batch_size:len(X_test_batch),
-                                                               self.keep_prob:1.0})
+            batch_pred = self.sess.run(self.logits, {self.X:X_test_batch, self.batch_size:len(X_test_batch),
+                                                     self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

@@ -62,7 +62,7 @@ class Autoencoder:
         for epoch in range(n_epoch):
             # batch training
             for local_step, X_batch in enumerate(self.gen_batch(X_train, batch_size)):
-                _, loss = self.sess.run([self.train_op, self.loss], feed_dict={self.X:X_batch})
+                _, loss = self.sess.run([self.train_op, self.loss], {self.X:X_batch})
                 if global_step == 0:
                     print("Initial loss: ", loss)
                 if (local_step + 1) % 100 == 0:
@@ -72,7 +72,7 @@ class Autoencoder:
             
             val_loss_list = []
             for X_test_batch in self.gen_batch(val_data, batch_size):
-                v_loss = self.sess.run(self.loss, feed_dict={self.X:X_test_batch})
+                v_loss = self.sess.run(self.loss, {self.X:X_test_batch})
                 val_loss_list.append(v_loss)
             val_loss = sum(val_loss_list) / len(val_loss_list)
             print ("Epoch %d/%d | train loss: %.4f | test loss: %.4f" %(epoch+1, n_epoch, loss, v_loss))
@@ -82,7 +82,7 @@ class Autoencoder:
     def transform(self, X_test, batch_size=128):
         res = []
         for X_batch in self.gen_batch(X_test, batch_size):
-            res.append(self.sess.run(self.encoder_op, feed_dict={self.X: X_batch}))
+            res.append(self.sess.run(self.encoder_op, {self.X: X_batch}))
         return np.concatenate(res)
     # end method transform
 
@@ -90,7 +90,7 @@ class Autoencoder:
     def predict(self, X_test, batch_size=128):
         res = []
         for X_batch in self.gen_batch(X_test, batch_size):
-            res.append(self.sess.run(self.decoder_op, feed_dict={self.X: X_batch}))
+            res.append(self.sess.run(self.decoder_op, {self.X: X_batch}))
         return np.concatenate(res)
     # end method predict
 

@@ -55,14 +55,12 @@ class LinearRegression:
         for epoch in range(n_epoch):
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), # batch training
                                         self.gen_batch(Y, batch_size)):
-                _, loss= self.sess.run([self.train_op, self.loss], feed_dict={self.X:X_batch,
-                                                                              self.Y:Y_batch})
+                _, loss= self.sess.run([self.train_op, self.loss], {self.X:X_batch, self.Y:Y_batch})
 
             val_loss_list = []
             for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                   self.gen_batch(val_data[1], batch_size)):
-                v_loss = self.sess.run(self.loss, feed_dict={self.X:X_test_batch,
-                                                             self.Y:Y_test_batch})
+                v_loss = self.sess.run(self.loss, {self.X:X_test_batch, self.Y:Y_test_batch})
                 val_loss_list.append(v_loss)
             val_loss = self.list_avg(val_loss_list)
 
@@ -73,7 +71,7 @@ class LinearRegression:
     def predict(self, X_test, batch_size=100):        
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, feed_dict={self.X:X_test_batch})
+            batch_pred = self.sess.run(self.pred, {self.X:X_test_batch})
             batch_pred_list.append(batch_pred)
         return np.concatenate(batch_pred_list)
     # end method predict

@@ -25,8 +25,6 @@ Still at the early stage, many things to be done in future
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing-practice)
   * [Preprocessing](https://github.com/zhedongzheng/finch#preprocessing)
   * [Deep NLP](https://github.com/zhedongzheng/finch#deep-nlp)
-* [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
-* [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
 ### Notes
 * Machine Learning
     * [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)

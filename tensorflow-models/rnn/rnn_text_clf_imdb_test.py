@@ -1,5 +1,6 @@
 from rnn_text_clf import RNNTextClassifier
 import tensorflow as tf
+import numpy as np
 
 
 max_features = 20000
@@ -23,7 +24,8 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     clf = RNNTextClassifier(sess, maxlen, max_features, 2)
-    log = clf.fit(X_train, Y_train, batch_size=batch_size, keep_prob_tuple=(1.0,1.0), val_data=(X_test,Y_test))
+    log = clf.fit(X_train, Y_train, n_epoch=2, batch_size=batch_size, keep_prob_tuple=(1.0,1.0),
+                  val_data=(X_test,Y_test), en_exp_decay=False)
     pred = clf.predict(X_test)
     tf.reset_default_graph()
 

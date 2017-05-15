@@ -148,7 +148,7 @@ class RNNTextGen:
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):
         if en_exp_decay:
             max_lr = 0.003
-            min_lr = 0.0001
+            min_lr = 0.0005
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*nb_batch)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:

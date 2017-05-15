@@ -28,6 +28,7 @@ class RNNRegressor:
         self.build_graph()
     # end constructor
 
+
     def build_graph(self):
         self.add_input_layer()
         self.add_lstm_cells()
@@ -35,6 +36,7 @@ class RNNRegressor:
         self.add_output_layer() 
         self.add_backward_path()
     # end method build_graph
+
 
     def add_input_layer(self):
         self.batch_size = tf.placeholder(tf.int32)

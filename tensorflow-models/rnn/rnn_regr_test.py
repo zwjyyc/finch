@@ -51,6 +51,5 @@ if __name__ == '__main__':
                                                                    model.init_state:test_state,
                                                                    model.batch_size:BATCH_SIZE})
                 test_loss_list.append(test_loss)
-            if train_idx % 20 == 0:
-                print('train loss: %.4f |' % (train_loss),
-                      'test loss: %.4f' % (sum(test_loss_list)/len(test_loss_list)))
+            print('train loss: %.4f |' % (train_loss),
+                    'test loss: %.4f' % (sum(test_loss_list)/len(test_loss_list)))

@@ -2,7 +2,7 @@
 
 This project contains my models, tests, and notes written on machine learning (ML) topics
 
-Still at the early stage, many things to be done in future
+Still at the early stage, many things need to be done in future
 
 ## Contents
 ### Practice
@@ -25,8 +25,6 @@ Still at the early stage, many things to be done in future
 * [Natural Language Processing](https://github.com/zhedongzheng/finch#natural-language-processing-practice)
   * [Preprocessing](https://github.com/zhedongzheng/finch#preprocessing)
   * [Deep NLP](https://github.com/zhedongzheng/finch#deep-nlp)
-* [Distributed System](https://github.com/zhedongzheng/finch#distributed-system-practice)
-* [Database System](https://github.com/zhedongzheng/finch#database-system-practice)
 ### Notes
 * Machine Learning
     * [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
@@ -96,8 +94,3 @@ Still at the early stage, many things to be done in future
 * TensorFlow &nbsp; | &nbsp; Conv1D Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_1d_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_1d_text_clf_imdb_test.py) &nbsp; | &nbsp;
 * TensorFlow &nbsp; | &nbsp; Conv1D-LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn_rnn/conv_rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn_rnn/conv_rnn_text_clf_imdb_test.py) &nbsp; | &nbsp; 
 * TensorFlow &nbsp; | &nbsp; LSTM Char Language Model &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Shakespeare Texts Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_sh_test.py) &nbsp; | &nbsp; [Nietzsche Texts Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_ni_test.py) &nbsp; | &nbsp; [Jay Chou Lyrics Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_jay_test.py) &nbsp; | &nbsp; 
-## Distributed System (Practice)
-* [Java Multithreading Example](https://github.com/zhedongzheng/finch/tree/master/java/MessageSwitchApp)
-* [Spark Basic Examples](https://github.com/zhedongzheng/finch/tree/master/spark/examples)
-## Database System (Practice)
-* [SQL Basics](https://github.com/zhedongzheng/finch/blob/master/database/postgresql.md)

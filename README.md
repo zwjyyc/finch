@@ -46,7 +46,7 @@ Still at the early stage, many things need to be done in future
 #### Support Vector Machine
 * TensorFlow &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/svm/svm_linear_clf.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/svm/svm_linear_clf_test.py) &nbsp; | &nbsp;
 * Java &nbsp; | &nbsp; Linear SVM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java) &nbsp; | &nbsp;
-* LIBSVM &nbsp; | &nbsp; RBF Kernel Classifier &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/lib-tests/libsvm_clf_test.py) &nbsp; | &nbsp;
+* LibSVM &nbsp; | &nbsp; RBF Kernel Classifier &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/lib-tests/libsvm_clf_test.py) &nbsp; | &nbsp;
 #### Decomposition
 * TensorFlow &nbsp; | &nbsp; Non-negative Matrix Factorization &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/decomposition/nmf.py) &nbsp; | &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/decomposition/nmf_movielens_test.py) &nbsp; | &nbsp;
 ## Deep Learning (Practice)

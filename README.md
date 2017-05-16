@@ -2,7 +2,7 @@
 
 This project contains my models, tests, and notes written on machine learning (ML) topics
 
-Still at the early stage, many things to be done in future
+Still at the early stage, many things need to be done in future
 
 ## Contents
 ### Practice

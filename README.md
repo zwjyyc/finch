@@ -29,7 +29,9 @@ Still at the early stage, many things need to be done in future
 * Machine Learning
     * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
 * Deep Learning
-    * [Network Optimization](https://zhedongzheng.github.io/finch/nn-optimization.html) 
+    * [Network Optimization]
+        * [Optimizer](https://zhedongzheng.github.io/finch/optimizer.html)
+        * [Batch Normalization](https://zhedongzheng.github.io/finch/batch_norm.html)
     * Convolutional Network
         * [Overview](https://zhedongzheng.github.io/finch/conv.html)
         * [Pooling](https://zhedongzheng.github.io/finch/pooling.html)

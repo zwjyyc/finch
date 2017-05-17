@@ -27,7 +27,6 @@ Still at the early stage, many things need to be done in future
   * [Deep NLP](https://github.com/zhedongzheng/finch#deep-nlp)
 ### Notes
 * Machine Learning
-    * [Cross Entropy](https://zhedongzheng.github.io/finch/cross-entropy)
     * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
 * Deep Learning
     * [Network Optimization](https://zhedongzheng.github.io/finch/nn-optimization.html) 

@@ -183,8 +183,8 @@ class RNNTextGen:
     # end method build_vocab
 
 
-    def fit_text(self, prime_texts=None, text_iter_step=3, temperature=1.0, n_gen=100,
-                 n_epoch=50, batch_size=128, en_exp_decay=True, en_shuffle=False, keep_prob=(1.0, 1.0) ):
+    def fit_text(self, prime_texts=None, text_iter_step=1, temperature=1.0, n_gen=100,
+                 n_epoch=20, batch_size=128, en_exp_decay=True, en_shuffle=True, keep_prob=(1.0, 1.0) ):
         
         X = np.array([self.indices[i : i+self.seq_len] for i in range(0, len(self.indices)-self.seq_len,
                                                                       text_iter_step)])

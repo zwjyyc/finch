@@ -36,5 +36,5 @@ def load_shakespeare_text():
 if __name__ == '__main__':
     text = load_shakespeare_text()
     sess = tf.Session()
-    model = RNNTextGen(sess, text, min_freq=1000, stopwords=stopwords)
+    model = RNNTextGen(sess, text, stopwords=stopwords)
     log = model.fit_text(prime_texts, text_iter_step=25)

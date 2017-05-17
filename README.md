@@ -6,7 +6,7 @@ Still at the early stage, many things need to be done in future
 
 ## Contents
 ### Practice
-* [Machine Learning](https://github.com/zhedongzheng/finch#machine-learning-practice)
+* [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/practice.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch#linear-model)
   * [Support Vector Machine](https://github.com/zhedongzheng/finch#support-vector-machine)
   * [Decomposition](https://github.com/zhedongzheng/finch#decomposition)

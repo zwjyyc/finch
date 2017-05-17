@@ -76,7 +76,7 @@ class MLPClassifier:
         b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
         Y = tf.nn.bias_add(tf.matmul(X, W), b)
         if batch_norm:
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag)
+            Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag)
         if activation == 'relu':
             Y = tf.nn.relu(Y)
         if dropout:

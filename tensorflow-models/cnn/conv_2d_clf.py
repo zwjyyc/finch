@@ -92,7 +92,7 @@ class Conv2DClassifier:
         b = self._b(name+'_b', [w_shape[-1]])
         fc = tf.reshape(self.current_layer, [-1, w_shape[0]])
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
-        fc = tf.layers.batch_normalization(fc, training=self.train_flag)
+        fc = tf.contrib.layers.batch_norm(fc, is_training=self.train_flag)
         fc = tf.nn.relu(fc)
         fc = tf.nn.dropout(fc, self.keep_prob)
         self.current_layer = fc

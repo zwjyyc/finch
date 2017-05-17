@@ -94,8 +94,9 @@ class ConvRNNClassifier:
         conv = tf.expand_dims(self.current_layer, 1)
         conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
         conv = tf.squeeze(conv)
-        self.current_layer = conv
         self.current_seq_len = int(self.current_seq_len / k)
+        # reshape to produce explicit shape for later rnn use
+        self.current_layer = tf.reshape(conv, [self.batch_size, self.current_seq_len, self.n_filters])
     # end method add_global_maxpool_layer
 
 
@@ -105,7 +106,6 @@ class ConvRNNClassifier:
 
 
     def add_dynamic_rnn(self):
-        self.current_layer = tf.reshape(self.current_layer, [self.batch_size, self.current_seq_len, self.n_filters])
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)              
         self.current_layer, final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
                                                             initial_state=self.init_state,

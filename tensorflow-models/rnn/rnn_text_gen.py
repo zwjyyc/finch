@@ -5,6 +5,7 @@ import sklearn
 import string
 import re
 import collections
+from utils import orthogonal_initializer
 
 
 class RNNTextGen:
@@ -95,7 +96,7 @@ class RNNTextGen:
 
     def add_lstm_cells(self):
         def cell():
-            cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
+            cell = tf.contrib.rnn.LSTMCell(self.cell_size, initializer = orthogonal_initializer())
             cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
             return cell
         self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])

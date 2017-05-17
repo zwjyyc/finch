@@ -86,4 +86,4 @@ class LinearRegression:
     def list_avg(self, l):
         return sum(l) / len(l)
     # end method list_avg
-# end class LinearSVMClassifier
+# end class

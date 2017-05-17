@@ -167,4 +167,4 @@ class MLPClassifier:
 
     def list_avg(self, l):
         return sum(l) / len(l)
-# end class LinearSVMClassifier
+# end class

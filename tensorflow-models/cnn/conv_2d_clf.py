@@ -5,7 +5,8 @@ import sklearn
 
 
 class Conv2DClassifier:
-    def __init__(self, sess, img_size, img_ch, n_out, kernel_size=(5,5), pool_size=2, padding='VALID'):
+    def __init__(self, img_size, img_ch, n_out, kernel_size=(5,5), pool_size=2, padding='VALID',
+                 sess=tf.Session()):
         """
         Parameters:
         -----------

@@ -14,8 +14,7 @@ if __name__ == '__main__':
     Y_train = tf.contrib.keras.utils.to_categorical(y_train)
     Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
-    sess = tf.Session()
-    model = Conv2DClassifier(sess, (32,32), 3, 10)
+    model = Conv2DClassifier((32,32), 3, 10)
 
     datagen = tf.contrib.keras.preprocessing.image.ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset

@@ -8,8 +8,7 @@ if __name__ == '__main__':
     X_train = (X_train/255.0).mean(axis=3).reshape(-1, 32*32)
     X_test = (X_test/255.0).mean(axis=3).reshape(-1, 32*32)
     
-    sess = tf.Session()
-    auto = Autoencoder(sess, 32*32, [128,64,10,2], [2,10,64,128])
+    auto = Autoencoder(32*32, [128,64,10,2], [2,10,64,128])
     auto.fit(X_train, val_data=X_test)
     X_test_2d = auto.transform(X_test)
     X_test_pred = auto.predict(X_test)

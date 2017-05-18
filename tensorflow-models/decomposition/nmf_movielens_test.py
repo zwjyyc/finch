@@ -1,6 +1,6 @@
 import pandas as pd
-import tensorflow as tf
 import math
+import tensorflow as tf
 from nmf import NMF
 
 
@@ -17,13 +17,12 @@ if __name__ == '__main__':
     ans3 = R[900][931]
     R[900][931] = 0
 
-    sess = tf.Session()
-    nmf = NMF(sess, R.shape[0], R.shape[1])
+    nmf = NMF(R.shape[0], R.shape[1])
     
     nmf.sess.run(tf.global_variables_initializer())
     for step in range(50000):
-        _, loss = nmf.sess.run([nmf.train_op, nmf.loss], {nmf.R:R.values, nmf.lr:0.005})
+        _, loss, R_pred = nmf.sess.run([nmf.train_op, nmf.loss, nmf.R_pred], {nmf.R:R.values, nmf.lr:0.005})
         if step % 100 == 0:
             print(step, loss)
-            print(ans1, '：', sess.run(nmf.R_pred)[2][1], ' | ', ans2, ': ', sess.run(nmf.R_pred)[200][940],
-                  ' | ', ans3, ': ', sess.run(nmf.R_pred)[900][931])
+            print(ans1, '：', R_pred[2][1], ' | ', ans2, ': ', R_pred[200][940],
+                  ' | ', ans3, ': ', R_pred[900][931])

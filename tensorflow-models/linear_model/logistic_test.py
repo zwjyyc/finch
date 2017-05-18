@@ -12,8 +12,7 @@ if __name__ == '__main__':
     Y_train = tf.contrib.keras.utils.to_categorical(y_train)
     Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
-    sess = tf.Session()
-    clf = Logistic(sess, X.shape[1], 2)
+    clf = Logistic(X.shape[1], 2)
     clf.fit(X_train, Y_train, n_epoch=100, val_data=(X_test, Y_test))
     Y_pred = clf.predict(X_test)
     final_acc = np.equal(np.argmax(Y_pred,1), np.argmax(Y_test,1)).astype(float).mean()

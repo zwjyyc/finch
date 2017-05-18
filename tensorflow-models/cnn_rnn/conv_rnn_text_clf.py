@@ -5,7 +5,7 @@ import sklearn
 
 
 class ConvRNNClassifier:
-    def __init__(self, sess, seq_len, vocab_size, n_out,
+    def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(),
                  embedding_dims=128, n_filters=64, kernel_size=5, pool_size=4, padding='VALID', cell_size=128):
         """
         Parameters:

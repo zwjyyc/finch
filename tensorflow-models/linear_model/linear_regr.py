@@ -3,7 +3,7 @@ import numpy as np
 
 
 class LinearRegression:
-    def __init__(self, sess, n_in, l1_raio=0.15):
+    def __init__(self, n_in, l1_ratio=0.15, sess=tf.Session()):
         """
         Parameters:
         -----------

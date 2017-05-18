@@ -10,11 +10,9 @@ if __name__ == '__main__':
     Y_train = tf.contrib.keras.utils.to_categorical(y_train)
     Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
-    sess = tf.Session()
-    clf = Conv2DClassifier(sess, (32,32), 3, 10)
-
+    clf = Conv2DClassifier((32,32), 3, 10)
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
-    tf.reset_default_graph()
+
     final_acc = np.equal(np.argmax(pred,1), np.argmax(Y_test,1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)

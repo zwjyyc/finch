@@ -4,7 +4,7 @@ import math
 
 
 class Autoencoder:
-    def __init__(self, sess, n_in, encoder_units, decoder_units):
+    def __init__(self, n_in, encoder_units, decoder_units, sess=tf.Session()):
         self.sess = sess
         self.n_in = n_in
         self.encoder_units = encoder_units

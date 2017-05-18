@@ -3,7 +3,6 @@ from sklearn.metrics import r2_score
 from sklearn.datasets import make_regression
 from sklearn.linear_model import LinearRegression
 from linear_regr import LinearRegression as LR
-import tensorflow as tf
 
 
 if __name__ == '__main__':
@@ -12,8 +11,7 @@ if __name__ == '__main__':
     Y_train = y_train.reshape(-1, 1)
     Y_test = y_test.reshape(-1, 1)
 
-    sess = tf.Session()
-    regr = LR(sess, X.shape[1])
+    regr = LR(X.shape[1])
     regr.fit(X_train, Y_train, val_data=(X_test, Y_test))
     Y_pred = regr.predict(X_test)
     print("Tensorflow R2: ", r2_score(Y_pred.ravel(), Y_test.ravel()))

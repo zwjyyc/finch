@@ -4,7 +4,7 @@ import math
 
 
 class ConvAE:
-    def __init__(self, sess, img_size, img_ch, kernel_size=(5,5)):
+    def __init__(self, img_size, img_ch, kernel_size=(5,5), sess=tf.Session()):
         self.img_size = img_size
         self.img_ch = img_ch
         self.kernel_size = kernel_size

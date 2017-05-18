@@ -5,7 +5,7 @@ This project contains my models (with high reusability), tests and notes written
 Still at the early stage, many things need to be done in future
 
 ## Contents
-### [Practice](https://github.com/zhedongzheng/finch/blob/master/practice.md)
+### [Model & Tests](https://github.com/zhedongzheng/finch/blob/master/practice.md)
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/practice.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/practice.md#linear-model)
   * [Support Vector Machine](https://github.com/zhedongzheng/finch/blob/master/practice.md#support-vector-machine)

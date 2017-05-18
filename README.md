@@ -1,6 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-This project contains my models (with focus on reusability), tests and notes written on machine learning (ML) topics
+This project contains my models (with focus on reusability and neatness), tests and notes written on machine learning (ML) topics
 
 Still at the early stage, many things need to be done in future
 

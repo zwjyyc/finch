@@ -238,8 +238,7 @@ class RNNTextGen:
         next_state = self.sess.run(self.s_init_state, {self.batch_size:1})
         char_list = list(prime_text)
         for char in char_list[:-1]:
-            x = np.zeros([1,1])
-            x[0,0] = self.char2idx[char] 
+            x = np.atleast_2d(self.char2idx[char]) 
             next_state = self.sess.run(self.s_final_state, {self.s_X:x, self.s_init_state:next_state,
                                                             self.in_keep_prob:1.0, self.out_keep_prob:1.0})
         # end warming up
@@ -247,8 +246,7 @@ class RNNTextGen:
         out_sentence = prime_text + '|'
         char = char_list[-1]
         for _ in range(n_gen):
-            x = np.zeros([1,1])
-            x[0,0] = self.char2idx[char]
+            x = np.atleast_2d(self.char2idx[char])
             softmax_out, next_state = self.sess.run([self.s_out, self.s_final_state],
                                                     {self.s_X:x, self.s_init_state:next_state,
                                                      self.in_keep_prob:1.0, self.out_keep_prob:1.0})

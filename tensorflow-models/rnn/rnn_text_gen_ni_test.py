@@ -4,6 +4,7 @@ import string
 
 
 stopwords = [x for x in string.punctuation if x not in ['-', "'"]]
+prime_texts = ['the falseness of an opinion is']
 
 
 if __name__ == '__main__':
@@ -12,4 +13,4 @@ if __name__ == '__main__':
     text = open(path).read()
     
     model = RNNTextGen(text, stopwords=stopwords)
-    log = model.fit_text(text_iter_step=3)
+    log = model.fit_text(prime_texts, text_iter_step=3)

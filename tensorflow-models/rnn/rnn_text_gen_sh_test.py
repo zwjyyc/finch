@@ -1,4 +1,3 @@
-import tensorflow as tf
 import os
 import requests
 import string
@@ -35,6 +34,5 @@ def load_shakespeare_text():
 
 if __name__ == '__main__':
     text = load_shakespeare_text()
-    sess = tf.Session()
-    model = RNNTextGen(sess, text, stopwords=stopwords)
+    model = RNNTextGen(text, stopwords=stopwords)
     log = model.fit_text(prime_texts, text_iter_step=25)

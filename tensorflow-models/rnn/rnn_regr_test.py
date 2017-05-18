@@ -1,6 +1,6 @@
-import numpy as np
 from rnn_regr import RNNRegressor
 import tensorflow as tf
+import numpy as np
 
 
 BATCH_START = 0     
@@ -24,9 +24,7 @@ if __name__ == '__main__':
     data = [get_data_batch() for _ in range(2000)]
     train_data = data[:1500]
     test_data = data[1500:]
-    sess = tf.Session()
-    model = RNNRegressor(sess,
-                         n_step = TIME_STEPS,
+    model = RNNRegressor(n_step = TIME_STEPS,
                          n_in = 1,
                          n_out = 1,
                          cell_size = 16)

@@ -5,7 +5,7 @@ import sklearn
 
 
 class RNNTextClassifier:
-    def __init__(self, sess, seq_len, vocab_size, n_out, cell_size=128, n_layer=1, stateful=False):
+    def __init__(self, seq_len, vocab_size, n_out, cell_size=128, n_layer=1, stateful=False, sess=tf.Session()):
         """
         Parameters:
         -----------

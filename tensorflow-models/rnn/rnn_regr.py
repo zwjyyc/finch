@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 class RNNRegressor:
-    def __init__(self, sess, n_step, n_in, n_out, cell_size=128):
+    def __init__(self, n_step, n_in, n_out, cell_size=128, sess=tf.Session()):
         """
         Parameters:
         -----------

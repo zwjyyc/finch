@@ -22,12 +22,10 @@ if __name__ == '__main__':
     Y_train = tf.contrib.keras.utils.to_categorical(y_train)
     Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
-    sess = tf.Session()
-    clf = RNNTextClassifier(sess, maxlen, max_features, 2)
+    clf = RNNTextClassifier(maxlen, max_features, 2)
     log = clf.fit(X_train, Y_train, n_epoch=2, batch_size=batch_size, keep_prob_tuple=(1.0,1.0),
                   val_data=(X_test,Y_test), en_exp_decay=False)
     pred = clf.predict(X_test)
-    tf.reset_default_graph()
 
     final_acc = np.equal(np.argmax(pred,1), np.argmax(Y_test,1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)

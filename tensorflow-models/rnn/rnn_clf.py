@@ -5,7 +5,7 @@ import sklearn
 
 
 class RNNClassifier:
-    def __init__(self, sess, n_in, n_step, n_out, cell_size=128, n_layer=1, stateful=False):
+    def __init__(self, n_in, n_step, n_out, cell_size=128, n_layer=1, stateful=False, sess=tf.Session()):
         """
         Parameters:
         -----------

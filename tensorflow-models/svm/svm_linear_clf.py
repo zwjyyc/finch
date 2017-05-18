@@ -3,7 +3,7 @@ import numpy as np
 
 
 class LinearSVMClassifier:
-    def __init__(self, sess, n_in, C=1.0):
+    def __init__(self, n_in, C=1.0, sess=tf.Session()):
         """
         Parameters:
         -----------

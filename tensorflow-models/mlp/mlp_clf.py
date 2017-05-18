@@ -4,7 +4,7 @@ import math
 
 
 class MLPClassifier:
-    def __init__(self, sess, n_in, n_out, hidden_unit_list=[100,200,100]):
+    def __init__(self, n_in, n_out, hidden_unit_list=[100, 200, 100], sess=tf.Session()):
         """
         Parameters:
         -----------

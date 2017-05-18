@@ -3,7 +3,6 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import numpy as np
-import tensorflow as tf
 
 
 if __name__ == '__main__':
@@ -13,12 +12,10 @@ if __name__ == '__main__':
     Y_train = y_train.reshape(-1, 1)
     Y_test = y_test.reshape(-1, 1)
 
-    sess = tf.Session()
-    clf = LinearSVMClassifier(sess, X_train.shape[1])
+    clf = LinearSVMClassifier(X_train.shape[1])
     log = clf.fit(X_train, Y_train, n_epoch=100, batch_size=100, val_data=(X_test, Y_test))
     Y_pred = clf.predict(X_test)
     print("linear svm (tensorflow):", np.equal(Y_pred.ravel(), Y_test.ravel()).astype(float).mean())
-    tf.reset_default_graph()
 
     clf = SVC(kernel='linear')
     y_pred = clf.fit(X_train, y_train).predict(X_test)

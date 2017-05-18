@@ -36,13 +36,13 @@ class CNNClassifier(nn.Module):
     def forward(self, X):
         out = self.conv1(X)
         out = self.conv2(out)
-        out = self.flatten(out)
+        out = self.shrink(out)
         out = self.fc(out)
         return out
     # end method forward
 
 
-    def flatten(self, X):
+    def shrink(self, X):
         return X.view(X.size(0), -1)
     # end method flatten
 

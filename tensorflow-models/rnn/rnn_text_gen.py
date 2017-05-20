@@ -5,7 +5,6 @@ import sklearn
 import string
 import re
 import collections
-from utils import orthogonal_initializer
 
 
 class RNNTextGen:
@@ -90,13 +89,14 @@ class RNNTextGen:
     def add_word_embedding_layer(self):
         # (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
         E = tf.get_variable('E', [self.vocab_size, self.cell_size], tf.float32, tf.random_normal_initializer())
-        self.current_layer = tf.nn.embedding_lookup(E, self.current_layer)
+        E = tf.nn.embedding_lookup(E, self.current_layer)
+        self.current_layer = E
     # end method add_word_embedding_layer
 
 
     def add_lstm_cells(self):
         def cell():
-            cell = tf.contrib.rnn.LSTMCell(self.cell_size, initializer = orthogonal_initializer())
+            cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
             cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
             return cell
         self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])

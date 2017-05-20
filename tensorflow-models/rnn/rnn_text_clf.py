@@ -1,11 +1,12 @@
 import tensorflow as tf
+import sklearn
 import numpy as np
 import math
-import sklearn
 
 
 class RNNTextClassifier:
-    def __init__(self, seq_len, vocab_size, n_out, cell_size=128, n_layer=1, stateful=False, sess=tf.Session()):
+    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, stateful=False,
+                 sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -17,8 +18,6 @@ class RNNTextClassifier:
             Number of units in the rnn cell
         n_out: int
             Output dimensions
-        n_layer: int
-            Number of layers of stacked rnn cells
         sess: object
             tf.Session() object
         stateful: boolean
@@ -26,9 +25,9 @@ class RNNTextClassifier:
         """
         self.seq_len = seq_len
         self.vocab_size = vocab_size
+        self.embedding_dims = embedding_dims
         self.cell_size = cell_size
         self.n_out = n_out
-        self.n_layer = n_layer
         self.sess = sess
         self.stateful = stateful
         self.current_layer = None
@@ -55,29 +54,28 @@ class RNNTextClassifier:
         self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
         self.in_keep_prob = tf.placeholder(tf.float32)
         self.out_keep_prob = tf.placeholder(tf.float32)
+        self.lr = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
 
 
     def add_word_embedding_layer(self):
-        E = tf.get_variable('E', [self.vocab_size, self.cell_size], tf.float32, tf.random_normal_initializer())
+        E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_normal_initializer())
         E = tf.nn.embedding_lookup(E, self.current_layer)
         self.current_layer = E
     # end method add_word_embedding_layer
 
 
     def add_lstm_cells(self):
-        def cell():
-            cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
-            cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
-            return cell
-        self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
+        cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
+        cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
+        self.cell = cell
     # end method add_rnn_cells
 
 
     def add_dynamic_rnn(self):
-        self.init_state = self.cells.zero_state(self.batch_size, tf.float32)        
-        self.current_layer, self.final_state = tf.nn.dynamic_rnn(self.cells, self.current_layer,
+        self.init_state = self.cell.zero_state(self.batch_size, tf.float32)        
+        self.current_layer, self.final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
                                                                  initial_state=self.init_state,
                                                                  time_major=False)
     # end method add_dynamic_rnn
@@ -91,15 +89,17 @@ class RNNTextClassifier:
 
 
     def add_backward_path(self):
-        self.lr = tf.placeholder(tf.float32)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
+        # gradient clipping
+        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), 5.0)
+        optimizer = tf.train.AdamOptimizer(self.lr)
+        self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
     # end method add_backward_path
 
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
-            keep_prob_tuple=(1.0,1.0)):
+            rnn_keep_prob=(1.0,1.0) ):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -121,15 +121,15 @@ class RNNTextClassifier:
                     _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
                                                              {self.X:X_batch, self.Y:Y_batch,
                                                               self.batch_size:batch_size,
-                                                              self.in_keep_prob:keep_prob_tuple[0],
-                                                              self.out_keep_prob:keep_prob_tuple[1],
+                                                              self.in_keep_prob:rnn_keep_prob[0],
+                                                              self.out_keep_prob:rnn_keep_prob[1],
                                                               self.lr:lr, self.init_state:next_state})
                 else:             
                     _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                                  {self.X:X_batch, self.Y:Y_batch,
                                                   self.batch_size:len(X_batch), self.lr:lr,
-                                                  self.in_keep_prob:keep_prob_tuple[0],
-                                                  self.out_keep_prob:keep_prob_tuple[1]})
+                                                  self.in_keep_prob:rnn_keep_prob[0],
+                                                  self.out_keep_prob:rnn_keep_prob[1]})
                 local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
@@ -203,7 +203,7 @@ class RNNTextClassifier:
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
             max_lr = 0.003
-            min_lr = 0.0001
+            min_lr = 0.001
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:

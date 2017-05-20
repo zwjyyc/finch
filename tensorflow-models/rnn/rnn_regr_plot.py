@@ -15,12 +15,12 @@ class TimeSeriesGen:
         self.batch_size = batch_size
         
     def next_batch(self):
-        xs = np.arange(self.batch_start, self.batch_start + self.time_steps * self.batch_size)
-        xs = xs.reshape([self.batch_size, self.time_steps]) / (10 * np.pi)
+        ts = np.arange(self.batch_start, self.batch_start + self.time_steps * self.batch_size)
+        ts = ts.reshape([self.batch_size, self.time_steps]) / (10 * np.pi)
         self.batch_start += self.time_steps * self.batch_size
-        seq = np.sin(xs)
-        res = np.cos(xs)
-        return (seq[:, :, np.newaxis], res[:, :, np.newaxis], xs)
+        X = np.sin(ts)
+        Y = np.cos(ts)
+        return X[:, :, np.newaxis], Y[:, :, np.newaxis], ts
 
 
 if __name__ == '__main__':
@@ -36,24 +36,24 @@ if __name__ == '__main__':
     test_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})
 
     for _ in range(1000):
-        seq_train, res_train, _ = train_gen.next_batch()
+        X_train, Y_train, _ = train_gen.next_batch()
         _, train_loss, train_state = model.sess.run([model.train_op, model.loss, model.final_state],
-                                                    {model.X:seq_train,
-                                                     model.Y:res_train,
+                                                    {model.X:X_train,
+                                                     model.Y:Y_train,
                                                      model.init_state:train_state,
                                                      model.batch_size:BATCH_SIZE})
 
-        seq_test, res_test, xs = test_gen.next_batch()
-        test_loss, test_state, test_pred = model.sess.run([model.loss, model.final_state, model.time_seq_out],
-                                                          {model.X:seq_test,
-                                                           model.Y:res_test,
-                                                           model.init_state:test_state,
-                                                           model.batch_size:BATCH_SIZE})
+        X_test, Y_test, ts = test_gen.next_batch()
+        test_loss, test_state, Y_pred = model.sess.run([model.loss, model.final_state, model.time_seq_out],
+                                                       {model.X:X_test,
+                                                        model.Y:Y_test,
+                                                        model.init_state:test_state,
+                                                        model.batch_size:BATCH_SIZE})
 
         # update plotting
-        plt.plot(xs.ravel(), res_test.ravel(), 'r', xs.ravel(), test_pred.ravel(), 'b--')
+        plt.plot(ts.ravel(), Y_test.ravel(), 'r', ts.ravel(), Y_pred.ravel(), 'b--')
         plt.ylim((-1.2, 1.2))
-        plt.xlim((xs.ravel()[0], xs.ravel()[-1]))
+        plt.xlim((ts.ravel()[0], ts.ravel()[-1]))
         plt.draw()
         plt.pause(0.3)
 

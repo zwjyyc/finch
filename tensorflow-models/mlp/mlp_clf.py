@@ -37,6 +37,9 @@ class MLPClassifier:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.W = tf.get_variable('logits_w', [self.hidden_unit_list[-1], self.n_out], tf.float32,
+                                  tf.contrib.layers.variance_scaling_initializer())
+        self.b = tf.get_variable('logits_b', [self.n_out], tf.float32, tf.constant_initializer(0.1))
         self.keep_prob = tf.placeholder(tf.float32)
         self.train_flag = tf.placeholder(tf.bool)
         self.current_layer = self.X
@@ -47,40 +50,34 @@ class MLPClassifier:
         new_layer = self.current_layer
         forward = [self.n_in] + self.hidden_unit_list
         for i in range( len(forward)-1 ):
-            new_layer = self.fc('layer%s'%i, new_layer, forward[i], forward[i+1], batch_norm=True,
-                                 activation='relu', dropout=True)
+            new_layer = self.fc('layer'+str(i), new_layer, forward[i], forward[i+1])
         self.current_layer = new_layer
     # end method add_forward_path
 
 
     def add_output_layer(self):
-        self.logits = self.fc('layer_out', self.current_layer, self.hidden_unit_list[-1], self.n_out)
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
     # end method add_output_layer
 
 
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
         # batch_norm requires update_ops
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
             self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
     # end method add_backward_path
 
 
-    def fc(self, name, X, fan_in, fan_out, batch_norm=None, activation=None, dropout=None):
+    def fc(self, name, X, fan_in, fan_out):
         W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32, tf.contrib.layers.variance_scaling_initializer())
         b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
         Y = tf.nn.bias_add(tf.matmul(X, W), b)
-        if batch_norm:
-            Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag)
-        if activation == 'relu':
-            Y = tf.nn.relu(Y)
-        if dropout:
-            Y = tf.nn.dropout(Y, self.keep_prob)
+        Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag)
+        Y = tf.nn.relu(Y)
+        Y = tf.nn.dropout(Y, self.keep_prob)
         return Y
     # end method fc (fully-connected)
 

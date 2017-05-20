@@ -25,17 +25,3 @@ Still at the early stage, many things need to be done in future
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/practice.md#natural-language-processing)
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/practice.md#preprocessing)
   * [Deep NLP](https://github.com/zhedongzheng/finch/blob/master/practice.md#deep-nlp)
-### Notes
-* Machine Learning
-    * [Support Vector Machine](https://zhedongzheng.github.io/finch/svm.html)
-* Deep Learning
-    * Network Optimization
-        * [Optimizer](https://zhedongzheng.github.io/finch/optimizer.html)
-        * [Batch Normalization](https://zhedongzheng.github.io/finch/batch_norm.html)
-    * Convolutional Network
-        * [Overview](https://zhedongzheng.github.io/finch/conv.html)
-        * [Pooling](https://zhedongzheng.github.io/finch/pooling.html)
-    * Recurrent Network
-        * [Recurrent Structure](https://zhedongzheng.github.io/finch/rnn.html)
-        * [Long Short-Term Memory](https://zhedongzheng.github.io/finch/lstm.html)
-        * [Variable Length Input Sequence](https://zhedongzheng.github.io/finch/rnn_var_seq.html)

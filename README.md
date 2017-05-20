@@ -2,7 +2,7 @@
 
 This project contains my models, tests, and notebooks written on machine learning (ML) topics
 
-Still at the early stage, many things need to be done in future
+Work in process, many things to be done in future
 
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)

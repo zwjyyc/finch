@@ -8,7 +8,7 @@ import collections
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, min_freq=None, cell_size=128, n_layer=3, stateful=True,
+    def __init__(self, text, seq_len=50, min_freq=None, cell_size=128, n_layer=3, clip_norm=5.0, stateful=True,
                  stopwords=None, sess=tf.Session()):
         """
         Parameters:
@@ -40,6 +40,7 @@ class RNNTextGen:
         self.n_layer = n_layer
         self.stateful = stateful
         self.stopwords = stopwords
+        self.clip_norm = clip_norm
         self.current_layer = None
         self.text_preprocessing()
         self.build_graph()
@@ -127,7 +128,7 @@ class RNNTextGen:
         )
         self.loss = tf.reduce_sum(losses)
         # gradient clipping
-        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), 5.0)
+        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), self.clip_norm)
         optimizer = tf.train.AdamOptimizer(self.lr)
         self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
     # end method add_backward_path

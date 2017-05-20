@@ -5,8 +5,8 @@ import math
 
 
 class RNNTextClassifier:
-    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, stateful=False,
-                 sess=tf.Session()):
+    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, clip_norm=5.0,
+                 stateful=False, sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -27,6 +27,7 @@ class RNNTextClassifier:
         self.vocab_size = vocab_size
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
+        self.clip_norm = clip_norm
         self.n_out = n_out
         self.sess = sess
         self.stateful = stateful
@@ -92,7 +93,7 @@ class RNNTextClassifier:
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
         # gradient clipping
-        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), 5.0)
+        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), self.clip_norm)
         optimizer = tf.train.AdamOptimizer(self.lr)
         self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
     # end method add_backward_path

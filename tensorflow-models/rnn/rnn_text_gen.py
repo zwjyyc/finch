@@ -221,14 +221,13 @@ class RNNTextGen:
                                              self.batch_size:len(X_batch), self.lr:lr,
                                              self.in_keep_prob:1.0, self.out_keep_prob:1.0})
                 if batch_count % 10 == 0:
-                    print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f' % (epoch+1, n_epoch,
-                    batch_count, (len(X)/batch_size), loss, lr))
+                    print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
+                            % (epoch+1, n_epoch, batch_count, (len(X)/batch_size), loss, lr))
+                    for prime_text in prime_texts:
+                        print(self.sample(prime_text, temperature, n_gen), end='\n\n')
                 log['loss'].append(loss)
                 batch_count += 1
                 global_step += 1
-            
-            for prime_text in prime_texts:
-                print(self.sample(prime_text, temperature, n_gen), end='\n\n')
             
         return log
     # end method fit
@@ -244,7 +243,7 @@ class RNNTextGen:
                                                             self.in_keep_prob:1.0, self.out_keep_prob:1.0})
         # end warming up
 
-        out_sentence = prime_text + '|'
+        out_sentence = 'INPUT: ' + prime_text + '\nOUTPUT: ' + prime_text
         char = char_list[-1]
         for _ in range(n_gen):
             x = np.atleast_2d(self.char2idx[char])

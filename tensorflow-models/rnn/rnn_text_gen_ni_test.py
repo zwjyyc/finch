@@ -12,5 +12,5 @@ if __name__ == '__main__':
                                             origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
     text = open(path).read()
     
-    model = RNNTextGen(text, stopwords=stopwords)
+    model = RNNTextGen(text, stopwords=stopwords, min_freq=5)
     log = model.fit_text(prime_texts, text_iter_step=3)

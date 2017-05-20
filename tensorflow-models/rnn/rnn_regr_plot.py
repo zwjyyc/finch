@@ -38,10 +38,10 @@ if __name__ == '__main__':
     for _ in range(1000):
         seq_train, res_train, _ = train_gen.next_batch()
         _, train_loss, train_state = model.sess.run([model.train_op, model.loss, model.final_state],
-                                                     feed_dict={model.X:seq_train,
-                                                                model.Y:res_train,
-                                                                model.init_state:train_state,
-                                                                model.batch_size:BATCH_SIZE})
+                                                    {model.X:seq_train,
+                                                     model.Y:res_train,
+                                                     model.init_state:train_state,
+                                                     model.batch_size:BATCH_SIZE})
 
         seq_test, res_test, xs = test_gen.next_batch()
         test_loss, test_state, test_pred = model.sess.run([model.loss, model.final_state, model.time_seq_out],

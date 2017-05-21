@@ -219,7 +219,8 @@ class RNNTextGen:
                     _, loss = self.sess.run([self.train_op, self.loss],
                                             {self.X:X_batch, self.Y:Y_batch,
                                              self.batch_size:len(X_batch), self.lr:lr,
-                                             self.in_keep_prob:1.0, self.out_keep_prob:1.0})
+                                             self.in_keep_prob:keep_prob[0],
+                                             self.out_keep_prob:keep_prob[1]})
                 if batch_count % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
                             % (epoch+1, n_epoch, batch_count, (len(X)/batch_size), loss, lr))

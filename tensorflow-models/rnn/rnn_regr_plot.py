@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
+
 TIME_STEPS = 20
 BATCH_SIZE = 50
 
@@ -29,14 +30,14 @@ if __name__ == '__main__':
     model = RNNRegressor(n_step = TIME_STEPS,
                          n_in = 1,
                          n_out = 1,
-                         cell_size = 16)
+                         cell_size = TIME_STEPS)
 
     model.sess.run(tf.global_variables_initializer())
     train_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})
     test_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})
     sns.set(style='white')
 
-    for _ in range(200):
+    for step in range(200):
         X_train, Y_train, _ = train_gen.next_batch()
         _, train_loss, train_state = model.sess.run([model.train_op, model.loss, model.final_state],
                                                     {model.X:X_train,

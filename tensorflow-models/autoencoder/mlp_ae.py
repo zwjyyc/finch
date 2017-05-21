@@ -16,10 +16,8 @@ class Autoencoder:
     def build_graph(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.train_flag = tf.placeholder(tf.bool)
-        with tf.variable_scope('weights_tied') as scope:
-            self.encoder_op = self.add_forward_path(self.X, self.encoder_units, 'encoder')
-            scope.reuse_variables()
-            self.decoder_op = self.add_forward_path(self.encoder_op, self.decoder_units, 'decoder')
+        self.encoder_op = self.add_forward_path(self.X, self.encoder_units, 'encoder')
+        self.decoder_op = self.add_forward_path(self.encoder_op, self.decoder_units, 'decoder')
         self.add_backward_path()
     # end method build_graph
 
@@ -34,6 +32,12 @@ class Autoencoder:
             names = list(reversed(['layer%s'%i for i in range(len(forward)-1)]))
         for i in range(len(forward)-2):
             new_layer = self.fc(names[i], new_layer, forward[i], forward[i+1], mode)
+            if mode == 'encoder':
+                new_layer = tf.contrib.layers.batch_norm(new_layer, scope=mode+str(i)+'_bn',
+                                                         is_training=self.train_flag)
+            if mode == 'decoder':
+                new_layer = tf.contrib.layers.batch_norm(new_layer, scope=mode+str(i)+'_bn',
+                                                         is_training=self.train_flag)
             new_layer = tf.nn.relu(new_layer)
         new_layer = self.fc(names[-1], new_layer, forward[-2], forward[-1], mode)
         return new_layer
@@ -51,14 +55,14 @@ class Autoencoder:
 
     def fc(self, name, X, fan_in, fan_out, mode):
         if mode == 'encoder':
-            W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32,
-                                tf.contrib.layers.variance_scaling_initializer())
+            with tf.variable_scope('weights_tied'):
+                W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32,
+                                    tf.contrib.layers.variance_scaling_initializer())
         if mode == 'decoder':
-            W = tf.transpose(tf.get_variable(name+'_w'))
+            with tf.variable_scope('weights_tied', reuse=True):
+                W = tf.transpose(tf.get_variable(name+'_w'))
         b = tf.Variable(tf.constant(0.1, shape=[fan_out]))
         Y = tf.nn.bias_add(tf.matmul(X, W), b)
-        if mode == 'encoder':
-            Y = tf.contrib.layers.batch_norm(Y, scope=name+'_bn', is_training=self.train_flag)
         return Y
     # end method fc
 

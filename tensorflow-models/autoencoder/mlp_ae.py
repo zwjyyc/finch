@@ -15,6 +15,7 @@ class Autoencoder:
 
     def build_graph(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
+        self.train_flag = tf.placeholder(tf.bool)
         with tf.variable_scope('weights_tied') as scope:
             self.encoder_op = self.add_forward_path(self.X, self.encoder_units, 'encoder')
             scope.reuse_variables()
@@ -40,8 +41,11 @@ class Autoencoder:
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.square(self.X - self.decoder_op))
-        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
+        self.loss = tf.reduce_sum(tf.square(self.X - self.decoder_op))
+        # batch_norm requires update_ops
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(update_ops):
+            self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 
 
@@ -52,7 +56,10 @@ class Autoencoder:
         if mode == 'decoder':
             W = tf.transpose(tf.get_variable(name+'_w'))
         b = tf.Variable(tf.constant(0.1, shape=[fan_out]))
-        return tf.nn.bias_add(tf.matmul(X, W), b)
+        Y = tf.nn.bias_add(tf.matmul(X, W), b)
+        if mode == 'encoder':
+            Y = tf.contrib.layers.batch_norm(Y, scope=name+'_bn', is_training=self.train_flag)
+        return Y
     # end method fc
 
 
@@ -62,7 +69,8 @@ class Autoencoder:
         for epoch in range(n_epoch):
             # batch training
             for local_step, X_batch in enumerate(self.gen_batch(X_train, batch_size)):
-                _, loss = self.sess.run([self.train_op, self.loss], {self.X:X_batch})
+                _, loss = self.sess.run([self.train_op, self.loss],
+                                        {self.X:X_batch, self.train_flag:True})
                 if global_step == 0:
                     print("Initial loss: ", loss)
                 if (local_step + 1) % 100 == 0:
@@ -72,7 +80,7 @@ class Autoencoder:
             
             val_loss_list = []
             for X_test_batch in self.gen_batch(val_data, batch_size):
-                v_loss = self.sess.run(self.loss, {self.X:X_test_batch})
+                v_loss = self.sess.run(self.loss, {self.X:X_test_batch, self.train_flag:False})
                 val_loss_list.append(v_loss)
             val_loss = sum(val_loss_list) / len(val_loss_list)
             print ("Epoch %d/%d | train loss: %.4f | test loss: %.4f" %(epoch+1, n_epoch, loss, v_loss))
@@ -82,16 +90,16 @@ class Autoencoder:
     def transform(self, X_test, batch_size=128):
         res = []
         for X_batch in self.gen_batch(X_test, batch_size):
-            res.append(self.sess.run(self.encoder_op, {self.X: X_batch}))
-        return np.concatenate(res)
+            res.append(self.sess.run(self.encoder_op, {self.X: X_batch, self.train_flag:False}))
+        return np.vstack(res)
     # end method transform
 
 
     def predict(self, X_test, batch_size=128):
         res = []
         for X_batch in self.gen_batch(X_test, batch_size):
-            res.append(self.sess.run(self.decoder_op, {self.X: X_batch}))
-        return np.concatenate(res)
+            res.append(self.sess.run(self.decoder_op, {self.X: X_batch, self.train_flag:False}))
+        return np.vstack(res)
     # end method predict
 
 

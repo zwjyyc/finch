@@ -9,7 +9,7 @@ if __name__ == '__main__':
     X_test = (X_test/255.0).reshape(-1, 32, 32, 3)
 
     ae = ConvAE((32, 32), 3)
-    ae.fit(X_train, X_test, n_epoch=3)
+    ae.fit(X_train, X_test, n_epoch=5)
     X_test_pred = ae.predict(X_test)
     
     print("Plotting...")

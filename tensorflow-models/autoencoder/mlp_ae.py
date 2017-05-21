@@ -32,12 +32,8 @@ class Autoencoder:
             names = list(reversed(['layer%s'%i for i in range(len(forward)-1)]))
         for i in range(len(forward)-2):
             new_layer = self.fc(names[i], new_layer, forward[i], forward[i+1], mode)
-            if mode == 'encoder':
-                new_layer = tf.contrib.layers.batch_norm(new_layer, scope=mode+str(i)+'_bn',
-                                                         is_training=self.train_flag)
-            if mode == 'decoder':
-                new_layer = tf.contrib.layers.batch_norm(new_layer, scope=mode+str(i)+'_bn',
-                                                         is_training=self.train_flag)
+            new_layer = tf.contrib.layers.batch_norm(new_layer, scope=mode+str(i)+'_bn',
+                                                     is_training=self.train_flag)
             new_layer = tf.nn.relu(new_layer)
         new_layer = self.fc(names[-1], new_layer, forward[-2], forward[-1], mode)
         return new_layer

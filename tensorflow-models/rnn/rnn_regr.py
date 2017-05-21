@@ -1,10 +1,8 @@
 import tensorflow as tf
-import math
-import matplotlib.pyplot as plt
 
 
 class RNNRegressor:
-    def __init__(self, n_step, n_in, n_out, cell_size=128, sess=tf.Session()):
+    def __init__(self, n_step, n_in, n_out, cell_size, sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -63,24 +61,13 @@ class RNNRegressor:
 
 
     def add_output_layer(self):
-        reshaped = tf.reshape(self.current_layer, [-1, self.cell_size]) # (batch * n_step, n_hidden)
-        # (batch * n_step, n_hidden) dot (n_hidden, n_out)
+        reshaped = tf.reshape(self.current_layer, [-1, self.cell_size])
         self.logits = tf.nn.bias_add(tf.matmul(reshaped, self.W), self.b)
         self.time_seq_out = tf.reshape(self.logits, [-1, self.n_step, self.n_out])
     # end method add_output_layer
 
 
     def add_backward_path(self):
-        """
-        losses = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
-            logits = [tf.reshape(self.logits, [-1])],
-            targets = [tf.reshape(self.Y, [-1])],
-            weights = [tf.ones([self.batch_size * self.n_step])],
-            average_across_timesteps = True,
-            softmax_loss_function = self.squared_error,
-        )
-        self.loss = tf.div(tf.reduce_sum(losses), tf.cast(self.batch_size, tf.float32))
-        """
         square_loss = tf.square(tf.subtract(tf.reshape(self.logits, [-1]), tf.reshape(self.Y, [-1])))
         avg_across_steps = tf.div(tf.reduce_sum(square_loss), self.n_step)
         self.loss = tf.div(avg_across_steps, tf.cast(self.batch_size, tf.float32))

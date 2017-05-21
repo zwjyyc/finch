@@ -9,7 +9,7 @@ class ConvAE:
         self.img_ch = img_ch
         self.kernel_size = kernel_size
         self.sess = sess
-        self.current_layer=None
+        self.current_layer = None
         self.build_graph()
     # end constructor
 

@@ -36,6 +36,7 @@ if __name__ == '__main__':
     train_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})
     test_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})
     sns.set(style='white')
+    plt.ion()
 
     for step in range(200):
         X_train, Y_train, _ = train_gen.next_batch()

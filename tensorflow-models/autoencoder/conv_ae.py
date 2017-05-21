@@ -16,10 +16,8 @@ class ConvAE:
 
     def build_graph(self):
         self.add_input_layer()
-        with tf.variable_scope('weights_tied') as scope:
-            self.add_conv('shared', [self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
-            scope.reuse_variables()
-            self.add_deconv('shared', [self.batch_size, self.img_size[0], self.img_size[1], self.img_ch])
+        self.add_conv('tied_layer_1', [self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
+        self.add_deconv('tied_layer_1', [self.batch_size, self.img_size[0], self.img_size[1], self.img_ch])
         self.decoder_op = self.current_layer
         self.add_backward_path()
     # end method build_graph
@@ -33,7 +31,8 @@ class ConvAE:
 
 
     def add_conv(self, name, filter_shape, strides=1):
-        W = tf.get_variable(name+'_W', filter_shape, tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+        with tf.variable_scope('weights_tied'):
+            W = tf.get_variable(name+'_W', filter_shape, tf.float32, tf.truncated_normal_initializer(stddev=0.1))
         b = tf.get_variable(name+'_b', [filter_shape[-1]], tf.float32, tf.constant_initializer(0.1))
         Y = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding='SAME')
         Y = tf.nn.relu(tf.nn.bias_add(Y, b))
@@ -42,7 +41,8 @@ class ConvAE:
 
 
     def add_deconv(self, name, output_shape, strides=1):
-        W = tf.get_variable(name+'_W')
+        with tf.variable_scope('weights_tied', reuse=True):
+            W = tf.get_variable(name+'_W')
         self.current_layer = tf.nn.conv2d_transpose(self.current_layer, W, output_shape, [1,strides,strides,1],
                                                     'SAME')
     # end method add_deconv

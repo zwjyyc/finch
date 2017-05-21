@@ -2,7 +2,7 @@ from rnn_regr import RNNRegressor
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
-
+import seaborn as sns
 
 TIME_STEPS = 20
 BATCH_SIZE = 50
@@ -26,7 +26,7 @@ class TimeSeriesGen:
 if __name__ == '__main__':
     train_gen = TimeSeriesGen(0, TIME_STEPS, BATCH_SIZE)
     test_gen = TimeSeriesGen(1000, TIME_STEPS, BATCH_SIZE)
-    model = RNNRegressor(n_step = 20,
+    model = RNNRegressor(n_step = TIME_STEPS,
                          n_in = 1,
                          n_out = 1,
                          cell_size = 16)
@@ -34,8 +34,9 @@ if __name__ == '__main__':
     model.sess.run(tf.global_variables_initializer())
     train_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})
     test_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})
+    sns.set(style='white')
 
-    for _ in range(1000):
+    for _ in range(200):
         X_train, Y_train, _ = train_gen.next_batch()
         _, train_loss, train_state = model.sess.run([model.train_op, model.loss, model.final_state],
                                                     {model.X:X_train,
@@ -51,10 +52,15 @@ if __name__ == '__main__':
                                                         model.batch_size:BATCH_SIZE})
 
         # update plotting
-        plt.plot(ts.ravel(), Y_test.ravel(), 'r', ts.ravel(), Y_pred.ravel(), 'b--')
+        plt.cla()
+        plt.plot(ts.ravel(), Y_test.ravel(), label='actual')
+        plt.plot(ts.ravel(), Y_pred.ravel(), color='indianred', label='predicted')
         plt.ylim((-1.2, 1.2))
         plt.xlim((ts.ravel()[0], ts.ravel()[-1]))
+        plt.legend(fontsize=15)
         plt.draw()
-        plt.pause(0.3)
+        plt.pause(0.01)
+        print('train loss: %.4f | test loss: %.4f' % (train_loss, test_loss))
 
-        print('train loss: %.4f | test loss: %.4f' % (train_loss, test_loss)) 
+    plt.ioff()
+    plt.show()

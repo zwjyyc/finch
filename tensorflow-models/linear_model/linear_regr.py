@@ -73,7 +73,7 @@ class LinearRegression:
         for X_test_batch in self.gen_batch(X_test, batch_size):
             batch_pred = self.sess.run(self.pred, {self.X:X_test_batch})
             batch_pred_list.append(batch_pred)
-        return np.concatenate(batch_pred_list)
+        return np.vstack(batch_pred_list)
     # end method predict
 
 

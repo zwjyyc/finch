@@ -82,7 +82,7 @@ class ConvAE:
         res = []
         for X_batch in self.gen_batch(X_test, batch_size):
             res.append(self.sess.run(self.decoder_op, {self.X: X_batch, self.batch_size:len(X_batch)}))
-        return np.concatenate(res)
+        return np.vstack(res)
     # end method predict
 
 

@@ -140,7 +140,7 @@ class MLPClassifier:
             batch_pred = self.sess.run(self.logits, {self.X:X_test_batch, self.keep_prob:1.0,
                                                      self.train_flag:False})
             batch_pred_list.append(batch_pred)
-        return np.concatenate(batch_pred_list)
+        return np.vstack(batch_pred_list)
     # end method predict
 
 

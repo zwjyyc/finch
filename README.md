@@ -8,7 +8,7 @@ My model implements the scikit-learn interface of fit / predict
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
 ```
-My model provides a high-level overview of construction in TensorFlow
+My model in TensorFlow provides a high-level overview of construction
 ```python
     def build_graph(self):
         self.add_input_layer()

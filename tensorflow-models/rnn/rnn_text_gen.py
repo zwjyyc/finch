@@ -8,7 +8,7 @@ import collections
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, min_freq=None, cell_size=128, n_layer=3, clip_norm=5.0, stateful=False,
+    def __init__(self, text, seq_len=50, min_freq=None, cell_size=128, n_layer=3, clip_grad=5.0, stateful=False,
                  stopwords=None, sess=tf.Session()):
         """
         Parameters:
@@ -40,7 +40,7 @@ class RNNTextGen:
         self.n_layer = n_layer
         self.stateful = stateful
         self.stopwords = stopwords
-        self.clip_norm = clip_norm
+        self.clip_grad = clip_grad
         self.current_layer = None
         self.text_preprocessing()
         self.build_graph()
@@ -81,8 +81,6 @@ class RNNTextGen:
         self.b = tf.get_variable('logits_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))  
         self.batch_size = tf.placeholder(tf.int32)
         self.lr = tf.placeholder(tf.float32) 
-        self.in_keep_prob = tf.placeholder(tf.float32)
-        self.out_keep_prob = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
 
@@ -98,7 +96,6 @@ class RNNTextGen:
     def add_lstm_cells(self):
         def cell():
             cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
-            cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
             return cell
         self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
     # end method add_rnn_cells
@@ -128,7 +125,7 @@ class RNNTextGen:
         )
         self.loss = tf.reduce_sum(losses)
         # gradient clipping
-        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), self.clip_norm)
+        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), self.clip_grad)
         optimizer = tf.train.AdamOptimizer(self.lr)
         self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
     # end method add_backward_path
@@ -185,12 +182,12 @@ class RNNTextGen:
 
 
     def fit_text(self, prime_texts=None, text_iter_step=1, temperature=1.0, n_gen=100,
-                 n_epoch=20, batch_size=128, en_exp_decay=True, en_shuffle=True, keep_prob=(1.0, 1.0) ):
-        
-        X = np.array([self.indices[i : i+self.seq_len] for i in range(0, len(self.indices)-self.seq_len,
-                                                                      text_iter_step)])
+                 n_epoch=20, batch_size=128, en_exp_decay=True, en_shuffle=True):
+        window = self.seq_len + 1
+        X = np.array([self.indices[i:i+window] for i in range(0, len(self.indices)-window, text_iter_step)])
         Y = np.roll(X, -1, axis=1)
-        Y[np.arange(len(X)-1), -1] = X[np.arange(1,len(X)), 0]
+        X = X[:, :-1]
+        Y = Y[:, :-1]
         print('X shape:', X.shape, '|', 'Y shape:', Y.shape)
 
         if prime_texts is None:
@@ -212,18 +209,15 @@ class RNNTextGen:
                     _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                                                         {self.X:X_batch, self.Y:Y_batch,
                                                          self.init_state:next_state,
-                                                         self.batch_size:len(X_batch), self.lr:lr,
-                                                         self.in_keep_prob:keep_prob[0],
-                                                         self.out_keep_prob:keep_prob[1]})
+                                                         self.batch_size:len(X_batch), self.lr:lr})
                 else:
                     _, loss = self.sess.run([self.train_op, self.loss],
                                             {self.X:X_batch, self.Y:Y_batch,
-                                             self.batch_size:len(X_batch), self.lr:lr,
-                                             self.in_keep_prob:keep_prob[0],
-                                             self.out_keep_prob:keep_prob[1]})
+                                             self.batch_size:len(X_batch), self.lr:lr})
                 if batch_count % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
                             % (epoch+1, n_epoch, batch_count, (len(X)/batch_size), loss, lr))
+                if batch_count % 100 == 0:
                     for prime_text in prime_texts:
                         print(self.sample(prime_text, temperature, n_gen), end='\n\n')
                 log['loss'].append(loss)
@@ -240,8 +234,7 @@ class RNNTextGen:
         char_list = list(prime_text)
         for char in char_list[:-1]:
             x = np.atleast_2d(self.char2idx[char]) 
-            next_state = self.sess.run(self.s_final_state, {self.s_X:x, self.s_init_state:next_state,
-                                                            self.in_keep_prob:1.0, self.out_keep_prob:1.0})
+            next_state = self.sess.run(self.s_final_state, {self.s_X:x, self.s_init_state:next_state})
         # end warming up
 
         out_sentence = 'INPUT: ' + prime_text + '\nOUTPUT: ' + prime_text
@@ -249,8 +242,7 @@ class RNNTextGen:
         for _ in range(n_gen):
             x = np.atleast_2d(self.char2idx[char])
             softmax_out, next_state = self.sess.run([self.s_out, self.s_final_state],
-                                                    {self.s_X:x, self.s_init_state:next_state,
-                                                     self.in_keep_prob:1.0, self.out_keep_prob:1.0})
+                                                    {self.s_X:x, self.s_init_state:next_state})
             idx = self.infer_idx(softmax_out[0], temperature)
             if idx == 0:
                 break

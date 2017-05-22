@@ -1,13 +1,14 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-This project contains my models, tests, and notebooks written on machine learning (ML) topics <br>
+This project contains my models, tests, and notebooks written on machine learning (ML) topics
+
 My model implements the scikit-learn interface of fit / predict
 ```python
     clf = RNNClassifier(n_in=28, n_step=28, n_out=10, stateful=True)
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
 ```
-My model provides a high-level overview of construction in build_graph() method
+My model provides a high-level overview of construction in TensorFlow
 ```python
     def build_graph(self):
         self.add_input_layer()

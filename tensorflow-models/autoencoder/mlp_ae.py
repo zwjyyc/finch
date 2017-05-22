@@ -4,44 +4,56 @@ import math
 
 
 class Autoencoder:
-    def __init__(self, n_in, encoder_units, decoder_units, sess=tf.Session()):
+    def __init__(self, n_in, encoder_units, sess=tf.Session()):
         self.sess = sess
         self.n_in = n_in
         self.encoder_units = encoder_units
-        self.decoder_units = decoder_units
+        self.decoder_units = list(reversed(encoder_units))
+        self.current_layer = None
         self.build_graph()
     # end constructor
 
 
     def build_graph(self):
-        self.X = tf.placeholder(tf.float32, [None, self.n_in])
-        self.train_flag = tf.placeholder(tf.bool)
-        self.encoder_op = self.add_forward_path(self.X, self.encoder_units, 'encoder')
-        self.decoder_op = self.add_forward_path(self.encoder_op, self.decoder_units, 'decoder')
+        self.add_input_layer()
+        self.add_encoders()
+        self.add_decoders()
         self.add_backward_path()
     # end method build_graph
 
 
-    def add_forward_path(self, X, units, mode):
-        new_layer = X
-        if mode == 'encoder':
-            forward = [self.n_in] + units
-            names = ['layer%s'%i for i in range(len(forward)-1)]
-        if mode == 'decoder':
-            forward = units + [self.n_in]
-            names = list(reversed(['layer%s'%i for i in range(len(forward)-1)]))
-        for i in range(len(forward)-2):
-            new_layer = self.fc(names[i], new_layer, forward[i], forward[i+1], mode)
-            new_layer = tf.contrib.layers.batch_norm(new_layer, scope=mode+str(i)+'_bn',
+    def add_input_layer(self):
+        self.X = tf.placeholder(tf.float32, [None, self.n_in])
+        self.train_flag = tf.placeholder(tf.bool)
+    # end method add_input_layer
+
+
+    def add_encoders(self):
+        new_layer = self.X
+        forward = [self.n_in] + self.encoder_units
+        names = ['layer%s'%i for i in range(len(forward)-1)]
+        for i in range(len(names)):
+            new_layer = self.fc(names[i], new_layer, forward[i], forward[i+1], 'encoder')
+            new_layer = tf.contrib.layers.batch_norm(new_layer, scope='encoder'+str(i)+'_bn',
                                                      is_training=self.train_flag)
             new_layer = tf.nn.relu(new_layer)
-        new_layer = self.fc(names[-1], new_layer, forward[-2], forward[-1], mode)
-        return new_layer
-    # end method add_forward_path
+        self.encoder_op = new_layer
+    # end method add_encoders
+
+
+    def add_decoders(self):
+        new_layer = self.encoder_op
+        forward = self.decoder_units + [self.n_in]
+        names = list(reversed(['layer%s'%i for i in range(len(forward)-1)]))
+        for i in range(len(names)-1):
+            new_layer = self.fc(names[i], new_layer, forward[i], forward[i+1], 'decoder')
+            new_layer = tf.nn.relu(new_layer)
+        self.decoder_op = self.fc(names[-1], new_layer, forward[-2], forward[-1], 'decoder')
+    # end method add_decoders
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_sum(tf.square(self.X - self.decoder_op))
+        self.loss = tf.reduce_mean(tf.square(self.X - self.decoder_op))
         # batch_norm requires update_ops
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):

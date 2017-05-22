@@ -8,7 +8,7 @@ if __name__ == '__main__':
     X_train = (X_train/255.0).reshape(-1, 28*28)
     X_test = (X_test/255.0).reshape(-1, 28*28)
 
-    auto = Autoencoder(28*28, [128,64,10,2], [2,10,64,128])
+    auto = Autoencoder(28*28, [512,128,16,2])
     auto.fit(X_train, val_data=X_test)
     X_test_2d = auto.transform(X_test)
     X_test_pred = auto.predict(X_test)

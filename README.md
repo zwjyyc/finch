@@ -2,26 +2,7 @@
 
 This project contains my models, tests, and notebooks written on machine learning (ML) topics
 
-My model implements the scikit-learn interface of fit / predict, for example:
-```python
-    clf = RNNClassifier(n_in=28, n_step=28, n_out=10)
-    log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
-    pred = clf.predict(X_test)
-```
-My model based on TensorFlow provides a high-level overview of each block, for example:
-```python
-    def build_graph(self):
-        self.add_input_layer()
-        self.add_word_embedding()
-        self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-        self.add_maxpool(self.pool_size)
-        self.add_lstm_cells()
-        self.add_dynamic_rnn()
-        self.add_output_layer()   
-        self.add_backward_path()
-    # end method build_graph
-```
-Work in process, many things to be done in future
+WIP, many things to be done in future
 
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)

@@ -1,9 +1,7 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
 This project contains my models, tests, and notebooks written on machine learning (ML) topics
-
 My model implements the scikit-learn interface of fit / predict
-
 ```python
     clf = RNNClassifier(n_in=28, n_step=28, n_out=10, stateful=True)
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
@@ -11,7 +9,7 @@ My model implements the scikit-learn interface of fit / predict
 ```
 My model provides a high-level overview of construction in build_graph() method
 ```python
-        def build_graph(self):
+    def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
@@ -22,7 +20,6 @@ My model provides a high-level overview of construction in build_graph() method
         self.add_backward_path()
     # end method build_graph
 ```
-
 Work in process, many things to be done in future
 
 ## Contents

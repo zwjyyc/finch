@@ -82,7 +82,7 @@ class MLPClassifier:
     # end method fc (fully-connected)
 
 
-    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, dropout=1.0):
+    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, keep_prob=1.0):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -97,7 +97,7 @@ class MLPClassifier:
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                              {self.X: X_batch, self.Y: Y_batch, self.lr: lr,
-                                              self.keep_prob:dropout, self.train_flag:True})
+                                              self.keep_prob:keep_prob, self.train_flag:True})
                 local_step += 1
                 global_step += 1
                 if local_step % 100 == 0:

@@ -1,6 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-This project contains my models, tests, and notebooks written on machine learning (ML) topics
+This project contains my models, tests, and notebooks written on machine learning (ML) topics <br>
 My model implements the scikit-learn interface of fit / predict
 ```python
     clf = RNNClassifier(n_in=28, n_step=28, n_out=10, stateful=True)

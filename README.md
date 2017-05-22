@@ -2,13 +2,13 @@
 
 This project contains my models, tests, and notebooks written on machine learning (ML) topics
 
-My model implements the scikit-learn interface of fit / predict
+My model implements the scikit-learn interface of fit / predict, for example:
 ```python
     clf = RNNClassifier(n_in=28, n_step=28, n_out=10, stateful=True)
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
 ```
-My model in TensorFlow provides a high-level overview of construction
+My model in TensorFlow provides a high-level overview of construction, for example:
 ```python
     def build_graph(self):
         self.add_input_layer()

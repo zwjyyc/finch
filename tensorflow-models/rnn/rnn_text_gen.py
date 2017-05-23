@@ -108,7 +108,7 @@ class RNNTextGen:
 
     def add_output_layer(self):
         W = tf.get_variable('logits_W', [self.cell_size, self.vocab_size], tf.float32,
-                             tf.contrib.layers.xavier_initializer())
+                             tf.contrib.layers.variance_scaling_initializer())
         b = tf.get_variable('logits_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.1)) 
         reshaped = tf.reshape(self.current_layer, [-1, self.cell_size])
         self.logits = tf.nn.bias_add(tf.matmul(reshaped, W), b)

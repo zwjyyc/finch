@@ -237,7 +237,7 @@ class RNNTextGen:
             next_state = self.sess.run(self.s_final_state, {self.s_X:x, self.s_init_state:next_state})
         # end warming up
 
-        out_sentence = 'INPUT: ' + prime_text + '\nOUTPUT: ' + prime_text
+        out_sentence = 'IN: ' + prime_text + '\nOUT: ' + prime_text
         char = char_list[-1]
         for _ in range(n_gen):
             x = np.atleast_2d(self.char2idx[char])
@@ -248,7 +248,7 @@ class RNNTextGen:
                 break
             char = self.idx2char[idx]
             out_sentence = out_sentence + char
-        return(out_sentence)
+        return out_sentence
     # end method sample
 
 

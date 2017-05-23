@@ -9,16 +9,12 @@ n_out = 2
 
 
 if __name__ == '__main__':
-    print('Loading data...')
     (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.imdb.load_data(num_words=max_features)
-    print(len(X_train), 'train sequences')
-    print(len(X_test), 'test sequences')
 
-    print('Pad sequences (samples x time)')
     X_train = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=maxlen)
     X_test = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=maxlen)
-    print('x_train shape:', X_train.shape)
-    print('x_test shape:', X_test.shape)
+    print('x_train shape:', X_train.shape, 'x_test shape:', X_test.shape)
+    
     Y_train = tf.contrib.keras.utils.to_categorical(y_train)
     Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 

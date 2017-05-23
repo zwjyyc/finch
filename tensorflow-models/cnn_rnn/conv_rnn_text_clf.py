@@ -94,7 +94,7 @@ class ConvRNNClassifier:
         conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
         conv = tf.squeeze(conv)
         self.current_seq_len = int(self.current_seq_len / k)
-        # reshape to produce explicit shape for later rnn use
+        # reshape to produce explicit tensor shape, because rnn will reject unknown shape
         self.current_layer = tf.reshape(conv, [self.batch_size, self.current_seq_len, self.n_filters])
     # end method add_maxpool
 

@@ -76,9 +76,6 @@ class RNNTextGen:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.W = tf.get_variable('logits_W', [self.cell_size, self.vocab_size], tf.float32,
-                                  tf.contrib.layers.variance_scaling_initializer())
-        self.b = tf.get_variable('logits_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))  
         self.batch_size = tf.placeholder(tf.int32)
         self.lr = tf.placeholder(tf.float32) 
         self.current_layer = self.X
@@ -110,8 +107,11 @@ class RNNTextGen:
 
 
     def add_output_layer(self):
+        W = tf.get_variable('logits_W', [self.cell_size, self.vocab_size], tf.float32,
+                             tf.contrib.layers.xavier_initializer())
+        b = tf.get_variable('logits_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.1)) 
         reshaped = tf.reshape(self.current_layer, [-1, self.cell_size])
-        self.logits = tf.nn.bias_add(tf.matmul(reshaped, self.W), self.b)
+        self.logits = tf.nn.bias_add(tf.matmul(reshaped, W), b)
     # end method add_output_layer
 
 

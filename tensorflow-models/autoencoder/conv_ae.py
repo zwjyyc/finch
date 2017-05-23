@@ -32,7 +32,7 @@ class ConvAE:
 
     def add_conv(self, name, filter_shape, strides=1):
         with tf.variable_scope('weights_tied'):
-            W = tf.get_variable(name+'_W', filter_shape, tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+            W = tf.get_variable(name+'_W', filter_shape, tf.float32, tf.contrib.layers.xavier_initializer())
         b = tf.get_variable(name+'_b', [filter_shape[-1]], tf.float32, tf.constant_initializer(0.1))
         Y = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding='SAME')
         Y = tf.nn.relu(tf.nn.bias_add(Y, b))

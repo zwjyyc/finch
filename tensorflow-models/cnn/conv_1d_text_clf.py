@@ -136,7 +136,7 @@ class Conv1DClassifier:
 
 
     def _W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.xavier_initializer())
     # end method _W
 
 

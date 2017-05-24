@@ -60,11 +60,10 @@ class HighwayClassifier:
         size = self.highway_units
         X = self.current_layer
 
-        W_T = tf.get_variable(str(n)+'_wt', [size,size], tf.float32,
-                              tf.contrib.layers.variance_scaling_initializer())
+        W_T = tf.get_variable(str(n)+'_wt', [size,size], tf.float32, tf.contrib.layers.variance_scaling_initializer())
         b_T = tf.get_variable(str(n)+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
-        W = tf.get_variable(str(n)+'_w', [size,size], tf.float32,
-                            tf.contrib.layers.variance_scaling_initializer())
+
+        W = tf.get_variable(str(n)+'_w', [size,size], tf.float32, tf.contrib.layers.variance_scaling_initializer())
         b = tf.get_variable(str(n)+'_b', [size], tf.float32, tf.constant_initializer(0.1))
 
         T = tf.sigmoid(tf.matmul(X, W_T) + b_T, name="transform_gate")

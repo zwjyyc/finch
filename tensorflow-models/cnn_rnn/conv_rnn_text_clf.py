@@ -64,6 +64,7 @@ class ConvRNNClassifier:
         self.batch_size = tf.placeholder(tf.int32)
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
+        self.train_flag = tf.placeholder(tf.bool)
         self.current_layer = self.X
     # end method add_input_layer
 
@@ -80,6 +81,7 @@ class ConvRNNClassifier:
         b = self._b(name+'_b', [filter_shape[-1]])                                
         conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
+        conv = tf.contrib.layers.batch_norm(conv, is_training=self.train_flag)
         conv = tf.nn.relu(conv)
         self.current_layer = conv
         if self.padding == 'VALID':
@@ -124,8 +126,11 @@ class ConvRNNClassifier:
 
     def add_backward_path(self):
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.Y, 1)), tf.float32))
+        # batch_norm requires update_ops
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(update_ops):
+            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
 
 
@@ -158,9 +163,11 @@ class ConvRNNClassifier:
                                         self.gen_batch(Y, batch_size)): # batch training
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                             {self.X:X_batch, self.Y:Y_batch, self.lr:lr,
-                                              self.batch_size:len(X_batch),
-                                              self.keep_prob:keep_prob})
+                                             {self.X: X_batch, self.Y: Y_batch,
+                                              self.lr: lr,
+                                              self.batch_size: len(X_batch),
+                                              self.keep_prob: keep_prob,
+                                              self.train_flag: True})
                 local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
@@ -172,9 +179,10 @@ class ConvRNNClassifier:
                 for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                                  {self.X:X_test_batch, self.Y:Y_test_batch,
-                                                   self.batch_size:len(X_test_batch),
-                                                   self.keep_prob:1.0})
+                                                  {self.X: X_test_batch, self.Y: Y_test_batch,
+                                                   self.batch_size: len(X_test_batch),
+                                                   self.keep_prob: 1.0,
+                                                   self.train_flag: False})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -202,9 +210,10 @@ class ConvRNNClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.logits, {self.X:X_test_batch,
-                                                     self.batch_size:len(X_test_batch),
-                                                     self.keep_prob:1.0})
+            batch_pred = self.sess.run(self.logits, {self.X: X_test_batch,
+                                                     self.batch_size: len(X_test_batch),
+                                                     self.keep_prob: 1.0,
+                                                     self.train_flag: False})
             batch_pred_list.append(batch_pred)
         return np.vstack(batch_pred_list)
     # end method predict

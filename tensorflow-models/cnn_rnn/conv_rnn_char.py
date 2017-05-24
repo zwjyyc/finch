@@ -76,10 +76,13 @@ class ConvLSTMChar:
         with tf.variable_scope('main_model'):
             self.add_input_layer()       
             self.add_word_embedding()
+
             self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
             self.add_maxpool(self.pool_size)
+
             self.add_lstm_cells()
             self.add_dynamic_rnn()
+            
             self.add_output_layer()
             self.add_backward_path()
     # end method build_graph
@@ -204,7 +207,7 @@ class ConvLSTMChar:
     # end method build_vocab
 
 
-    def fit_text(self, text_iter_step=1, temperature=1.0, n_gen=100, n_epoch=20, batch_size=128,
+    def fit_text(self, text_iter_step=1, temperature=1.0, n_gen=100, n_epoch=50, batch_size=128,
                  en_exp_decay=True, en_shuffle=True):
         
         window = self.seq_len + 1
@@ -230,13 +233,17 @@ class ConvLSTMChar:
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, int(len(X)/batch_size))
                 if (self.stateful) and (len(X_batch) == batch_size):
                     _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
-                                                        {self.X:X_batch, self.Y:Y_batch,
-                                                         self.init_state:next_state, self.train_flag:True,
-                                                         self.batch_size:len(X_batch), self.lr:lr})
+                                                        {self.X: X_batch, self.Y: Y_batch,
+                                                         self.init_state: next_state,
+                                                         self.train_flag: True,
+                                                         self.batch_size: len(X_batch),
+                                                         self.lr: lr})
                 else:
                     _, loss = self.sess.run([self.train_op, self.loss],
-                                            {self.X:X_batch, self.Y:Y_batch, self.train_flag:True,
-                                             self.batch_size:len(X_batch), self.lr:lr})
+                                            {self.X: X_batch, self.Y: Y_batch,
+                                             self.train_flag: True,
+                                             self.batch_size: len(X_batch),
+                                             self.lr: lr})
                 if batch_count % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
                             % (epoch+1, n_epoch, batch_count, (len(X)/batch_size), loss, lr))
@@ -254,7 +261,7 @@ class ConvLSTMChar:
     def sample(self, prime_text, temperature, n_gen):
         out_sentence = 'IN: ' + prime_text + '\nOUT: ' + prime_text
         x = [self.char2idx[char] for char in list(prime_text)]
-        next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:1})
+        next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: 1})
         for _ in range(n_gen):
             softmax_out, next_state = self.sess.run([self.softmax_out, self.final_state],
                                                     {self.X: np.atleast_2d(x),

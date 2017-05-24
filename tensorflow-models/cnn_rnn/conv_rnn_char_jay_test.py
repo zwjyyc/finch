@@ -6,4 +6,4 @@ if __name__ == '__main__':
         text = f.read()
     
     model = ConvLSTMChar(text)
-    log = model.fit_text(n_epoch=50)
+    log = model.fit_text()

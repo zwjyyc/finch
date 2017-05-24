@@ -70,7 +70,7 @@ class HighwayClassifier:
         H = tf.nn.relu(tf.matmul(X, W) + b, name="activation")
         C = tf.subtract(1.0, T, name="carry_gate")
 
-        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C), "y")
+        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C), "y") # y = (H * T) + (x * C)
         Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag)
         self.current_layer = Y
     # end add_highway

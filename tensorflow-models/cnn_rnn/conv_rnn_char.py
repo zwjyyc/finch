@@ -9,7 +9,7 @@ import collections
 
 class ConvLSTMChar:
     def __init__(self, text, seq_len=50, min_freq=None, stopwords=None, embedding_dims=128,
-                 cell_size=128, n_layer=3, clip_grad=5.0, stateful=False,
+                 cell_size=64, n_layer=3, clip_grad=5.0, stateful=False,
                  n_filters=64, pool_size=2, kernel_size=5, padding='VALID',
                  sess=tf.Session()):
         """
@@ -93,7 +93,6 @@ class ConvLSTMChar:
         self.Y = tf.placeholder(tf.int32, [None, self.vocab_size]) 
         self.batch_size = tf.placeholder(tf.int32)
         self.lr = tf.placeholder(tf.float32)
-        self.train_flag = tf.placeholder(tf.bool)
         self.current_layer = self.X
     # end method add_input_layer
 
@@ -111,7 +110,6 @@ class ConvLSTMChar:
         b = tf.get_variable(name+'_b', filter_shape[-1], tf.float32, tf.constant_initializer(0.1))
         conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
-        conv = tf.contrib.layers.batch_norm(conv, is_training=self.train_flag)
         conv = tf.nn.relu(conv)
         self.current_layer = conv
         if self.padding == 'VALID':
@@ -160,13 +158,10 @@ class ConvLSTMChar:
 
     def add_backward_path(self):
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        # batch_norm requires update_ops
-        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-        with tf.control_dependencies(update_ops):
-            # gradient clipping
-            gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), self.clip_grad)
-            optimizer = tf.train.AdamOptimizer(self.lr)
-            self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
+        # gradient clipping
+        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), self.clip_grad)
+        optimizer = tf.train.AdamOptimizer(self.lr)
+        self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
     # end method add_backward_path
 
 
@@ -232,13 +227,11 @@ class ConvLSTMChar:
                     _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                                                         {self.X: X_batch, self.Y: Y_batch,
                                                          self.init_state: next_state,
-                                                         self.train_flag: True,
                                                          self.batch_size: len(X_batch),
                                                          self.lr: lr})
                 else:
                     _, loss = self.sess.run([self.train_op, self.loss],
                                             {self.X: X_batch, self.Y: Y_batch,
-                                             self.train_flag: True,
                                              self.batch_size: len(X_batch),
                                              self.lr: lr})
                 if batch_count % 10 == 0:
@@ -271,8 +264,7 @@ class ConvLSTMChar:
             softmax_out, next_state = self.sess.run([self.softmax_out, self.final_state],
                                                     {self.X: np.atleast_2d(x),
                                                      self.init_state: next_state,
-                                                     self.batch_size: 1,
-                                                     self.train_flag: False})
+                                                     self.batch_size: 1})
             idx = self.infer_idx(softmax_out[0], temperature)
             if idx == 0:
                 break

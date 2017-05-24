@@ -10,7 +10,7 @@ if __name__ == '__main__':
     Y_train = tf.contrib.keras.utils.to_categorical(y_train)
     Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
-    clf = MLPClassifier(28*28, 10)
+    clf = MLPClassifier(28*28, 10, [100, 200, 100])
     log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
 

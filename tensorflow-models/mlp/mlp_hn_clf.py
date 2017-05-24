@@ -29,8 +29,8 @@ class HighwayClassifier:
         self.add_input_layer()
         self.add_fc(self.highway_units)
 
-        for _ in range(self.n_highway):
-            self.add_highway()
+        for n in range(self.n_highway):
+            self.add_highway(n)
         
         self.add_output_layer()
         self.add_backward_path()
@@ -56,14 +56,16 @@ class HighwayClassifier:
     # end add_fc
 
 
-    def add_highway(self, carry_bias=-1.0):
+    def add_highway(self, n, carry_bias=-1.0):
         size = self.highway_units
         X = self.current_layer
 
-        W_T = tf.Variable(tf.truncated_normal([size, size], stddev=0.1), name="weight_transform")
-        b_T = tf.Variable(tf.constant(carry_bias, shape=[size]), name="bias_transform")
-        W = tf.Variable(tf.truncated_normal([size, size], stddev=0.1), name="weight")
-        b = tf.Variable(tf.constant(0.1, shape=[size]), name="bias")
+        W_T = tf.get_variable(str(n)+'_wt', [size,size], tf.float32,
+                              tf.contrib.layers.variance_scaling_initializer())
+        b_T = tf.get_variable(str(n)+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
+        W = tf.get_variable(str(n)+'_w', [size,size], tf.float32,
+                            tf.contrib.layers.variance_scaling_initializer())
+        b = tf.get_variable(str(n)+'_b', [size], tf.float32, tf.constant_initializer(0.1))
 
         T = tf.sigmoid(tf.matmul(X, W_T) + b_T, name="transform_gate")
         H = tf.nn.relu(tf.matmul(X, W) + b, name="activation")
@@ -94,7 +96,8 @@ class HighwayClassifier:
 
 
     def fc(self, name, X, fan_in, fan_out):
-        W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32, tf.contrib.layers.variance_scaling_initializer())
+        W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32,
+                            tf.contrib.layers.variance_scaling_initializer())
         b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
         Y = tf.nn.bias_add(tf.matmul(X, W), b)
         Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag)

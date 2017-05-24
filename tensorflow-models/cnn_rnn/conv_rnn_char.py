@@ -9,7 +9,7 @@ import collections
 
 class ConvLSTMChar:
     def __init__(self, text, seq_len=50, min_freq=None, stopwords=None, embedding_dims=128,
-                 cell_size=64, n_layer=3, clip_grad=5.0, stateful=False,
+                 cell_size=128, n_layer=3, clip_grad=5.0, stateful=False,
                  n_filters=64, pool_size=2, kernel_size=5, padding='VALID',
                  sess=tf.Session()):
         """
@@ -216,9 +216,6 @@ class ConvLSTMChar:
         X = X[:, :-1]
         Y = tf.contrib.keras.utils.to_categorical(Y)
         print('X shape:', X.shape, '|', 'Y shape:', Y.shape)
-
-        random_start = np.random.randint(0, len(self.text)-1-self.seq_len)
-        prime_texts = [self.text[random_start: random_start + self.seq_len]]
         
         log = {'loss': []}
         global_step = 0
@@ -248,8 +245,7 @@ class ConvLSTMChar:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
                             % (epoch+1, n_epoch, batch_count, (len(X)/batch_size), loss, lr))
                 if batch_count % 100 == 0:
-                    for prime_text in prime_texts:
-                        print(self.sample(prime_text, temperature, n_gen), end='\n\n')
+                    print(self.sample(temperature, n_gen), end='\n\n')
                 log['loss'].append(loss)
                 batch_count += 1
                 global_step += 1
@@ -258,9 +254,18 @@ class ConvLSTMChar:
     # end method fit
 
 
-    def sample(self, prime_text, temperature, n_gen):
+    def sample(self, temperature, n_gen):
+        while True:
+            random_start = np.random.randint(0, len(self.text)-1-self.seq_len)
+            prime_text = self.text[random_start: random_start + self.seq_len]
+            try:
+                x = [self.char2idx[char] for char in list(prime_text)]
+            except:
+                continue
+            else:
+                break
+        
         out_sentence = 'IN: ' + prime_text + '\nOUT: ' + prime_text
-        x = [self.char2idx[char] for char in list(prime_text)]
         next_state = self.sess.run(self.init_state, feed_dict={self.batch_size: 1})
         for _ in range(n_gen):
             softmax_out, next_state = self.sess.run([self.softmax_out, self.final_state],

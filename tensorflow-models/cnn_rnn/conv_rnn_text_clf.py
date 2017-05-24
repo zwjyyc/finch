@@ -4,7 +4,7 @@ import math
 import sklearn
 
 
-class ConvRNNClassifier:
+class ConvLSTMClassifier:
     def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(),
                  embedding_dims=128, n_filters=64, kernel_size=5, pool_size=4, padding='VALID',
                  cell_size=128):
@@ -228,7 +228,7 @@ class ConvRNNClassifier:
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
             max_lr = 0.003
-            min_lr = 0.001
+            min_lr = 0.0005
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:

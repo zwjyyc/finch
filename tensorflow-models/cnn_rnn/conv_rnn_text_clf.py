@@ -51,6 +51,7 @@ class ConvLSTMClassifier:
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
         self.add_maxpool(self.pool_size)
+        self.add_highway('highway')
         self.add_lstm_cells()
         self.add_dynamic_rnn()
         self.add_output_layer()   
@@ -96,9 +97,26 @@ class ConvLSTMClassifier:
         conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
         conv = tf.squeeze(conv)
         self.current_seq_len = int(self.current_seq_len / k)
-        # reshape to produce explicit tensor shape, because rnn will reject unknown shape
-        self.current_layer = tf.reshape(conv, [self.batch_size, self.current_seq_len, self.n_filters])
+        self.current_layer = tf.reshape(conv, [self.batch_size, self.current_seq_len * self.n_filters])
     # end method add_maxpool
+
+
+    def add_highway(self, name, carry_bias=-1.0):
+        X = self.current_layer
+        size = self.current_seq_len * self.n_filters
+
+        W_T = self._W(name+'_wt', [size, size])
+        b_T = tf.get_variable(name+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
+        W = self._W(name+'_w', [size,size])
+        b = self._b(name+'_b', [size])
+
+        T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
+        H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
+        C = tf.subtract(1.0, T, name="carry_gate")
+
+        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C))
+        self.current_layer = tf.reshape(Y, [self.batch_size, self.current_seq_len, self.n_filters])
+    # end method add_highway
 
 
     def add_lstm_cells(self):

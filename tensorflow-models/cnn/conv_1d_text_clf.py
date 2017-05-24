@@ -6,7 +6,7 @@ import sklearn
 
 class Conv1DClassifier:
     def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(),
-                 embedding_dims=50, n_filters=250, kernel_size=3, padding='VALID', hidden_dims=250):
+                 embedding_dims=50, n_filters=250, kernel_size=3, padding='VALID'):
         """
         Parameters:
         -----------
@@ -33,7 +33,6 @@ class Conv1DClassifier:
         self.n_filters = n_filters
         self.kernel_size = kernel_size
         self.padding = padding
-        self.hidden_dims = hidden_dims
         self.n_out = n_out
         self.sess = sess
         self.current_layer = None
@@ -46,7 +45,6 @@ class Conv1DClassifier:
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
         self.add_global_maxpool()
-        # self.add_fc('fc', self.hidden_dims)
         self.add_highway('highway')
         self.add_output_layer()   
         self.add_backward_path()
@@ -92,14 +90,14 @@ class Conv1DClassifier:
     # end method add_global_maxpool_layer
 
 
-    def add_highway(self, name, carry_bias=-1.0, en_batch_norm=None):
+    def add_highway(self, name, carry_bias=-1.0):
         X = self.current_layer
         size = self.n_filters
 
-        W_T = tf.get_variable(name+'_wt', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
+        W_T = self._W(name+'_wt', [size, size])
         b_T = tf.get_variable(name+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
-        W = tf.get_variable(name+'_w', [size,size], tf.float32, tf.truncated_normal_initializer(stddev=0.1))
-        b = tf.get_variable(name+'_b', [size], tf.float32, tf.constant_initializer(0.1))
+        W = self._W(name+'_w', [size,size])
+        b = self._b(name+'_b', [size])
 
         T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
         H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
@@ -108,17 +106,6 @@ class Conv1DClassifier:
         Y = tf.add(tf.multiply(H, T), tf.multiply(X, C))
         self.current_layer = tf.reshape(Y, [-1, size])
     # end method add_highway
-
-
-    def add_fc(self, name, out_dim):
-        in_dim = self.n_filters
-        W = self._W(name+'_w', [in_dim, out_dim])
-        b = self._b(name+'_b', [out_dim])
-        fc = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
-        fc = tf.nn.dropout(fc, self.keep_prob)
-        fc = tf.nn.relu(fc)
-        self.current_layer = fc
-    # end method add_fc_layer
 
 
     def add_output_layer(self):

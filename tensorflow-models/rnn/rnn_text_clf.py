@@ -5,7 +5,7 @@ import math
 
 
 class RNNTextClassifier:
-    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, clip_norm=5.0,
+    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, clip_norm=True,
                  stateful=False, sess=tf.Session()):
         """
         Parameters:
@@ -50,57 +50,57 @@ class RNNTextClassifier:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.W = tf.get_variable('W', [self.cell_size, self.n_out], tf.float32,
-                                 tf.contrib.layers.variance_scaling_initializer())
-        self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
-        self.in_keep_prob = tf.placeholder(tf.float32)
-        self.out_keep_prob = tf.placeholder(tf.float32)
+        self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
 
 
     def add_word_embedding_layer(self):
+        X = self.current_layer
         E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_normal_initializer())
-        E = tf.nn.embedding_lookup(E, self.current_layer)
-        self.current_layer = E
+        Y = tf.nn.embedding_lookup(E, X)
+        self.current_layer = Y
     # end method add_word_embedding_layer
 
 
     def add_lstm_cells(self):
         cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
-        cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
+        cell = tf.contrib.rnn.DropoutWrapper(cell, self.rnn_keep_prob)
         self.cell = cell
     # end method add_rnn_cells
 
 
     def add_dynamic_rnn(self):
+        X = self.current_layer
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)        
-        self.current_layer, self.final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
-                                                                 initial_state=self.init_state,
-                                                                 time_major=False)
+        Y, self.final_state = tf.nn.dynamic_rnn(self.cell, X, initial_state=self.init_state, time_major=False)
+        self.current_layer = Y
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        time_major = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
-        self.logits = tf.nn.bias_add(tf.matmul(time_major[-1], self.W), self.b)
+        X = self.current_layer
+        time_major = tf.unstack(tf.transpose(X, [1,0,2]))
+        Y = tf.layers.dense(time_major[-1], self.n_out)
+        self.logits = Y
     # end method add_output_layer
 
 
     def add_backward_path(self):
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
-        # gradient clipping
-        gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), self.clip_norm)
-        optimizer = tf.train.AdamOptimizer(self.lr)
-        self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
+        if self.clip_norm is not None:
+            gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), self.clip_norm)
+            optimizer = tf.train.AdamOptimizer(self.lr)
+            self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
+        else:
+            self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
-            rnn_keep_prob=(1.0,1.0) ):
+            rnn_keep_prob=1.0):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -122,15 +122,13 @@ class RNNTextClassifier:
                     _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
                                                              {self.X:X_batch, self.Y:Y_batch,
                                                               self.batch_size:batch_size,
-                                                              self.in_keep_prob:rnn_keep_prob[0],
-                                                              self.out_keep_prob:rnn_keep_prob[1],
+                                                              self.rnn_keep_prob:rnn_keep_prob,
                                                               self.lr:lr, self.init_state:next_state})
                 else:             
                     _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                                  {self.X:X_batch, self.Y:Y_batch,
                                                   self.batch_size:len(X_batch), self.lr:lr,
-                                                  self.in_keep_prob:rnn_keep_prob[0],
-                                                  self.out_keep_prob:rnn_keep_prob[1]})
+                                                  self.rnn_keep_prob:rnn_keep_prob})
                 local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
@@ -146,13 +144,13 @@ class RNNTextClassifier:
                         v_loss, v_acc, next_state = self.sess.run([self.loss, self.acc, self.final_state],
                                                                   {self.X:X_test_batch, self.Y:Y_test_batch,
                                                                    self.batch_size:batch_size,
-                                                                   self.in_keep_prob:1.0, self.out_keep_prob:1.0,
+                                                                   self.rnn_keep_prob:1.0,
                                                                    self.init_state:next_state})
                     else:
                         v_loss, v_acc = self.sess.run([self.loss, self.acc],
                                                       {self.X:X_test_batch, self.Y:Y_test_batch,
                                                        self.batch_size:len(X_test_batch),
-                                                       self.in_keep_prob:1.0, self.out_keep_prob:1.0})
+                                                       self.rnn_keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -184,12 +182,12 @@ class RNNTextClassifier:
             if (self.stateful) and (len(X_test_batch) == batch_size):
                 batch_pred, next_state = self.sess.run([self.logits, self.final_state], 
                                                        {self.X:X_test_batch, self.batch_size:batch_size,
-                                                        self.in_keep_prob:1.0, self.out_keep_prob:1.0,
+                                                        self.rnn_keep_prob:1.0,
                                                         self.init_state:next_state})
             else:
                 batch_pred = self.sess.run(self.logits,
                                           {self.X:X_test_batch, self.batch_size:len(X_test_batch),
-                                           self.in_keep_prob:1.0, self.out_keep_prob:1.0})
+                                           self.rnn_keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.vstack(batch_pred_list)
     # end method predict

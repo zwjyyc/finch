@@ -19,7 +19,7 @@ if __name__ == '__main__':
     Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
     clf = ConvLSTMClassifier(maxlen, max_features, n_out)
-    log = clf.fit(X_train, Y_train, batch_size=32, n_epoch=2, val_data=(X_test,Y_test))
+    log = clf.fit(X_train, Y_train, batch_size=32, n_epoch=3, keep_prob=0.8, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
 
     final_acc = np.equal(np.argmax(pred,1), np.argmax(Y_test,1)).astype(float).mean()

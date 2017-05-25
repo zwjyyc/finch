@@ -51,7 +51,7 @@ class ConvLSTMClassifier:
         self.add_word_embedding()
 
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-        self.add_maxpool(self.pool_size)
+        self.add_pooling(self.pool_size)
 
         self.add_lstm_cells()
         self.add_dynamic_rnn()
@@ -72,32 +72,37 @@ class ConvLSTMClassifier:
 
 
     def add_word_embedding(self):
-        E = tf.get_variable('E', [self.vocab_size,self.embedding_dims], tf.float32, tf.random_normal_initializer())
-        E = tf.nn.embedding_lookup(E, self.current_layer)
-        self.current_layer = tf.nn.dropout(E, self.keep_prob)
+        X = self.current_layer
+        E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_normal_initializer())
+        Y = tf.nn.embedding_lookup(E, X)
+        Y = tf.nn.dropout(Y, self.keep_prob)
+        self.current_layer = Y
     # end method add_word_embedding
 
 
     def add_conv1d(self, name, filter_shape, stride=1):
+        X = self.current_layer
         W = self.call_W(name+'_w', filter_shape)
         b = self.call_b(name+'_b', [filter_shape[-1]])                                
-        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
-        conv = tf.nn.bias_add(conv, b)
-        conv = tf.nn.relu(conv)
-        self.current_layer = conv
+        Y = tf.nn.conv1d(X, W, stride=stride, padding=self.padding)
+        Y = tf.nn.bias_add(Y, b)
+        Y = tf.nn.relu(Y)
         if self.padding == 'VALID':
-            self.current_seq_len = int((self.current_seq_len-self.kernel_size+1) / stride)
+            self.current_seq_len = int((self.current_seq_len - self.kernel_size + 1) / stride)
         if self.padding == 'SAME':
             self.current_seq_len = int(self.current_seq_len / stride)
+        self.current_layer = Y
     # end method add_conv1d
 
 
-    def add_maxpool(self, k=2):
-        conv = tf.expand_dims(self.current_layer, 1)
-        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
-        conv = tf.squeeze(conv)
+    def add_pooling(self, k=2):
+        X = self.current_layer
+        Y = tf.expand_dims(X, 1)
+        Y = tf.nn.avg_pool(Y, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
+        Y = tf.squeeze(Y)
         self.current_seq_len = int(self.current_seq_len / k)
-        self.current_layer = tf.reshape(conv, [self.batch_size, self.current_seq_len, self.n_filters])
+        Y = tf.reshape(Y, [self.batch_size, self.current_seq_len, self.n_filters])
+        self.current_layer = Y
     # end method add_maxpool
 
 
@@ -107,19 +112,18 @@ class ConvLSTMClassifier:
 
 
     def add_dynamic_rnn(self):
+        X = self.current_layer
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)              
-        self.current_layer, final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
-                                                            initial_state=self.init_state,
-                                                            time_major=False)
+        Y, final_state = tf.nn.dynamic_rnn(self.cell, X, initial_state=self.init_state, time_major=False)
+        self.current_layer = Y
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        time_major = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
-        W = self.call_W('logits_w', [self.cell_size, self.n_out])
-        b = self.call_b('logits_b', [self.n_out])
-        self.logits = tf.nn.bias_add(tf.matmul(time_major[-1], W), b)
+        X = self.current_layer
+        time_major = tf.unstack(tf.transpose(X, [1,0,2]))
+        Y = tf.layers.dense(time_major[-1], self.n_out)
+        self.logits = Y
     # end method add_output_layer
 
 
@@ -220,8 +224,8 @@ class ConvLSTMClassifier:
 
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
-            max_lr = 0.003
-            min_lr = 0.0005
+            max_lr = 0.005
+            min_lr = 0.001
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:

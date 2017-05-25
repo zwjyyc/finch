@@ -46,7 +46,7 @@ class Conv1DClassifier:
         self.add_word_embedding()
         self.add_conv1d('conv1', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
         self.add_conv1d_highway('conv2', filter_shape=[self.kernel_size, self.n_filters, self.n_filters])
-        self.add_global_maxpool()
+        self.add_global_pooling()
         self.add_highway('highway')
         self.add_output_layer()   
         self.add_backward_path()
@@ -95,15 +95,15 @@ class Conv1DClassifier:
         T = tf.sigmoid(tf.nn.conv1d(X, W_T, stride, 'SAME') + b_T, name='transform_gate')
         C = tf.subtract(1.0, T, name="carry_gate")
 
-        self.current_layer = tf.add(tf.multiply(H, T), tf.multiply(X, C), 'y') # y = (H * T) + (x * C)
+        self.current_layer = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # y = (H * T) + (x * C)
         self.current_seq_len = int(self.current_seq_len / stride)
     # end method add_conv1d_highway
 
 
-    def add_global_maxpool(self):
+    def add_global_pooling(self):
         k = self.current_seq_len
         conv = tf.expand_dims(self.current_layer, 1)
-        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
+        conv = tf.nn.avg_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
         conv = tf.squeeze(conv)
         self.current_layer = conv
     # end method add_global_maxpool_layer
@@ -152,7 +152,7 @@ class Conv1DClassifier:
     # end method _b
 
 
-    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True,
+    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, keep_prob=1.0, en_exp_decay=True,
             en_shuffle=True):
         if val_data is None:
             print("Train %d samples" % len(X))
@@ -227,8 +227,8 @@ class Conv1DClassifier:
 
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
-            max_lr = 0.003
-            min_lr = 0.0005
+            max_lr = 0.005
+            min_lr = 0.001
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:

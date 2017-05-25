@@ -19,7 +19,7 @@ if __name__ == '__main__':
     Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
     clf = Conv1DClassifier(maxlen, max_features, n_out)
-    log = clf.fit(X_train, Y_train, n_epoch=5, batch_size=32, keep_prob=0.8, en_exp_decay=True,
+    log = clf.fit(X_train, Y_train, n_epoch=5, batch_size=32, keep_prob=0.9, en_exp_decay=False,
                   val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
 

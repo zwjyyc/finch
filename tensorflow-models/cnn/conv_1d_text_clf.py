@@ -44,8 +44,8 @@ class Conv1DClassifier:
         self.add_input_layer()
         self.add_word_embedding()
         self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-        self.add_global_maxpool()
-        self.add_highway('highway')
+        self.add_global_pooling()
+        self.add_fc()
         self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
@@ -61,58 +61,53 @@ class Conv1DClassifier:
 
 
     def add_word_embedding(self):
+        X = self.current_layer
         E = tf.get_variable('E', [self.vocab_size,self.embedding_dims], tf.float32, tf.random_normal_initializer())
-        E = tf.nn.embedding_lookup(E, self.current_layer)
-        self.current_layer = tf.nn.dropout(E, self.keep_prob)
+        Y = tf.nn.embedding_lookup(E, X)
+        Y = tf.nn.dropout(Y, self.keep_prob)
+        self.current_layer = Y
     # end method add_word_embedding_layer
 
 
     def add_conv1d(self, name, filter_shape, stride=1):
+        X = self.current_layer
         W = self.call_W(name+'_w', filter_shape)
         b = self.call_b(name+'_b', [filter_shape[-1]])
-        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
-        conv = tf.nn.bias_add(conv, b)
-        conv = tf.nn.relu(conv)
-        self.current_layer = conv
+        Y = tf.nn.conv1d(X, W, stride=stride, padding=self.padding)
+        Y = tf.nn.bias_add(Y, b)
+        Y = tf.nn.relu(Y)
         if self.padding == 'VALID':
             self.current_seq_len = int(self.seq_len - self.kernel_size + 1 / stride)
         if self.padding == 'SAME':
             self.current_seq_len = int(self.seq_len / stride)
+        self.current_layer = Y
     # end method add_conv1d_layer
 
 
-    def add_global_maxpool(self):
+    def add_global_pooling(self):
+        X = self.current_layer
         k = self.current_seq_len
-        conv = tf.expand_dims(self.current_layer, 1)
-        conv = tf.nn.max_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
-        conv = tf.squeeze(conv)
-        self.current_layer = conv
+        Y = tf.expand_dims(X, 1)
+        Y = tf.nn.avg_pool(Y, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
+        Y = tf.squeeze(Y)
+        Y = tf.reshape(Y, [-1, self.n_filters])
+        self.current_layer = Y
     # end method add_global_maxpool_layer
 
 
-    def add_highway(self, name, carry_bias=-1.0):
+    def add_fc(self):
         X = self.current_layer
-        size = self.n_filters
-
-        W_T = self.call_W(name+'_W_T', [size, size])
-        b_T = tf.get_variable(name+'_b_T', [size], tf.float32, tf.constant_initializer(carry_bias))
-        W = self.call_W(name+'_W', [size,size])
-        b = self.call_b(name+'_b', [size])
-
-        T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
-        H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
-        C = tf.subtract(1.0, T, name="carry_gate")
-
-        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C))
-        self.current_layer = tf.reshape(Y, [-1, size])
-    # end method add_highway
+        Y = tf.layers.dense(X, self.n_filters)
+        Y = tf.nn.dropout(Y, self.keep_prob)
+        Y = tf.nn.relu(Y)
+        self.current_layer = Y
+    # end method add_fc
 
 
     def add_output_layer(self):
-        in_dim = self.current_layer.get_shape()[1]
-        W = self.call_W('logits_w', [in_dim, self.n_out])
-        b = self.call_b('logits_b', [self.n_out])
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
+        X = self.current_layer
+        Y = tf.layers.dense(X, self.n_out)
+        self.logits = Y
     # end method add_output_layer
 
 
@@ -208,12 +203,12 @@ class Conv1DClassifier:
 
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
-            max_lr = 0.003
-            min_lr = 0.0005
+            max_lr = 0.005
+            min_lr = 0.001
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:
-            lr = 0.001
+            lr = 0.005
         return lr
     # end method adjust_lr
 

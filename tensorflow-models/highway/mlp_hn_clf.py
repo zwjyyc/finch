@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
+import sklearn
 
 
 class HighwayClassifier:
@@ -41,16 +42,13 @@ class HighwayClassifier:
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
-        self.train_flag = tf.placeholder(tf.bool)
         self.lr = tf.placeholder(tf.float32)
         self.current_layer = self.X
     # end method add_input_layer
 
 
     def add_fc(self, out_dim):
-        Y = tf.layers.dense(self.current_layer, out_dim)
-        Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag)
-        Y = tf.nn.relu(Y)
+        Y = tf.layers.dense(self.current_layer, out_dim, tf.nn.relu)
         Y = tf.nn.dropout(Y, self.keep_prob)
         self.current_layer = Y
     # end add_fc
@@ -70,22 +68,18 @@ class HighwayClassifier:
         C = tf.subtract(1.0, T, name="carry_gate")
 
         Y = tf.add(tf.multiply(H, T), tf.multiply(X, C), "y") # y = (H * T) + (x * C)
-        Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag)
         self.current_layer = Y
     # end add_highway
 
 
     def add_output_layer(self):
-        W = self.call_W('logits_w', [self.highway_units, self.n_out])
-        b = self.call_b('logits_b', [self.n_out])
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
+        self.logits = tf.layers.dense(self.current_layer, self.n_out)
     # end method add_output_layer
 
 
     def add_backward_path(self):
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
-        # batch_norm requires update_ops
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
             self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
@@ -102,7 +96,8 @@ class HighwayClassifier:
     # end method _b
 
 
-    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, keep_prob=1.0):
+    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True,
+            keep_prob=1.0):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -112,12 +107,15 @@ class HighwayClassifier:
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
+            if en_shuffle:
+                X, Y = sklearn.utils.shuffle(X, Y)
             local_step = 1
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                             {self.X: X_batch, self.Y: Y_batch, self.lr: lr,
-                                              self.keep_prob:keep_prob, self.train_flag:True})
+                                             {self.X: X_batch, self.Y: Y_batch,
+                                              self.lr: lr,
+                                              self.keep_prob: keep_prob})
                 local_step += 1
                 global_step += 1
                 if local_step % 100 == 0:
@@ -130,7 +128,8 @@ class HighwayClassifier:
                                                     self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
                                                   {self.X:X_test_batch, self.Y:Y_test_batch,
-                                                   self.keep_prob:1.0, self.train_flag:False})
+                                                   self.lr: lr,
+                                                   self.keep_prob: 1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -157,8 +156,8 @@ class HighwayClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.logits, {self.X:X_test_batch, self.keep_prob:1.0,
-                                                     self.train_flag:False})
+            batch_pred = self.sess.run(self.logits, {self.X: X_test_batch,
+                                                     self.keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.vstack(batch_pred_list)
     # end method predict
@@ -177,7 +176,7 @@ class HighwayClassifier:
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:
-            lr = 0.001
+            lr = 0.003
         return lr
     # end method adjust_lr
 

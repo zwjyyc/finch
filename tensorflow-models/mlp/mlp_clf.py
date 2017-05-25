@@ -37,9 +37,6 @@ class MLPClassifier:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.W = tf.get_variable('logits_w', [self.hidden_unit_list[-1], self.n_out], tf.float32,
-                                  tf.contrib.layers.variance_scaling_initializer())
-        self.b = tf.get_variable('logits_b', [self.n_out], tf.float32, tf.constant_initializer(0.1))
         self.keep_prob = tf.placeholder(tf.float32)
         self.train_flag = tf.placeholder(tf.bool)
         self.current_layer = self.X
@@ -56,7 +53,9 @@ class MLPClassifier:
 
 
     def add_output_layer(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self.W), self.b)
+        W = self.call_W('logits_w', [self.hidden_unit_list[-1], self.n_out])
+        b = self.call_b('logits_b', [self.n_out])
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
     # end method add_output_layer
 
 
@@ -72,14 +71,24 @@ class MLPClassifier:
 
 
     def fc(self, name, X, fan_in, fan_out):
-        W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32, tf.contrib.layers.variance_scaling_initializer())
-        b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
+        W = self.call_W(name+'_w', [fan_in,fan_out])
+        b = self.call_b(name+'_b', [fan_out])
         Y = tf.nn.bias_add(tf.matmul(X, W), b)
         Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag)
         Y = tf.nn.relu(Y)
         Y = tf.nn.dropout(Y, self.keep_prob)
         return Y
     # end method fc (fully-connected)
+
+
+    def call_W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+    # end method _W
+
+
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
+    # end method _b
 
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, keep_prob=1.0):

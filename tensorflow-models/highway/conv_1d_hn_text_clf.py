@@ -6,7 +6,7 @@ import sklearn
 
 class Conv1DClassifier:
     def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(),
-                 embedding_dims=128, n_filters=128, kernel_size=3, padding='SAME'):
+                 embedding_dims=50, n_filters=250, kernel_size=3, padding='VALID'):
         """
         Parameters:
         -----------
@@ -36,6 +36,7 @@ class Conv1DClassifier:
         self.n_out = n_out
         self.sess = sess
         self.current_layer = None
+        self.current_seq_len = self.seq_len
         self.build_graph()
     # end constructor
  
@@ -43,7 +44,8 @@ class Conv1DClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding()
-        self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
+        self.add_conv1d('conv1', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
+        self.add_conv1d_highway('conv2', filter_shape=[self.kernel_size, self.n_filters, self.n_filters])
         self.add_global_maxpool()
         self.add_highway('highway')
         self.add_output_layer()   
@@ -67,23 +69,35 @@ class Conv1DClassifier:
     # end method add_word_embedding_layer
 
 
-    def add_conv1d(self, name, filter_shape, stride=1, carry_bias=-1.0):
-        x = self.current_layer
-        W = self._W(name+'_w', filter_shape)
-        b = tf.get_variable(name+'_b', filter_shape[-1], tf.float32, tf.constant_initializer(carry_bias))
-        W_T = self._W(name+'_wt', filter_shape)
-        b_T = self._b(name+'_bt', [filter_shape[-1]])\
+    def add_conv1d(self, name, filter_shape, stride=1):
+        W = self.call_W(name+'_w', filter_shape)
+        b = self.call_b(name+'_b', [filter_shape[-1]])
+        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
+        conv = tf.nn.bias_add(conv, b)
+        conv = tf.nn.relu(conv)
+        self.current_layer = conv
+        if self.padding == 'VALID':
+            self.current_seq_len = int(self.current_seq_len - self.kernel_size + 1 / stride)
+        if self.padding == 'SAME':
+            self.current_seq_len = int(self.current_seq_len / stride)
+    # end method add_conv1d_layer
 
-        H = tf.nn.relu(tf.nn.conv1d(x, W, stride, self.padding) + b, name='activation')
-        T = tf.sigmoid(tf.nn.conv1d(x, W_T, stride, self.padding) + b_T, name='transform_gate')
+
+    def add_conv1d_highway(self, name, filter_shape, stride=1, carry_bias=-1.0):
+        X = self.current_layer
+
+        W = self.call_W(name+'_w', filter_shape)
+        b = tf.get_variable(name+'_b', filter_shape[-1], tf.float32, tf.constant_initializer(carry_bias))
+        W_T = self.call_W(name+'_wt', filter_shape)
+        b_T = self.call_b(name+'_bt', [filter_shape[-1]])
+
+        H = tf.nn.relu(tf.nn.conv1d(X, W, stride, 'SAME') + b, name='activation')
+        T = tf.sigmoid(tf.nn.conv1d(X, W_T, stride, 'SAME') + b_T, name='transform_gate')
         C = tf.subtract(1.0, T, name="carry_gate")
 
-        self.current_layer = tf.add(tf.multiply(H, T), tf.multiply(x, C), 'y')
-        if self.padding == 'VALID':
-            self.current_seq_len = int(self.seq_len - self.kernel_size + 1 / stride)
-        if self.padding == 'SAME':
-            self.current_seq_len = int(self.seq_len / stride)
-    # end method add_conv1d_layer
+        self.current_layer = tf.add(tf.multiply(H, T), tf.multiply(X, C), 'y') # y = (H * T) + (x * C)
+        self.current_seq_len = int(self.current_seq_len / stride)
+    # end method add_conv1d_highway
 
 
     def add_global_maxpool(self):
@@ -99,10 +113,10 @@ class Conv1DClassifier:
         X = self.current_layer
         size = self.n_filters
 
-        W_T = self._W(name+'_wt', [size, size])
+        W_T = self.call_W(name+'_wt', [size, size])
         b_T = tf.get_variable(name+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
-        W = self._W(name+'_w', [size,size])
-        b = self._b(name+'_b', [size])
+        W = self.call_W(name+'_w', [size,size])
+        b = self.call_b(name+'_b', [size])
 
         T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
         H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
@@ -114,10 +128,10 @@ class Conv1DClassifier:
 
 
     def add_output_layer(self):
-        in_dim = self.current_layer.get_shape().as_list()[1]
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer,
-                                               self._W('logits_w', [in_dim,self.n_out])),
-                                               self._b('logits_b', [self.n_out]))
+        in_dim = self.current_layer.get_shape()[1]
+        W = self.call_W('logits_w', [in_dim, self.n_out])
+        b = self.call_b('logits_b', [self.n_out])
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
     # end method add_output_layer
 
 
@@ -128,13 +142,13 @@ class Conv1DClassifier:
     # end method add_backward_path
 
 
-    def _W(self, name, shape):
+    def call_W(self, name, shape):
         return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
     # end method _W
 
 
-    def _b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.1))
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
     # end method _b
 
 
@@ -213,8 +227,8 @@ class Conv1DClassifier:
 
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
-            max_lr = 0.005
-            min_lr = 0.001
+            max_lr = 0.003
+            min_lr = 0.0005
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:

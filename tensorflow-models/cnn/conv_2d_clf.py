@@ -62,8 +62,8 @@ class Conv2DClassifier:
 
 
     def add_conv(self, name, filter_shape, strides=1):
-        W = self._W(name+'_w', filter_shape)
-        b = self._b(name+'_b', [filter_shape[-1]])
+        W = self.call_W(name+'_w', filter_shape)
+        b = self.call_b(name+'_b', [filter_shape[-1]])
         conv = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
         conv = tf.layers.batch_normalization(conv, training=self.train_flag)
@@ -89,8 +89,8 @@ class Conv2DClassifier:
 
     def add_fully_connected(self, name, out_dim):
         w_shape = [self.current_img_h * self.current_img_h * self.current_n_filter, out_dim]
-        W = self._W(name+'_w', w_shape)
-        b = self._b(name+'_b', [w_shape[-1]])
+        W = self.call_W(name+'_w', w_shape)
+        b = self.call_b(name+'_b', [w_shape[-1]])
         fc = tf.reshape(self.current_layer, [-1, w_shape[0]])
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
         fc = tf.contrib.layers.batch_norm(fc, is_training=self.train_flag)
@@ -102,8 +102,9 @@ class Conv2DClassifier:
 
     def add_output_layer(self):
         in_dim = self.current_layer.get_shape().as_list()[1]
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self._W('w_out', [in_dim,self.n_out])),
-                                     self._b('b_out', [self.n_out]))
+        W = self.call_W('logits_w', [in_dim, self.n_out])
+        b = self.call_b('logits_b', [self.n_out])
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
     # end method add_output_layer
 
 
@@ -118,13 +119,13 @@ class Conv2DClassifier:
     # end method add_backward_path
 
 
-    def _W(self, name, shape):
+    def call_W(self, name, shape):
         return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
     # end method _W
 
     
-    def _b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.1))
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
     # end method _b
 
 

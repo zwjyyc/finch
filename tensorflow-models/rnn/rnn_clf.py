@@ -49,9 +49,6 @@ class RNNClassifier:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.W = tf.get_variable('W', [self.cell_size, self.n_out], tf.float32,
-                                 tf.contrib.layers.variance_scaling_initializer())
-        self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.0))
         self.in_keep_prob = tf.placeholder(tf.float32)
         self.out_keep_prob = tf.placeholder(tf.float32)
         self.current_layer = self.X
@@ -78,7 +75,9 @@ class RNNClassifier:
     def add_output_layer(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         time_major = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
-        self.logits = tf.nn.bias_add(tf.matmul(time_major[-1], self.W), self.b)
+        W = self.call_W('logits_W', [self.cell_size, self.n_out])
+        b = self.call_b('logits_b', [self.n_out])
+        self.logits = tf.nn.bias_add(tf.matmul(time_major[-1], W), b)
     # end method add_output_layer
 
 
@@ -88,6 +87,16 @@ class RNNClassifier:
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
     # end method add_backward_path
+
+
+    def call_W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+    # end method _W
+
+
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
+    # end method _b
 
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 

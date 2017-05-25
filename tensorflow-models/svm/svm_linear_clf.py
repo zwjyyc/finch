@@ -32,13 +32,13 @@ class LinearSVMClassifier:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(shape=(None, self.n_in), dtype=tf.float32)
         self.Y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-        self.W = tf.Variable(tf.random_normal([self.n_in, 1]))
-        self.b = tf.Variable(tf.constant(0.1, shape=[1]))
     # end method add_input_layer
 
 
     def add_forward_path(self):
-        self.logits = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
+        W = self.call_W('W', [self.n_in, 1])
+        b = self.call_b('b', [1])
+        self.logits = tf.nn.bias_add(tf.matmul(self.X, W), b)
     # end method add_forward_path
 
 
@@ -54,6 +54,16 @@ class LinearSVMClassifier:
         self.train_op = tf.train.GradientDescentOptimizer(1e-3).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(self.pred, self.Y), tf.float32))
     # end method add_backward_path
+
+
+    def call_W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+    # end method _W
+
+
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
+    # end method _b
 
 
     def fit(self, X, Y, val_data, n_epoch=100, batch_size=100):

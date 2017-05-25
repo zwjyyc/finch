@@ -18,7 +18,6 @@ class ConvAE:
         self.add_input_layer()
         self.add_conv('tied_layer_1', [self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
         self.add_deconv('tied_layer_1', [self.batch_size, self.img_size[0], self.img_size[1], self.img_ch])
-        self.decoder_op = self.current_layer
         self.add_backward_path()
     # end method build_graph
 
@@ -32,9 +31,8 @@ class ConvAE:
 
     def add_conv(self, name, filter_shape, strides=1):
         with tf.variable_scope('weights_tied'):
-            W = tf.get_variable(name+'_W', filter_shape, tf.float32,
-                                tf.contrib.layers.variance_scaling_initializer())
-        b = tf.get_variable(name+'_b', [filter_shape[-1]], tf.float32, tf.constant_initializer(0.1))
+            W = self.call_W(name+'_W', filter_shape)
+        b = self.call_b(name+'_conv_b', [filter_shape[-1]])
         Y = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding='SAME')
         Y = tf.nn.relu(tf.nn.bias_add(Y, b))
         self.current_layer = Y
@@ -44,15 +42,27 @@ class ConvAE:
     def add_deconv(self, name, output_shape, strides=1):
         with tf.variable_scope('weights_tied', reuse=True):
             W = tf.get_variable(name+'_W')
-        self.current_layer = tf.nn.conv2d_transpose(self.current_layer, W, output_shape, [1,strides,strides,1],
-                                                    'SAME')
+        b = self.call_b(name+'_deconv_b', [output_shape[-1]])
+        Y = tf.nn.conv2d_transpose(self.current_layer, W, output_shape, [1,strides,strides,1], 'SAME')
+        Y = tf.nn.bias_add(Y, b)
+        self.decoder_op = Y
     # end method add_deconv
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_sum(tf.square(tf.subtract(self.X, self.decoder_op)))
+        self.loss = tf.reduce_mean(tf.square(tf.subtract(self.X, self.decoder_op)))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
+
+
+    def call_W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+    # end method _W
+
+
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
+    # end method _b
 
 
     def fit(self, X_train, val_data, n_epoch=10, batch_size=128):

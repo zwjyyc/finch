@@ -106,8 +106,8 @@ class ConvLSTMChar:
 
 
     def add_conv1d(self, name, filter_shape, stride=1):
-        W = tf.get_variable(name+'_W', filter_shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
-        b = tf.get_variable(name+'_b', filter_shape[-1], tf.float32, tf.constant_initializer(0.1))
+        W = self.call_W(name+'_W', filter_shape)
+        b = self.call_b(name+'_b', filter_shape[-1])
         conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
@@ -148,9 +148,8 @@ class ConvLSTMChar:
 
     def add_output_layer(self):
         time_major = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
-        W = tf.get_variable('logits_W', [self.cell_size, self.vocab_size], tf.float32,
-                             tf.contrib.layers.variance_scaling_initializer())
-        b = tf.get_variable('logits_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.1))
+        W = self.call_W('logits_W', [self.cell_size, self.vocab_size])
+        b = self.call_b('logits_b', [self.vocab_size])
         self.logits = tf.nn.bias_add(tf.matmul(time_major[-1], W), b)
         self.softmax_out = tf.nn.softmax(self.logits)
     # end method add_output_layer
@@ -200,6 +199,16 @@ class ConvLSTMChar:
         self.vocab_size = len(self.idx2char)
         print('Vocabulary size:', self.vocab_size, '/', n_total)
     # end method build_vocab
+
+
+    def call_W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+    # end method _W
+
+
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
+    # end method _b
 
 
     def fit_text(self, text_iter_step=1, temperature=1.0, n_gen=100, n_epoch=50, batch_size=128,

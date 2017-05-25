@@ -60,11 +60,10 @@ class HighwayClassifier:
         size = self.highway_units
         X = self.current_layer
 
-        W_T = tf.get_variable(str(n)+'_wt', [size,size], tf.float32, tf.contrib.layers.variance_scaling_initializer())
-        b_T = tf.get_variable(str(n)+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
-
-        W = tf.get_variable(str(n)+'_w', [size,size], tf.float32, tf.contrib.layers.variance_scaling_initializer())
-        b = tf.get_variable(str(n)+'_b', [size], tf.float32, tf.constant_initializer(0.1))
+        W_T = self.call_W(str(n)+'_wt', [size,size])
+        b_T = self.call_b(str(n)+'_bt', [size])
+        W = self.call_W(str(n)+'_w', [size,size])
+        b = self.call_b(str(n)+'_b', [size])
 
         T = tf.sigmoid(tf.matmul(X, W_T) + b_T, name="transform_gate")
         H = tf.nn.relu(tf.matmul(X, W) + b, name="activation")
@@ -77,9 +76,8 @@ class HighwayClassifier:
 
 
     def add_output_layer(self):
-        W = tf.get_variable('logits_w', [self.highway_units, self.n_out], tf.float32,
-                            tf.contrib.layers.variance_scaling_initializer())
-        b = tf.get_variable('logits_b', [self.n_out], tf.float32, tf.constant_initializer(0.1))
+        W = self.call_W('logits_w', [self.highway_units, self.n_out])
+        b = self.call_b('logits_b', [self.n_out])
         self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
     # end method add_output_layer
 
@@ -94,16 +92,14 @@ class HighwayClassifier:
     # end method add_backward_path
 
 
-    def fc(self, name, X, fan_in, fan_out):
-        W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32,
-                            tf.contrib.layers.variance_scaling_initializer())
-        b = tf.get_variable(name+'_b', [fan_out], tf.float32, tf.constant_initializer(0.1))
-        Y = tf.nn.bias_add(tf.matmul(X, W), b)
-        Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag)
-        Y = tf.nn.relu(Y)
-        Y = tf.nn.dropout(Y, self.keep_prob)
-        return Y
-    # end method fc (fully-connected)
+    def call_W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+    # end method _W
+
+
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
+    # end method _b
 
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, keep_prob=1.0):

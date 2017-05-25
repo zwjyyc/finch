@@ -59,15 +59,25 @@ class Autoencoder:
     def fc(self, name, X, fan_in, fan_out, mode):
         if mode == 'encoder':
             with tf.variable_scope('weights_tied'):
-                W = tf.get_variable(name+'_w', [fan_in,fan_out], tf.float32,
-                                    tf.contrib.layers.variance_scaling_initializer())
+                W = self.call_W(name+'_w', [fan_in,fan_out])
+            b = self.call_b(name+'_'+mode+'_b', shape=[fan_out])
         if mode == 'decoder':
             with tf.variable_scope('weights_tied', reuse=True):
                 W = tf.transpose(tf.get_variable(name+'_w'))
-        b = tf.Variable(tf.constant(0.1, shape=[fan_out]))
+            b = self.call_b(name+'_'+mode+'_b', shape=[fan_out])
         Y = tf.nn.bias_add(tf.matmul(X, W), b)
         return Y
     # end method fc
+
+
+    def call_W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+    # end method _W
+
+
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
+    # end method _b
 
 
     def fit(self, X_train, val_data, n_epoch=10, batch_size=128, en_shuffle=True):

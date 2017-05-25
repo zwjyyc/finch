@@ -107,9 +107,8 @@ class RNNTextGen:
 
 
     def add_output_layer(self):
-        W = tf.get_variable('logits_W', [self.cell_size, self.vocab_size], tf.float32,
-                             tf.contrib.layers.variance_scaling_initializer())
-        b = tf.get_variable('logits_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.1)) 
+        W = self.call_W('logits_W', [self.cell_size, self.vocab_size])
+        b = self.call_b('logits_b', [self.vocab_size]) 
         reshaped = tf.reshape(self.current_layer, [-1, self.cell_size])
         self.logits = tf.nn.bias_add(tf.matmul(reshaped, W), b)
     # end method add_output_layer
@@ -179,6 +178,16 @@ class RNNTextGen:
         self.vocab_size = len(self.idx2char)
         print('Vocabulary size:', self.vocab_size, '/', n_total)
     # end method build_vocab
+
+
+    def call_W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+    # end method _W
+
+
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
+    # end method _b
 
 
     def fit_text(self, prime_texts=None, text_iter_step=1, temperature=1.0, n_gen=100,

@@ -68,8 +68,8 @@ class Conv1DClassifier:
 
 
     def add_conv1d(self, name, filter_shape, stride=1):
-        W = self._W(name+'_w', filter_shape)
-        b = self._b(name+'_b', [filter_shape[-1]])
+        W = self.call_W(name+'_w', filter_shape)
+        b = self.call_b(name+'_b', [filter_shape[-1]])
         conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
@@ -94,10 +94,10 @@ class Conv1DClassifier:
         X = self.current_layer
         size = self.n_filters
 
-        W_T = self._W(name+'_wt', [size, size])
-        b_T = tf.get_variable(name+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
-        W = self._W(name+'_w', [size,size])
-        b = self._b(name+'_b', [size])
+        W_T = self.call_W(name+'_W_T', [size, size])
+        b_T = tf.get_variable(name+'_b_T', [size], tf.float32, tf.constant_initializer(carry_bias))
+        W = self.call_W(name+'_W', [size,size])
+        b = self.call_b(name+'_b', [size])
 
         T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
         H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
@@ -109,9 +109,10 @@ class Conv1DClassifier:
 
 
     def add_output_layer(self):
-        in_dim = self.current_layer.get_shape().as_list()[1]
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, self._W('w_out', [in_dim,self.n_out])),
-                                     self._b('b_out', [self.n_out]))
+        in_dim = self.current_layer.get_shape()[1]
+        W = self.call_W('logits_w', [in_dim, self.n_out])
+        b = self.call_b('logits_b', [self.n_out])
+        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
     # end method add_output_layer
 
 
@@ -122,17 +123,17 @@ class Conv1DClassifier:
     # end method add_backward_path
 
 
-    def _W(self, name, shape):
+    def call_W(self, name, shape):
         return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
     # end method _W
 
 
-    def _b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.1))
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
     # end method _b
 
 
-    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.5, en_exp_decay=True,
+    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, keep_prob=1.0, en_exp_decay=True,
             en_shuffle=True):
         if val_data is None:
             print("Train %d samples" % len(X))
@@ -207,8 +208,8 @@ class Conv1DClassifier:
 
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
         if en_exp_decay:
-            max_lr = 0.005
-            min_lr = 0.001
+            max_lr = 0.003
+            min_lr = 0.0005
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
             lr = max_lr*math.exp(-decay_rate*global_step)
         else:

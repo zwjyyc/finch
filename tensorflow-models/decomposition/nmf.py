@@ -37,8 +37,8 @@ class NMF:
 
     def add_input_layer(self):
         self.R = tf.placeholder(tf.float32, [self.n_user, self.n_item])
-        self.U = tf.Variable(tf.truncated_normal([self.n_user, self.n_hidden]))
-        self.I = tf.Variable(tf.truncated_normal([self.n_hidden, self.n_item]))
+        self.U = self.call_W('U', [self.n_user, self.n_hidden])
+        self.I = self.call_W('I', [self.n_hidden, self.n_item])
         self.lr = tf.placeholder(tf.float32)
     # end method add_input_layer
 
@@ -63,4 +63,9 @@ class NMF:
         self.loss = tf.add(cost, regu)
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
+
+
+    def call_W(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+    # end method _W
 # end class

@@ -79,8 +79,8 @@ class ConvLSTMClassifier:
 
 
     def add_conv1d(self, name, filter_shape, stride=1):
-        W = self._W(name+'_w', filter_shape)
-        b = self._b(name+'_b', [filter_shape[-1]])                                
+        W = self.call_W(name+'_w', filter_shape)
+        b = self.call_b(name+'_b', [filter_shape[-1]])                                
         conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
         conv = tf.nn.bias_add(conv, b)
         conv = tf.nn.relu(conv)
@@ -117,8 +117,8 @@ class ConvLSTMClassifier:
     def add_output_layer(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         time_major = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
-        W = self._W('logits_w', [self.cell_size, self.n_out])
-        b = self._b('logits_b', [self.n_out])
+        W = self.call_W('logits_w', [self.cell_size, self.n_out])
+        b = self.call_b('logits_b', [self.n_out])
         self.logits = tf.nn.bias_add(tf.matmul(time_major[-1], W), b)
     # end method add_output_layer
 
@@ -130,13 +130,13 @@ class ConvLSTMClassifier:
     # end method add_backward_path
 
 
-    def _W(self, name, shape):
+    def call_W(self, name, shape):
         return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
     # end method _W
 
 
-    def _b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.1))
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
     # end method _b
 
 

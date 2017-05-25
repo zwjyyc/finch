@@ -8,7 +8,7 @@ import collections
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, min_freq=None, cell_size=128, n_layer=3, grad_clip=5, stateful=False,
+    def __init__(self, text, seq_len=50, cell_size=128, n_layer=3, grad_clip=5, stateful=False,
                  stopwords=None, sess=tf.Session()):
         """
         Parameters:
@@ -35,28 +35,34 @@ class RNNTextGen:
         self.sess = sess
         self.text = text
         self.seq_len = seq_len
-        self.min_freq = min_freq
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.stateful = stateful
         self.stopwords = stopwords
         self.grad_clip = grad_clip
         self.current_layer = None
-        self.text_preprocessing()
+
+        self.preprocessing()
         self.build_graph()
     # end constructor
 
 
-    def text_preprocessing(self):
-        self.clean_text(self.text)
-        chars = list(self.text)
-        self.build_vocab(chars)
-        self.indices = []
-        for char in chars:
-            try:
-                self.indices.append(self.char2idx[char])
-            except:
-                self.indices.append(0)
+    def preprocessing(self):
+        text = self.text
+        text = text.replace('\n', ' ')
+        if self.stopwords is None:
+            self.stopwords = string.punctuation
+        text = re.sub(r'[{}]'.format(''.join(self.stopwords)), ' ', text)
+        text = re.sub('\s+', ' ', text ).strip().lower()
+        
+        chars = list(set(text))
+        self.char2idx = dict((c, i) for i, c in enumerate(chars))
+        self.idx2char = dict((i, c) for i, c in enumerate(chars))
+        assert len(self.idx2char) == len(self.char2idx), "len(idx2char) != len(char2idx)"
+        self.vocab_size = len(self.idx2char)
+        print('Vocabulary size:', self.vocab_size)
+
+        self.indices = [self.char2idx[char] for char in list(text)]
     # end method text_preprocessing
 
 
@@ -156,31 +162,6 @@ class RNNTextGen:
     # end method adjust_lr
 
 
-    def clean_text(self, text):
-        text = text.replace('\n', ' ')
-        if self.stopwords is None:
-            self.stopwords = string.punctuation
-        text = re.sub(r'[{}]'.format(''.join(self.stopwords)), ' ', text)
-        text = re.sub('\s+', ' ', text ).strip().lower()
-        self.text = text
-    # end method clean_text
-
-
-    def build_vocab(self, chars):
-        char_freqs = collections.Counter(chars)
-        n_total = len(char_freqs)
-        if self.min_freq is not None:
-            char_freqs = {char:freq for char,freq in char_freqs.items() if freq > self.min_freq}
-        chars = char_freqs.keys()
-        self.char2idx = {char:(idx+1) for idx,char in enumerate(chars)} # create word -> index mapping
-        self.char2idx['_unknown'] = 0 # add unknown key -> 0 index
-        self.idx2char = {idx:char for char,idx in self.char2idx.items()} # create index -> word mapping
-        assert len(self.idx2char) == len(self.char2idx), "len(idx2char) != len(char2idx)"
-        self.vocab_size = len(self.idx2char)
-        print('Vocabulary size:', self.vocab_size, '/', n_total)
-    # end method build_vocab
-
-
     def call_W(self, name, shape):
         return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
     # end method _W
@@ -192,7 +173,7 @@ class RNNTextGen:
 
 
     def fit_text(self, prime_texts, text_iter_step=1, temperature=1.0, n_gen=100,
-                 n_epoch=100, batch_size=128, en_exp_decay=True, en_shuffle=True):
+                 n_epoch=20, batch_size=128, en_exp_decay=True, en_shuffle=True):
         window = self.seq_len + 1
         X = np.array([self.indices[i:i+window] for i in range(0, len(self.indices)-window, text_iter_step)])
         Y = np.roll(X, -1, axis=1)
@@ -250,8 +231,6 @@ class RNNTextGen:
             softmax_out, next_state = self.sess.run([self.s_out, self.s_final_state],
                                                     {self.s_X:x, self.s_init_state:next_state})
             idx = self.infer_idx(softmax_out[0], temperature)
-            if idx == 0:
-                break
             char = self.idx2char[idx]
             out_sentence = out_sentence + char
         return out_sentence

@@ -11,6 +11,5 @@ if __name__ == '__main__':
     path = tf.contrib.keras.utils.get_file('nietzsche.txt',
                                             origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
     text = open(path).read()
-    
-    model = RNNTextGen(text, stopwords=stopwords, min_freq=5)
+    model = RNNTextGen(text, stopwords=stopwords)
     log = model.fit_text(prime_texts, text_iter_step=3)

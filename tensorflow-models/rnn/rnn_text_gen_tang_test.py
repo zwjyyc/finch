@@ -2,6 +2,7 @@ from rnn_text_gen import RNNTextGen
 
 
 stopwords = ['，', '。']
+prime_texts = ['长']
 
 
 if __name__ == '__main__':
@@ -9,4 +10,4 @@ if __name__ == '__main__':
         text = f.read()
     
     model = RNNTextGen(text, seq_len=20, stopwords=stopwords)
-    log = model.fit_text()
+    log = model.fit_text(prime_texts)

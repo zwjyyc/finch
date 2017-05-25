@@ -4,7 +4,7 @@ import string
 
 
 stopwords = [x for x in string.punctuation if x not in ['-', "'"]]
-prime_texts = ['the falseness of an opinion is']
+prime_texts = ['I']
 
 
 if __name__ == '__main__':

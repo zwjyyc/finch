@@ -145,7 +145,7 @@ class RNNTextGen:
 
     def decrease_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):
         if en_exp_decay:
-            max_lr = 0.003
+            max_lr = 0.005
             min_lr = 0.0005
             decay_rate = math.log(min_lr/max_lr) / (-n_epoch*nb_batch)
             lr = max_lr*math.exp(-decay_rate*global_step)
@@ -190,18 +190,14 @@ class RNNTextGen:
     # end method _b
 
 
-    def fit_text(self, prime_texts=None, text_iter_step=1, temperature=1.0, n_gen=100,
-                 n_epoch=20, batch_size=128, en_exp_decay=True, en_shuffle=True):
+    def fit_text(self, prime_texts, text_iter_step=1, temperature=1.0, n_gen=100,
+                 n_epoch=100, batch_size=128, en_exp_decay=True, en_shuffle=True):
         window = self.seq_len + 1
         X = np.array([self.indices[i:i+window] for i in range(0, len(self.indices)-window, text_iter_step)])
         Y = np.roll(X, -1, axis=1)
         X = X[:, :-1]
         Y = Y[:, :-1]
         print('X shape:', X.shape, '|', 'Y shape:', Y.shape)
-
-        if prime_texts is None:
-            random_start = np.random.randint(0, len(self.text)-1-self.seq_len)
-            prime_texts = [self.text[random_start: random_start + self.seq_len]]
         
         log = {'loss': []}
         global_step = 0

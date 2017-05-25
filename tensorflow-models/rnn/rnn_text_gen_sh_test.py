@@ -5,9 +5,7 @@ from rnn_text_gen import RNNTextGen
 
 
 stopwords = [x for x in string.punctuation if x not in ['-', "'"]]
-prime_texts = ['thou art more',
-               'to be or not to',
-               'wherefore art thou']
+prime_texts = ['I']
 
 
 def load_shakespeare_text():

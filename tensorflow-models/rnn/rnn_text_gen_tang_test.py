@@ -10,4 +10,4 @@ if __name__ == '__main__':
         text = f.read()
     
     model = RNNTextGen(text, seq_len=20, stopwords=stopwords)
-    log = model.fit_text(prime_texts)
+    log = model.fit_text(prime_texts, n_epoch=20)

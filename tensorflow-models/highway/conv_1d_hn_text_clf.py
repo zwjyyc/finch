@@ -4,9 +4,9 @@ import math
 import sklearn
 
 
-class Conv1DClassifier:
+class HighwayClassifier:
     def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(),
-                 embedding_dims=50, n_filters=250, kernel_size=3, padding='VALID'):
+                 embedding_dims=50, n_filters=50, kernel_size=3, padding='VALID'):
         """
         Parameters:
         -----------
@@ -44,10 +44,8 @@ class Conv1DClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding()
-        self.add_conv1d('conv1', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-        self.add_conv1d_highway('conv2', filter_shape=[self.kernel_size, self.n_filters, self.n_filters])
+        self.add_conv1d_highway('highway', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
         self.add_global_pooling()
-        self.add_highway('highway')
         self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
@@ -63,75 +61,47 @@ class Conv1DClassifier:
 
 
     def add_word_embedding(self):
-        E = tf.get_variable('E', [self.vocab_size,self.embedding_dims], tf.float32, tf.random_normal_initializer())
-        E = tf.nn.embedding_lookup(E, self.current_layer)
-        self.current_layer = tf.nn.dropout(E, self.keep_prob)
+        X = self.current_layer
+        E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_normal_initializer())
+        Y = tf.nn.embedding_lookup(E, X)
+        Y = tf.nn.dropout(Y, self.keep_prob)
+        self.current_layer = Y
     # end method add_word_embedding_layer
-
-
-    def add_conv1d(self, name, filter_shape, stride=1):
-        W = self.call_W(name+'_w', filter_shape)
-        b = self.call_b(name+'_b', [filter_shape[-1]])
-        conv = tf.nn.conv1d(self.current_layer, W, stride=stride, padding=self.padding)
-        conv = tf.nn.bias_add(conv, b)
-        conv = tf.nn.relu(conv)
-        self.current_layer = conv
-        if self.padding == 'VALID':
-            self.current_seq_len = int(self.current_seq_len - self.kernel_size + 1 / stride)
-        if self.padding == 'SAME':
-            self.current_seq_len = int(self.current_seq_len / stride)
-    # end method add_conv1d_layer
 
 
     def add_conv1d_highway(self, name, filter_shape, stride=1, carry_bias=-1.0):
         X = self.current_layer
 
-        W = self.call_W(name+'_w', filter_shape)
+        W = self.call_W(name+'_W', filter_shape)
         b = tf.get_variable(name+'_b', filter_shape[-1], tf.float32, tf.constant_initializer(carry_bias))
-        W_T = self.call_W(name+'_wt', filter_shape)
-        b_T = self.call_b(name+'_bt', [filter_shape[-1]])
+        W_T = self.call_W(name+'_W_T', filter_shape)
+        b_T = self.call_b(name+'_b_T', [filter_shape[-1]])
 
         H = tf.nn.relu(tf.nn.conv1d(X, W, stride, 'SAME') + b, name='activation')
         T = tf.sigmoid(tf.nn.conv1d(X, W_T, stride, 'SAME') + b_T, name='transform_gate')
         C = tf.subtract(1.0, T, name="carry_gate")
 
-        self.current_layer = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # y = (H * T) + (x * C)
+        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # y = (H * T) + (x * C)
         self.current_seq_len = int(self.current_seq_len / stride)
+        self.current_layer = Y
     # end method add_conv1d_highway
 
 
     def add_global_pooling(self):
+        X = self.current_layer
         k = self.current_seq_len
-        conv = tf.expand_dims(self.current_layer, 1)
-        conv = tf.nn.avg_pool(conv, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
-        conv = tf.squeeze(conv)
-        self.current_layer = conv
+        Y = tf.expand_dims(X, 1)
+        Y = tf.nn.avg_pool(Y, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
+        Y = tf.squeeze(Y)
+        Y = tf.reshape(Y, [-1, self.n_filters])
+        self.current_layer = Y
     # end method add_global_maxpool_layer
 
 
-    def add_highway(self, name, carry_bias=-1.0):
-        X = self.current_layer
-        size = self.n_filters
-
-        W_T = self.call_W(name+'_wt', [size, size])
-        b_T = tf.get_variable(name+'_bt', [size], tf.float32, tf.constant_initializer(carry_bias))
-        W = self.call_W(name+'_w', [size,size])
-        b = self.call_b(name+'_b', [size])
-
-        T = tf.sigmoid(tf.nn.bias_add(tf.matmul(X, W_T), b_T))
-        H = tf.nn.relu(tf.nn.bias_add(tf.matmul(X, W), b))
-        C = tf.subtract(1.0, T, name="carry_gate")
-
-        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C))
-        self.current_layer = tf.reshape(Y, [-1, size])
-    # end method add_highway
-
-
     def add_output_layer(self):
-        in_dim = self.current_layer.get_shape()[1]
-        W = self.call_W('logits_w', [in_dim, self.n_out])
-        b = self.call_b('logits_b', [self.n_out])
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
+        X = self.current_layer
+        Y = tf.layers.dense(X, self.n_out)
+        self.logits = Y
     # end method add_output_layer
 
 

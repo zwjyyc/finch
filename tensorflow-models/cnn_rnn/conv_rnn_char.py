@@ -98,7 +98,7 @@ class ConvLSTMChar:
 
 
     def add_word_embedding(self):
-        X = self.self.current_layer
+        X = self.current_layer
         E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_normal_initializer())
         Y = tf.nn.embedding_lookup(E, X)
         self.current_layer = Y
@@ -150,7 +150,7 @@ class ConvLSTMChar:
     def add_output_layer(self):
         X = self.current_layer
         time_major = tf.unstack(tf.transpose(X, [1,0,2]))
-        Y = tf.layers.dense(time_major[-1], self.n_out)
+        Y = tf.layers.dense(time_major[-1], self.vocab_size)
         self.logits = Y
         self.softmax_out = tf.nn.softmax(Y)
     # end method add_output_layer

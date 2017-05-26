@@ -158,7 +158,6 @@ class ConvLSTMClassifier:
             if en_shuffle:
                 X, Y = sklearn.utils.shuffle(X, Y)
             local_step = 1
-            
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size),
                                         self.gen_batch(Y, batch_size)): # batch training
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 

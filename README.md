@@ -1,6 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-This project contains my models, tests, and notebooks written on machine learning (ML) topics
+This project contains a wide range of my models and tests written on machine learning (ML) topics
 
 Work in process ......
 

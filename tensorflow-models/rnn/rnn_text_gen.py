@@ -149,12 +149,12 @@ class RNNTextGen:
     # end add_sample_model
 
 
-    def decrease_lr(self, en_exp_decay, global_step, n_epoch, nb_batch):
+    def adjust_lr(self, en_exp_decay, current_step, total_steps):
         if en_exp_decay:
             max_lr = 0.005
             min_lr = 0.0005
-            decay_rate = math.log(min_lr/max_lr) / (-n_epoch*nb_batch)
-            lr = max_lr*math.exp(-decay_rate*global_step)
+            decay_rate = math.log(min_lr/max_lr) / (-total_steps)
+            lr = max_lr * math.exp(-decay_rate * current_step)
         else:
             lr = 0.001
         return lr
@@ -180,7 +180,7 @@ class RNNTextGen:
             if en_shuffle:
                 X, Y = sklearn.utils.shuffle(X, Y)
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
-                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, int(len(X)/batch_size))
+                lr = self.adjust_lr(en_exp_decay, global_step, int(n_epoch*len(X)/batch_size))
                 if (self.stateful) and (len(X_batch) == batch_size):
                     _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                                                         {self.X:X_batch, self.Y:Y_batch,

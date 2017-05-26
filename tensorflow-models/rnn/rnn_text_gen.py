@@ -47,29 +47,10 @@ class RNNTextGen:
     # end constructor
 
 
-    def preprocessing(self):
-        text = self.text
-        text = text.replace('\n', ' ')
-        if self.stopwords is None:
-            self.stopwords = string.punctuation
-        text = re.sub(r'[{}]'.format(''.join(self.stopwords)), ' ', text)
-        text = re.sub('\s+', ' ', text ).strip().lower()
-        
-        chars = list(set(text))
-        self.char2idx = dict((c, i) for i, c in enumerate(chars))
-        self.idx2char = dict((i, c) for i, c in enumerate(chars))
-        assert len(self.idx2char) == len(self.char2idx), "len(idx2char) != len(char2idx)"
-        self.vocab_size = len(self.idx2char)
-        print('Vocabulary size:', self.vocab_size)
-
-        self.indices = [self.char2idx[char] for char in list(text)]
-    # end method text_preprocessing
-
-
     def build_graph(self):
         with tf.variable_scope('main_model'):
             self.add_input_layer()       
-            self.add_word_embedding_layer()
+            self.add_word_embedding()
             self.add_lstm_cells()
             self.add_dynamic_rnn()
             self.add_output_layer()
@@ -88,13 +69,13 @@ class RNNTextGen:
     # end method add_input_layer
 
 
-    def add_word_embedding_layer(self):
+    def add_word_embedding(self):
         # (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
         X = self.current_layer
         E = tf.get_variable('E', [self.vocab_size, self.cell_size], tf.float32, tf.random_normal_initializer())
         Y = tf.nn.embedding_lookup(E, X)
         self.current_layer = Y
-    # end method add_word_embedding_layer
+    # end method add_word_embedding
 
 
     def add_lstm_cells(self):
@@ -156,6 +137,25 @@ class RNNTextGen:
         lr = max_lr * math.exp(-decay_rate * current_step)
         return lr
     # end method adjust_lr
+
+
+    def preprocessing(self):
+        text = self.text
+        text = text.replace('\n', ' ')
+        if self.stopwords is None:
+            self.stopwords = string.punctuation
+        text = re.sub(r'[{}]'.format(''.join(self.stopwords)), ' ', text)
+        text = re.sub('\s+', ' ', text ).strip().lower()
+        
+        chars = list(set(text))
+        self.char2idx = dict((c, i) for i, c in enumerate(chars))
+        self.idx2char = dict((i, c) for i, c in enumerate(chars))
+        assert len(self.idx2char) == len(self.char2idx), "len(idx2char) != len(char2idx)"
+        self.vocab_size = len(self.idx2char)
+        print('Vocabulary size:', self.vocab_size)
+
+        self.indices = [self.char2idx[char] for char in list(text)]
+    # end method text_preprocessing
 
 
     def fit_text(self, prime_texts, text_iter_step=1, temperature=1.0, n_gen=100,

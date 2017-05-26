@@ -41,7 +41,6 @@ class RNNTextGen:
         self.stopwords = stopwords
         self.grad_clip = grad_clip
         self.current_layer = None
-
         self.preprocessing()
         self.build_graph()
     # end constructor
@@ -158,7 +157,7 @@ class RNNTextGen:
     # end method text_preprocessing
 
 
-    def fit_text(self, prime_texts, text_iter_step=1, temperature=1.0, n_gen=100,
+    def fit_text(self, prime_texts, text_iter_step=1, temperature=1.0, n_gen=500,
                  n_epoch=20, batch_size=128, en_exp_decay=True, en_shuffle=True):
         window = self.seq_len + 1
         X = np.array([self.indices[i:i+window] for i in range(0, len(self.indices)-window, text_iter_step)])

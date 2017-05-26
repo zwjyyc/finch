@@ -8,7 +8,7 @@ import collections
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, cell_size=128, n_layer=3, grad_clip=5, stateful=False,
+    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=128, n_layer=3, grad_clip=5, stateful=False,
                  useless_words=None, sess=tf.Session()):
         """
         Parameters:
@@ -35,6 +35,7 @@ class RNNTextGen:
         self.sess = sess
         self.text = text
         self.seq_len = seq_len
+        self.embedding_dims = embedding_dims
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.stateful = stateful
@@ -69,9 +70,9 @@ class RNNTextGen:
 
 
     def add_word_embedding(self):
-        # (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
+        # (batch_size, seq_len) -> (batch_size, seq_len, embedding_dims)
         X = self.current_layer
-        E = tf.get_variable('E', [self.vocab_size, self.cell_size], tf.float32, tf.random_normal_initializer())
+        E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_normal_initializer())
         Y = tf.nn.embedding_lookup(E, X)
         self.current_layer = Y
     # end method add_word_embedding
@@ -158,7 +159,7 @@ class RNNTextGen:
     # end method text_preprocessing
 
 
-    def fit_text(self, prime_texts, text_iter_step=1, temperature=1.0, n_gen=500,
+    def fit_text(self, prime_texts, text_iter_step=10, temperature=1.0, n_gen=500,
                  n_epoch=20, batch_size=128, en_exp_decay=True, en_shuffle=True):
         window = self.seq_len + 1
         X = np.array([self.indices[i:i+window] for i in range(0, len(self.indices)-window, text_iter_step)])

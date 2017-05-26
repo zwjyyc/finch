@@ -8,4 +8,4 @@ if __name__ == '__main__':
     with open('./temp/anna.txt') as f:
         text = f.read()
     model = RNNTextGen(text)
-    log = model.fit_text(prime_texts)
+    log = model.fit_text(prime_texts, text_iter_step=25)

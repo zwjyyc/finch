@@ -131,7 +131,7 @@ class RNNTextGen:
 
     def adjust_lr(self, current_step, total_steps):
         max_lr = 0.005
-        min_lr = 0.0005
+        min_lr = 0.0001
         decay_rate = math.log(min_lr/max_lr) / (-total_steps)
         lr = max_lr * math.exp(-decay_rate * current_step)
         return lr

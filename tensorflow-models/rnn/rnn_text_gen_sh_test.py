@@ -4,7 +4,7 @@ import string
 from rnn_text_gen import RNNTextGen
 
 
-stopwords = [x for x in string.punctuation if x not in ['-', "'"]]
+useless_words = [x for x in string.punctuation if x not in ['-', "'"]]
 prime_texts = ['i']
 
 
@@ -32,5 +32,5 @@ def load_shakespeare_text():
 
 if __name__ == '__main__':
     text = load_shakespeare_text()
-    model = RNNTextGen(text, stopwords=stopwords)
+    model = RNNTextGen(text, useless_words=useless_words)
     log = model.fit_text(prime_texts, text_iter_step=25)

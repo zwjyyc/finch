@@ -9,7 +9,7 @@ import collections
 
 class RNNTextGen:
     def __init__(self, text, seq_len=50, cell_size=128, n_layer=3, grad_clip=5, stateful=False,
-                 stopwords=None, sess=tf.Session()):
+                 useless_words=None, sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -29,8 +29,8 @@ class RNNTextGen:
             Number of layers of stacked rnn cells
         stateful: boolean
             Whether the final state of each training batch will be provided as the initial state of next batch
-        stopwords: list of characters
-            all the stopwords which will be removed from text, usually punctuations
+        useless_words: list of characters
+            all the useless_words which will be removed from text, usually punctuations
         """
         self.sess = sess
         self.text = text
@@ -38,7 +38,7 @@ class RNNTextGen:
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.stateful = stateful
-        self.stopwords = stopwords
+        self.useless_words = useless_words
         self.grad_clip = grad_clip
         self.current_layer = None
         self.preprocessing()
@@ -141,14 +141,15 @@ class RNNTextGen:
     def preprocessing(self):
         text = self.text
         text = text.replace('\n', ' ')
-        if self.stopwords is None:
-            self.stopwords = string.punctuation
-        text = re.sub(r'[{}]'.format(''.join(self.stopwords)), ' ', text)
+        if self.useless_words is None:
+            self.useless_words = string.punctuation
+        table = str.maketrans( {useless: ' ' for useless in self.useless_words} )
+        text = text.translate(table)
         text = re.sub('\s+', ' ', text ).strip().lower()
         
         chars = list(set(text))
-        self.char2idx = dict((c, i) for i, c in enumerate(chars))
-        self.idx2char = dict((i, c) for i, c in enumerate(chars))
+        self.char2idx = {c: i for i, c in enumerate(chars)}
+        self.idx2char = {i: c for i, c in enumerate(chars)}
         assert len(self.idx2char) == len(self.char2idx), "len(idx2char) != len(char2idx)"
         self.vocab_size = len(self.idx2char)
         print('Vocabulary size:', self.vocab_size)

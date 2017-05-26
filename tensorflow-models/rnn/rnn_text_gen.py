@@ -90,9 +90,10 @@ class RNNTextGen:
 
     def add_word_embedding_layer(self):
         # (batch_size, seq_len) -> (batch_size, seq_len, n_hidden)
+        X = self.current_layer
         E = tf.get_variable('E', [self.vocab_size, self.cell_size], tf.float32, tf.random_normal_initializer())
-        E = tf.nn.embedding_lookup(E, self.current_layer)
-        self.current_layer = E
+        Y = tf.nn.embedding_lookup(E, X)
+        self.current_layer = Y
     # end method add_word_embedding_layer
 
 
@@ -105,18 +106,18 @@ class RNNTextGen:
 
 
     def add_dynamic_rnn(self):
+        X = self.current_layer
         self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
-        self.current_layer, self.final_state = tf.nn.dynamic_rnn(self.cells, self.current_layer,
-                                                                 initial_state=self.init_state,
-                                                                 time_major=False)    
+        Y, self.final_state = tf.nn.dynamic_rnn(self.cells, X, initial_state=self.init_state, time_major=False)
+        self.current_layer = Y    
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        W = self.call_W('logits_W', [self.cell_size, self.vocab_size])
-        b = self.call_b('logits_b', [self.vocab_size]) 
-        reshaped = tf.reshape(self.current_layer, [-1, self.cell_size])
-        self.logits = tf.nn.bias_add(tf.matmul(reshaped, W), b)
+        X = self.current_layer
+        X = tf.reshape(X, [-1, self.cell_size])
+        Y = tf.layers.dense(X, self.vocab_size, name='output')
+        self.logits = Y
     # end method add_output_layer
 
 
@@ -138,15 +139,13 @@ class RNNTextGen:
 
 
     def add_sample_model(self):
-        self.s_X = tf.placeholder(tf.int32, [None, 1])
-        self.s_init_state = self.cells.zero_state(self.batch_size, tf.float32)
-        rnn_in = tf.nn.embedding_lookup(tf.get_variable('E'), self.s_X)
-        rnn_out, self.s_final_state = tf.nn.dynamic_rnn(self.cells, rnn_in,
-                                                        initial_state=self.s_init_state,
-                                                        time_major=False)
-        rnn_out = tf.reshape(rnn_out, [-1, self.cell_size])
-        logits = tf.nn.bias_add(tf.matmul(rnn_out, tf.get_variable('logits_W')), tf.get_variable('logits_b'))
-        self.s_out = tf.nn.softmax(logits)
+        self.X_ = tf.placeholder(tf.int32, [None, 1])
+        self.init_state_ = self.cells.zero_state(self.batch_size, tf.float32)
+        X = tf.nn.embedding_lookup(tf.get_variable('E'), self.X_)
+        Y, self.final_state_ = tf.nn.dynamic_rnn(self.cells, X, initial_state=self.init_state_, time_major=False)
+        Y = tf.reshape(Y, [-1, self.cell_size])
+        Y = tf.layers.dense(Y, self.vocab_size, name='output', reuse=True)
+        self.softmax_out_ = tf.nn.softmax(Y)
     # end add_sample_model
 
 
@@ -160,16 +159,6 @@ class RNNTextGen:
             lr = 0.001
         return lr
     # end method adjust_lr
-
-
-    def call_W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
-    # end method _W
-
-
-    def call_b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
-    # end method _b
 
 
     def fit_text(self, prime_texts, text_iter_step=1, temperature=1.0, n_gen=100,
@@ -217,19 +206,19 @@ class RNNTextGen:
 
     def sample(self, prime_text, temperature, n_gen):
         # warming up
-        next_state = self.sess.run(self.s_init_state, {self.batch_size:1})
+        next_state = self.sess.run(self.init_state_, {self.batch_size:1})
         char_list = list(prime_text)
         for char in char_list[:-1]:
             x = np.atleast_2d(self.char2idx[char]) 
-            next_state = self.sess.run(self.s_final_state, {self.s_X:x, self.s_init_state:next_state})
+            next_state = self.sess.run(self.final_state_, {self.X_:x, self.init_state_:next_state})
         # end warming up
 
         out_sentence = 'IN: ' + prime_text + '\nOUT: ' + prime_text
         char = char_list[-1]
         for _ in range(n_gen):
             x = np.atleast_2d(self.char2idx[char])
-            softmax_out, next_state = self.sess.run([self.s_out, self.s_final_state],
-                                                    {self.s_X:x, self.s_init_state:next_state})
+            softmax_out, next_state = self.sess.run([self.softmax_out_, self.final_state_],
+                                                    {self.X_:x, self.init_state_:next_state})
             idx = self.infer_idx(softmax_out[0], temperature)
             char = self.idx2char[idx]
             out_sentence = out_sentence + char

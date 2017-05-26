@@ -5,7 +5,7 @@ import math
 
 
 class RNNTextClassifier:
-    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, clip_norm=True,
+    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, grad_clip=5,
                  stateful=False, sess=tf.Session()):
         """
         Parameters:
@@ -27,7 +27,7 @@ class RNNTextClassifier:
         self.vocab_size = vocab_size
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
-        self.clip_norm = clip_norm
+        self.grad_clip = grad_clip
         self.n_out = n_out
         self.sess = sess
         self.stateful = stateful
@@ -90,12 +90,11 @@ class RNNTextClassifier:
     def add_backward_path(self):
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
-        if self.clip_norm is not None:
-            gradients, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tf.trainable_variables()), self.clip_norm)
-            optimizer = tf.train.AdamOptimizer(self.lr)
-            self.train_op = optimizer.apply_gradients(zip(gradients, tf.trainable_variables()))
-        else:
-            self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
+        # gradient clipping
+        tvars = tf.trainable_variables()
+        grads, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tvars), self.grad_clip)
+        optimizer = tf.train.AdamOptimizer(self.lr)
+        self.train_op = optimizer.apply_gradients(zip(grads, tvars))
     # end method add_backward_path
 
 

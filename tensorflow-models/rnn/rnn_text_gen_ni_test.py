@@ -4,7 +4,7 @@ import string
 
 
 stopwords = [x for x in string.punctuation if x not in ['-', "'"]]
-prime_texts = ['I']
+prime_texts = ['i']
 
 
 if __name__ == '__main__':

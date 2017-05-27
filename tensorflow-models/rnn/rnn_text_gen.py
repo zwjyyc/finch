@@ -217,19 +217,13 @@ class RNNTextGen:
             x = np.atleast_2d(self.char2idx[char])
             softmax_out, next_state = self.sess.run([self.softmax_out_, self.final_state_],
                                                     {self.X_:x, self.init_state_:next_state})
-            idx = self.pick_with_rand(softmax_out[0])
+            probas = np.asarray(softmax_out[0]).astype('float64')
+            actions = np.random.multinomial(1, probas, 1)
+            idx = np.argmax(actions)
             char = self.idx2char[idx]
             out_sentence = out_sentence + char
         return out_sentence
     # end method sample
-
-
-    def pick_with_rand(self, probas):
-        probas = np.asarray(probas).astype('float64')
-        probas = probas / np.sum(probas)
-        actions = np.random.multinomial(1, probas, 1)
-        return np.argmax(actions)
-    # end method pick_with_rand
 
 
     def gen_batch(self, arr, batch_size):

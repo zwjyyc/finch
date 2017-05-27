@@ -127,7 +127,7 @@ class RNNTextGen:
 
 
     def adjust_lr(self, current_step, total_steps):
-        max_lr = 0.005
+        max_lr = 0.003
         min_lr = 0.0001
         decay_rate = math.log(min_lr/max_lr) / (-total_steps)
         lr = max_lr * math.exp(-decay_rate * current_step)
@@ -217,7 +217,8 @@ class RNNTextGen:
             x = np.atleast_2d(self.char2idx[char])
             softmax_out, next_state = self.sess.run([self.softmax_out_, self.final_state_],
                                                     {self.X_:x, self.init_state_:next_state})
-            probas = np.asarray(softmax_out[0]).astype('float64')
+            probas = softmax_out[0].astype('float64')
+            probas = probas / np.sum(probas)
             actions = np.random.multinomial(1, probas, 1)
             idx = np.argmax(actions)
             char = self.idx2char[idx]

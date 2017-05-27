@@ -1,14 +1,15 @@
 import tensorflow as tf
 import math
 import numpy as np
-import sklearn
+from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
 import string
 import re
 import collections
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=128, n_layer=3, grad_clip=5, stateful=False,
+    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=128, n_layer=2, grad_clip=5,
                  useless_words=None, sess=tf.Session()):
         """
         Parameters:
@@ -19,16 +20,12 @@ class RNNTextGen:
             corpus in one long string, usually obtained by file.read()
         seq_len: int
             Sequence length
-        min_freq: int or None
-            The minimum char occurence in text required to be saved in vocabulary
-            For example, if you pass 10, any char whose occurence below 10 will be indexed as 0
-            If you don't want to filter out any word, pass None
+        embedding_dims: int
+            length of embedding vector for each word
         cell_size: int
             Number of units in the rnn cell, default to 128
         n_layers: int
             Number of layers of stacked rnn cells
-        stateful: boolean
-            Whether the final state of each training batch will be provided as the initial state of next batch
         useless_words: list of characters
             all the useless_words which will be removed from text, usually punctuations
         """
@@ -38,7 +35,6 @@ class RNNTextGen:
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
         self.n_layer = n_layer
-        self.stateful = stateful
         self.useless_words = useless_words
         self.grad_clip = grad_clip
         self.current_layer = None
@@ -159,7 +155,7 @@ class RNNTextGen:
     # end method text_preprocessing
 
 
-    def fit_text(self, prime_texts, text_iter_step=10, temperature=1.0, n_gen=500,
+    def fit_text(self, prime_texts, text_iter_step=10, n_gen=500,
                  n_epoch=20, batch_size=128, en_exp_decay=True, en_shuffle=True):
         window = self.seq_len + 1
         X = np.array([self.indices[i:i+window] for i in range(0, len(self.indices)-window, text_iter_step)])
@@ -167,42 +163,46 @@ class RNNTextGen:
         X = X[:, :-1]
         Y = Y[:, :-1]
         print('X shape:', X.shape, '|', 'Y shape:', Y.shape)
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
         
-        log = {'loss': []}
         global_step = 0
+        n_batch = len(X_train) / batch_size
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         
         for epoch in range(n_epoch):
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
-            batch_count = 1
+            local_step = 1
             if en_shuffle:
-                X, Y = sklearn.utils.shuffle(X, Y)
-            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
-                lr = self.adjust_lr(global_step, int(n_epoch*len(X)/batch_size)) if en_exp_decay else 0.001
-                if (self.stateful) and (len(X_batch) == batch_size):
-                    _, loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
-                                                        {self.X:X_batch, self.Y:Y_batch,
-                                                         self.init_state:next_state,
-                                                         self.batch_size:len(X_batch), self.lr:lr})
-                else:
-                    _, loss = self.sess.run([self.train_op, self.loss],
-                                            {self.X:X_batch, self.Y:Y_batch,
-                                             self.batch_size:len(X_batch), self.lr:lr})
-                if batch_count % 10 == 0:
+                X_train, Y_train = shuffle(X_train, Y_train)
+            for X_train_batch, Y_train_batch in zip(self.gen_batch(X_train, batch_size),
+                                                    self.gen_batch(Y_train, batch_size)):
+                lr = self.adjust_lr(global_step, int(n_epoch * n_batch)) if en_exp_decay else 0.001
+                _, train_loss = self.sess.run([self.train_op, self.loss],
+                                              {self.X:X_train_batch, self.Y:Y_train_batch,
+                                               self.batch_size:len(X_train_batch), self.lr:lr})
+                if local_step % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
-                            % (epoch+1, n_epoch, batch_count, (len(X)/batch_size), loss, lr))
-                if batch_count % 100 == 0:
+                            % (epoch+1, n_epoch, local_step, n_batch, train_loss, lr))
+                if local_step % 100 == 0:
+                    test_losses = []
+                    for X_test_batch, Y_test_batch in zip(self.gen_batch(X_test, batch_size),
+                                                          self.gen_batch(Y_test, batch_size)):
+                        test_loss = self.sess.run(self.loss, {self.X:X_test_batch, self.Y:Y_test_batch,
+                                                              self.batch_size:len(X_test_batch)})
+                        test_losses.append(test_loss)
+                    avg_test_loss = sum(test_losses) / len(test_losses)
+                    print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | test loss: %.4f'
+                            % (epoch+1, n_epoch, local_step, n_batch, train_loss, avg_test_loss))
                     for prime_text in prime_texts:
-                        print(self.sample(prime_text, temperature, n_gen), end='\n\n')
-                log['loss'].append(loss)
-                batch_count += 1
+                        print(self.sample(prime_text, n_gen), end='\n\n')
+                local_step += 1
                 global_step += 1
             
         return log
     # end method fit
 
 
-    def sample(self, prime_text, temperature, n_gen):
+    def sample(self, prime_text, n_gen):
         # warming up
         next_state = self.sess.run(self.init_state_, {self.batch_size:1})
         char_list = list(prime_text)
@@ -217,21 +217,19 @@ class RNNTextGen:
             x = np.atleast_2d(self.char2idx[char])
             softmax_out, next_state = self.sess.run([self.softmax_out_, self.final_state_],
                                                     {self.X_:x, self.init_state_:next_state})
-            idx = self.infer_idx(softmax_out[0], temperature)
+            idx = self.pick_with_rand(softmax_out[0])
             char = self.idx2char[idx]
             out_sentence = out_sentence + char
         return out_sentence
     # end method sample
 
 
-    def infer_idx(self, preds, temperature): # helper function to sample an index from a probability array
-        preds = np.asarray(preds).astype('float64')
-        preds = np.log(preds) / temperature
-        exp_preds = np.exp(preds)
-        preds = exp_preds / np.sum(exp_preds)
-        probas = np.random.multinomial(1, preds, 1)
-        return np.argmax(probas)
-    # end method infer_idx
+    def pick_with_rand(self, probas):
+        probas = np.asarray(probas).astype('float64')
+        probas = probas / np.sum(probas)
+        actions = np.random.multinomial(1, probas, 1)
+        return np.argmax(actions)
+    # end method pick_with_rand
 
 
     def gen_batch(self, arr, batch_size):

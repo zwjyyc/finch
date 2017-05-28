@@ -31,8 +31,8 @@ class Conv2DClassifier:
         self.n_out = n_out
         self.sess = sess
         self._cursor = None
-        self._img_h = self.img_size[0]
-        self._img_w = self.img_size[1]
+        self._img_h = img_size[0]
+        self._img_w = img_size[1]
         self._n_filter = None
         self.build_graph()
     # end constructor
@@ -86,7 +86,7 @@ class Conv2DClassifier:
 
 
     def add_fully_connected(self, name, out_dim):
-        W_shape = [self._img_h * self._img_h * self._n_filter, out_dim]
+        W_shape = [self._img_h * self._img_w * self._n_filter, out_dim]
         W = self.call_W(name+'_w', W_shape)
         b = self.call_b(name+'_b', [out_dim])
         fc = tf.reshape(self._cursor, [-1, W_shape[0]])

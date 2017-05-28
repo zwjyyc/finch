@@ -10,7 +10,6 @@ class Autoencoder:
         self.n_in = n_in
         self.encoder_units = encoder_units
         self.decoder_units = list(reversed(encoder_units))
-        self.current_layer = None
         self.build_graph()
     # end constructor
 

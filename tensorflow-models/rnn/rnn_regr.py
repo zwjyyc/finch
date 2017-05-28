@@ -22,7 +22,7 @@ class RNNRegressor:
         self.n_out = n_out
         self.cell_size = cell_size
         self.sess = sess
-        self.current_layer = None
+        self._cursor = None
         self.build_graph()
     # end constructor
 
@@ -40,7 +40,7 @@ class RNNRegressor:
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.Y = tf.placeholder(tf.float32, [None, self.n_step, self.n_out])
-        self.current_layer = self.X
+        self._cursor = self.X
     # end method add_input_layer
 
 
@@ -51,14 +51,14 @@ class RNNRegressor:
 
     def add_dynamic_rnn(self):
         self.init_state = self.cell.zero_state(self.batch_size, dtype=tf.float32)
-        self.current_layer, self.final_state = tf.nn.dynamic_rnn(self.cell, self.current_layer,
-                                                                 initial_state=self.init_state,
-                                                                 time_major=False)
+        self._cursor, self.final_state = tf.nn.dynamic_rnn(self.cell, self._cursor,
+                                                           initial_state=self.init_state,
+                                                           time_major=False)
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        reshaped = tf.reshape(self.current_layer, [-1, self.cell_size])
+        reshaped = tf.reshape(self._cursor, [-1, self.cell_size])
         W = self.call_W('logits_w', [self.cell_size, self.n_out])
         b = self.call_b('logits_b', [self.n_out])
         self.logits = tf.nn.bias_add(tf.matmul(reshaped, W), b)

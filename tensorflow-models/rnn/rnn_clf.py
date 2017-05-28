@@ -31,7 +31,7 @@ class RNNClassifier:
         self.n_layer = n_layer
         self.sess = sess
         self.stateful = stateful
-        self.current_layer = None
+        self._cursor = None
         self.build_graph()
     # end constructor
 
@@ -51,7 +51,7 @@ class RNNClassifier:
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.in_keep_prob = tf.placeholder(tf.float32)
         self.out_keep_prob = tf.placeholder(tf.float32)
-        self.current_layer = self.X
+        self._cursor = self.X
     # end method add_input_layer
 
 
@@ -66,15 +66,15 @@ class RNNClassifier:
 
     def add_dynamic_rnn(self):      
         self.init_state = self.cells.zero_state(self.batch_size, tf.float32)        
-        self.current_layer, self.final_state = tf.nn.dynamic_rnn(self.cells, self.current_layer,
-                                                                 initial_state=self.init_state,
-                                                                 time_major=False)
+        self._cursor, self.final_state = tf.nn.dynamic_rnn(self.cells, self._cursor,
+                                                           initial_state=self.init_state,
+                                                           time_major=False)
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
-        time_major = tf.unstack(tf.transpose(self.current_layer, [1,0,2]))
+        time_major = tf.unstack(tf.transpose(self._cursor, [1,0,2]))
         W = self.call_W('logits_W', [self.cell_size, self.n_out])
         b = self.call_b('logits_b', [self.n_out])
         self.logits = tf.nn.bias_add(tf.matmul(time_major[-1], W), b)

@@ -9,7 +9,7 @@ class ConvAE:
         self.img_ch = img_ch
         self.kernel_size = kernel_size
         self.sess = sess
-        self.current_layer = None
+        self._cursor = None
         self.build_graph()
     # end constructor
 
@@ -25,7 +25,7 @@ class ConvAE:
     def add_input_layer(self):
         self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.img_size[0], self.img_size[1], self.img_ch])
-        self.current_layer = self.X
+        self._cursor = self.X
     # end method add_input_layer
 
 
@@ -33,9 +33,8 @@ class ConvAE:
         with tf.variable_scope('weights_tied'):
             W = self.call_W(name+'_W', filter_shape)
         b = self.call_b(name+'_conv_b', [filter_shape[-1]])
-        Y = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding='SAME')
-        Y = tf.nn.relu(tf.nn.bias_add(Y, b))
-        self.current_layer = Y
+        Y = tf.nn.conv2d(self._cursor, W, strides=[1,strides,strides,1], padding='SAME')
+        self._cursor = tf.nn.relu(tf.nn.bias_add(Y, b))
     # end method add_conv
 
 
@@ -43,9 +42,8 @@ class ConvAE:
         with tf.variable_scope('weights_tied', reuse=True):
             W = tf.get_variable(name+'_W')
         b = self.call_b(name+'_deconv_b', [output_shape[-1]])
-        Y = tf.nn.conv2d_transpose(self.current_layer, W, output_shape, [1,strides,strides,1], 'SAME')
-        Y = tf.nn.bias_add(Y, b)
-        self.decoder_op = Y
+        Y = tf.nn.conv2d_transpose(self._cursor, W, output_shape, [1,strides,strides,1], 'SAME')
+        self.decoder_op = tf.nn.bias_add(Y, b)
     # end method add_deconv
 
 

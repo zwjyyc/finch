@@ -31,7 +31,7 @@ class RNNTextClassifier:
         self.n_out = n_out
         self.sess = sess
         self.stateful = stateful
-        self.current_layer = None
+        self._cursor = None
         self.build_graph()
     # end constructor
 
@@ -52,15 +52,13 @@ class RNNTextClassifier:
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self.current_layer = self.X
+        self._cursor = self.X
     # end method add_input_layer
 
 
     def add_word_embedding_layer(self):
-        X = self.current_layer
         E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_normal_initializer())
-        Y = tf.nn.embedding_lookup(E, X)
-        self.current_layer = Y
+        self._cursor = tf.nn.embedding_lookup(E, self._cursor)
     # end method add_word_embedding_layer
 
 
@@ -72,18 +70,15 @@ class RNNTextClassifier:
 
 
     def add_dynamic_rnn(self):
-        X = self.current_layer
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)        
-        Y, self.final_state = tf.nn.dynamic_rnn(self.cell, X, initial_state=self.init_state, time_major=False)
-        self.current_layer = Y
+        self._cursor, self.final_state = tf.nn.dynamic_rnn(self.cell, self._cursor,
+                                                           initial_state=self.init_state, time_major=False)
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        X = self.current_layer
-        time_major = tf.unstack(tf.transpose(X, [1,0,2]))
-        Y = tf.layers.dense(time_major[-1], self.n_out)
-        self.logits = Y
+        time_major = tf.unstack(tf.transpose(self._cursor, [1,0,2]))
+        self.logits = tf.layers.dense(time_major[-1], self.n_out)
     # end method add_output_layer
 
 

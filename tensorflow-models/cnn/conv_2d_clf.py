@@ -30,10 +30,10 @@ class Conv2DClassifier:
         self.padding = padding
         self.n_out = n_out
         self.sess = sess
-        self.current_layer = None
-        self.current_img_h = self.img_size[0]
-        self.current_img_w = self.img_size[1]
-        self.current_n_filter = None
+        self._cursor = None
+        self._img_h = self.img_size[0]
+        self._img_w = self.img_size[1]
+        self._n_filter = None
         self.build_graph()
     # end constructor
 
@@ -57,54 +57,51 @@ class Conv2DClassifier:
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
         self.train_flag = tf.placeholder(tf.bool)
-        self.current_layer = self.X
+        self._cursor = self.X
     # end method add_input_layer
 
 
     def add_conv(self, name, filter_shape, strides=1):
         W = self.call_W(name+'_w', filter_shape)
         b = self.call_b(name+'_b', [filter_shape[-1]])
-        conv = tf.nn.conv2d(self.current_layer, W, strides=[1,strides,strides,1], padding=self.padding)
-        conv = tf.nn.bias_add(conv, b)
-        conv = tf.layers.batch_normalization(conv, training=self.train_flag)
-        conv = tf.nn.relu(conv)
-        self.current_layer = conv
-        self.current_n_filter = filter_shape[-1]
+        Y = tf.nn.conv2d(self._cursor, W, strides=[1,strides,strides,1], padding=self.padding)
+        Y = tf.nn.bias_add(Y, b)
+        Y = tf.layers.batch_normalization(Y, training=self.train_flag)
+        self._cursor = tf.nn.relu(Y)
+        self._n_filter = filter_shape[-1]
         if self.padding == 'VALID':
-            self.current_img_h = int((self.current_img_h-self.kernel_size[0]+1) / strides)
-            self.current_img_w = int((self.current_img_w-self.kernel_size[1]+1) / strides)
+            self._img_h = int((self._img_h-self.kernel_size[0]+1) / strides)
+            self._img_w = int((self._img_w-self.kernel_size[1]+1) / strides)
         if self.padding == 'SAME':
-            self.current_img_h = int(self.current_img_h / strides)
-            self.current_img_w = int(self.current_img_w / strides)
+            self._img_h = int(self._img_h / strides)
+            self._img_w = int(self._img_w / strides)
     # end method add_conv_layer
 
 
     def add_maxpool(self, k):
-        self.current_layer = tf.nn.max_pool(self.current_layer, ksize=[1,k,k,1], strides=[1,k,k,1],
-                                            padding=self.padding)
-        self.current_img_h = int(self.current_img_h / k)
-        self.current_img_w = int(self.current_img_w / k)
+        self._cursor = tf.nn.max_pool(self._cursor, ksize=[1,k,k,1], strides=[1,k,k,1], padding=self.padding)
+        self._img_h = int(self._img_h / k)
+        self._img_w = int(self._img_w / k)
     # end method add_maxpool_layer
 
 
     def add_fully_connected(self, name, out_dim):
-        w_shape = [self.current_img_h * self.current_img_h * self.current_n_filter, out_dim]
-        W = self.call_W(name+'_w', w_shape)
-        b = self.call_b(name+'_b', [w_shape[-1]])
-        fc = tf.reshape(self.current_layer, [-1, w_shape[0]])
+        W_shape = [self._img_h * self._img_h * self._n_filter, out_dim]
+        W = self.call_W(name+'_w', W_shape)
+        b = self.call_b(name+'_b', [out_dim])
+        fc = tf.reshape(self._cursor, [-1, W_shape[0]])
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
         fc = tf.contrib.layers.batch_norm(fc, is_training=self.train_flag)
         fc = tf.nn.relu(fc)
-        fc = tf.nn.dropout(fc, self.keep_prob)
-        self.current_layer = fc
+        self._cursor = tf.nn.dropout(fc, self.keep_prob)
     # end method add_fully_connected
 
 
     def add_output_layer(self):
-        in_dim = self.current_layer.get_shape().as_list()[1]
+        in_dim = self._cursor.get_shape()[1]
         W = self.call_W('logits_w', [in_dim, self.n_out])
         b = self.call_b('logits_b', [self.n_out])
-        self.logits = tf.nn.bias_add(tf.matmul(self.current_layer, W), b)
+        self.logits = tf.nn.bias_add(tf.matmul(self._cursor, W), b)
     # end method add_output_layer
 
 

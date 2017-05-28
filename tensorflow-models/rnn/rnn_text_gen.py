@@ -37,7 +37,7 @@ class RNNTextGen:
         self.n_layer = n_layer
         self.useless_words = useless_words
         self.grad_clip = grad_clip
-        self.current_layer = None
+        self._cursor = None
         self.preprocessing()
         self.build_graph()
     # end constructor
@@ -61,16 +61,14 @@ class RNNTextGen:
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
         self.batch_size = tf.placeholder(tf.int32)
         self.lr = tf.placeholder(tf.float32) 
-        self.current_layer = self.X
+        self._cursor = self.X
     # end method add_input_layer
 
 
     def add_word_embedding(self):
         # (batch_size, seq_len) -> (batch_size, seq_len, embedding_dims)
-        X = self.current_layer
         E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_normal_initializer())
-        Y = tf.nn.embedding_lookup(E, X)
-        self.current_layer = Y
+        self._cursor = tf.nn.embedding_lookup(E, self._cursor)
     # end method add_word_embedding
 
 
@@ -83,18 +81,15 @@ class RNNTextGen:
 
 
     def add_dynamic_rnn(self):
-        X = self.current_layer
         self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
-        Y, self.final_state = tf.nn.dynamic_rnn(self.cells, X, initial_state=self.init_state, time_major=False)
-        self.current_layer = Y    
+        self._cursor, final_state = tf.nn.dynamic_rnn(self.cells, self._cursor,
+                                                      initial_state=self.init_state, time_major=False)   
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        X = self.current_layer
-        X = tf.reshape(X, [-1, self.cell_size])
-        Y = tf.layers.dense(X, self.vocab_size, name='output')
-        self.logits = Y
+        reshaped = tf.reshape(self._cursor, [-1, self.cell_size])
+        self.logits = tf.layers.dense(reshaped, self.vocab_size, name='output')
     # end method add_output_layer
 
 

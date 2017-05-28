@@ -35,8 +35,8 @@ class HighwayClassifier:
         self.padding = padding
         self.n_out = n_out
         self.sess = sess
-        self.current_layer = None
-        self.current_seq_len = self.seq_len
+        self._cursor = None
+        self._seq_len = seq_len
         self.build_graph()
     # end constructor
  
@@ -56,21 +56,19 @@ class HighwayClassifier:
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self.current_layer = self.X
+        self._cursor = self.X
     # end method add_input_layer
 
 
     def add_word_embedding(self):
-        X = self.current_layer
         E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_normal_initializer())
-        Y = tf.nn.embedding_lookup(E, X)
-        Y = tf.nn.dropout(Y, self.keep_prob)
-        self.current_layer = Y
+        Y = tf.nn.embedding_lookup(E, self._cursor)
+        self._cursor = tf.nn.dropout(Y, self.keep_prob)
     # end method add_word_embedding_layer
 
 
     def add_conv1d_highway(self, name, filter_shape, stride=1, carry_bias=-1.0):
-        X = self.current_layer
+        X = self._cursor
 
         W = self.call_W(name+'_W', filter_shape)
         b = tf.get_variable(name+'_b', filter_shape[-1], tf.float32, tf.constant_initializer(carry_bias))
@@ -81,27 +79,24 @@ class HighwayClassifier:
         T = tf.sigmoid(tf.nn.conv1d(X, W_T, stride, 'SAME') + b_T, name='transform_gate')
         C = tf.subtract(1.0, T, name="carry_gate")
 
-        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # y = (H * T) + (x * C)
-        self.current_seq_len = int(self.current_seq_len / stride)
-        self.current_layer = Y
+        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # Y = (H * T) + (x * C)
+
+        self._seq_len = int(self._seq_len / stride)
+        self._cursor = Y
     # end method add_conv1d_highway
 
 
     def add_global_pooling(self):
-        X = self.current_layer
-        k = self.current_seq_len
-        Y = tf.expand_dims(X, 1)
+        k = self._seq_len
+        Y = tf.expand_dims(self._cursor, 1)
         Y = tf.nn.avg_pool(Y, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
         Y = tf.squeeze(Y)
-        Y = tf.reshape(Y, [-1, self.n_filters])
-        self.current_layer = Y
+        self._cursor = tf.reshape(Y, [-1, self.n_filters])
     # end method add_global_maxpool_layer
 
 
     def add_output_layer(self):
-        X = self.current_layer
-        Y = tf.layers.dense(X, self.n_out)
-        self.logits = Y
+        self.logits = tf.layers.dense(self._cursor, self.n_out)
     # end method add_output_layer
 
 

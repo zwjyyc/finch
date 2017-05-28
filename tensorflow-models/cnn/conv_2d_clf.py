@@ -33,18 +33,16 @@ class Conv2DClassifier:
         self._cursor = None
         self._img_h = img_size[0]
         self._img_w = img_size[1]
-        self._n_filter = None
+        self._n_filter = img_ch
         self.build_graph()
     # end constructor
 
 
     def build_graph(self):
         self.add_input_layer()
-        self.add_conv('conv1', filter_shape=[self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
-        self.add_conv('conv1.1', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 32])
+        self.add_conv('conv1', 32)
         self.add_maxpool(self.pool_size)
-        self.add_conv('conv2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 32, 64])
-        self.add_conv('conv2.2', filter_shape=[self.kernel_size[0], self.kernel_size[1], 64, 64])
+        self.add_conv('conv2', 64)
         self.add_maxpool(self.pool_size)
         self.add_fully_connected('fc', 1024)
         self.add_output_layer()   
@@ -61,14 +59,15 @@ class Conv2DClassifier:
     # end method add_input_layer
 
 
-    def add_conv(self, name, filter_shape, strides=1):
+    def add_conv(self, name, out_dim, strides=1):
+        filter_shape = [self.kernel_size[0], self.kernel_size[1], self._n_filter, out_dim]
         W = self.call_W(name+'_w', filter_shape)
         b = self.call_b(name+'_b', [filter_shape[-1]])
         Y = tf.nn.conv2d(self._cursor, W, strides=[1,strides,strides,1], padding=self.padding)
         Y = tf.nn.bias_add(Y, b)
         Y = tf.layers.batch_normalization(Y, training=self.train_flag)
         self._cursor = tf.nn.relu(Y)
-        self._n_filter = filter_shape[-1]
+        self._n_filter = out_dim
         if self.padding == 'VALID':
             self._img_h = int((self._img_h-self.kernel_size[0]+1) / strides)
             self._img_w = int((self._img_w-self.kernel_size[1]+1) / strides)

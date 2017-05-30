@@ -1,15 +1,15 @@
-from utils import make_data
-from utils import plot_decision_boundary
+from sklearn.datasets import make_classification
 from sklearn.tree import DecisionTreeClassifier
-import matplotlib.pyplot as plt
+from bagging_clf import BaggingClassifier
 
 
 if __name__ == '__main__':
-    X, Y = make_data()
-    plt.scatter(X[:,0], X[:,1], s=100, c=Y, alpha=0.5)
+    X, y = make_classification(5000)
     
     tree = DecisionTreeClassifier()
-    tree.fit(X, Y)
-    
-    plot_decision_boundary(X, tree)
-    plt.show()
+    tree.fit(X, y)
+    print ("score for tree model:", tree.score(X, y))
+
+    clf = BaggingClassifier()
+    clf.fit(X, y)
+    print ("score for bagged model:", clf.score(X, y))

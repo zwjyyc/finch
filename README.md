@@ -8,6 +8,7 @@ Work in process ......
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)
   * [Support Vector Machine](https://github.com/zhedongzheng/finch/blob/master/README.md#support-vector-machine)
+  * [Ensemble](https://github.com/zhedongzheng/finch/blob/master/README.md#ensemble)
   * [Decomposition](https://github.com/zhedongzheng/finch/blob/master/README.md#decomposition)
 * [Deep Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#deep-learning)
   * [Multilayer Perceptron](https://github.com/zhedongzheng/finch/blob/master/README.md#multilayer-perceptron)

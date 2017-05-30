@@ -25,7 +25,7 @@ if __name__ == '__main__':
     plt.show()
     
     for step in range(3000):
-        G_out, D_prob, D_loss, _, _ = sess.run([GAN.G_out, GAN.D_X_prob, GAN.D_loss, GAN.D_train, GAN.G_train],
+        G_out, D_prob, D_loss, _, _ = sess.run([GAN.G_out, GAN.X_true_prob, GAN.D_loss, GAN.D_train, GAN.G_train],
                                                {GAN.G_in: np.random.randn(batch_size, n_G_in),
                                                 GAN.X_in: load_data()})
         if step % 50 == 0:

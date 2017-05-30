@@ -34,15 +34,15 @@ class MLP_GAN:
 
     def add_Discriminator(self):
         D_hidden = tf.layers.dense(self.X_in, 128, tf.nn.relu, name='hidden')
-        self.D_X_prob = tf.layers.dense(D_hidden, 1, tf.nn.sigmoid, name='out')
+        self.X_true_prob = tf.layers.dense(D_hidden, 1, tf.nn.sigmoid, name='out')
         D_hidden = tf.layers.dense(self.G_out, 128, tf.nn.relu, name='hidden', reuse=True)
-        self.D_G_prob = tf.layers.dense(D_hidden, 1, tf.nn.sigmoid, name='out', reuse=True)
+        self.G_true_prob = tf.layers.dense(D_hidden, 1, tf.nn.sigmoid, name='out', reuse=True)
     # end method add_Discriminator
 
 
     def add_backward_path(self):
-        self.G_loss = tf.reduce_mean( - tf.log(self.D_G_prob))
-        self.D_loss = tf.reduce_mean( - tf.log(self.D_X_prob) - tf.log(1 - self.D_G_prob) )
+        self.G_loss = tf.reduce_mean( - tf.log(self.G_true_prob))
+        self.D_loss = tf.reduce_mean( - tf.log(self.X_true_prob) - tf.log(1 - self.G_true_prob) )
         self.G_train = tf.train.AdamOptimizer(self.lr_G).minimize(self.G_loss,
             var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='G'))
         self.D_train = tf.train.AdamOptimizer(self.lr_D).minimize(self.D_loss,

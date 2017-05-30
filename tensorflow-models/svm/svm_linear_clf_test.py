@@ -15,7 +15,7 @@ if __name__ == '__main__':
     clf = LinearSVMClassifier(X_train.shape[1])
     log = clf.fit(X_train, Y_train, n_epoch=100, batch_size=100, val_data=(X_test, Y_test))
     Y_pred = clf.predict(X_test)
-    print("linear svm (tensorflow):", np.equal(Y_pred.ravel(), Y_test.ravel()).astype(float).mean())
+    print("linear svm (tensorflow):", (Y_pred.ravel() == Y_test.ravel()).astype(float).mean())
 
     clf = SVC(kernel='linear')
     y_pred = clf.fit(X_train, y_train).predict(X_test)

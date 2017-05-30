@@ -41,8 +41,8 @@ class MLP_GAN:
 
 
     def add_backward_path(self):
-        self.G_loss = tf.reduce_mean( - tf.log(self.G_true_prob))
-        self.D_loss = tf.reduce_mean( - tf.log(self.X_true_prob) - tf.log(1 - self.G_true_prob) )
+        self.G_loss = - tf.reduce_mean(tf.log(self.G_true_prob))
+        self.D_loss = - tf.reduce_mean(tf.log(self.X_true_prob) + tf.log(1 - self.G_true_prob))
         self.G_train = tf.train.AdamOptimizer(self.lr_G).minimize(self.G_loss,
             var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='G'))
         self.D_train = tf.train.AdamOptimizer(self.lr_D).minimize(self.D_loss,

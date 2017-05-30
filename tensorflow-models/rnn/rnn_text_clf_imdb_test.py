@@ -23,5 +23,5 @@ if __name__ == '__main__':
                   val_data=(X_test, Y_test))
     Y_pred = clf.predict(X_test, batch_size)
 
-    final_acc = np.equal(np.argmax(Y_pred,1), np.argmax(Y_test,1)).astype(float).mean()
+    final_acc = (np.argmax(Y_pred,1) == np.argmax(Y_test,1)).astype(float).mean()
     print("final testing accuracy: %.4f" % final_acc)

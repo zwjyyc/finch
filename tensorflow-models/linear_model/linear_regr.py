@@ -34,9 +34,9 @@ class LinearRegression:
 
 
     def add_output_layer(self):
-        W = self.call_W('W', [self.n_in, 1])
-        b = self.call_b('b', [1])
-        self.pred = tf.nn.bias_add(tf.matmul(self.X, W), b)
+        self.W = self.call_W('W', [self.n_in, 1])
+        self.b = self.call_b('b', [1])
+        self.pred = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
     # end method add_output_layer
 
 

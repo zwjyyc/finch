@@ -19,4 +19,4 @@ if __name__ == '__main__':
 
     clf = SVC(kernel='linear')
     y_pred = clf.fit(X_train, y_train).predict(X_test)
-    print("linear svm (sklearn):", np.equal(y_pred, y_test).astype(float).mean())
+    print("linear svm (sklearn):", (y_pred == y_test).astype(float).mean())

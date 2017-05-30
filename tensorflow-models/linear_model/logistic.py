@@ -37,9 +37,9 @@ class Logistic:
 
 
     def add_output_layer(self):
-        W = self._W('W', [self.n_in, self.n_out])
-        b = self._b('b', shape=[self.n_out])
-        self.pred = tf.nn.softmax(tf.nn.bias_add(tf.matmul(self.X, W), b))
+        self.W = self.call_W('W', [self.n_in, self.n_out])
+        self.b = self.call_b('b', shape=[self.n_out])
+        self.pred = tf.nn.softmax(tf.nn.bias_add(tf.matmul(self.X, self.W), self.b))
     # end method add_output_layer
 
 

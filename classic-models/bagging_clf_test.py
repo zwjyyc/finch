@@ -4,12 +4,12 @@ from bagging_clf import BaggingClassifier
 
 
 if __name__ == '__main__':
-    X, y = make_classification(5000)
+    X, y = make_classification()
     
     tree = DecisionTreeClassifier()
     tree.fit(X, y)
     print ("score for tree model:", tree.score(X, y))
-
-    clf = BaggingClassifier()
+    
+    clf = BaggingClassifier(n_models=5)
     clf.fit(X, y)
     print ("score for bagged model:", clf.score(X, y))

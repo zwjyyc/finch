@@ -12,19 +12,19 @@ This repository contains a wide range of my API models and tests written on Appl
   ```
 * The model is easy to read with provided overview in method build_graph()
   ```python
-    def build_graph(self):
-        self.add_input_layer()
-        self.add_word_embedding()
+  def build_graph(self):
+      self.add_input_layer()
+      self.add_word_embedding()
 
-        self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-        self.add_pooling(self.pool_size)
+      self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
+      self.add_pooling(self.pool_size)
 
-        self.add_lstm_cells()
-        self.add_dynamic_rnn()
-        
-        self.add_output_layer()   
-        self.add_backward_path()
-    # end method build_graph
+      self.add_lstm_cells()
+      self.add_dynamic_rnn()
+
+      self.add_output_layer()   
+      self.add_backward_path()
+  # end method build_graph
   ```
 
 Work in process ......

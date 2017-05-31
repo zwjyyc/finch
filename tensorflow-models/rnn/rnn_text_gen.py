@@ -150,8 +150,8 @@ class RNNTextGen:
     # end method text_preprocessing
 
 
-    def fit_text(self, prime_texts, text_iter_step=10, n_gen=500,
-                 n_epoch=20, batch_size=128, en_exp_decay=True, en_shuffle=True):
+    def fit(self, prime_texts, text_iter_step=10, n_gen=500, n_epoch=20, batch_size=128,
+            en_exp_decay=True, en_shuffle=True):
         window = self.seq_len + 1
         X = np.array([self.indices[i:i+window] for i in range(0, len(self.indices)-window, text_iter_step)])
         Y = np.roll(X, -1, axis=1)
@@ -189,7 +189,7 @@ class RNNTextGen:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | test loss: %.4f'
                             % (epoch+1, n_epoch, local_step, n_batch, train_loss, avg_test_loss))
                     for prime_text in prime_texts:
-                        print(self.sample(prime_text, n_gen), end='\n\n')
+                        print(self.predict(prime_text, n_gen), end='\n\n')
                 local_step += 1
                 global_step += 1
             
@@ -197,7 +197,7 @@ class RNNTextGen:
     # end method fit
 
 
-    def sample(self, prime_text, n_gen):
+    def predict(self, prime_text, n_gen):
         # warming up
         next_state = self.sess.run(self.init_state_, {self.batch_size:1})
         char_list = list(prime_text)

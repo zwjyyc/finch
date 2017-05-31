@@ -10,18 +10,15 @@ This repository contains a wide range of my API models and tests written on Appl
   log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
   pred = clf.predict(X_test)
   ```
-* The code of model is easy to read with a overview written in method build_graph()
+* The code of model is easy to read with a overview provided in method build_graph() for each model
   ```python
   def build_graph(self):
       self.add_input_layer()
       self.add_word_embedding()
-
       self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
       self.add_pooling(self.pool_size)
-
       self.add_lstm_cells()
       self.add_dynamic_rnn()
-
       self.add_output_layer()   
       self.add_backward_path()
   # end method build_graph

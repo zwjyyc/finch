@@ -1,5 +1,5 @@
 from cnn_clf import CNNClassifier
-from keras.datasets import mnist
+import tensorflow as tf
 
 
 img_size = (28,28)
@@ -12,7 +12,7 @@ n_epoch = 2
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.mnist.load_data()
     X_train = (X_train / 255.0).reshape(-1, img_ch, img_size[0], img_size[1])
     X_test = (X_test / 255.0).reshape(-1, img_ch, img_size[0], img_size[1])
 

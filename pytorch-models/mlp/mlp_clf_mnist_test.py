@@ -1,5 +1,5 @@
 from mlp_clf import MLPClassifier
-from keras.datasets import mnist
+import tensorflow as tf
 
 
 n_in = 28*28
@@ -10,7 +10,7 @@ n_epoch = 5
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.mnist.load_data()
     X_train = (X_train / 255.0).reshape(-1, n_in)
     X_test = (X_test / 255.0).reshape(-1, n_in)
 

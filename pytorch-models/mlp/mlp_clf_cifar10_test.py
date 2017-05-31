@@ -1,5 +1,5 @@
 from mlp_clf import MLPClassifier
-from keras.datasets import cifar10
+import tensorflow as tf
 
 
 n_in = 32*32
@@ -10,7 +10,7 @@ n_epoch = 5
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.cifar10.load_data()
     X_train = (X_train / 255.0).mean(axis=3).reshape(-1, n_in)          
     X_test = (X_test / 255.0).mean(axis=3).reshape(-1, n_in)   
     y_train = y_train.ravel()

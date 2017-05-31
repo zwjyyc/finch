@@ -1,10 +1,8 @@
-import torch 
-from torch import nn
-from torch.autograd import Variable
+import torch
 import numpy as np
 
 
-class RNNClassifier(nn.Module):
+class RNNClassifier(torch.nn.Module):
     def __init__(self, n_in, n_out, cell_size=128, n_layer=2, stateful=False):
         super(RNNClassifier, self).__init__()
         self.n_in = n_in
@@ -17,21 +15,17 @@ class RNNClassifier(nn.Module):
 
 
     def build_model(self):
-        self.lstm = nn.LSTM(self.n_in, self.cell_size, self.n_layer, batch_first=True)
-        self.fc = nn.Linear(self.cell_size, self.n_out)
-        self.criterion = nn.CrossEntropyLoss()
+        self.lstm = torch.nn.LSTM(self.n_in, self.cell_size, self.n_layer, batch_first=True)
+        self.fc = torch.nn.Linear(self.cell_size, self.n_out)
+        self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
     # end method build_model    
 
 
     def forward(self, X, init_state=None):
-        """
-        h_0 = Variable(torch.zeros(self.n_layer, X.size(0), self.cell_size))
-        c_0 = Variable(torch.zeros(self.n_layer, X.size(0), self.cell_size))
-        """
-        out, final_state = self.lstm(X, init_state) # forward propagate
-        out = self.fc(out[:, -1, :])                # decode hidden state of last time step
-        return out, final_state
+        Y, final_state = self.lstm(X, init_state) # forward propagate
+        Y = self.fc(Y[:, -1, :])                  # decode hidden state of last time step
+        return Y, final_state
     # end method forward
 
 
@@ -41,12 +35,12 @@ class RNNClassifier(nn.Module):
             state = None
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size),
                                                     self.gen_batch(y, batch_size)):
-                X_train_batch = Variable(torch.from_numpy(X_batch.astype(np.float32)))
-                y_train_batch = Variable(torch.from_numpy(y_batch.astype(np.int64)))
+                X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
+                y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
                 if (self.stateful) and (len(X_batch) == batch_size):
                     y_pred_batch, state = self.forward(X_train_batch, state)
-                    state = (Variable(state[0].data), Variable(state[1].data))
+                    state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
                 else:
                     y_pred_batch, _ = self.forward(X_train_batch)
 
@@ -55,7 +49,7 @@ class RNNClassifier(nn.Module):
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
                 i+=1 
-                acc = np.equal(torch.max(y_pred_batch,1)[1].data.numpy().squeeze(), y_batch).astype(float).mean()
+                acc = (torch.max(y_pred_batch,1)[1].data.numpy().squeeze() == y_batch).astype(float).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
                            %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
@@ -68,12 +62,12 @@ class RNNClassifier(nn.Module):
         state = None
         for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size),
                                               self.gen_batch(y_test, batch_size)):
-            X_test_batch = Variable(torch.from_numpy(X_batch.astype(np.float32)))
+            X_test_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
             y_test_batch = torch.from_numpy(y_batch.astype(np.int64))
 
             if (self.stateful) and (len(X_batch) == batch_size):
                 y_pred_batch, state = self.forward(X_test_batch, state)
-                state = (Variable(state[0].data), Variable(state[1].data))
+                state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
             else:
                 y_pred_batch, _ = self.forward(X_test_batch)
 

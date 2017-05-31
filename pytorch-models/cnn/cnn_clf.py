@@ -1,10 +1,8 @@
-import torch 
-from torch import nn
-from torch.autograd import Variable
+import torch
 import numpy as np
 
 
-class CNNClassifier(nn.Module):
+class CNNClassifier(torch.nn.Module):
     def __init__(self, img_size, img_ch, kernel_size, pool_size, n_out):
         super(CNNClassifier, self).__init__()
         self.img_size = img_size
@@ -17,28 +15,28 @@ class CNNClassifier(nn.Module):
 
 
     def build_model(self):
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(self.img_ch, 16, kernel_size=self.kernel_size, padding=2),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(self.pool_size))
-        self.conv2 = nn.Sequential(
-            nn.Conv2d(16, 32, kernel_size=self.kernel_size, padding=2),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(self.pool_size))
-        self.fc = nn.Linear(int(self.img_size[0]/4)*int(self.img_size[1]/4)*32, self.n_out)
-        self.criterion = nn.CrossEntropyLoss()
+        self.conv1 = torch.nn.Sequential(
+            torch.nn.Conv2d(self.img_ch, 16, kernel_size=self.kernel_size, padding=2),
+            torch.nn.BatchNorm2d(16),
+            torch.nn.ReLU(),
+            torch.nn.MaxPool2d(self.pool_size))
+        self.conv2 = torch.nn.Sequential(
+            torch.nn.Conv2d(16, 32, kernel_size=self.kernel_size, padding=2),
+            torch.nn.BatchNorm2d(32),
+            torch.nn.ReLU(),
+            torch.nn.MaxPool2d(self.pool_size))
+        self.fc = torch.nn.Linear(int(self.img_size[0]/4)*int(self.img_size[1]/4)*32, self.n_out)
+        self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
     # end method build_model
 
 
     def forward(self, X):
-        out = self.conv1(X)
-        out = self.conv2(out)
-        out = self.shrink(out)
-        out = self.fc(out)
-        return out
+        Y = self.conv1(X)
+        Y = self.conv2(Y)
+        Y = self.shrink(Y)
+        Y = self.fc(Y)
+        return Y
     # end method forward
 
 
@@ -52,8 +50,8 @@ class CNNClassifier(nn.Module):
             i = 0
             for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size),
                                                     self.gen_batch(y, batch_size)):
-                images = Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
-                labels = Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
+                images = torch.autograd.Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
+                labels = torch.autograd.Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
 
                 pred = self.forward(images)             # rnn output
                 loss = self.criterion(pred, labels)     # cross entropy loss
@@ -61,7 +59,7 @@ class CNNClassifier(nn.Module):
                 loss.backward()                         # backpropagation, compute gradients
                 self.optimizer.step()                   # apply gradients
                 i+=1 
-                acc = np.equal(torch.max(pred,1)[1].data.numpy().squeeze(), y_train_batch).astype(float).mean()
+                acc = (torch.max(pred,1)[1].data.numpy().squeeze() == y_train_batch).astype(float).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
                            %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
@@ -73,7 +71,7 @@ class CNNClassifier(nn.Module):
         total = 0
         for X_test_batch, y_test_batch in zip(self.gen_batch(X_test, batch_size),
                                               self.gen_batch(y_test, batch_size)):
-            images = Variable(torch.from_numpy(X_test_batch.astype(np.float32)))
+            images = torch.autograd.Variable(torch.from_numpy(X_test_batch.astype(np.float32)))
             labels = torch.from_numpy(y_test_batch.astype(np.int64))
             outputs = self.forward(images)
             _, predicted = torch.max(outputs.data, 1)

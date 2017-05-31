@@ -1,10 +1,8 @@
-import torch 
-from torch import nn
-from torch.autograd import Variable
+import torch
 import numpy as np
 
 
-class MLPClassifier(nn.Module):
+class MLPClassifier(torch.nn.Module):
     def __init__(self, n_in, hidden_units, n_out):
         super(MLPClassifier, self).__init__()
         self.n_in = n_in
@@ -15,8 +13,8 @@ class MLPClassifier(nn.Module):
 
 
     def build_model(self):            
-        self.mlp = nn.Sequential(*self._dense())
-        self.criterion = nn.CrossEntropyLoss()
+        self.mlp = torch.nn.Sequential(*self._dense())
+        self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
     # end method build_model    
 
@@ -25,16 +23,16 @@ class MLPClassifier(nn.Module):
         dense = []
         forward = [self.n_in] + self.hidden_units
         for i in range(len(forward)-1):
-            dense.append(nn.Linear(forward[i], forward[i+1]))
-            dense.append(nn.ReLU())
-        dense.append(nn.Linear(self.hidden_units[-1], self.n_out))
+            dense.append(torch.nn.Linear(forward[i], forward[i+1]))
+            dense.append(torch.nn.ReLU())
+        dense.append(torch.nn.Linear(self.hidden_units[-1], self.n_out))
         return dense
     # end method _dense         
     
 
     def forward(self, X):
-        out = self.mlp(X)
-        return out
+        Y = self.mlp(X)
+        return Y
     # end method forward
 
 
@@ -43,8 +41,8 @@ class MLPClassifier(nn.Module):
             i = 0
             for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size),
                                                     self.gen_batch(y, batch_size)):
-                images = Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
-                labels = Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
+                images = torch.autograd.Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
+                labels = torch.autograd.Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
 
                 pred = self.forward(images)             # rnn output
                 loss = self.criterion(pred, labels)     # cross entropy loss
@@ -52,7 +50,7 @@ class MLPClassifier(nn.Module):
                 loss.backward()                         # backpropagation, compute gradients
                 self.optimizer.step()                   # apply gradients
                 i+=1 
-                acc = np.equal(torch.max(pred,1)[1].data.numpy().squeeze(), y_train_batch).astype(float).mean()
+                acc = (torch.max(pred,1)[1].data.numpy().squeeze() == y_train_batch).astype(float).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
                            %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
@@ -64,7 +62,7 @@ class MLPClassifier(nn.Module):
         total = 0
         for X_test_batch, y_test_batch in zip(self.gen_batch(X_test, batch_size),
                                               self.gen_batch(y_test, batch_size)):
-            images = Variable(torch.from_numpy(X_test_batch.astype(np.float32)))
+            images = torch.autograd.Variable(torch.from_numpy(X_test_batch.astype(np.float32)))
             labels = torch.from_numpy(y_test_batch.astype(np.int64))
             outputs = self.forward(images)
             _, predicted = torch.max(outputs.data, 1)

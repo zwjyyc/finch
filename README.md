@@ -3,6 +3,7 @@
 This repository contains a wide range of my API models and tests written on Applied Machine Learning
 
 * The model is easy to plug in
+
   ```python
   from rnn_clf import RNNClassifier
 
@@ -11,6 +12,7 @@ This repository contains a wide range of my API models and tests written on Appl
   pred = clf.predict(X_test)
   ```
 * The code of model is easy to read with a overview provided in method build_graph() for each model
+
   ```python
   def build_graph(self):
       self.add_input_layer()

@@ -34,13 +34,14 @@ class RNNClassifier(torch.nn.Module):
             i = 0
             state = None
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size),
-                                                    self.gen_batch(y, batch_size)):
+                                        self.gen_batch(y, batch_size)):
                 X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
                 y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
                 if (self.stateful) and (len(X_batch) == batch_size):
                     y_pred_batch, state = self.forward(X_train_batch, state)
-                    state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
+                    state = (torch.autograd.Variable(state[0].data),
+                             torch.autograd.Variable(state[1].data))
                 else:
                     y_pred_batch, _ = self.forward(X_train_batch)
 
@@ -61,13 +62,14 @@ class RNNClassifier(torch.nn.Module):
         total = 0
         state = None
         for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size),
-                                              self.gen_batch(y_test, batch_size)):
+                                    self.gen_batch(y_test, batch_size)):
             X_test_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
             y_test_batch = torch.from_numpy(y_batch.astype(np.int64))
 
             if (self.stateful) and (len(X_batch) == batch_size):
                 y_pred_batch, state = self.forward(X_test_batch, state)
-                state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
+                state = (torch.autograd.Variable(state[0].data),
+                         torch.autograd.Variable(state[1].data))
             else:
                 y_pred_batch, _ = self.forward(X_test_batch)
 

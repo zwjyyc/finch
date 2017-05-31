@@ -26,7 +26,7 @@ This repository contains a wide range of my API models and tests written on Appl
   # end method build_graph
   ```
 
-Work in process ......
+work in process ......
 
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)

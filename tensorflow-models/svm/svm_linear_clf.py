@@ -51,7 +51,7 @@ class LinearSVMClassifier:
         regu_loss = 0.5 * tf.reduce_sum(tf.square(self.W))
         hinge_loss = tf.reduce_sum(tf.maximum(tf.zeros([self.batch_size,1]), 1-self.Y*self.logits))
         self.loss = regu_loss + self.C * hinge_loss
-        self.train_op = tf.train.GradientDescentOptimizer(1e-3).minimize(self.loss)
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(self.pred, self.Y), tf.float32))
     # end method add_backward_path
 
@@ -66,7 +66,7 @@ class LinearSVMClassifier:
     # end method _b
 
 
-    def fit(self, X, Y, val_data, n_epoch=100, batch_size=100):
+    def fit(self, X, Y, val_data, n_epoch=20, batch_size=100):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         
@@ -93,7 +93,7 @@ class LinearSVMClassifier:
             log['val_loss'].append(val_loss)
             log['val_acc'].append(val_acc)
             # verbose
-            if epoch % 20 == 0:
+            if epoch % 5 == 0:
                 print ("%d / %d: train_loss: %.4f train_acc: %.4f | test_loss: %.4f test_acc: %.4f"
                     % (epoch+1, n_epoch, loss, acc, val_loss, val_acc))
             

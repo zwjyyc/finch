@@ -45,11 +45,11 @@ class LinearRegression:
         l1_loss = tf.reduce_mean(tf.abs(self.W))
         l2_loss = tf.reduce_mean(tf.square(self.W))
         self.loss = regr_loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
-        self.train_op = tf.train.GradientDescentOptimizer(0.01).minimize(self.loss)
+        self.train_op = tf.train.AdamOptimizer(0.1).minimize(self.loss)
     # end method add_backward_path
 
 
-    def fit(self, X, Y, val_data, n_epoch=100, batch_size=100):
+    def fit(self, X, Y, val_data, n_epoch=70, batch_size=100):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
@@ -63,8 +63,8 @@ class LinearRegression:
                 v_loss = self.sess.run(self.loss, {self.X:X_test_batch, self.Y:Y_test_batch})
                 val_loss_list.append(v_loss)
             val_loss = self.list_avg(val_loss_list)
-
-            print ("%d / %d: train_loss: %.4f | test_loss: %.4f" % (epoch+1, n_epoch, loss, val_loss))
+            if epoch % 5 == 0:
+                print ("%d / %d: train_loss: %.4f | test_loss: %.4f" % (epoch+1, n_epoch, loss, val_loss))
     # end method fit
 
 

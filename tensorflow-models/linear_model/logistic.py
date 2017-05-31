@@ -49,11 +49,11 @@ class Logistic:
         l2_loss = tf.reduce_mean(tf.square(self.W))
         self.loss = regr_loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.pred,1), tf.argmax(self.Y,1)), tf.float32))
-        self.train_op = tf.train.GradientDescentOptimizer(0.005).minimize(self.loss)
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 
 
-    def fit(self, X, Y, val_data, n_epoch=100, batch_size=100):
+    def fit(self, X, Y, val_data, n_epoch=20, batch_size=100):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
@@ -72,7 +72,7 @@ class Logistic:
             val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
 
             # verbose
-            if epoch % 20 == 0:
+            if epoch % 5 == 0:
                 print ("%d / %d: train_loss: %.4f train_acc: %.4f | test_loss: %.4f test_acc: %.4f"
                     % (epoch+1, n_epoch, loss, acc, val_loss, val_acc))
     # end method fit

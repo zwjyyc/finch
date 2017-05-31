@@ -4,7 +4,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 class BaggingClassifier:
-    def __init__(self, model=DecisionTreeClassifier(), n_models=200):
+    def __init__(self, model=DecisionTreeClassifier(), n_models=10):
         self.model = model
         self.n_models = n_models
         self.models = []

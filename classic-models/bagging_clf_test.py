@@ -10,6 +10,6 @@ if __name__ == '__main__':
     tree.fit(X, y)
     print ("score for tree model:", tree.score(X, y))
     
-    clf = BaggingClassifier(n_models=5)
+    clf = BaggingClassifier()
     clf.fit(X, y)
     print ("score for bagged model:", clf.score(X, y))

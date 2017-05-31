@@ -4,15 +4,15 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 class BaggingClassifier:
-    def __init__(self, model=DecisionTreeClassifier(), n_models=10):
-        self.model = model
+    def __init__(self, base_model=DecisionTreeClassifier(), n_models=10):
+        self.base_model = base_model
         self.n_models = n_models
         self.models = []
     def fit(self, X, y):
         for _ in range(self.n_models):
             N = len(X)
             idx = np.random.choice(N, size=N, replace=True)
-            self.models.append(self.model.fit(X[idx], y[idx]))
+            self.models.append(self.base_model.fit(X[idx], y[idx]))
     def predict(self, X):
         ys = [model.predict(X) for model in self.models]
         ys_one_hot = [tf.contrib.keras.utils.to_categorical(y) for y in ys]

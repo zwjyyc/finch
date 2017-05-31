@@ -10,7 +10,7 @@ This repository contains a wide range of my API models and tests written on Appl
   log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
   pred = clf.predict(X_test)
   ```
-* The code of model is easy to read with provided overview in method build_graph()
+* The code of model is easy to read with a overview written in method build_graph()
   ```python
   def build_graph(self):
       self.add_input_layer()

@@ -1,6 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-This repository contains a wide range of my models and tests written on machine learning (ML) topics
+This repository contains a wide range of my models and tests written on Applied Machine Learning topics
 
 Work in process ......
 

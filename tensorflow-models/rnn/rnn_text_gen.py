@@ -94,7 +94,10 @@ class RNNTextGen:
 
     def add_output_layer(self):
         reshaped = tf.reshape(self._cursor, [-1, self.cell_size])
-        self.logits = tf.layers.dense(reshaped, self.vocab_size, name='output')
+        if tf.__version__[0] == 1:
+            self.logits = tf.layers.dense(reshaped, self.vocab_size, name='output')
+        else:
+            self.logits = tf.contrib.layers.fully_connected(reshaped, self.vocab_size, scope='output')
     # end method add_output_layer
 
 
@@ -121,7 +124,10 @@ class RNNTextGen:
         X = tf.nn.embedding_lookup(tf.get_variable('E'), self.X_)
         Y, self.final_state_ = tf.nn.dynamic_rnn(self.cells, X, initial_state=self.init_state_, time_major=False)
         Y = tf.reshape(Y, [-1, self.cell_size])
-        Y = tf.layers.dense(Y, self.vocab_size, name='output', reuse=True)
+        if tf.__version__[0] == 1:
+            Y = tf.layers.dense(Y, self.vocab_size, name='output', reuse=True)
+        else:
+            Y = tf.contrib.layers.fully_connected(Y, self.vocab_size, scope='output', reuse=True)
         self.softmax_out_ = tf.nn.softmax(Y)
     # end add_sample_model
 

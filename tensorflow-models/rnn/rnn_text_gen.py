@@ -102,22 +102,13 @@ class RNNTextGen:
 
 
     def add_backward_path(self):
-        if tf.__version__[0] == 1:
-            losses = tf.contrib.seq2seq.sequence_loss(
-                logits = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.vocab_size]),
-                targets = self.Y,
-                weights = tf.ones([self.batch_size, self.seq_len]),
-                average_across_timesteps = True,
-                average_across_batch = True,
-            )
-        else:
-            losses = tf.nn.seq2seq.sequence_loss(
-                logits = tf.reshape(self.logits, [self.batch_size, self.seq_len * self.vocab_size]),
-                targets = tf.reshape(self.Y, [-1]),
-                weights = tf.ones([self.batch_size, self.seq_len]),
-                average_across_timesteps = True,
-                average_across_batch = True,
-            )
+        losses = tf.contrib.seq2seq.sequence_loss(
+            logits = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.vocab_size]),
+            targets = self.Y,
+            weights = tf.ones([self.batch_size, self.seq_len]),
+            average_across_timesteps = True,
+            average_across_batch = True,
+        )
         self.loss = tf.reduce_sum(losses)
         # gradient clipping
         tvars = tf.trainable_variables()

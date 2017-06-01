@@ -74,14 +74,10 @@ class RNNTextGen:
 
 
     def add_lstm_cells(self):
-        if tf.__version__[0] == 1:
-            def cell():
-                cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
-                return cell
-            self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
-        else:
-            cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
-            self.cells = tf.nn.rnn_cell.MultiRNNCell([cell] * self.n_layer)
+        def cell():
+            cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
+            return cell
+        self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
     # end method add_rnn_cells
 
 
@@ -94,10 +90,7 @@ class RNNTextGen:
 
     def add_output_layer(self):
         reshaped = tf.reshape(self._cursor, [-1, self.cell_size])
-        if tf.__version__[0] == 1:
-            self.logits = tf.layers.dense(reshaped, self.vocab_size, name='output')
-        else:
-            self.logits = tf.contrib.layers.fully_connected(reshaped, self.vocab_size, scope='output')
+        self.logits = tf.layers.dense(reshaped, self.vocab_size, name='output')
     # end method add_output_layer
 
 
@@ -124,10 +117,7 @@ class RNNTextGen:
         X = tf.nn.embedding_lookup(tf.get_variable('E'), self.X_)
         Y, self.final_state_ = tf.nn.dynamic_rnn(self.cells, X, initial_state=self.init_state_, time_major=False)
         Y = tf.reshape(Y, [-1, self.cell_size])
-        if tf.__version__[0] == 1:
-            Y = tf.layers.dense(Y, self.vocab_size, name='output', reuse=True)
-        else:
-            Y = tf.contrib.layers.fully_connected(Y, self.vocab_size, scope='output', reuse=True)
+        Y = tf.layers.dense(Y, self.vocab_size, name='output', reuse=True)
         self.softmax_out_ = tf.nn.softmax(Y)
     # end add_sample_model
 

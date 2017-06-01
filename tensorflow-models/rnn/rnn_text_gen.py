@@ -81,7 +81,7 @@ class RNNTextGen:
             self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
         else:
             cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
-            self.cells = tf.nn.rnn_cell.MultiRNNCell([cell * self.n_layer])
+            self.cells = tf.nn.rnn_cell.MultiRNNCell([cell] * self.n_layer)
     # end method add_rnn_cells
 
 

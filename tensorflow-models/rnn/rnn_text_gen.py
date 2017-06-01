@@ -112,8 +112,8 @@ class RNNTextGen:
             )
         else:
             losses = tf.nn.seq2seq.sequence_loss(
-                logits = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.vocab_size]),
-                targets = self.Y,
+                logits = tf.reshape(self.logits, [self.batch_size, self.seq_len * self.vocab_size]),
+                targets = tf.reshape(self.Y, [-1]),
                 weights = tf.ones([self.batch_size, self.seq_len]),
                 average_across_timesteps = True,
                 average_across_batch = True,

@@ -1,4 +1,3 @@
-from __future__ import print_function
 import tensorflow as tf
 import math
 import numpy as np
@@ -75,10 +74,14 @@ class RNNTextGen:
 
 
     def add_lstm_cells(self):
-        def cell():
-            cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
-            return cell
-        self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
+        if tf.__version__[0] == 1:
+            def cell():
+                cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
+                return cell
+            self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
+        else:
+            self.cell_size = 512
+            self.cells = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
     # end method add_rnn_cells
 
 
@@ -194,7 +197,7 @@ class RNNTextGen:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | test loss: %.4f'
                             % (epoch+1, n_epoch, local_step, n_batch, train_loss, avg_test_loss))
                     for prime_text in prime_texts:
-                        print(self.predict(prime_text, n_gen), end='\n\n')
+                            print(self.predict(prime_text, n_gen)+'\n')
                 local_step += 1
                 global_step += 1
             

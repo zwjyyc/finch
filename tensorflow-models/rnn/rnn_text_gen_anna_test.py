@@ -1,6 +1,6 @@
 from rnn_text_gen import RNNTextGen
 import string
-
+import tensorflow as tf
 
 prime_texts = ['the']
 useless_words = [x for x in string.punctuation if x not in [',', "."]]

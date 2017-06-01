@@ -1,3 +1,4 @@
+from __future__ import print_function
 import tensorflow as tf
 import math
 import numpy as np
@@ -6,6 +7,7 @@ from sklearn.model_selection import train_test_split
 import string
 import re
 import collections
+import sys
 
 
 class RNNTextGen:
@@ -135,8 +137,11 @@ class RNNTextGen:
         text = text.replace('\n', ' ')
         if self.useless_words is None:
             self.useless_words = string.punctuation
-        table = str.maketrans( {useless: ' ' for useless in self.useless_words} )
-        text = text.translate(table)
+        if sys.version[0] == 3:
+            table = str.maketrans( {useless: ' ' for useless in self.useless_words} )
+            text = text.translate(table)
+        else:
+            text = re.sub(r'[{}]'.format(''.join(self.useless_words)), ' ', text)
         text = re.sub('\s+', ' ', text ).strip().lower()
         
         chars = list(set(text))

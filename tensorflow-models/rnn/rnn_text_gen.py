@@ -134,13 +134,12 @@ class RNNTextGen:
     def preprocessing(self):
         text = self.text
         text = text.replace('\n', ' ')
-        if self.useless_words is None:
-            self.useless_words = string.punctuation
-        if sys.version[0] == 3:
-            table = str.maketrans( {useless: ' ' for useless in self.useless_words} )
-            text = text.translate(table)
-        else:
-            text = re.sub(r'[{}]'.format(''.join(self.useless_words)), ' ', text)
+        if self.useless_words is not None:
+            if sys.version[0] == 3:
+                table = str.maketrans({useless: ' ' for useless in self.useless_words})
+                text = text.translate(table)
+            else:
+                text = re.sub(r'[{}]'.format(''.join(self.useless_words)), ' ', text)
         text = re.sub('\s+', ' ', text ).strip().lower()
         
         chars = list(set(text))

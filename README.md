@@ -9,7 +9,7 @@ The models are designed to be:
   from rnn_clf import RNNClassifier
   ......
   clf = RNNClassifier(n_in=28, n_step=28, n_out=10, stateful=True)
-  log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
+  clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
   pred = clf.predict(X_test)
   ```
 * easy to read with a overview provided in method build_graph() for each model

@@ -3,11 +3,12 @@ import numpy as np
 
 
 class CONV_GAN:
-    def __init__(self, X_size, G_size=100, lr_G=1e-3, lr_D=1e-3):
+    def __init__(self, X_size, G_size=100, lr_G=1e-3, lr_D=1e-3, sess=tf.session()):
         self.X_size = X_size # (height, width, channel)
         self.G_size = G_size
         self.lr_G = lr_G
         self.lr_D = lr_D
+        self.sess = sess
         self._depths = [64, 128, 256]
         self.build_graph()
     # end constructor
@@ -105,12 +106,15 @@ class CONV_GAN:
 
     
     def fit(self, X, batch_size=128, n_epoch=10):
+        sess.run(tf.global_variables_initializer())
+        step = 0
         for epoch in range(n_epoch):
-            for step, X_batch in enumerate(self.gen_batch(X_train, batch_size)):
+            for X_batch in self.gen_batch(X_train, batch_size):
                 G_out, D_prob, D_loss, _, _ = sess.run([self.G_out, self.X_true_prob, self.D_loss, self.D_train, self.G_train],
                                                        {self.G_in: np.random.randn(batch_size, self.G_size),
                                                         self.X_in: X,
                                                         self.train_flag: True})
+                step += 1
                 print("Step %d | X true: %.2f | D loss: %.2f" % (step, D_prob, D_loss))
     # end method fit
 # end class

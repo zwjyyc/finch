@@ -1,17 +1,18 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-This repository contains a wide range of my API models and tests written on Applied Machine Learning
+This repository contains a wide range of my API models and tests written on machine learning topics
 
-* The model is easy to plug in
+The models are designed to be:
+* easy to plug in (inspired by scikit-learn)
 
   ```python
   from rnn_clf import RNNClassifier
-
+  ......
   clf = RNNClassifier(n_in=28, n_step=28, n_out=10, stateful=True)
-  log = clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
+  clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
   pred = clf.predict(X_test)
   ```
-* The code of model is easy to read with a overview provided in method build_graph() for each model
+* easy to read with a overview provided (inspired by Keras)
 
   ```python
   def build_graph(self):

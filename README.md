@@ -1,7 +1,7 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
 This repository contains a wide range of my API models and tests written on machine learning topics
-
+The models are:
 * easy to plug in
 
   ```python

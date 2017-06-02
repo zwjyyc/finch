@@ -17,9 +17,9 @@ class Adaboost:
             tree.fit(X, y, sample_weight=W)
             preds = tree.predict(X)
 
-            err = W.dot(preds != y)
+            err = np.dot(W, preds != y)
             alpha = 0.5 * (np.log(1 - err) - np.log(err))
-        
+
             W = W * np.exp(-alpha * y * preds)
             W = W / W.sum()
 

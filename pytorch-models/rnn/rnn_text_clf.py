@@ -43,8 +43,6 @@ class RNNTextClassifier(torch.nn.Module):
             local_step = 0
             state = None
             for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
-                varlen = np.random.choice([70, 75, 80, 85, 90], 1)[0]
-                X_batch = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_batch, maxlen=varlen)
                 X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
                 y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
@@ -68,11 +66,13 @@ class RNNTextClassifier(torch.nn.Module):
     # end method fit
 
 
-    def evaluate(self, X_test, y_test, batch_size=32):
+    def evaluate(self, X_test, y_test, batch_size=1):
         correct = 0
         total = 0
         state = None
         for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size), self.gen_batch(y_test, batch_size)):
+            print(len(X_batch[0]))
+            X_batch = np.atleast_2d(X_batch[0])
             X_test_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
             y_test_batch = torch.from_numpy(y_batch.astype(np.int64))
 

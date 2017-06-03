@@ -9,7 +9,7 @@ n_epoch = 3
 
 if __name__ == '__main__':
     (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.imdb.load_data(num_words=vocab_size)
-    X_test = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=maxlen)
+    X_train = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=maxlen)
 
     clf = RNNTextClassifier(vocab_size)
     clf.fit(X_train, y_train, n_epoch=n_epoch)

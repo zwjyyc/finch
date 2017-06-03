@@ -1,6 +1,8 @@
 import torch
 import numpy as np
 import math
+import tensorflow as tf
+from sklearn.utils import shuffle
 
 
 class RNNTextClassifier(torch.nn.Module):
@@ -37,10 +39,12 @@ class RNNTextClassifier(torch.nn.Module):
         n_batch = len(X) / batch_size
         total_steps = int(n_epoch * n_batch)
         for epoch in range(n_epoch):
+            X, y = shuffle(X, y)
             local_step = 0
             state = None
-            for X_batch, y_batch in zip(self.gen_batch(X, batch_size),
-                                        self.gen_batch(y, batch_size)):
+            for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
+                varlen = np.random.choice([70, 75, 80, 85, 90], 1)[0]
+                X_batch = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_batch, maxlen=varlen)
                 X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
                 y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
@@ -68,8 +72,7 @@ class RNNTextClassifier(torch.nn.Module):
         correct = 0
         total = 0
         state = None
-        for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size),
-                                    self.gen_batch(y_test, batch_size)):
+        for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size), self.gen_batch(y_test, batch_size)):
             X_test_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
             y_test_batch = torch.from_numpy(y_batch.astype(np.int64))
 
@@ -94,7 +97,7 @@ class RNNTextClassifier(torch.nn.Module):
 
     def adjust_lr(self, optimizer, current_step, total_steps):
         max_lr = 0.005
-        min_lr = 0.001
+        min_lr = 0.0005
         decay_rate = math.log(min_lr/max_lr) / (-total_steps)
         lr = max_lr * math.exp(-decay_rate * current_step)
         for param_group in optimizer.param_groups:

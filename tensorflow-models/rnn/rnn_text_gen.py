@@ -165,6 +165,7 @@ class RNNTextGen:
         
         global_step = 0
         n_batch = len(X_train) / batch_size
+        total_steps = int(n_epoch * n_batch)
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         
         for epoch in range(n_epoch):
@@ -174,7 +175,7 @@ class RNNTextGen:
                 X_train, Y_train = shuffle(X_train, Y_train)
             for X_train_batch, Y_train_batch in zip(self.gen_batch(X_train, batch_size),
                                                     self.gen_batch(Y_train, batch_size)):
-                lr = self.adjust_lr(global_step, int(n_epoch * n_batch)) if en_exp_decay else 0.001
+                lr = self.adjust_lr(global_step, total_steps) if en_exp_decay else 0.001
                 _, train_loss = self.sess.run([self.train_op, self.loss],
                                               {self.X:X_train_batch, self.Y:Y_train_batch,
                                                self.batch_size:len(X_train_batch), self.lr:lr})

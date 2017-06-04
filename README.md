@@ -111,7 +111,7 @@ work in process ......
 * TensorFlow &nbsp; | &nbsp; Conv1D Highway Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf_imdb_test.py) &nbsp; | &nbsp; 
 #### Generative Adversarial Network
 * TensorFlow &nbsp; | &nbsp; MLP GAN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/mlp_gan.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/mlp_gan_test.py) &nbsp; | &nbsp;
-* TensorFlow &nbsp; | &nbsp; Placeholder &nbsp; | &nbsp; [Placeholder]() &nbsp; &nbsp; [Placeholder]() &nbsp; | &nbsp; &nbsp; &nbsp; [Placeholder]() &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Placeholder &nbsp; | &nbsp; [Placeholder]() &nbsp; &nbsp; [Placeholder]() &nbsp; | &nbsp; [Placeholder]() &nbsp; &nbsp; [Placeholder]() &nbsp; | &nbsp;
 
 ## Computer Vision
 #### Basic Operations

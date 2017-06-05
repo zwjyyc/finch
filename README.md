@@ -3,7 +3,7 @@
 This repository contains a wide range of my API models and tests written on machine learning topics
 
 The models are designed to be:
-* easy to plug in (inspired by scikit-learn)
+* easy to plug in (inspired by Scikit-Learn)
 
   ```python
   from rnn_clf import RNNClassifier
@@ -12,7 +12,7 @@ The models are designed to be:
   clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
   pred = clf.predict(X_test)
   ```
-* easy to read with a overview provided (inspired by Keras)
+* easy to read with a high-level overview (inspired by Keras)
 
   ```python
   def build_graph(self):

@@ -43,14 +43,14 @@ work in process ......
   * [Autoencoder](https://github.com/zhedongzheng/finch/blob/master/README.md#autoencoder)
   * [Highway Network](https://github.com/zhedongzheng/finch/blob/master/README.md#highway-network)
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
+* [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
+  * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
+  * [Deep NLP](https://github.com/zhedongzheng/finch/blob/master/README.md#deep-nlp)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [Basic Operations](https://github.com/zhedongzheng/finch/blob/master/README.md#basic-operations)
   * [Image Segmentation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-segmentation)
   * [Detection](https://github.com/zhedongzheng/finch/blob/master/README.md#detection)
   * [Deep CV](https://github.com/zhedongzheng/finch/blob/master/README.md#deep-cv)
-* [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
-  * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
-  * [Deep NLP](https://github.com/zhedongzheng/finch/blob/master/README.md#deep-nlp)
 
 ## Machine Learning
 #### Linear Model

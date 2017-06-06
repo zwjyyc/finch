@@ -3,11 +3,9 @@ import numpy as np
 
 
 class ConvGAN:
-    def __init__(self, X_size, G_size=100, lr_G=2e-4, lr_D=2e-4, sess=tf.Session() ):
+    def __init__(self, X_size, G_size=100, sess=tf.Session() ):
         self.G_size = G_size
         self.X_size = X_size # (height, width, channel)
-        self.lr_G = lr_G
-        self.lr_D = lr_D
         self.sess = sess
         self.build_graph()
     # end constructor
@@ -43,6 +41,7 @@ class ConvGAN:
         Y = tf.nn.relu(tf.contrib.layers.batch_norm(Y, is_training=self.train_flag))
         # (16, 16, 128) -> (32, 32, 3)
         Y = tf.layers.conv2d_transpose(Y, 3, [5, 5], strides=(2, 2), padding='SAME')
+        self.G_out_pre = Y
         self.G_out = tf.nn.tanh(Y)
     # end method add_Generator
 
@@ -91,8 +90,10 @@ class ConvGAN:
 
         D_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='D')
         with tf.control_dependencies(D_update_ops):
-            self.D_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.D_loss,
+            self.D_train = tf.train.GradientDescentOptimizer(2e-4).minimize(self.D_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='D'))
+        
+        self.mse_loss = tf.reduce_mean(tf.square(self.X_in - self.G_out_pre))
     # end method add_backward_path
 
 

@@ -67,9 +67,7 @@ class RNNRegressor:
 
 
     def add_backward_path(self):
-        square_loss = tf.square(tf.subtract(tf.reshape(self.logits, [-1]), tf.reshape(self.Y, [-1])))
-        avg_across_steps = tf.div(tf.reduce_sum(square_loss), self.n_step)
-        self.loss = tf.div(avg_across_steps, tf.cast(self.batch_size, tf.float32))
+        self.loss = tf.nn.l2_loss(tf.reshape(self.logits, [-1]) - tf.reshape(self.Y, [-1]))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 

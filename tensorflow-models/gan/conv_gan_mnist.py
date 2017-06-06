@@ -6,8 +6,6 @@ class ConvGAN:
     def __init__(self, X_size, G_size=100, sess=tf.Session() ):
         self.G_size = G_size
         self.X_size = X_size # (height, width, channel)
-        self.lr_G = lr_G
-        self.lr_D = lr_D
         self.sess = sess
         self.build_graph()
     # end constructor
@@ -40,6 +38,7 @@ class ConvGAN:
         Y = tf.nn.relu(tf.contrib.layers.batch_norm(Y, is_training=self.train_flag))
         # (14, 14, 128) -> (28, 28, 1)
         Y = tf.layers.conv2d_transpose(Y, 1, [5, 5], strides=(2, 2), padding='SAME')
+        self.G_out_pre = Y
         self.G_out = tf.nn.tanh(Y)
     # end method add_Generator
 
@@ -60,21 +59,25 @@ class ConvGAN:
             fully_connected = tf.reshape(Y, [-1, 7 * 7 * 256])
             return tf.layers.dense(fully_connected, 1, name='out', reuse=reuse)
         
-        self.G_logits = compute(self.G_out)
-        self.X_logits = compute(self.X_in, reuse=True)
-        self.X_true_prob = tf.nn.sigmoid(self.X_logits)
+        self.D_G_logits = compute(self.G_out)
+        self.D_X_logits = compute(self.X_in, reuse=True)
+        self.G_true_prob = tf.nn.sigmoid(self.D_G_logits)
+        self.X_true_prob = tf.nn.sigmoid(self.D_X_logits)
     # end method add_Discriminator
 
 
     def add_backward_path(self):
+        ones = tf.ones_like(self.D_G_logits)
+        zeros = tf.zeros_like(self.D_G_logits)
+        
         self.G_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=tf.ones_like(self.G_logits), logits=self.G_logits))
+            labels=ones, logits=self.D_G_logits))
 
         D_loss_X = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=tf.ones_like(self.X_logits), logits=self.X_logits))
+            labels=ones, logits=self.D_X_logits))
 
         D_loss_G = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=tf.zeros_like(self.G_logits), logits=self.G_logits))
+            labels=zeros, logits=self.D_G_logits))
 
         self.D_loss = D_loss_X + D_loss_G
 
@@ -87,6 +90,8 @@ class ConvGAN:
         with tf.control_dependencies(D_update_ops):
             self.D_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.D_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='D'))
+        
+        self.l2_loss = tf.nn.l2_loss(self.G_out_pre - self.X_in)
     # end method add_backward_path
 
 

@@ -3,7 +3,7 @@
 This repository contains a wide range of my API models and tests written on machine learning topics
 
 The models are designed to be:
-* easy to plug in (inspired by scikit-learn)
+* easy to plug in (inspired by Scikit-Learn)
 
   ```python
   from rnn_clf import RNNClassifier
@@ -12,7 +12,7 @@ The models are designed to be:
   clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
   pred = clf.predict(X_test)
   ```
-* easy to read with a overview provided (inspired by Keras)
+* easy to read with a high-level overview (inspired by Keras)
 
   ```python
   def build_graph(self):
@@ -43,14 +43,12 @@ work in process ......
   * [Autoencoder](https://github.com/zhedongzheng/finch/blob/master/README.md#autoencoder)
   * [Highway Network](https://github.com/zhedongzheng/finch/blob/master/README.md#highway-network)
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
+* [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
+  * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [Basic Operations](https://github.com/zhedongzheng/finch/blob/master/README.md#basic-operations)
   * [Image Segmentation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-segmentation)
   * [Detection](https://github.com/zhedongzheng/finch/blob/master/README.md#detection)
-  * [Deep CV](https://github.com/zhedongzheng/finch/blob/master/README.md#deep-cv)
-* [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
-  * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
-  * [Deep NLP](https://github.com/zhedongzheng/finch/blob/master/README.md#deep-nlp)
 
 ## Machine Learning
 #### Linear Model
@@ -111,19 +109,23 @@ work in process ......
 * TensorFlow &nbsp; | &nbsp; Conv1D Highway Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf_imdb_test.py) &nbsp; | &nbsp; 
 #### Generative Adversarial Network
 * TensorFlow &nbsp; | &nbsp; MLP GAN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/mlp_gan.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/mlp_gan_test.py) &nbsp; | &nbsp;
-* TensorFlow &nbsp; | &nbsp; Placeholder &nbsp; | &nbsp; Placeholder &nbsp; &nbsp; [Placeholder]() &nbsp; &nbsp; [Placeholder]() &nbsp; | &nbsp; Placeholder &nbsp; &nbsp; [Placeholder]() &nbsp; &nbsp; [Placeholder]() &nbsp; | &nbsp;
+
+* TensorFlow &nbsp; | &nbsp; Conv GAN &nbsp; | &nbsp; MNIST &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/conv_gan_mnist.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/conv_gan_mnist_test.py) &nbsp; | &nbsp; CIFAR10 &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/conv_gan_cifar10.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/conv_gan_cifar10_test.py) &nbsp; | &nbsp;
+
+## Natural Language Processing
+#### Preprocessing
+* Python &nbsp; | &nbsp; [Text Cleaning](https://github.com/zhedongzheng/finch/blob/master/nlp-models/text-cleaning.ipynb)
+* Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
 ## Computer Vision
 #### Basic Operations
   * OpenCV &nbsp; | &nbsp; [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
   * OpenCV &nbsp; | &nbsp; [Rotations](https://github.com/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
+
 #### Image Segmentation
   * OpenCV &nbsp; | &nbsp; [Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
   * OpenCV &nbsp; | &nbsp; [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
+
 #### Detection
   * OpenCV &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
   * OpenCV &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
-## Natural Language Processing
-#### Preprocessing
-* Python &nbsp; | &nbsp; [Text Cleaning](https://github.com/zhedongzheng/finch/blob/master/nlp-models/text-cleaning.ipynb)
-* Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)

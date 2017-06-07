@@ -51,26 +51,33 @@ class Conv_GAN:
             Y = lrelu(Y)
             fc = tf.reshape(Y, [-1, 7 * 7 * 64])
             fc = tf.layers.dense(fc, self.G_size, tf.nn.relu, name='hidden', reuse=reuse)
-            output = tf.layers.dense(fc, 1, tf.nn.sigmoid, name='out', reuse=reuse)
+            output = tf.layers.dense(fc, 1, name='out', reuse=reuse)
             return output
-        
-        self.G_true_prob = conv(self.G_out)
-        self.X_true_prob = conv(self.X_in, reuse=True)
+        self.G_true_logits = conv(self.G_out)
+        self.X_true_logits = conv(self.X_in, reuse=True)
+        self.G_true_prob = tf.nn.sigmoid(self.G_true_logits)
+        self.X_true_prob = tf.nn.sigmoid(self.X_true_logits)
     # end method add_Discriminator
 
 
     def add_backward_path(self):
+        ones = tf.ones_like(self.G_true_logits)
+        zeros = tf.zeros_like(self.G_true_logits)
+
+        D_loss_X = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=ones, logits=self.X_true_logits))
+        D_loss_G = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=zeros, logits=self.G_true_logits))
+
         G_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='G')
         with tf.control_dependencies(G_update_ops):
-            self.G_loss = - tf.reduce_mean(tf.log(self.G_true_prob))
+            self.G_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=ones, logits=self.G_true_logits))
 
             self.G_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.G_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='G'))
 
         D_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='D')
         with tf.control_dependencies(D_update_ops):
-            self.D_loss = - tf.reduce_mean(tf.log(self.X_true_prob) + tf.log(1 - self.G_true_prob))
-            
+            self.D_loss = D_loss_X + D_loss_G
+
             self.D_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.D_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='D'))
 

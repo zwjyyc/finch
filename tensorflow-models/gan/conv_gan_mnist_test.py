@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-n_epoch = 3
+n_epoch = 2
 batch_size = 32
 G_size = 100
 

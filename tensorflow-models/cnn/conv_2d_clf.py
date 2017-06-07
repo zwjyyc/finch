@@ -65,7 +65,7 @@ class Conv2DClassifier:
         b = self.call_b(name+'_b', [filter_shape[-1]])
         Y = tf.nn.conv2d(self._cursor, W, strides=[1,strides,strides,1], padding=self.padding)
         Y = tf.nn.bias_add(Y, b)
-        Y = tf.layers.batch_normalization(Y, training=self.train_flag)
+        Y = tf.contrib.layers.batch_norm(Y, fused=True, is_training=self.train_flag)
         self._cursor = tf.nn.relu(Y)
         self._n_filter = out_dim
         if self.padding == 'VALID':
@@ -90,7 +90,7 @@ class Conv2DClassifier:
         b = self.call_b(name+'_b', [out_dim])
         fc = tf.reshape(self._cursor, [-1, W_shape[0]])
         fc = tf.nn.bias_add(tf.matmul(fc, W), b)
-        fc = tf.contrib.layers.batch_norm(fc, is_training=self.train_flag)
+        fc = tf.contrib.layers.batch_norm(fc, fused=True, is_training=self.train_flag)
         fc = tf.nn.relu(fc)
         self._cursor = tf.nn.dropout(fc, self.keep_prob)
     # end method add_fully_connected

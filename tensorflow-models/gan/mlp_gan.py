@@ -47,5 +47,6 @@ class MLP_GAN:
             var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='G'))
         self.D_train = tf.train.AdamOptimizer(self.lr_D).minimize(self.D_loss,
             var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='D'))
+        self.l2_loss = tf.nn.l2_loss(self.G_out - self.X_in)
     # end method add_backward_path
 # end class

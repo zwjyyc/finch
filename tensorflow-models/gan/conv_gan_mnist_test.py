@@ -1,4 +1,4 @@
-from conv_gan import Conv_GAN
+from conv_gan_mnist import Conv_GAN
 from sklearn.utils import shuffle
 import tensorflow as tf
 import numpy as np

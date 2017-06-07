@@ -65,12 +65,12 @@ class Conv_GAN:
 
         G_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='G')
         with tf.control_dependencies(G_update_ops):
-            self.G_train = tf.train.AdamOptimizer(5e-4, beta1=0.5).minimize(self.G_loss,
+            self.G_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.G_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='G'))
 
         D_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='D')
         with tf.control_dependencies(D_update_ops):
-            self.D_train = tf.train.AdamOptimizer(5e-4, beta1=0.5).minimize(self.D_loss,
+            self.D_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.D_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='D'))
 
         self.l2_loss = tf.nn.l2_loss(self.G_out - self.X_in)

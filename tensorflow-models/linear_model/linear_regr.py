@@ -41,7 +41,7 @@ class LinearRegression:
 
 
     def add_backward_path(self):
-        regr_loss = tf.reduce_mean(tf.square(self.pred - self.Y))
+        regr_loss = tf.reduce_mean(tf.square(self.pred - self.Y)) / 2
         l1_loss = tf.reduce_mean(tf.abs(self.W))
         l2_loss = tf.reduce_mean(tf.square(self.W))
         self.loss = regr_loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss

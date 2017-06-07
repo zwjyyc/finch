@@ -48,7 +48,7 @@ class ConvAE:
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.square(tf.subtract(self.X, self.decoder_op)))
+        self.loss = tf.nn.l2_loss(self.X - self.decoder_op)
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 

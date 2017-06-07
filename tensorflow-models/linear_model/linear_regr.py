@@ -41,9 +41,9 @@ class LinearRegression:
 
 
     def add_backward_path(self):
-        regr_loss = tf.reduce_mean(tf.square(self.pred - self.Y)) / 2
-        l1_loss = tf.reduce_mean(tf.abs(self.W))
-        l2_loss = tf.reduce_mean(tf.square(self.W))
+        regr_loss = tf.nn.l2_loss(self.pred - self.Y)
+        l1_loss = tf.div(tf.reduce_sum(tf.abs(self.W)), 2)
+        l2_loss = tf.nn.l2_loss(self.W)
         self.loss = regr_loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
         self.train_op = tf.train.AdamOptimizer(0.1).minimize(self.loss)
     # end method add_backward_path

@@ -2,9 +2,9 @@ import tensorflow as tf
 
 
 class MLP_GAN:
-    def __init__(self, n_G_in, n_X_in, lr_G=1e-4, lr_D=1e-4):
-        self.n_G_in = n_G_in
-        self.n_X_in = n_X_in
+    def __init__(self, G_size, X_size, lr_G=1e-4, lr_D=1e-4):
+        self.G_size = G_size
+        self.X_size = X_size
         self.lr_G = lr_G
         self.lr_D = lr_D
         self.build_graph()
@@ -22,13 +22,13 @@ class MLP_GAN:
 
 
     def add_input_layer(self):
-        self.G_in = tf.placeholder(tf.float32, [None, self.n_G_in]) # random data
-        self.X_in = tf.placeholder(tf.float32, [None, self.n_X_in]) # real data
+        self.G_in = tf.placeholder(tf.float32, [None, self.G_size]) # random data
+        self.X_in = tf.placeholder(tf.float32, [None, self.X_size]) # real data
 
 
     def add_Generator(self):
         G_hidden = tf.layers.dense(self.G_in, 128, tf.nn.relu)
-        self.G_out = tf.layers.dense(G_hidden, self.n_X_in)
+        self.G_out = tf.layers.dense(G_hidden, self.X_size)
     # end method add_Generator
 
 

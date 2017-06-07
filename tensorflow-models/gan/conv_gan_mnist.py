@@ -50,6 +50,7 @@ class Conv_GAN:
             Y = tf.contrib.layers.batch_norm(Y, is_training=self.train_flag, scope='bn2', reuse=reuse)
             Y = lrelu(Y)
             fc = tf.reshape(Y, [-1, 7 * 7 * 64])
+            fc = tf.layers.dense(fc, self.G_size, tf.nn.relu, name='hidden', reuse=reuse)
             output = tf.layers.dense(fc, 1, tf.nn.sigmoid, name='out', reuse=reuse)
             return output
         
@@ -59,17 +60,17 @@ class Conv_GAN:
 
 
     def add_backward_path(self):
-        self.G_loss = - tf.reduce_mean(tf.log(self.G_true_prob))
-
-        self.D_loss = - tf.reduce_mean(tf.log(self.X_true_prob) + tf.log(1 - self.G_true_prob))
-
         G_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='G')
         with tf.control_dependencies(G_update_ops):
+            self.G_loss = - tf.reduce_mean(tf.log(self.G_true_prob))
+
             self.G_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.G_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='G'))
 
         D_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='D')
         with tf.control_dependencies(D_update_ops):
+            self.D_loss = - tf.reduce_mean(tf.log(self.X_true_prob) + tf.log(1 - self.G_true_prob))
+            
             self.D_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.D_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='D'))
 

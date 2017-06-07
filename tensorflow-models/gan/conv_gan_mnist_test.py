@@ -46,5 +46,5 @@ if __name__ == '__main__':
     
     img = sess.run(model.G_out, {model.G_in: np.random.uniform(-1, 1, (1, G_size)),
                                  model.train_flag: False})
-    plt.imshow(img.reshape(28, 28))
+    plt.imshow(np.squeeze(img))
     plt.show()

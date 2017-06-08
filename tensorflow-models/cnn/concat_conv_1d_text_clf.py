@@ -78,7 +78,7 @@ class Conv1DClassifier:
         Y = tf.nn.bias_add(Y, b)
         Y = tf.nn.relu(Y)
         if self.padding == 'VALID':
-            self._seq_len = int(self.seq_len - self.kernel_size + 1 / stride)
+            self._seq_len = int((self.seq_len - self.kernel_size + 1) / stride)
         if self.padding == 'SAME':
             self._seq_len = int(self.seq_len / stride)
         return Y

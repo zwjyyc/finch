@@ -79,7 +79,7 @@ class HighwayClassifier:
         T = tf.sigmoid(tf.nn.conv1d(X, W_T, stride, 'SAME') + b_T, name='transform_gate')
         C = tf.subtract(1.0, T, name="carry_gate")
 
-        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # Y = (H * T) + (x * C)
+        Y = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # Y = (H * T) + (X * C)
 
         self._seq_len = int(self._seq_len / stride)
         self._cursor = Y
@@ -103,7 +103,8 @@ class HighwayClassifier:
     def add_backward_path(self):
         self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),tf.argmax(self.Y, 1)), tf.float32))
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),
+                                                   tf.argmax(self.Y, 1)), tf.float32))
     # end method add_backward_path
 
 

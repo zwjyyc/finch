@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     idx2word = {idx : word for word, idx in word2idx.iteritems()}
 
-    model = TSNE(3)
+    model = TSNE(n_components=3, verbose=2)
     X = model.fit_transform(X)
     print("TSNE transform completed ...")
 

@@ -1,37 +1,41 @@
 from brown import get_indexed
 from sklearn.manifold import TSNE
 from sklearn.feature_extraction.text import TfidfTransformer
-from utils import find_analogies
+from utils import find_analogy
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 if __name__ == '__main__':
-    indexed, word2idx = get_indexed(min_freq=50)
+    indexed, word2idx = get_indexed(min_freq=5)
     vocab_size = len(word2idx)
     print("Data loaded | Vocab size:", vocab_size, '| Document size:', len(indexed))
 
-    X = np.zeros((vocab_size, len(indexed))) # term-document matrix
+    TD = np.zeros((vocab_size, len(indexed))) # term-document matrix
     j = 0
-    for document in indexed:
-        for idx in document:
-            X[idx, j] += 1
+    for indices in indexed:
+        for idx in indices:
+            TD[idx, j] += 1
         j += 1
     print("Term-Document matrix built ...")
 
     model = TfidfTransformer()
-    X = model.fit_transform(X)
-    X = X.toarray()
+    DT = TD.T
+    DT = model.fit_transform(DT).toarray()
+    TD = DT.T
     print("TF-IDF transform completed ...")
 
-    idx2word = {idx : word for word, idx in word2idx.iteritems()}
+    find_analogy('london', TD, word2idx)
+    find_analogy('king', TD, word2idx)
 
-    model = TSNE(n_components=3, verbose=2)
-    X = model.fit_transform(X)
+    """
+    model = TSNE(n_components=2, verbose=2, learning_rate=200)
+    X = model.fit_transform(TD)
     print("TSNE transform completed ...")
+    """
 
-    find_analogies('king', 'man', 'woman', X, word2idx)
-
+    """
+    idx2word = {idx : word for word, idx in word2idx.items()}
     plt.scatter(X[:,0], X[:,1])
     for i in range(vocab_size):
         try:
@@ -39,3 +43,4 @@ if __name__ == '__main__':
         except:
             print("bad string:", idx2word[i])
     plt.show()
+    """

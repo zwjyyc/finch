@@ -52,4 +52,4 @@ if __name__ == '__main__':
                 next_word = predict(trigram2proba[key])
                 tokens[i+1] = next_word
     print()
-    print(' '.join(tokens))
+    print(' '.join(tokens).replace(' .', '.').replace(" '", "'").replace(' ,', ',').replace(' $', '$').replace(' !', '!'))

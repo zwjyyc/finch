@@ -20,6 +20,7 @@ Work in process ......
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
+  * [Word-count based Model](https://github.com/zhedongzheng/finch/blob/master/README.md#word-count-based-model)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [Basic Operations](https://github.com/zhedongzheng/finch/blob/master/README.md#basic-operations)
   * [Image Segmentation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-segmentation)

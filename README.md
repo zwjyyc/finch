@@ -102,6 +102,8 @@ Work in process ......
 
 * Python &nbsp; | &nbsp; [Trigram Model on Article Spinning](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py)
 
+* Python &nbsp; | &nbsp; [TF-IDF and t-SNE on Brown Corpus](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py)
+
 ## Computer Vision
 #### Basic Operations
   * OpenCV &nbsp; | &nbsp; [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)

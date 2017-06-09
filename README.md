@@ -2,31 +2,6 @@
 
 This repository contains a wide range of my API models and tests written on machine learning topics
 
-The models are designed to be:
-* easy to plug in (inspired by Scikit-Learn)
-
-  ```python
-  from rnn_clf import RNNClassifier
-  ......
-  clf = RNNClassifier(n_in=28, n_step=28, n_out=10, stateful=True)
-  clf.fit(X_train, Y_train, val_data=(X_test,Y_test))
-  pred = clf.predict(X_test)
-  ```
-* easy to read with a high-level overview (inspired by Keras)
-
-  ```python
-  def build_graph(self):
-      self.add_input_layer()
-      self.add_word_embedding()
-      self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
-      self.add_pooling(self.pool_size)
-      self.add_lstm_cells()
-      self.add_dynamic_rnn()
-      self.add_output_layer()   
-      self.add_backward_path()
-  # end method build_graph
-  ```
-
 work in process ......
 
 ## Contents
@@ -116,7 +91,7 @@ work in process ......
 * TensorFlow &nbsp; | &nbsp; Conv GAN &nbsp; | &nbsp; MNIST &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/conv_gan_mnist.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/conv_gan_mnist_test.py) &nbsp; | &nbsp;
 
 ## Natural Language Processing
-#### Word Preprocessing
+#### Text Preprocessing
 * Python &nbsp; | &nbsp; [Text Cleaning](https://github.com/zhedongzheng/finch/blob/master/nlp-models/text-cleaning.ipynb)
 
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)

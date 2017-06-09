@@ -2,7 +2,7 @@
 
 This repository contains a wide range of my API models and tests written on machine learning topics
 
-work in process ......
+Work in process ......
 
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)

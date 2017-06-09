@@ -149,14 +149,14 @@ class RNNTextGen:
         self.vocab_size = len(self.idx2char)
         print('Vocabulary size:', self.vocab_size)
 
-        self.indices = [self.char2idx[char] for char in list(text)]
+        self.indexed = [self.char2idx[char] for char in list(text)]
     # end method text_preprocessing
 
 
     def fit(self, prime_texts, text_iter_step=10, n_gen=500, n_epoch=20, batch_size=128,
             en_exp_decay=True, en_shuffle=True):
         window = self.seq_len + 1
-        X = np.array([self.indices[i:i+window] for i in range(0, len(self.indices)-window, text_iter_step)])
+        X = np.array([self.indexed[i:i+window] for i in range(0, len(self.indexed)-window, text_iter_step)])
         Y = np.roll(X, -1, axis=1)
         X = X[:, :-1]
         Y = Y[:, :-1]

@@ -1,4 +1,3 @@
-import string
 import numpy as np
 import matplotlib.pyplot as plt
 from nltk.tokenize import word_tokenize

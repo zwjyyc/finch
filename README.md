@@ -120,7 +120,7 @@ work in process ......
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
 #### Count-based Model
-* Python &nbsp; | &nbsp; [Latent Semantic Analysis(LSA))](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
+* Python &nbsp; | &nbsp; [Latent Semantic Analysis (LSA)](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
 
 ## Computer Vision
 #### Basic Operations

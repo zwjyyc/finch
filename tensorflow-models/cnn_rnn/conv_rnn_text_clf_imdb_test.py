@@ -22,5 +22,5 @@ if __name__ == '__main__':
     log = clf.fit(X_train, Y_train, batch_size=32, n_epoch=3, keep_prob=0.8, val_data=(X_test,Y_test))
     pred = clf.predict(X_test)
 
-    final_acc = (np.argmax(pred,1) == np.argmax(Y_test,1)).astype(float).mean()
+    final_acc = (np.argmax(pred,1) == np.argmax(Y_test,1)).mean()
     print("final testing accuracy: %.4f" % final_acc)

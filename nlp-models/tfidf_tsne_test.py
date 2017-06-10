@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 if __name__ == '__main__':
-    indexed, word2idx = get_indexed(min_freq=5)
+    indexed, word2idx = get_indexed(10000)
     vocab_size = len(word2idx)
     print("Data loaded | Vocab size:", vocab_size, '| Document size:', len(indexed))
 

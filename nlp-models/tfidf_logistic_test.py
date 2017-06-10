@@ -12,11 +12,10 @@ if __name__ == '__main__':
 
     indexed = np.concatenate([X_train, X_test])
     DT = np.zeros((len(indexed), vocab_size))
-    i = 0
-    for indices in indexed:
+    
+    for i, indices in enumerate(indexed):
         for idx in indices:
             DT[i, idx] += 1
-        i += 1
     print("Document-Term matrix built ...")
 
     model = TfidfTransformer()

@@ -105,8 +105,7 @@ Work in process ......
 * Python &nbsp; | &nbsp; [TF-IDF and t-SNE on Brown Corpus](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py)
 
 * Python &nbsp; | &nbsp; [TF-IDF and Logistic Regression on IMDB Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py)
-
-    * In this test, TF-IDF and Logistic Regression yield around 89% testing accuracy on IMDB dataset (25k training samples, relatively small), which is comparable to convolution 1D however much faster
+    * In this test, TF-IDF and Logistic Regression yield around 89% testing accuracy on IMDB dataset (25k training samples, relatively small), which is comparable to convolution 1D however much faster
 ## Computer Vision
 #### Basic Operations
   * OpenCV &nbsp; | &nbsp; [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)

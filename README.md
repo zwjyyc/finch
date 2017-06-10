@@ -104,7 +104,7 @@ Work in process ......
 
 * Python &nbsp; | &nbsp; [TF-IDF and t-SNE on Brown Corpus](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py)
 
-* Python &nbsp; | &nbsp; [TF-IDF and Logistic Regression on IMDB Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py)
+* Python &nbsp; | &nbsp; [TF-IDF and Logistic Regression on IMDB Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py)
 
 ## Computer Vision
 #### Basic Operations

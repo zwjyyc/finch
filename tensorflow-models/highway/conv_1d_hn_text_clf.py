@@ -126,6 +126,8 @@ class HighwayClassifier:
             print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0
+        n_batch = int(len(X)/batch_size)
+        total_steps = n_epoch * n_batch
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
@@ -135,7 +137,7 @@ class HighwayClassifier:
             
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size),
                                         self.gen_batch(Y, batch_size)): # batch training
-                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
+                lr = self.decrease_lr(global_step, total_steps) if en_exp_decay else 1e-3 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                              {self.X:X_batch, self.Y:Y_batch,
                                               self.lr:lr, self.keep_prob:keep_prob})
@@ -143,7 +145,7 @@ class HighwayClassifier:
                 global_step += 1
                 if local_step % 50 == 0:
                     print ("Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f"
-                        %(epoch+1, n_epoch, local_step, int(len(X)/batch_size), loss, acc, lr))
+                        %(epoch+1, n_epoch, local_step, n_batch, loss, acc, lr))
 
             if val_data is not None: # go through test dara, compute averaged validation loss and acc
                 val_loss_list, val_acc_list = [], []
@@ -191,14 +193,11 @@ class HighwayClassifier:
     # end method gen_batch
 
 
-    def decrease_lr(self, en_exp_decay, global_step, n_epoch, len_X, batch_size):
-        if en_exp_decay:
-            max_lr = 0.005
-            min_lr = 0.001
-            decay_rate = math.log(min_lr/max_lr) / (-n_epoch*len_X/batch_size)
-            lr = max_lr*math.exp(-decay_rate*global_step)
-        else:
-            lr = 0.001
+    def decrease_lr(self, global_step, total_steps):
+        max_lr = 0.005
+        min_lr = 0.0005
+        decay_rate = math.log(min_lr / max_lr) / (- total_steps)
+        lr = max_lr * math.exp(- decay_rate * global_step)
         return lr
     # end method adjust_lr
 

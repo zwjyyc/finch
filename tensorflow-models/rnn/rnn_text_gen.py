@@ -140,12 +140,11 @@ class RNNTextGen:
                 text = text.translate(table)
             else:
                 text = re.sub(r'[{}]'.format(''.join(self.useless_words)), ' ', text)
-        text = re.sub('\s+', ' ', text ).strip().lower()
+        text = re.sub('\s+', ' ', text).strip().lower()
         
-        chars = list(set(text))
+        chars = set(text)
         self.char2idx = {c: i for i, c in enumerate(chars)}
         self.idx2char = {i: c for i, c in enumerate(chars)}
-        assert len(self.idx2char) == len(self.char2idx), "len(idx2char) != len(char2idx)"
         self.vocab_size = len(self.idx2char)
         print('Vocabulary size:', self.vocab_size)
 

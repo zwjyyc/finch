@@ -72,7 +72,7 @@ Work in process ......
 * PyTorch &nbsp; | &nbsp; LSTM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_clf_cifar10_test.py) &nbsp; | &nbsp;
 
 * PyTorch &nbsp; | &nbsp; LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
-    * Sequence length can be flexible in PyTorch, so we predict each testing sentence according to its own length without padding or clipping, which yields 86% accuracy higher than TensorFlow 84%
+
 #### Recurrent Convolutional Network
 * TensorFlow &nbsp; | &nbsp; Conv1D-LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn_rnn/conv_rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn_rnn/conv_rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 #### Autoencoder
@@ -83,7 +83,7 @@ Work in process ......
 * TensorFlow &nbsp; | &nbsp; MLP Highway Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/mlp_hn_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/mlp_hn_clf_mnist_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Conv1D Highway Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf_imdb_test.py) &nbsp; | &nbsp;
-    * In our experiment on IMDB dataset, highway conv1D model achieves 88% testing accuracy in one epoch, which works better than pure conv1D model and concatenated conv1D model.
+
 #### Generative Adversarial Network
 * TensorFlow &nbsp; | &nbsp; MLP GAN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/mlp_gan.py) &nbsp; | &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/mlp_gan_test.py) &nbsp; | &nbsp;
 
@@ -98,9 +98,9 @@ Work in process ......
 #### Language Model
 * Python &nbsp; | &nbsp; Latent Semantic Analysis (LSA) &nbsp; | &nbsp; [Book Titles Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
 
-* Python &nbsp; | &nbsp; Tri-Gram &nbsp; | &nbsp; [Amazon Review Spinning Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py)
+* Python &nbsp; | &nbsp; Tri-Gram &nbsp; | &nbsp; [Amazon Review Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py)
 
-* Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py) &nbsp; | &nbsp; [IMDB Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py)
+* Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py) &nbsp; | &nbsp; [IMDB Sentiment Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py)
 
 * TensorFlow &nbsp; | &nbsp; LSTM Text Generation &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
 

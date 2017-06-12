@@ -102,9 +102,9 @@ Work in process ......
 
 * Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py) &nbsp; | &nbsp; [IMDB Sentiment Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; LSTM Text Generation &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Skip-Gram &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram.py) &nbsp; | &nbsp; [Text8 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram_text8_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; Skip-Gram Embedding &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram.py) &nbsp; | &nbsp; [Text8 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram_text8_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; LSTM Text Generation &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
 
 ## Computer Vision
 #### Basic Operations

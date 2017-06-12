@@ -106,14 +106,16 @@ Work in process ......
 
 ## Computer Vision
 #### OpenCV
-* [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
+* Op
+    * [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
 
-* [Rotations](https://github.com/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
+    * [Rotations](https://github.com/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
+* Segmentation
+    * [Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
 
-* [Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
+    * [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
 
-* [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
+* Detection
+    * [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
 
-* [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
-
-* [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
+    * [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)

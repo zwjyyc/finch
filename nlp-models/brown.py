@@ -17,8 +17,3 @@ def get_indexed(vocab_size):
                 continue
         indexed.append(indexed_words)
     return indexed, word2idx
-
-
-if __name__ == "__main__":
-    indexed, word2idx = get_indexed()
-    print(indexed)

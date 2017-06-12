@@ -98,11 +98,9 @@ Work in process ......
 #### Language Model
 * Python &nbsp; | &nbsp; Latent Semantic Analysis (LSA) &nbsp; | &nbsp; [Book Titles Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
 
-* Python &nbsp; | &nbsp; N-Gram &nbsp; | &nbsp; [Trigram on Amazon Review Spinning](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py)
+* Python &nbsp; | &nbsp; Tri-Gram &nbsp; | &nbsp; [Amazon Review Spinning Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py)
 
-* Python &nbsp; | &nbsp; [TF-IDF and t-SNE on Brown Corpus](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py)
-
-* Python &nbsp; | &nbsp; [TF-IDF and Logistic Regression on IMDB Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py)
+* Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py) &nbsp; | &nbsp; [IMDB Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py)
     * In this test, TF-IDF and Logistic Regression yield around 89% testing accuracy on IMDB dataset (25k training samples, relatively small), which is comparable to convolution 1D however much faster
 
 * TensorFlow &nbsp; | &nbsp; LSTM Text Generation &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;

@@ -20,7 +20,7 @@ Work in process ......
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
-  * [Word-count based Model](https://github.com/zhedongzheng/finch/blob/master/README.md#word-count-based-model)
+  * [Classic Model](https://github.com/zhedongzheng/finch/blob/master/README.md#classic-model)
   * [Word Embedding Model](https://github.com/zhedongzheng/finch/blob/master/README.md#word-embedding-model)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [Basic Operations](https://github.com/zhedongzheng/finch/blob/master/README.md#basic-operations)
@@ -98,7 +98,7 @@ Work in process ......
 
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
-#### Word-count based Model
+#### Classic Model
 * Python &nbsp; | &nbsp; [Latent Semantic Analysis (LSA) on Book Titles](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
 
 * Python &nbsp; | &nbsp; [Trigram Model on Amazon Review Spinning](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py)

@@ -22,9 +22,7 @@ Work in process ......
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
   * [Language Model](https://github.com/zhedongzheng/finch/blob/master/README.md#language-model)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
-  * [Basic Operations](https://github.com/zhedongzheng/finch/blob/master/README.md#basic-operations)
-  * [Image Segmentation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-segmentation)
-  * [Detection](https://github.com/zhedongzheng/finch/blob/master/README.md#detection)
+  * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 
 ## Machine Learning
 #### Linear Model
@@ -107,17 +105,15 @@ Work in process ......
 * TensorFlow &nbsp; | &nbsp; Char RNN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
 
 ## Computer Vision
-#### Basic Operations
-  * OpenCV &nbsp; | &nbsp; [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
+#### OpenCV
+* [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
 
-  * OpenCV &nbsp; | &nbsp; [Rotations](https://github.com/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
+* [Rotations](https://github.com/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
 
-#### Image Segmentation
-  * OpenCV &nbsp; | &nbsp; [Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
+* [Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
 
-  * OpenCV &nbsp; | &nbsp; [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
+* [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
 
-#### Detection
-  * OpenCV &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
+* [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
 
-  * OpenCV &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
+* [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)

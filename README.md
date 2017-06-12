@@ -106,6 +106,10 @@ Work in process ......
 
 * Python &nbsp; | &nbsp; [TF-IDF and Logistic Regression on IMDB Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py)
     * In this test, TF-IDF and Logistic Regression yield around 89% testing accuracy on IMDB dataset (25k training samples, relatively small), which is comparable to convolution 1D however much faster
+
+#### Word Embedding Model
+* TensorFlow &nbsp; | &nbsp; Skip-Gram Model &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf_imdb_test.py) &nbsp; | &nbsp;
+
 ## Computer Vision
 #### Basic Operations
   * OpenCV &nbsp; | &nbsp; [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)

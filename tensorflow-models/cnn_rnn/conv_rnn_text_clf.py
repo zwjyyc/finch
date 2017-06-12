@@ -64,7 +64,7 @@ class ConvLSTMClassifier:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
-        self.batch_size = tf.placeholder(tf.int32)
+        self.batch_size = tf.placeholder(tf.int32, [])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
         self._cursor = self.X
@@ -101,7 +101,7 @@ class ConvLSTMClassifier:
 
 
     def add_lstm_cells(self):
-        self.cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
+        self.cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
     # end method add_rnn_cells
 
 

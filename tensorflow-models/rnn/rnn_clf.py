@@ -46,9 +46,9 @@ class RNNClassifier:
 
 
     def add_input_layer(self):
-        self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.batch_size = tf.placeholder(tf.int32, [])
         self.in_keep_prob = tf.placeholder(tf.float32)
         self.out_keep_prob = tf.placeholder(tf.float32)
         self._cursor = self.X
@@ -57,10 +57,10 @@ class RNNClassifier:
 
     def add_lstm_cells(self):
         def cell():
-            cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
-            cell = tf.contrib.rnn.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
+            cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
+            cell = tf.nn.rnn_cell.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
             return cell
-        self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
+        self.cells = tf.nn.rnn_cell.MultiRNNCell([cell() for _ in range(self.n_layer)])
     # end method add_rnn_cells
 
 

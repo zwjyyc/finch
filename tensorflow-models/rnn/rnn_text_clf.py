@@ -47,9 +47,9 @@ class RNNTextClassifier:
 
 
     def add_input_layer(self):
-        self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.batch_size = tf.placeholder(tf.int32, [])
         self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
         self._cursor = self.X
@@ -63,8 +63,8 @@ class RNNTextClassifier:
 
 
     def add_lstm_cells(self):
-        cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
-        cell = tf.contrib.rnn.DropoutWrapper(cell, self.rnn_keep_prob)
+        cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
+        cell = tf.nn.rnn_cell.DropoutWrapper(cell, self.rnn_keep_prob)
         self.cell = cell
     # end method add_rnn_cells
 

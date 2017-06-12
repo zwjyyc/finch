@@ -60,7 +60,7 @@ class RNNTextGen:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.batch_size = tf.placeholder(tf.int32)
+        self.batch_size = tf.placeholder(tf.int32, [])
         self.lr = tf.placeholder(tf.float32) 
         self._cursor = self.X
     # end method add_input_layer
@@ -75,9 +75,9 @@ class RNNTextGen:
 
     def add_lstm_cells(self):
         def cell():
-            cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
+            cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
             return cell
-        self.cells = tf.contrib.rnn.MultiRNNCell([cell() for _ in range(self.n_layer)])
+        self.cells = tf.nn.rnn_cell.MultiRNNCell([cell() for _ in range(self.n_layer)])
     # end method add_rnn_cells
 
 

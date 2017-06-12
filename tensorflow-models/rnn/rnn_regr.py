@@ -37,15 +37,15 @@ class RNNRegressor:
 
 
     def add_input_layer(self):
-        self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
         self.Y = tf.placeholder(tf.float32, [None, self.n_step, self.n_out])
+        self.batch_size = tf.placeholder(tf.int32, [])
         self._cursor = self.X
     # end method add_input_layer
 
 
     def add_lstm_cells(self):
-        self.cell = tf.contrib.rnn.BasicLSTMCell(self.cell_size)
+        self.cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
     # end method add_lstm_cells
 
 

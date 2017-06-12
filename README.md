@@ -96,7 +96,7 @@ Work in process ......
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
 #### Language Model
-* Python &nbsp; | &nbsp; [Latent Semantic Analysis (LSA) on Book Titles](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
+* Python &nbsp; | &nbsp; Latent Semantic Analysis (LSA) &nbsp; | &nbsp; [Book Titles Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
 
 * Python &nbsp; | &nbsp; [Trigram Model on Amazon Review Spinning](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py)
 

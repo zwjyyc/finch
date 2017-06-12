@@ -20,8 +20,7 @@ Work in process ......
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
-  * [Classic Model](https://github.com/zhedongzheng/finch/blob/master/README.md#classic-model)
-  * [Word Embedding Model](https://github.com/zhedongzheng/finch/blob/master/README.md#word-embedding-model)
+  * [Language Model](https://github.com/zhedongzheng/finch/blob/master/README.md#language-model)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [Basic Operations](https://github.com/zhedongzheng/finch/blob/master/README.md#basic-operations)
   * [Image Segmentation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-segmentation)
@@ -70,8 +69,6 @@ Work in process ......
 
 * TensorFlow &nbsp; | &nbsp; LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; LSTM Char Language Model &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
-
 * PyTorch &nbsp; | &nbsp; LSTM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_clf_cifar10_test.py) &nbsp; | &nbsp;
 
 * PyTorch &nbsp; | &nbsp; LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
@@ -98,7 +95,7 @@ Work in process ......
 
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
-#### Classic Model
+#### Language Model
 * Python &nbsp; | &nbsp; [Latent Semantic Analysis (LSA) on Book Titles](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
 
 * Python &nbsp; | &nbsp; [Trigram Model on Amazon Review Spinning](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py)
@@ -108,7 +105,8 @@ Work in process ......
 * Python &nbsp; | &nbsp; [TF-IDF and Logistic Regression on IMDB Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py)
     * In this test, TF-IDF and Logistic Regression yield around 89% testing accuracy on IMDB dataset (25k training samples, relatively small), which is comparable to convolution 1D however much faster
 
-#### Word Embedding Model
+* TensorFlow &nbsp; | &nbsp; LSTM Char Language Model &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
+
 * TensorFlow &nbsp; | &nbsp; Skip-Gram Model &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram.py) &nbsp; | &nbsp; [Text8 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram_text8_test.py) &nbsp; | &nbsp;
 
 ## Computer Vision

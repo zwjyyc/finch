@@ -98,9 +98,9 @@ Work in process ......
 #### Language Model
 * Python &nbsp; | &nbsp; Latent Semantic Analysis (LSA) &nbsp; | &nbsp; [Book Titles Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
 
-* Python &nbsp; | &nbsp; Tri-Gram &nbsp; | &nbsp; [Amazon Review Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py)
+* Python &nbsp; | &nbsp; Tri-Gram &nbsp; | &nbsp; [Amazon Review Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py) &nbsp; | &nbsp;
 
-* Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py) &nbsp; | &nbsp; [IMDB Sentiment Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py)
+* Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py) &nbsp; | &nbsp; [IMDB Sentiment Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; LSTM Text Generation &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
 

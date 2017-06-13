@@ -51,7 +51,7 @@ class RNNTextClassifier(torch.nn.Module):
                     y_pred_batch, state = self.forward(X_train_batch, state)
                     state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
                 else:
-                    y_pred_batch, state = self.forward(X_train_batch)
+                    y_pred_batch, _ = self.forward(X_train_batch)
 
                 loss = self.criterion(y_pred_batch, y_train_batch)     # cross entropy loss
                 self.optimizer, lr = self.adjust_lr(self.optimizer, global_step, total_steps)

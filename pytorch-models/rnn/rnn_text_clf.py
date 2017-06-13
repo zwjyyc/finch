@@ -85,7 +85,7 @@ class RNNTextClassifier(torch.nn.Module):
             _, y_pred_batch = torch.max(y_pred_batch.data, 1)
             total += y_test_batch.size(0)
             correct += (y_pred_batch == y_test_batch).sum()
-        print('Test Accuracy of the model on the 10000 test images: %d %%' % (100 * correct / total)) 
+        print('Test Accuracy of the model: %d %%' % (100 * correct / total)) 
     # end method evaluate
 
 

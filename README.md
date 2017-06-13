@@ -109,12 +109,12 @@ Work in process ......
 * PyTorch &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 
 #### POS Tagging
-* TensorFlow &nbsp; | &nbsp; RNN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pos_rnn_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pos_rnn_test.py) &nbsp; | &nbsp;
 
-* PyTorch &nbsp; | &nbsp; RNN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_tagging.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_tagging_test.py) &nbsp; | &nbsp;
+* PyTorch &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_tagging.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_tagging_test.py) &nbsp; | &nbsp;
 
 #### Text Generation
-* TensorFlow &nbsp; | &nbsp; Char RNN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Char LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
 
 ## Computer Vision
 #### OpenCV

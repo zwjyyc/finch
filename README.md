@@ -14,13 +14,14 @@ Work in process ......
   * [Multilayer Perceptron](https://github.com/zhedongzheng/finch/blob/master/README.md#multilayer-perceptron)
   * [Convolutional Network](https://github.com/zhedongzheng/finch/blob/master/README.md#convolutional-network)
   * [Recurrent Network](https://github.com/zhedongzheng/finch/blob/master/README.md#recurrent-network)
-  * [Recurrent Convolutional Network](https://github.com/zhedongzheng/finch/blob/master/README.md#recurrent-convolutional-network)
   * [Autoencoder](https://github.com/zhedongzheng/finch/blob/master/README.md#autoencoder)
   * [Highway Network](https://github.com/zhedongzheng/finch/blob/master/README.md#highway-network)
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
   * [Language Model](https://github.com/zhedongzheng/finch/blob/master/README.md#language-model)
+  * [Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/README.md#pos-tagging)
+  * [POS Tagging](https://github.com/zhedongzheng/finch/blob/master/README.md#sentiment-analysis)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 
@@ -66,8 +67,6 @@ Work in process ......
 
 * PyTorch &nbsp; | &nbsp; LSTM Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_clf.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_clf_mnist_test.py) &nbsp; | &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_clf_cifar10_test.py) &nbsp; | &nbsp;
 
-#### Recurrent Convolutional Network
-* TensorFlow &nbsp; | &nbsp; Conv1D-LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn_rnn/conv_rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn_rnn/conv_rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 #### Autoencoder
 * TensorFlow &nbsp; | &nbsp; MLP Autoencoder &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder/mlp_ae.py) &nbsp; | &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/autoencoder/mlp_ae_mnist_test.py) &nbsp; | &nbsp;
 
@@ -91,13 +90,15 @@ Work in process ......
 
 * Python &nbsp; | &nbsp; Tri-Gram &nbsp; | &nbsp; [Amazon Review Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py) &nbsp; | &nbsp;
 
-* Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py) &nbsp; | &nbsp; [IMDB Sentiment Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py) &nbsp; | &nbsp;
+* Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Skip-Gram &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram.py) &nbsp; | &nbsp; [Text8 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram_text8_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Char RNN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
 
 #### Sentiment Analysis
+* Python &nbsp; | &nbsp; TF-IDF + Logistic Regression &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py) &nbsp; | &nbsp;
+
 * TensorFlow &nbsp; | &nbsp; LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 
 * PyTorch &nbsp; | &nbsp; LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
@@ -105,6 +106,8 @@ Work in process ......
 * TensorFlow &nbsp; | &nbsp; Conv1D Highway Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/highway/conv_1d_hn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Conv1D Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_1d_text_clf.py) &nbsp; &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_1d_text_clf_imdb_test.py) &nbsp; | &nbsp;[Concatenated Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/concat_conv_1d_text_clf.py) &nbsp; &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/concat_conv_1d_text_clf_imdb_test.py) &nbsp; | &nbsp;
+
+* TensorFlow &nbsp; | &nbsp; Conv1D-LSTM Text Classifier &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn_rnn/conv_rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn_rnn/conv_rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 
 #### POS Tagging
 * TensorFlow &nbsp; | &nbsp; Using Recurrent Network &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pos_rnn_test.py) &nbsp; | &nbsp;

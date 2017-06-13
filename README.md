@@ -105,7 +105,7 @@ Work in process ......
 * TensorFlow &nbsp; | &nbsp; Char RNN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
 
 #### POS Tagging
-* TensorFlow &nbsp; | &nbsp; RNN POS &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pos_rnn_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Using Recurrent Network &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pos_rnn_test.py) &nbsp; | &nbsp;
 
 ## Computer Vision
 #### OpenCV

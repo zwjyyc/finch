@@ -20,7 +20,7 @@ Work in process ......
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
   * [Language Model](https://github.com/zhedongzheng/finch/blob/master/README.md#language-model)
-  * [Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/README.md#sentiment-analysis)
+  * [Sentiment Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#sentiment-classification)
   * [POS Tagging](https://github.com/zhedongzheng/finch/blob/master/README.md#pos-tagging)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
@@ -96,7 +96,7 @@ Work in process ......
 
 * TensorFlow &nbsp; | &nbsp; Char RNN &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
 
-#### Sentiment Analysis
+#### Sentiment Classification
 * Python &nbsp; | &nbsp; TF-IDF + Logistic Regression &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;

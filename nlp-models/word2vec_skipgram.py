@@ -7,8 +7,8 @@ from collections import Counter
 
 
 class SkipGram:
-    def __init__(self, text, sample_words, skip_window=5, embedding_dim=200, n_sampled=200, min_freq=5, useless_words=None,
-                 loss_fn=tf.nn.nce_loss, sess=tf.Session()):
+    def __init__(self, text, sample_words, skip_window=5, embedding_dim=200, n_sampled=100, min_freq=5, useless_words=None,
+                 loss_fn=tf.nn.sampled_softmax_loss, sess=tf.Session()):
         self.text = text
         self.sample_words = sample_words
         self.skip_window = skip_window

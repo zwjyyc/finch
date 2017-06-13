@@ -21,7 +21,7 @@ Work in process ......
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
   * [Language Model](https://github.com/zhedongzheng/finch/blob/master/README.md#language-model)
   * [Sentiment Analysis](https://github.com/zhedongzheng/finch/blob/master/README.md#sentiment-analysis)
-  * [POS Tagging](https://github.com/zhedongzheng/finch/blob/master/README.md#sentiment-analysis)
+  * [POS Tagging](https://github.com/zhedongzheng/finch/blob/master/README.md#pos-tagging)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 

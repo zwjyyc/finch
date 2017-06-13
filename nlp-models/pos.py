@@ -21,6 +21,8 @@ def load_data():
                 tag_idx += 1
             y_train.append(tag2idx[tag])
 
+    word2idx['_unknown'] = word_idx
+
     for line in open('temp/test.txt'):
         line = line.rstrip()
         if line:
@@ -28,8 +30,8 @@ def load_data():
             if word in word2idx:
                 x_test.append(word2idx[word])
             else:
-                x_test.append(word_idx) # use this as unknown
+                x_test.append(word_idx)
             y_test.append(tag2idx[tag])
 
     print("Vocab Size: %d | x_train: %d | x_test: %d" % (len(word2idx), len(x_train), len(x_test)))
-    return x_train, y_train, x_test, y_test
+    return x_train, y_train, x_test, y_test, len(word2idx), tag_idx

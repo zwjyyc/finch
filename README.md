@@ -112,6 +112,8 @@ Work in process ......
 #### POS Tagging
 * TensorFlow &nbsp; | &nbsp; Using Recurrent Network &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pos_rnn_test.py) &nbsp; | &nbsp;
 
+* PyTorch &nbsp; | &nbsp; Using Recurrent Network &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_tagging.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_tagging_test.py) &nbsp; | &nbsp;
+
 ## Computer Vision
 #### OpenCV
 * OP &nbsp; | &nbsp; [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)

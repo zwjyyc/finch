@@ -6,9 +6,10 @@ from sklearn.utils import shuffle
 
 
 class RNNTextClassifier(torch.nn.Module):
-    def __init__(self, vocab_size, n_out=2, cell_size=128, n_layer=1, stateful=False):
+    def __init__(self, vocab_size, n_out=2, embedding_dim=128, cell_size=128, n_layer=1, stateful=False):
         super(RNNTextClassifier, self).__init__()
         self.vocab_size = vocab_size
+        self.embedding_dim = embedding_dim
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.n_out = n_out
@@ -18,8 +19,8 @@ class RNNTextClassifier(torch.nn.Module):
 
 
     def build_model(self):
-        self.encoder = torch.nn.Embedding(self.vocab_size, self.cell_size)
-        self.lstm = torch.nn.LSTM(self.cell_size, self.cell_size, self.n_layer, batch_first=True)
+        self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
+        self.lstm = torch.nn.LSTM(self.embedding_dim, self.cell_size, self.n_layer, batch_first=True)
         self.fc = torch.nn.Linear(self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters())

@@ -2,24 +2,29 @@ import torch
 import numpy as np
 import math
 import tensorflow as tf
-from sklearn.utils import shuffle
 
 
 class RNNTextClassifier(torch.nn.Module):
-    def __init__(self, vocab_size, n_out, cell_size=128, n_layer=1, stateful=False):
+    def __init__(self, vocab_size, n_out, embedding_dim=128, cell_size=128, n_layer=1, dropout=0.3, stateful=False):
         super(RNNTextClassifier, self).__init__()
         self.vocab_size = vocab_size
+        self.embedding_dim = embedding_dim
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.n_out = n_out
         self.stateful = stateful
+        self.dropout = dropout
         self.build_model()
     # end constructor
 
 
     def build_model(self):
-        self.encoder = torch.nn.Embedding(self.vocab_size, self.cell_size)
-        self.lstm = torch.nn.LSTM(self.cell_size, self.cell_size, self.n_layer, batch_first=True)
+        self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
+        self.lstm = torch.nn.LSTM(input_size=self.embedding_dim,
+                                  hidden_size=self.cell_size,
+                                  num_layers=self.n_layer,
+                                  batch_first=True,
+                                  dropout=self.dropout)
         self.fc = torch.nn.Linear(self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters())
@@ -35,11 +40,15 @@ class RNNTextClassifier(torch.nn.Module):
     # end method forward
 
 
-    def fit(self, X, Y, n_epoch=10, batch_size=128):
+    def fit(self, X, Y, n_epoch=10, batch_size=128, en_shuffle=True):
         global_step = 0
         n_batch = len(X) / batch_size
         total_steps = int(n_epoch * n_batch)
         for epoch in range(n_epoch):
+            if en_shuffle:
+                shuffled = np.random.permutation(len(X))
+                X = X[shuffled]
+                Y = Y[shuffled]
             local_step = 0
             state = None
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
@@ -85,7 +94,7 @@ class RNNTextClassifier(torch.nn.Module):
             _, y_pred_batch = torch.max(y_pred_batch.data, 1)
             total += y_test_batch.size(0)
             correct += (y_pred_batch == y_test_batch).sum()
-        print('Test Accuracy of the model: %d %%' % (100 * correct / total)) 
+        print('Test Accuracy of the model: %.4f' % (float(correct) / total)) 
     # end method evaluate
 
     

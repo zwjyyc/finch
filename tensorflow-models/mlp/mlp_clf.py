@@ -74,7 +74,7 @@ class MLPClassifier:
         W = self.call_W(name+'_w', [fan_in,fan_out])
         b = self.call_b(name+'_b', [fan_out])
         Y = tf.nn.bias_add(tf.matmul(X, W), b)
-        Y = tf.contrib.layers.batch_norm(Y, fused=True, is_training=self.train_flag)
+        Y = tf.layers.batch_normalization(Y, training=self.train_flag)
         Y = tf.nn.relu(Y)
         Y = tf.nn.dropout(Y, self.keep_prob)
         return Y

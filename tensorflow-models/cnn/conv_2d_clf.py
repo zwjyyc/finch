@@ -66,7 +66,7 @@ class Conv2DClassifier:
                              strides = strides,
                              padding = self.padding)
         Y = tf.nn.bias_add(Y, self.call_b(name+'_b', [out_dim]))
-        Y = tf.contrib.layers.batch_norm(Y, fused=True, is_training=self.train_flag)
+        Y = tf.layers.batch_normalization(Y, training=self.train_flag)
         Y = tf.nn.relu(Y)
         self._cursor = Y
         self._n_filter = out_dim
@@ -92,7 +92,7 @@ class Conv2DClassifier:
     def add_fully_connected(self, name, out_dim):
         fc = tf.reshape(self._cursor, [-1, self._img_h * self._img_w * self._n_filter])
         fc = tf.layers.dense(fc, out_dim)
-        fc = tf.contrib.layers.batch_norm(fc, fused=True, is_training=self.train_flag)
+        fc = tf.layers.batch_normalization(fc, training=self.train_flag)
         fc = tf.nn.relu(fc)
         self._cursor = tf.nn.dropout(fc, self.keep_prob)
     # end method add_fully_connected

@@ -30,7 +30,7 @@ class Conv_GAN:
             X = tf.layers.dense(X, 7*7*64)
             X = tf.reshape(X, [-1, 7, 7, 64])
             Y = tf.layers.conv2d_transpose(X, 32, [5, 5], strides=(2, 2), padding='SAME')
-            Y = tf.contrib.layers.batch_norm(Y, fused=True, is_training=self.train_flag)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag)
             Y = tf.nn.relu(Y)
             Y = tf.layers.conv2d_transpose(Y, 1, [5, 5], strides=(2, 2), padding='SAME')
             return Y
@@ -41,18 +41,20 @@ class Conv_GAN:
     def add_Discriminator(self):
         def lrelu(X, leak=0.2):
             return tf.maximum(X, X * leak)
+        
         def conv(X, reuse=False):
             # (28, 28, 1) -> (14, 14, 32) -> (7, 7, 64) -> 1
             Y = tf.layers.conv2d(X, 32, [5, 5], strides=(2, 2), padding='SAME', name='conv1', reuse=reuse)
-            Y = tf.contrib.layers.batch_norm(Y, fused=True, is_training=self.train_flag, scope='bn1', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn1', reuse=reuse)
             Y = lrelu(Y)
             Y = tf.layers.conv2d(Y, 64, [5, 5], strides=(2, 2), padding='SAME', name='conv2', reuse=reuse)
-            Y = tf.contrib.layers.batch_norm(Y, fused=True, is_training=self.train_flag, scope='bn2', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn2', reuse=reuse)
             Y = lrelu(Y)
             fc = tf.reshape(Y, [-1, 7 * 7 * 64])
             fc = tf.layers.dense(fc, self.G_size, tf.nn.relu, name='hidden', reuse=reuse)
             output = tf.layers.dense(fc, 1, name='out', reuse=reuse)
             return output
+        
         self.G_true_logits = conv(self.G_out)
         self.X_true_logits = conv(self.X_in, reuse=True)
         self.G_true_prob = tf.nn.sigmoid(self.G_true_logits)

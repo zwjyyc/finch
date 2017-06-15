@@ -45,7 +45,7 @@ class RNNRegressor:
 
 
     def add_lstm_cells(self):
-        self.cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
+        self.cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
     # end method add_lstm_cells
 
 

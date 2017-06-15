@@ -5,7 +5,7 @@ import sklearn
 
 
 class Conv2DClassifier:
-    def __init__(self, img_size, img_ch, n_out, kernel_size=(5,5), pool_size=2, padding='VALID',
+    def __init__(self, img_size, img_ch, n_out, kernel_size=(5,5), pool_size=(2,2), padding='valid',
                  sess=tf.Session()):
         """
         Parameters:
@@ -41,9 +41,9 @@ class Conv2DClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_conv('conv1', 32)
-        self.add_maxpool(self.pool_size)
+        self.add_pooling()
         self.add_conv('conv2', 64)
-        self.add_maxpool(self.pool_size)
+        self.add_pooling()
         self.add_fully_connected('fc', 1024)
         self.add_output_layer()   
         self.add_backward_path()
@@ -59,37 +59,39 @@ class Conv2DClassifier:
     # end method add_input_layer
 
 
-    def add_conv(self, name, out_dim, strides=1):
-        filter_shape = [self.kernel_size[0], self.kernel_size[1], self._n_filter, out_dim]
-        W = self.call_W(name+'_w', filter_shape)
-        b = self.call_b(name+'_b', [filter_shape[-1]])
-        Y = tf.nn.conv2d(self._cursor, W, strides=[1,strides,strides,1], padding=self.padding)
-        Y = tf.nn.bias_add(Y, b)
+    def add_conv(self, name, out_dim, strides=(1, 1)):
+        Y = tf.layers.conv2d(inputs = self._cursor,
+                             filters = out_dim,
+                             kernel_size = self.kernel_size,
+                             strides = strides,
+                             padding = self.padding)
+        Y = tf.nn.bias_add(Y, self.call_b(name+'_b', [out_dim]))
         Y = tf.contrib.layers.batch_norm(Y, fused=True, is_training=self.train_flag)
-        self._cursor = tf.nn.relu(Y)
+        Y = tf.nn.relu(Y)
+        self._cursor = Y
         self._n_filter = out_dim
-        if self.padding == 'VALID':
-            self._img_h = int((self._img_h-self.kernel_size[0]+1) / strides)
-            self._img_w = int((self._img_w-self.kernel_size[1]+1) / strides)
-        if self.padding == 'SAME':
-            self._img_h = int(self._img_h / strides)
-            self._img_w = int(self._img_w / strides)
+        if self.padding == 'valid':
+            self._img_h = int((self._img_h-self.kernel_size[0]+1) / strides[0])
+            self._img_w = int((self._img_w-self.kernel_size[1]+1) / strides[1])
+        if self.padding == 'same':
+            self._img_h = int(self._img_h / strides[0])
+            self._img_w = int(self._img_w / strides[1])
     # end method add_conv_layer
 
 
-    def add_maxpool(self, k):
-        self._cursor = tf.nn.max_pool(self._cursor, ksize=[1,k,k,1], strides=[1,k,k,1], padding=self.padding)
-        self._img_h = int(self._img_h / k)
-        self._img_w = int(self._img_w / k)
+    def add_pooling(self):
+        self._cursor = tf.layers.max_pooling2d(inputs = self._cursor,
+                                               pool_size = self.pool_size,
+                                               strides = self.pool_size,
+                                               padding = self.padding)
+        self._img_h = int(self._img_h / self.pool_size[0])
+        self._img_w = int(self._img_w / self.pool_size[1])
     # end method add_maxpool_layer
 
 
     def add_fully_connected(self, name, out_dim):
-        W_shape = [self._img_h * self._img_w * self._n_filter, out_dim]
-        W = self.call_W(name+'_w', W_shape)
-        b = self.call_b(name+'_b', [out_dim])
-        fc = tf.reshape(self._cursor, [-1, W_shape[0]])
-        fc = tf.nn.bias_add(tf.matmul(fc, W), b)
+        fc = tf.reshape(self._cursor, [-1, self._img_h * self._img_w * self._n_filter])
+        fc = tf.layers.dense(fc, out_dim)
         fc = tf.contrib.layers.batch_norm(fc, fused=True, is_training=self.train_flag)
         fc = tf.nn.relu(fc)
         self._cursor = tf.nn.dropout(fc, self.keep_prob)
@@ -97,10 +99,7 @@ class Conv2DClassifier:
 
 
     def add_output_layer(self):
-        in_dim = self._cursor.get_shape()[1]
-        W = self.call_W('logits_w', [in_dim, self.n_out])
-        b = self.call_b('logits_b', [self.n_out])
-        self.logits = tf.nn.bias_add(tf.matmul(self._cursor, W), b)
+        self.logits = tf.layers.dense(self._cursor, self.n_out)
     # end method add_output_layer
 
 

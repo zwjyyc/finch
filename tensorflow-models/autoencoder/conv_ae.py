@@ -32,18 +32,19 @@ class ConvAE:
     def add_conv(self, name, filter_shape, strides=1):
         with tf.variable_scope('weights_tied'):
             W = self.call_W(name+'_W', filter_shape)
-        b = self.call_b(name+'_conv_b', [filter_shape[-1]])
         Y = tf.nn.conv2d(self._cursor, W, strides=[1,strides,strides,1], padding='SAME')
-        self._cursor = tf.nn.relu(tf.nn.bias_add(Y, b))
+        Y = tf.nn.bias_add(Y, self.call_b(name+'_conv_b', [filter_shape[-1]]))
+        Y = tf.nn.relu(Y)
+        self._cursor = Y
     # end method add_conv
 
 
     def add_deconv(self, name, output_shape, strides=1):
         with tf.variable_scope('weights_tied', reuse=True):
             W = tf.get_variable(name+'_W')
-        b = self.call_b(name+'_deconv_b', [output_shape[-1]])
         Y = tf.nn.conv2d_transpose(self._cursor, W, output_shape, [1,strides,strides,1], 'SAME')
-        self.decoder_op = tf.nn.bias_add(Y, b)
+        Y = tf.nn.bias_add(Y, self.call_b(name+'_deconv_b', [output_shape[-1]]))
+        self.decoder_op = Y
     # end method add_deconv
 
 

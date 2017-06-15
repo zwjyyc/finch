@@ -6,7 +6,7 @@ import sklearn
 
 class ConvLSTMClassifier:
     def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(),
-                 embedding_dims=128, n_filters=64, kernel_size=5, pool_size=4, padding='VALID',
+                 embedding_dims=128, n_filters=64, kernel_size=5, pool_size=4, padding='valid',
                  cell_size=64):
         """
         Parameters:
@@ -49,13 +49,10 @@ class ConvLSTMClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding()
-
-        self.add_conv1d('conv', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
+        self.add_conv1d('conv1d', self.n_filters)
         self.add_pooling(self.pool_size)
-
         self.add_lstm_cells()
         self.add_dynamic_rnn()
-        
         self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
@@ -78,23 +75,27 @@ class ConvLSTMClassifier:
     # end method add_word_embedding
 
 
-    def add_conv1d(self, name, filter_shape, stride=1):
-        W = self.call_W(name+'_w', filter_shape)
-        b = self.call_b(name+'_b', [filter_shape[-1]])                                
-        Y = tf.nn.conv1d(self._cursor, W, stride=stride, padding=self.padding)
-        Y = tf.nn.bias_add(Y, b)
-        self._cursor = tf.nn.relu(Y)
-        if self.padding == 'VALID':
-            self._seq_len = int((self._seq_len - self.kernel_size + 1) / stride)
-        if self.padding == 'SAME':
-            self._seq_len = int(self._seq_len / stride)
+    def add_conv1d(self, name, n_filters, strides=1):
+        Y = tf.layers.conv1d(inputs = self._cursor,
+                             filters = n_filters,
+                             kernel_size  = self.kernel_size,
+                             strides = strides,
+                             padding = self.padding)
+        Y = tf.nn.bias_add(Y, self.call_b(name+'_b', [n_filters]))
+        Y = tf.nn.relu(Y)
+        self._cursor = Y
+        if self.padding == 'valid':
+            self._seq_len = int((self._seq_len - self.kernel_size + 1) / strides)
+        if self.padding == 'same':
+            self._seq_len = int(self._seq_len / strides)
     # end method add_conv1d
 
 
     def add_pooling(self, k=2):
-        Y = tf.expand_dims(self._cursor, 1)
-        Y = tf.nn.avg_pool(Y, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
-        Y = tf.squeeze(Y)
+        Y = tf.layers.average_pooling1d(inputs = self._cursor,
+                                        pool_size = k,
+                                        strides = k,
+                                        padding = self.padding)
         self._seq_len = int(self._seq_len / k)
         self._cursor = tf.reshape(Y, [self.batch_size, self._seq_len, self.n_filters])
     # end method add_maxpool

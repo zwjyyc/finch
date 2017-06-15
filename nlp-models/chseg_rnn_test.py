@@ -34,7 +34,7 @@ if __name__ == '__main__':
     print('Vocab size: %d' % vocab_size)
 
     clf = RNNTextClassifier(SEQ_LEN, vocab_size, N_CLASS)
-    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), rnn_keep_prob=0.5, n_epoch=1)
+    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=1)
     Y_pred = clf.predict(X_test)
     Y_test = Y_test.reshape(-1, N_CLASS)
     final_acc = (np.argmax(Y_pred,1) == np.argmax(Y_test,1)).mean()

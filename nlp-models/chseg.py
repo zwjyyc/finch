@@ -32,19 +32,14 @@ def load_data():
                 ys.append(1)
     
     if version == 3:
-        text_train = preprocess('temp/icwb2-data/training/pku_training.txt')
-        text_train += preprocess('temp/icwb2-data/training/msr_training.txt')
+        text = preprocess('temp/icwb2-data/training/pku_training.txt')
+        text += preprocess('temp/icwb2-data/training/msr_training.txt')
     else:
-        text_train = preprocess('temp/icwb2-data/training/pku_training.utf8')
-        text_train += preprocess('temp/icwb2-data/training/msr_training.utf8')
-    segs_train = text_train.split()
-    if version == 3:
-        text_test = preprocess('temp/icwb2-data/testing/pku_test.txt')
-        text_test += preprocess('temp/icwb2-data/testing/msr_test.txt')
-    else:
-        text_test = preprocess('temp/icwb2-data/testing/pku_test.utf8')
-        text_test += preprocess('temp/icwb2-data/testing/msr_test.utf8')
-    segs_test = jieba.cut(text_test)
+        text = preprocess('temp/icwb2-data/training/pku_training.utf8')
+        text += preprocess('temp/icwb2-data/training/msr_training.utf8')
+    cutoff = int(0.7 * len(text))
+    segs_train = text[:cutoff].split()
+    segs_test = text[cutoff:].split()
 
     for seg in segs_train:
         chars = list(seg) if version == 3 else list(seg.decode('utf-8'))

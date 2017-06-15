@@ -116,6 +116,9 @@ Work in process ......
 #### Text Generation
 * TensorFlow &nbsp; | &nbsp; Char-LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;
 
+#### Segmentation
+* TensorFlow &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [ICWB2 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/chseg_rnn_test.py) &nbsp; | &nbsp;
+
 ## Computer Vision
 #### OpenCV
 * OP &nbsp; | &nbsp; [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)

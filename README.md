@@ -23,6 +23,7 @@ Work in process ......
   * [Sentiment Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#sentiment-classification)
   * [POS Tagging](https://github.com/zhedongzheng/finch/blob/master/README.md#pos-tagging)
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
+  * [Segmentation](https://github.com/zhedongzheng/finch/blob/master/README.md#segmentation)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 

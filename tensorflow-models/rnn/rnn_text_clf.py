@@ -63,7 +63,7 @@ class RNNTextClassifier:
 
 
     def add_lstm_cells(self):
-        cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
+        cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
         cell = tf.nn.rnn_cell.DropoutWrapper(cell, self.rnn_keep_prob)
         self.cell = cell
     # end method add_rnn_cells

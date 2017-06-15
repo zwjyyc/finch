@@ -35,12 +35,15 @@ class RNNTextClassifier:
 
 
     def build_graph(self):
-        self.add_input_layer()
-        self.add_word_embedding_layer()
-        self.add_lstm_cells()
-        self.add_dynamic_rnn()
-        self.add_output_layer()
-        self.add_backward_path()
+        with tf.variable_scope('main_model'):
+            self.add_input_layer()
+            self.add_word_embedding_layer()
+            self.add_lstm_cells()
+            self.add_dynamic_rnn()
+            self.add_output_layer()
+            self.add_backward_path()
+        with tf.variable_scope('main_model', reuse=True):
+            self.add_inference()
     # end method build_graph
 
 
@@ -62,7 +65,7 @@ class RNNTextClassifier:
 
 
     def add_lstm_cells(self):
-        cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
+        cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
         cell = tf.nn.rnn_cell.DropoutWrapper(cell, self.rnn_keep_prob)
         self.cell = cell
     # end method add_rnn_cells
@@ -76,7 +79,7 @@ class RNNTextClassifier:
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(tf.reshape(self._cursor, [-1, self.cell_size]), self.n_out)
+        self.logits = tf.layers.dense(tf.reshape(self._cursor, [-1, self.cell_size]), self.n_out, name='output')
     # end method add_output_layer
 
 
@@ -87,6 +90,16 @@ class RNNTextClassifier:
                                                    tf.argmax(Y_2d, 1)), tf.float32))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
+
+
+    def add_inference(self):
+        self.X_ = tf.placeholder(tf.int32, [None, 1])
+        self.init_state_ = self.cell.zero_state(1, tf.float32)
+        X = tf.nn.embedding_lookup(tf.get_variable('E'), self.X_)
+        Y, self.final_state_ = tf.nn.dynamic_rnn(self.cell, X, initial_state=self.init_state_, time_major=False)
+        Y = tf.layers.dense(tf.reshape(Y, [-1, self.cell_size]), self.n_out, name='output', reuse=True)
+        self.softmax_out_ = tf.nn.softmax(Y)
+    # end add_sample_model
 
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True,
@@ -183,6 +196,20 @@ class RNNTextClassifier:
             batch_pred_list.append(batch_pred)
         return np.vstack(batch_pred_list)
     # end method predict
+
+
+    def infer(self, xs):
+        next_state = self.sess.run(self.init_state_)
+        ys = []
+        for x in xs:
+            x = np.atleast_2d(x)
+            y, next_state = self.sess.run([self.softmax_out_, self.final_state_], 
+                                          {self.X_: x,
+                                           self.rnn_keep_prob: 1.0,
+                                           self.init_state_: next_state})
+            ys.append(y)
+        return np.vstack(ys)
+    # end method infer
 
 
     def gen_batch(self, arr, batch_size):

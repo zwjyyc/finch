@@ -53,7 +53,7 @@ class RNNTextGen:
             self.add_output_layer()
             self.add_backward_path()
         with tf.variable_scope('main_model', reuse=True):
-            self.add_sample_model()
+            self.add_inference()
     # end method build_graph
 
 
@@ -75,7 +75,7 @@ class RNNTextGen:
 
     def add_lstm_cells(self):
         def cell():
-            cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
+            cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
             return cell
         self.cells = tf.nn.rnn_cell.MultiRNNCell([cell() for _ in range(self.n_layer)])
     # end method add_rnn_cells
@@ -111,9 +111,9 @@ class RNNTextGen:
     # end method add_backward_path
 
 
-    def add_sample_model(self):
+    def add_inference(self):
         self.X_ = tf.placeholder(tf.int32, [None, 1])
-        self.init_state_ = self.cells.zero_state(self.batch_size, tf.float32)
+        self.init_state_ = self.cells.zero_state(1, tf.float32)
         X = tf.nn.embedding_lookup(tf.get_variable('E'), self.X_)
         Y, self.final_state_ = tf.nn.dynamic_rnn(self.cells, X, initial_state=self.init_state_, time_major=False)
         Y = tf.reshape(Y, [-1, self.cell_size])
@@ -182,6 +182,9 @@ class RNNTextGen:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
                             % (epoch+1, n_epoch, local_step, n_batch, train_loss, lr))
                 if local_step % 100 == 0:
+                    for prime_text in prime_texts:
+                        print(self.infer(prime_text, n_gen)+'\n')
+                    
                     test_losses = []
                     for X_test_batch, Y_test_batch in zip(self.gen_batch(X_test, batch_size),
                                                           self.gen_batch(Y_test, batch_size)):
@@ -191,8 +194,7 @@ class RNNTextGen:
                     avg_test_loss = sum(test_losses) / len(test_losses)
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | test loss: %.4f'
                             % (epoch+1, n_epoch, local_step, n_batch, train_loss, avg_test_loss))
-                    for prime_text in prime_texts:
-                            print(self.predict(prime_text, n_gen)+'\n')
+
                 local_step += 1
                 global_step += 1
             
@@ -200,9 +202,9 @@ class RNNTextGen:
     # end method fit
 
 
-    def predict(self, prime_text, n_gen):
+    def infer(self, prime_text, n_gen):
         # warming up
-        next_state = self.sess.run(self.init_state_, {self.batch_size:1})
+        next_state = self.sess.run(self.init_state_)
         char_list = list(prime_text)
         for char in char_list[:-1]:
             x = np.atleast_2d(self.char2idx[char]) 

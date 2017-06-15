@@ -34,4 +34,4 @@ def load_data():
             y_test.append(tag2idx[tag])
 
     print("Vocab Size: %d | x_train: %d | x_test: %d" % (len(word2idx), len(x_train), len(x_test)))
-    return x_train, y_train, x_test, y_test, len(word2idx), tag_idx
+    return x_train, y_train, x_test, y_test, len(word2idx), tag_idx, word2idx, tag2idx

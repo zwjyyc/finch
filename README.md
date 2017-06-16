@@ -120,6 +120,8 @@ Work in process ......
 #### Segmentation
 * TensorFlow &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [ICWB2 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/chseg_rnn_test.py) &nbsp; | &nbsp;
 
+* PyTorch &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_seq_clf.py) &nbsp; | &nbsp; [ICWB2 Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_chseg_test.py) &nbsp; | &nbsp;
+
 ## Computer Vision
 #### OpenCV
 * OP &nbsp; | &nbsp; [Resize](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)

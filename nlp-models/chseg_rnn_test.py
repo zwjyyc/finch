@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import sys
 import chseg
 import numpy as np
 import tensorflow as tf
@@ -6,8 +9,9 @@ from collections import Counter
 
 
 SEQ_LEN = 50
-N_CLASS = 4
+N_CLASS = 4 # B: 0, M: 1, E: 2, S: 3
 sample = '没有孩子的世界是寂寞的'
+py = int(sys.version[0])
 
 
 def x_to_seq(*args):
@@ -35,16 +39,13 @@ if __name__ == '__main__':
 
     clf = RNNTextClassifier(SEQ_LEN, vocab_size, N_CLASS)
     clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=1)
-    Y_pred = clf.predict(X_test)
-    Y_test = Y_test.reshape(-1, N_CLASS)
-    final_acc = (np.argmax(Y_pred,1) == np.argmax(Y_test,1)).mean()
-    print("final testing accuracy: %.4f" % final_acc)
     
-    preds = clf.infer([char2idx[c] for c in list(sample)])
+    chars = list(sample) if py == 3 else list(sample.decode('utf-8'))
+    preds = clf.infer([char2idx[c] for c in chars])
     labels = np.argmax(preds, 1)
     res = ''
     for i, l in enumerate(labels):
-        c = sample[i]
+        c = sample[i] if py == 3 else sample.decode('utf-8')[i]
         if l == 2 or l == 3:
             c += ' '
         res += c

@@ -12,7 +12,7 @@ def load_data():
     y_train = []
     x_test = []
     y_test = []
-    version = int(sys.version[0])
+    py = int(sys.version[0])
 
     def preprocess(path):
         text = open(path).read()
@@ -31,7 +31,7 @@ def load_data():
             else:
                 ys.append(1)
     
-    if version == 3:
+    if py == 3:
         text = preprocess('temp/icwb2-data/training/pku_training.txt')
         text += preprocess('temp/icwb2-data/training/msr_training.txt')
     else:
@@ -42,7 +42,7 @@ def load_data():
     segs_test = text[cutoff:].split()
 
     for seg in segs_train:
-        chars = list(seg) if version == 3 else list(seg.decode('utf-8'))
+        chars = list(seg) if py == 3 else list(seg.decode('utf-8', 'ignore'))
         for i, char in enumerate(chars):
             # handle x
             if char not in char2idx:
@@ -56,7 +56,7 @@ def load_data():
     char2idx['_unknown'] = char_idx
 
     for seg in segs_test:
-        chars = list(seg) if version == 3 else list(seg.decode('utf-8'))
+        chars = list(seg) if py == 3 else list(seg.decode('utf-8', 'ignore'))
         for i, char in enumerate(chars):
             # handle x
             if char in char2idx:

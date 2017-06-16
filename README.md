@@ -88,16 +88,16 @@ Work in process ......
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
 #### Language Model
-* Python &nbsp; | &nbsp; LSA &nbsp; | &nbsp; [Book Titles Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_tsvd_test.py)
+* Python &nbsp; | &nbsp; LSA &nbsp; | &nbsp; [Book Titles Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/lsa_test.py)
 
 * Python &nbsp; | &nbsp; Tri-Gram &nbsp; | &nbsp; [Amazon Review Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/trigram_test.py) &nbsp; | &nbsp;
 
-* Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_tsne_test.py) &nbsp; | &nbsp;
+* Python &nbsp; | &nbsp; TF-IDF &nbsp; | &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_brown_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Skip-Gram &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram.py) &nbsp; | &nbsp; [Text8 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word2vec_skipgram_text8_test.py) &nbsp; | &nbsp;
 
 #### Sentiment Classification
-* Python &nbsp; | &nbsp; TF-IDF + Logistic Regression &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_logistic_test.py) &nbsp; | &nbsp;
+* Python &nbsp; | &nbsp; TF-IDF + Logistic Regression &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tfidf_imdb_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 

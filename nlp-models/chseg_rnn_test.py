@@ -10,7 +10,7 @@ from collections import Counter
 
 SEQ_LEN = 50
 N_CLASS = 4 # B: 0, M: 1, E: 2, S: 3
-sample = '没有孩子的世界是寂寞的'
+sample = '我来到大学读书'
 py = int(sys.version[0])
 
 
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     print('Vocab size: %d' % vocab_size)
 
     clf = RNNTextClassifier(SEQ_LEN, vocab_size, N_CLASS)
-    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=1)
+    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=2)
     
     chars = list(sample) if py == 3 else list(sample.decode('utf-8'))
     preds = clf.infer([char2idx[c] for c in chars])

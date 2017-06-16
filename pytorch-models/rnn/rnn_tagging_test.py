@@ -1,6 +1,6 @@
 import pos
 import numpy as np
-from rnn_tagging import RNNTextClassifier
+from rnn_seq_clf import RNNTextClassifier
 
 
 SEQ_LEN = 5
@@ -29,4 +29,3 @@ if __name__ == '__main__':
     idx2tag = {idx : tag for tag, idx in tag2idx.items()}
     print(' '.join(sample))
     print(' '.join([idx2tag[idx] for idx in indices]))
-

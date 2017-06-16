@@ -112,7 +112,7 @@ Work in process ......
 #### POS Tagging
 * TensorFlow &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pos_rnn_test.py) &nbsp; | &nbsp;
 
-* PyTorch &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_tagging.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_tagging_test.py) &nbsp; | &nbsp;
+* PyTorch &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_seq_clf.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_tagging_test.py) &nbsp; | &nbsp;
 
 #### Text Generation
 * TensorFlow &nbsp; | &nbsp; Char-LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen.py) &nbsp; | &nbsp; [Anna Karenina Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_text_gen_anna_test.py) &nbsp; | &nbsp;

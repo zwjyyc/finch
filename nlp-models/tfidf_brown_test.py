@@ -26,16 +26,3 @@ if __name__ == '__main__':
     find_analogy('king', TD, word2idx)
     find_analogy('italy', TD, word2idx)
     find_analogy('queen', TD, word2idx)
-
-    model = TSNE(n_components=2, verbose=2, learning_rate=200)
-    X = model.fit_transform(TD)
-    print("TSNE transform completed ...")
-
-    idx2word = {idx : word for word, idx in word2idx.items()}
-    plt.scatter(X[:,0], X[:,1])
-    for i in range(vocab_size):
-        try:
-            plt.annotate(s=idx2word[i], xy=(X[i,0], X[i,1]))
-        except:
-            print("bad string:", idx2word[i])
-    plt.show()

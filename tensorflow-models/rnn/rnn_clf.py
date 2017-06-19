@@ -75,28 +75,18 @@ class RNNClassifier:
     def add_output_layer(self):
         # (batch, n_step, n_hidden) -> (n_step, batch, n_hidden) -> n_step * [(batch, n_hidden)]
         time_major = tf.unstack(tf.transpose(self._cursor, [1,0,2]))
-        W = self.call_W('logits_W', [self.cell_size, self.n_out])
-        b = self.call_b('logits_b', [self.n_out])
-        self.logits = tf.nn.bias_add(tf.matmul(time_major[-1], W), b)
+        self.logits = tf.layers.dense(time_major[-1], self.n_out)
     # end method add_output_layer
 
 
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
+        self.loss = tf.losses.softmax_cross_entropy(onehot_labels=self.Y, logits=self.logits)
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
+        self.acc = tf.metrics.accuracy(labels=tf.argmax(self.Y, axis=1),
+                                       predictions=tf.argmax(self.logits, axis=1))[1]
+    # return (acc, update_op), and create 2 local variables
     # end method add_backward_path
-
-
-    def call_W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
-    # end method _W
-
-
-    def call_b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
-    # end method _b
 
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
@@ -108,7 +98,8 @@ class RNNClassifier:
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0
 
-        self.sess.run(tf.global_variables_initializer()) # initialize all variables
+        init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
+        self.sess.run(init_op)
         for epoch in range(n_epoch): # batch training
 
             if en_shuffle:

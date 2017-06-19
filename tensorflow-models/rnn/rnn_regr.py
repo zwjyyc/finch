@@ -59,25 +59,14 @@ class RNNRegressor:
 
     def add_output_layer(self):
         reshaped = tf.reshape(self._cursor, [-1, self.cell_size])
-        W = self.call_W('logits_w', [self.cell_size, self.n_out])
-        b = self.call_b('logits_b', [self.n_out])
-        self.logits = tf.nn.bias_add(tf.matmul(reshaped, W), b)
+        self.logits = tf.layers.dense(reshaped, self.n_out)
         self.time_seq_out = tf.reshape(self.logits, [-1, self.n_step, self.n_out])
     # end method add_output_layer
 
 
     def add_backward_path(self):
-        self.loss = tf.nn.l2_loss(tf.reshape(self.logits, [-1]) - tf.reshape(self.Y, [-1]))
+        self.loss = tf.losses.mean_squared_error(labels = tf.reshape(self.logits, [-1]),
+                                                 predictions = tf.reshape(self.Y, [-1]))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
-
-
-    def call_W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
-    # end method _W
-
-
-    def call_b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
-    # end method _b
 # end class RNNRegressor

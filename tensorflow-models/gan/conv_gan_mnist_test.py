@@ -28,9 +28,8 @@ if __name__ == '__main__':
         X = shuffle(X)
         for step, real_data in enumerate(gen_batch(X, batch_size)):
             rand_data = np.random.uniform(-1, 1, (len(real_data), G_size))
-            
-            sess.run(model.G_train, {model.G_in: rand_data, model.train_flag: True})
-            sess.run(model.G_train, {model.G_in: rand_data, model.train_flag: True})
+            for _ in range(2):
+                sess.run(model.G_train, {model.G_in: rand_data, model.train_flag: True})
             sess.run(model.D_train, {model.G_in: rand_data, model.X_in: real_data, model.train_flag: True})
 
             G_loss, D_loss, D_prob, G_prob, loss = sess.run([model.G_loss, model.D_loss,

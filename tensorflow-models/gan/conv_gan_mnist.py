@@ -22,6 +22,7 @@ class Conv_GAN:
         self.G_in = tf.placeholder(tf.float32, [None, self.G_size]) # random data
         self.X_in = tf.placeholder(tf.float32, [None, 28, 28, 1]) # real data
         self.train_flag = tf.placeholder(tf.bool)
+    # end method input_layer
 
 
     def add_Generator(self):
@@ -51,7 +52,6 @@ class Conv_GAN:
             Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn2', reuse=reuse)
             Y = lrelu(Y)
             fc = tf.reshape(Y, [-1, 7 * 7 * 64])
-            fc = tf.layers.dense(fc, self.G_size, tf.nn.relu, name='hidden', reuse=reuse)
             output = tf.layers.dense(fc, 1, name='out', reuse=reuse)
             return output
         

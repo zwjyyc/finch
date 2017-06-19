@@ -45,10 +45,10 @@ if __name__ == '__main__':
         if step % 50 == 0:
             plt.cla()
             plt.plot(x_range[0], G_out[0], c='#4AD631', lw=3, label='generated')
-            bound = [0, 0.5] if labels[0, 0] == 0 else [0.5, 1]
+            bound = [0, 0.5] if labels[0,0] == 0 else [0.5, 1]
             plt.plot(x_range[0], 2 * np.power(x_range[0], 2) + bound[1], c='#74BCFF', lw=3, label='upper bound')
             plt.plot(x_range[0], 1 * np.power(x_range[0], 2) + bound[0], c='#FF9359', lw=3, label='lower bound')
-            plt.text(-0.5, 1.7, 'Class = %i' % int(labels[0, 0]), fontdict={'size': 15})
+            plt.text(-0.5, 1.7, 'Class = %i' % int(labels[0,0]), fontdict={'size': 15})
             plt.ylim((0, 3))
             plt.legend(loc='upper right', fontsize=12)
             plt.draw()

@@ -81,11 +81,10 @@ class RNNClassifier:
 
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
-        self.loss = tf.losses.softmax_cross_entropy(onehot_labels=self.Y, logits=self.logits)
+        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-        self.acc = tf.metrics.accuracy(labels=tf.argmax(self.Y, axis=1),
-                                       predictions=tf.argmax(self.logits, axis=1))[1]
-    # return (acc, update_op), and create 2 local variables
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, axis=1),
+                                                   tf.argmax(self.Y, axis=1)), tf.float32))
     # end method add_backward_path
 
 
@@ -98,8 +97,7 @@ class RNNClassifier:
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         global_step = 0
 
-        init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
-        self.sess.run(init_op)
+        self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch): # batch training
 
             if en_shuffle:

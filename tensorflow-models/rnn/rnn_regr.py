@@ -45,7 +45,7 @@ class RNNRegressor:
 
 
     def add_lstm_cells(self):
-        self.cell = tf.nn.rnn_cell.BasicLSTMCell(self.cell_size)
+        self.cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
     # end method add_lstm_cells
 
 
@@ -65,8 +65,7 @@ class RNNRegressor:
 
 
     def add_backward_path(self):
-        self.loss = tf.losses.mean_squared_error(labels = tf.reshape(self.logits, [-1]),
-                                                 predictions = tf.reshape(self.Y, [-1]))
+        self.loss = tf.nn.l2_loss(tf.reshape(self.logits, [-1]) - tf.reshape(self.Y, [-1]))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 # end class RNNRegressor

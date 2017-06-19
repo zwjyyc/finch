@@ -2,6 +2,8 @@ from mlp_cond_gan import MLP_GAN
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set(context='poster', style='white')
 
 
 batch_size = 64
@@ -16,6 +18,13 @@ def load_data():
     labels = (a - 1) > 0.5  # upper paintings (1), lower paintings (0), two classes
     labels = labels.astype(np.float32)
     return data, labels
+
+
+def plot_background():
+    plt.plot(x_range[0], 2 * np.power(x_range[0], 2) + 1)
+    plt.plot(x_range[0], 1 * np.power(x_range[0], 2) + 0.5)
+    plt.plot(x_range[0], 2 * np.power(x_range[0], 2) + 0.5)
+    plt.plot(x_range[0], 1 * np.power(x_range[0], 2) + 0)
 
 
 if __name__ == '__main__':
@@ -44,10 +53,8 @@ if __name__ == '__main__':
                                                          model.labels: labels})
         if step % 50 == 0:
             plt.cla()
-            plt.plot(x_range[0], G_out[0], c='#4AD631', lw=3, label='generated')
-            bound = [0, 0.5] if labels[0,0] == 0 else [0.5, 1]
-            plt.plot(x_range[0], 2 * np.power(x_range[0], 2) + bound[1], c='#74BCFF', lw=3, label='upper bound')
-            plt.plot(x_range[0], 1 * np.power(x_range[0], 2) + bound[0], c='#FF9359', lw=3, label='lower bound')
+            plt.plot(x_range[0], G_out[0], label='generated')
+            plot_background()
             plt.text(-0.5, 1.7, 'Class = %i' % int(labels[0,0]), fontdict={'size': 15})
             plt.ylim((0, 3))
             plt.legend(loc='upper right', fontsize=12)
@@ -59,13 +66,10 @@ if __name__ == '__main__':
     plt.ioff()
 
     plt.figure(2) # plot a generated painting for upper class
-    z = np.random.randn(1, G_size)
-    label = np.array([[1.0]]) # for upper class
-    G_paintings = sess.run(model.G_out, {model.G_in: z, model.labels: label})
-    plt.plot(x_range[0], G_paintings[0], c='#4AD631', lw=3, label='G painting for upper class',)
-    bound = [0.5, 1]
-    plt.plot(x_range[0], 2 * np.power(x_range[0], 2) + bound[1], c='#74BCFF', lw=3, label='upper bound (class 1)')
-    plt.plot(x_range[0], 1 * np.power(x_range[0], 2) + bound[0], c='#FF9359', lw=3, label='lower bound (class 1)')
+    G_out = sess.run(model.G_out, {model.G_in: np.random.randn(1, G_size),
+                                   model.labels: np.atleast_2d(1.0)})
+    plt.plot(x_range[0], G_out[0], c='#4AD631', label='generated for class 1',)
+    plot_background()
     plt.ylim((0, 3))
     plt.legend(loc='upper right', fontsize=12)
     plt.show()

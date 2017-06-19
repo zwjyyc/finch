@@ -26,7 +26,7 @@ if __name__ == '__main__':
     plt.ion()
     plt.show()
     
-    for step in range(5000):
+    for step in range(3000):
         rand_data = np.random.randn(batch_size, G_size)
         real_data, labels = load_data()
 
@@ -63,8 +63,9 @@ if __name__ == '__main__':
     label = np.array([[1.0]]) # for upper class
     G_paintings = sess.run(model.G_out, {model.G_in: z, model.labels: label})
     plt.plot(x_range[0], G_paintings[0], c='#4AD631', lw=3, label='G painting for upper class',)
+    bound = [0.5, 1]
     plt.plot(x_range[0], 2 * np.power(x_range[0], 2) + bound[1], c='#74BCFF', lw=3, label='upper bound (class 1)')
-    plt.plot(x_range[0], 1 * np.power(x_range[0], 2) + bound[0], c='#FF9359', lw=3, label='lower bound (class 0)')
+    plt.plot(x_range[0], 1 * np.power(x_range[0], 2) + bound[0], c='#FF9359', lw=3, label='lower bound (class 1)')
     plt.ylim((0, 3))
     plt.legend(loc='upper right', fontsize=12)
     plt.show()

@@ -38,7 +38,7 @@ if __name__ == '__main__':
     print('Vocab size: %d' % vocab_size)
 
     clf = RNNTextClassifier(SEQ_LEN, vocab_size, N_CLASS)
-    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=2)
+    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=3)
     
     chars = list(sample) if py == 3 else list(sample.decode('utf-8'))
     preds = clf.infer([char2idx[c] for c in chars])

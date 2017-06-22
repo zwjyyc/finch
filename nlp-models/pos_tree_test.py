@@ -1,11 +1,10 @@
 import pos
 import numpy as np
-from sklearn.metrics import f1_score
 from sklearn.tree import DecisionTreeClassifier
 
 
 if __name__ == '__main__':
-    x_train, y_train, x_test, y_test = pos.load_data()
+    x_train, y_train, x_test, y_test, _, _, _, _ = pos.load_data()
     X_train = np.expand_dims(x_train, 1)
     X_test = np.expand_dims(x_test, 1)
 

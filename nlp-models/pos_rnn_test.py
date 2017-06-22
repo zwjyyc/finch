@@ -4,7 +4,8 @@ import tensorflow as tf
 from rnn_seq2seq_clf import RNNTextClassifier
 
 
-SEQ_LEN = 5
+SEQ_LEN = 30
+BATCH_SIZE = 32
 sample = ['I', 'love', 'you']
 
 
@@ -32,8 +33,8 @@ if __name__ == '__main__':
     print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
 
     clf = RNNTextClassifier(SEQ_LEN, vocab_size, n_class)
-    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), rnn_keep_prob=0.7, n_epoch=5)
-    Y_pred = clf.predict(X_test)
+    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), rnn_keep_prob=0.8, n_epoch=5, batch_size=BATCH_SIZE)
+    Y_pred = clf.predict(X_test, batch_size=BATCH_SIZE)
     Y_test = Y_test.reshape(-1, n_class)
     final_acc = (np.argmax(Y_pred,1) == np.argmax(Y_test,1)).mean()
     print("final testing accuracy: %.4f" % final_acc)

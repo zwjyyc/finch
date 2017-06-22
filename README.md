@@ -102,7 +102,7 @@ Work in process ......
 
 * PyTorch &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf.py) &nbsp; | &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 
-* Pytorch &nbsp; | &nbsp; Conv1D &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/cnn/cnn_text_clf.py) &nbsp; &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/cnn/cnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
+* PyTorch &nbsp; | &nbsp; Conv1D &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/cnn/cnn_text_clf.py) &nbsp; &nbsp; [IMDB Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/cnn/cnn_text_clf_imdb_test.py) &nbsp; | &nbsp;
 
 #### POS Tagging
 * TensorFlow &nbsp; | &nbsp; LSTM &nbsp; | &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rnn_seq2seq_clf.py) &nbsp; | &nbsp; [CoNLL-2000 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pos_rnn_test.py) &nbsp; | &nbsp;

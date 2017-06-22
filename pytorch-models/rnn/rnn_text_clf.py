@@ -37,13 +37,13 @@ class RNNTextClassifier(torch.nn.Module):
 
     def fit(self, X, y, n_epoch=10, batch_size=32):
         global_step = 0
-        n_batch = len(X) / batch_size
+        n_batch = int(len(X) / batch_size)
         total_steps = int(n_epoch * n_batch)
         for epoch in range(n_epoch):
             X, y = shuffle(X, y)
-            local_step = 0
             state = None
-            for X_batch, y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(y, batch_size)):
+            for local_step, (X_batch, y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                                self.gen_batch(y, batch_size))):
                 X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
                 y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
@@ -58,7 +58,6 @@ class RNNTextClassifier(torch.nn.Module):
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
-                local_step += 1
                 global_step += 1
                 acc = (torch.max(y_pred_batch,1)[1].data.numpy().squeeze() == y_batch).mean()
                 if local_step % 100 == 0:
@@ -86,7 +85,7 @@ class RNNTextClassifier(torch.nn.Module):
             _, y_pred_batch = torch.max(y_pred_batch.data, 1)
             total += y_test_batch.size(0)
             correct += (y_pred_batch == y_test_batch).sum()
-        print('Test Accuracy of the model: %d %%' % (100 * correct / total)) 
+        print('Test Accuracy of the model: %.4f' % (float(correct) / total)) 
     # end method evaluate
 
 

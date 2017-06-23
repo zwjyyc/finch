@@ -14,14 +14,11 @@ if __name__ == '__main__':
     X_train = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=seq_len)
     X_test = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=seq_len)
     print('X_train shape:', X_train.shape, 'X_test shape:', X_test.shape)
-    
-    Y_train = tf.contrib.keras.utils.to_categorical(y_train)
-    Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
     clf = Conv1DClassifier(seq_len, vocab_size, n_out)
-    log = clf.fit(X_train, Y_train, n_epoch=3, batch_size=32, keep_prob=0.8, en_exp_decay=True,
-                  val_data=(X_test,Y_test))
+    log = clf.fit(X_train, y_train, n_epoch=3, batch_size=32, keep_prob=0.8, en_exp_decay=True,
+                  val_data=(X_test, y_test))
     pred = clf.predict(X_test)
 
-    final_acc = (np.argmax(pred,1) == np.argmax(Y_test,1)).mean()
+    final_acc = (pred == y_test).mean()
     print("final testing accuracy: %.4f" % final_acc)

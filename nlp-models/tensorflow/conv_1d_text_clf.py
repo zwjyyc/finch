@@ -53,8 +53,8 @@ class Conv1DClassifier:
  
  
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.Y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.X = tf.placeholder(tf.int64, [None, self.seq_len])
+        self.Y = tf.placeholder(tf.int64, [None])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
         self._cursor = self.X
@@ -107,10 +107,11 @@ class Conv1DClassifier:
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
+        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
+                                                                                  labels=self.Y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),
-                                                   tf.argmax(self.Y, 1)), tf.float32))
+                                                   self.Y), tf.float32))
     # end method add_backward_path
 
 
@@ -129,8 +130,8 @@ class Conv1DClassifier:
                 X, Y = sklearn.utils.shuffle(X, Y)
             local_step = 1
             
-            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size),
-                                        self.gen_batch(Y, batch_size)): # batch training
+            for X_batch, Y_batch in zip(self.next_batch(X, batch_size),
+                                        self.next_batch(Y, batch_size)): # batch training
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size) 
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                              {self.X:X_batch, self.Y:Y_batch,
@@ -143,8 +144,8 @@ class Conv1DClassifier:
 
             if val_data is not None: # go through test dara, compute averaged validation loss and acc
                 val_loss_list, val_acc_list = [], []
-                for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
-                                                      self.gen_batch(val_data[1], batch_size)):
+                for X_test_batch, Y_test_batch in zip(self.next_batch(val_data[0], batch_size),
+                                                      self.next_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
                                                   {self.X:X_test_batch, self.Y:Y_test_batch,
                                                    self.keep_prob:1.0})
@@ -174,14 +175,14 @@ class Conv1DClassifier:
 
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        for X_test_batch in self.gen_batch(X_test, batch_size):
+        for X_test_batch in self.next_batch(X_test, batch_size):
             batch_pred = self.sess.run(self.logits, {self.X:X_test_batch, self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
-        return np.vstack(batch_pred_list)
+        return np.argmax(np.vstack(batch_pred_list), 1)
     # end method predict
 
 
-    def gen_batch(self, arr, batch_size):
+    def next_batch(self, arr, batch_size):
         for i in range(0, len(arr), batch_size):
             yield arr[i : i+batch_size]
     # end method gen_batch
@@ -202,4 +203,9 @@ class Conv1DClassifier:
     def list_avg(self, l):
         return sum(l) / len(l)
     # end method list_avg
+
+    
+    def call_b(self, name, shape):
+        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
+    # end method call_b
 # end class

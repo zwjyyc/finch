@@ -4,7 +4,6 @@ import tensorflow as tf
 
 vocab_size = 20000
 seq_len = 100
-n_epoch = 3
 
 
 if __name__ == '__main__':
@@ -12,6 +11,6 @@ if __name__ == '__main__':
     X_train = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=seq_len)
     X_test = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=seq_len)
 
-    clf = ConvLSTMClassifier(seq_len, vocab_size)
-    clf.fit(X_train, y_train, n_epoch=n_epoch)
+    clf = ConvLSTMClassifier(vocab_size)
+    clf.fit(X_train, y_train, n_epoch=3)
     clf.evaluate(X_test, y_test)

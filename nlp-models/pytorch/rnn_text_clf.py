@@ -35,12 +35,13 @@ class RNNTextClassifier(torch.nn.Module):
     # end method forward
 
 
-    def fit(self, X, y, n_epoch=10, batch_size=32):
+    def fit(self, X, y, n_epoch=10, batch_size=32, en_shuffle=True):
         global_step = 0
         n_batch = int(len(X) / batch_size)
         total_steps = int(n_epoch * n_batch)
         for epoch in range(n_epoch):
-            X, y = shuffle(X, y)
+            if en_shuffle:
+                X, y = shuffle(X, y)
             state = None
             for local_step, (X_batch, y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
                                                                 self.gen_batch(y, batch_size))):

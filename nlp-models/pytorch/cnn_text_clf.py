@@ -23,7 +23,7 @@ class CNNTextClassifier(torch.nn.Module):
         self.conv1d = torch.nn.Conv1d(in_channels = self.embedding_dim,
                                       out_channels = self.n_filters,
                                       kernel_size = self.kernel_size)
-        self.pooling = torch.nn.MaxPool1d(kernel_size = (self.seq_len - self.kernel_size + 1))
+        self.pool1d = torch.nn.MaxPool1d(kernel_size = (self.seq_len - self.kernel_size + 1))
         self.fc = torch.nn.Linear(self.n_filters, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters())
@@ -33,20 +33,20 @@ class CNNTextClassifier(torch.nn.Module):
     def forward(self, X, batch_size):
         embedded = self.encoder(X)
         conv_out = self.conv1d(embedded.permute(0, 2, 1))
-        pool_out = self.pooling(conv_out)
+        pool_out = self.pool1d(conv_out)
         reshaped = pool_out.view(batch_size, self.n_filters)
         logits = self.fc(reshaped)
         return logits
     # end method forward
 
 
-    def fit(self, X, y, n_epoch=10, batch_size=32):
+    def fit(self, X, y, n_epoch=10, batch_size=32, en_shuffle=True):
         global_step = 0
         n_batch = int(len(X) / batch_size)
         total_steps = int(n_epoch * n_batch)
         for epoch in range(n_epoch):
-            X, y = shuffle(X, y)
-            state = None
+            if en_shuffle:
+                X, y = shuffle(X, y)
             for local_step, (X_, y_) in enumerate(zip(self.gen_batch(X, batch_size),
                                                       self.gen_batch(y, batch_size))):
                 X_batch = torch.autograd.Variable(torch.from_numpy(X_.astype(np.int64)))
@@ -69,7 +69,6 @@ class CNNTextClassifier(torch.nn.Module):
     def evaluate(self, X_test, y_test, batch_size=32):
         correct = 0
         total = 0
-        state = None
         for X_, y_ in zip(self.gen_batch(X_test, batch_size), self.gen_batch(y_test, batch_size)):
             X_batch = torch.autograd.Variable(torch.from_numpy(X_.astype(np.int64)))
             y_batch = torch.from_numpy(y_.astype(np.int64))

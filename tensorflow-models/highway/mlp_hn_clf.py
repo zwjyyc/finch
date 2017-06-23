@@ -29,10 +29,8 @@ class HighwayClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_fc(self.highway_units)
-
         for n in range(self.n_highway):
             self.add_highway(n)
-        
         self.add_output_layer()
         self.add_backward_path()
     # end method build_graph
@@ -40,7 +38,7 @@ class HighwayClassifier:
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
-        self.Y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.Y = tf.placeholder(tf.int64, [None])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
         self._cursor = self.X
@@ -77,8 +75,9 @@ class HighwayClassifier:
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
+        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
+                                                                                  labels=self.Y))
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1), self.Y), tf.float32))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
 
@@ -156,7 +155,7 @@ class HighwayClassifier:
             batch_pred = self.sess.run(self.logits, {self.X: X_test_batch,
                                                      self.keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
-        return np.vstack(batch_pred_list)
+        return np.argmax(np.vstack(batch_pred_list), 1)
     # end method predict
 
 

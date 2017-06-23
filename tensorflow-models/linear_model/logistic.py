@@ -31,29 +31,30 @@ class Logistic:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(shape=(None, self.n_in), dtype=tf.float32)
-        self.Y = tf.placeholder(shape=[None, self.n_out], dtype=tf.float32)
+        self.X = tf.placeholder(shape=[None, self.n_in], dtype=tf.float32)
+        self.Y = tf.placeholder(shape=[None], dtype=tf.int64)
     # end method add_input_layer
 
 
     def add_output_layer(self):
         self.W = self.call_W('W', [self.n_in, self.n_out])
         self.b = self.call_b('b', shape=[self.n_out])
-        self.pred = tf.nn.softmax(tf.nn.bias_add(tf.matmul(self.X, self.W), self.b))
+        self.logits = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
     # end method add_output_layer
 
 
     def add_backward_path(self):
-        regr_loss = tf.reduce_mean(-tf.reduce_sum(self.Y*tf.log(self.pred), axis=1))
+        loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
+                                                                             labels=self.Y))
         l1_loss = tf.reduce_mean(tf.abs(self.W))
         l2_loss = tf.reduce_mean(tf.square(self.W))
-        self.loss = regr_loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.pred,1), tf.argmax(self.Y,1)), tf.float32))
+        self.loss = loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1), self.Y), tf.float32))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 
 
-    def fit(self, X, Y, val_data, n_epoch=20, batch_size=100):
+    def fit(self, X, Y, val_data, n_epoch=50, batch_size=100):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
@@ -81,9 +82,9 @@ class Logistic:
     def predict(self, X_test, batch_size=100):        
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, {self.X:X_test_batch})
+            batch_pred = self.sess.run(self.logits, {self.X:X_test_batch})
             batch_pred_list.append(batch_pred)
-        return np.vstack(batch_pred_list)
+        return np.argmax(np.vstack(batch_pred_list), 1)
     # end method predict
 
 

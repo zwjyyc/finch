@@ -9,15 +9,13 @@ import numpy as np
 if __name__ == '__main__':
     X, y = make_classification(5000)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
-    Y_train = tf.contrib.keras.utils.to_categorical(y_train)
-    Y_test = tf.contrib.keras.utils.to_categorical(y_test)
-
+    
     clf = Logistic(X.shape[1], 2)
-    clf.fit(X_train, Y_train, val_data=(X_test, Y_test))
-    Y_pred = clf.predict(X_test)
-    final_acc = (np.argmax(Y_pred,1) == np.argmax(Y_test,1)).astype(float).mean()
-    print("svm (tensorflow): %.4f" % final_acc)
+    clf.fit(X_train, y_train, val_data=(X_test, y_test))
+    y_pred = clf.predict(X_test)
+    final_acc = (y_pred == y_test).mean()
+    print("logistic (tensorflow): %.4f" % final_acc)
 
     clf = SVC(kernel='linear')
     y_pred = clf.fit(X_train, y_train).predict(X_test)
-    print("svm (sklearn):", (y_pred == y_test).mean())
+    print("logistic (sklearn):", (y_pred == y_test).mean())

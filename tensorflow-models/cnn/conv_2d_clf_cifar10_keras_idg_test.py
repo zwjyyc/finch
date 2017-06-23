@@ -11,8 +11,6 @@ if __name__ == '__main__':
     (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.cifar10.load_data()
     X_train = X_train / 255.0
     X_test = X_test / 255.0
-    Y_train = tf.contrib.keras.utils.to_categorical(y_train)
-    Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
     model = Conv2DClassifier((32,32), 3, 10)
 
@@ -34,12 +32,12 @@ if __name__ == '__main__':
     for epoch in range(n_epoch):
 
         local_step = 1
-        for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=batch_size):
+        for X_batch, Y_batch in datagen.flow(X_train, y_train, batch_size=batch_size):
             if local_step > int(len(X_train)/batch_size):
                 break
             lr = model.decrease_lr(True, global_step, n_epoch, len(X_train), batch_size) 
             _, loss, acc = model.sess.run([model.train_op, model.loss, model.acc],
-                                          feed_dict={model.X:X_batch, model.Y:Y_batch,
+                                          feed_dict={model.X:X_batch, model.Y:Y_batch.squeeze(),
                                                      model.lr:lr, model.keep_prob:0.5,
                                                      model.train_flag:True})
             local_step += 1
@@ -50,9 +48,9 @@ if __name__ == '__main__':
 
         val_loss_list, val_acc_list = [], []
         for X_test_batch, Y_test_batch in zip(model.gen_batch(X_test, batch_size),
-                                              model.gen_batch(Y_test, batch_size)):
+                                              model.gen_batch(y_test, batch_size)):
             v_loss, v_acc = model.sess.run([model.loss, model.acc],
-                                            feed_dict={model.X:X_test_batch, model.Y:Y_test_batch,
+                                            feed_dict={model.X:X_test_batch, model.Y:Y_test_batch.squeeze(),
                                                        model.keep_prob:1.0, model.train_flag:False})
             val_loss_list.append(v_loss)
             val_acc_list.append(v_acc)

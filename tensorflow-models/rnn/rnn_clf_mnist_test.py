@@ -10,9 +10,9 @@ if __name__ == '__main__':
     Y_train = tf.contrib.keras.utils.to_categorical(y_train)
     Y_test = tf.contrib.keras.utils.to_categorical(y_test)
 
-    clf = RNNClassifier(n_in=28, n_step=28, n_out=10, stateful=True)
-    log = clf.fit(X_train, Y_train, keep_prob_tuple=(0.8,1.0), val_data=(X_test,Y_test))
+    clf = RNNClassifier(n_in=28, n_seq=28, n_out=10, stateful=True)
+    log = clf.fit(X_train, y_train, keep_prob_tuple=(0.8,1.0), val_data=(X_test, y_test))
     pred = clf.predict(X_test)
 
-    final_acc = (np.argmax(pred,1) == np.argmax(Y_test,1)).mean()
+    final_acc = (pred == y_test).mean()
     print("final testing accuracy: %.4f" % final_acc)

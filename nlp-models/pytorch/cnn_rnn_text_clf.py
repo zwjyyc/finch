@@ -5,14 +5,17 @@ import tensorflow as tf
 from sklearn.utils import shuffle
 
 
-class CNNTextClassifier(torch.nn.Module):
-    def __init__(self, seq_len, vocab_size, n_out=2, embedding_dim=128, n_filters=250, kernel_size=3):
-        super(CNNTextClassifier, self).__init__()
+class ConvLSTMClassifier(torch.nn.Module):
+    def __init__(self, seq_len, vocab_size, n_out=2, embedding_dim=128, n_filters=64, kernel_size=5, pool_size=4,
+                 cell_size=70):
+        super(ConvLSTMClassifier, self).__init__()
         self.seq_len = seq_len
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.n_filters = n_filters
         self.kernel_size = kernel_size
+        self.pool_size = pool_size
+        self.cell_size = cell_size
         self.n_out = n_out
         self.build_model()
     # end constructor
@@ -23,8 +26,11 @@ class CNNTextClassifier(torch.nn.Module):
         self.conv1d = torch.nn.Conv1d(in_channels = self.embedding_dim,
                                       out_channels = self.n_filters,
                                       kernel_size = self.kernel_size)
-        self.pooling = torch.nn.MaxPool1d(kernel_size = (self.seq_len - self.kernel_size + 1))
-        self.fc = torch.nn.Linear(self.n_filters, self.n_out)
+        self.pooling = torch.nn.MaxPool1d(kernel_size = self.pool_size)
+        self.lstm = torch.nn.LSTM(input_size = self.n_filters,
+                                  hidden_size = self.cell_size,
+                                  batch_first = True)
+        self.fc = torch.nn.Linear(self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters())
     # end method build_model    
@@ -34,7 +40,8 @@ class CNNTextClassifier(torch.nn.Module):
         embedded = self.encoder(X)
         conv_out = self.conv1d(embedded.permute(0, 2, 1))
         pool_out = self.pooling(conv_out)
-        reshaped = pool_out.view(batch_size, self.n_filters)
+        lstm_out, _ = self.lstm(pool_out.permute(0, 2, 1), None)
+        reshaped = lstm_out[:, -1, :]
         logits = self.fc(reshaped)
         return logits
     # end method forward
@@ -88,8 +95,8 @@ class CNNTextClassifier(torch.nn.Module):
 
 
     def adjust_lr(self, optimizer, current_step, total_steps):
-        max_lr = 0.005
-        min_lr = 0.001
+        max_lr = 0.003
+        min_lr = 0.0001
         decay_rate = math.log(min_lr/max_lr) / (-total_steps)
         lr = max_lr * math.exp(-decay_rate * current_step)
         for param_group in optimizer.param_groups:

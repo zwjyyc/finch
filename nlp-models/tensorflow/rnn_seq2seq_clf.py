@@ -48,8 +48,8 @@ class RNNTextClassifier:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.Y = tf.placeholder(tf.float32, [None, self.seq_len, self.n_out])
+        self.X = tf.placeholder(tf.int64, [None, self.seq_len])
+        self.Y = tf.placeholder(tf.int64, [None, self.seq_len])
         self.batch_size = tf.placeholder(tf.int32, [])
         self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
@@ -84,10 +84,15 @@ class RNNTextClassifier:
 
 
     def add_backward_path(self):
-        Y_2d = tf.reshape(self.Y, [-1, self.n_out])
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=Y_2d))
+        self.loss = tf.contrib.seq2seq.sequence_loss(
+            logits = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.n_out]),
+            targets = self.Y,
+            weights = tf.ones([self.batch_size, self.seq_len]),
+            average_across_timesteps = True,
+            average_across_batch = True,
+        )
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),
-                                                   tf.argmax(Y_2d, 1)), tf.float32))
+                                                   tf.reshape(self.Y, [-1])), tf.float32))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
 

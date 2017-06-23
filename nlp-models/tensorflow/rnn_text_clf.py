@@ -47,8 +47,8 @@ class RNNTextClassifier:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.Y = tf.placeholder(tf.float32, [None, self.n_out])
+        self.X = tf.placeholder(tf.int64, [None, self.seq_len])
+        self.Y = tf.placeholder(tf.int64, [None])
         self.batch_size = tf.placeholder(tf.int32, [])
         self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
@@ -83,8 +83,9 @@ class RNNTextClassifier:
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),tf.argmax(self.Y,1)), tf.float32))
+        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),
+                                                             self.Y), tf.float32))
         # gradient clipping
         tvars = tf.trainable_variables()
         grads, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tvars), self.grad_clip)
@@ -183,7 +184,7 @@ class RNNTextClassifier:
                                           {self.X:X_test_batch, self.batch_size:len(X_test_batch),
                                            self.rnn_keep_prob:1.0})
             batch_pred_list.append(batch_pred)
-        return np.vstack(batch_pred_list)
+        return np.argmax(np.vstack(batch_pred_list), 1)
     # end method predict
 
 

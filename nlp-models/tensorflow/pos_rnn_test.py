@@ -24,8 +24,8 @@ if __name__ == '__main__':
 
     clf = RNNTextClassifier(SEQ_LEN, vocab_size, n_class)
     clf.fit(X_train, Y_train, val_data=(X_test, Y_test), rnn_keep_prob=0.8, n_epoch=5, batch_size=BATCH_SIZE)
-    Y_pred = clf.predict(X_test, batch_size=BATCH_SIZE)
-    final_acc = (np.argmax(Y_pred,1) == Y_test.reshape([-1])).mean()
+    y_pred = clf.predict(X_test, batch_size=BATCH_SIZE)
+    final_acc = (y_pred == Y_test.ravel()).mean()
     print("final testing accuracy: %.4f" % final_acc)
 
     preds = clf.infer([word2idx[w] for w in sample])

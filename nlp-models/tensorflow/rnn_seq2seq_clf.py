@@ -199,7 +199,7 @@ class RNNTextClassifier:
                                           {self.X:X_test_batch, self.batch_size:len(X_test_batch),
                                            self.rnn_keep_prob:1.0})
             batch_pred_list.append(batch_pred)
-        return np.vstack(batch_pred_list)
+        return np.argmax(np.vstack(batch_pred_list), 1)
     # end method predict
 
 

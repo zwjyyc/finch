@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 import math
-import tensorflow as tf
 from sklearn.utils import shuffle
 
 

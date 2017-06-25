@@ -210,7 +210,7 @@ class RNNTextClassifier:
                                                                self.rnn_keep_prob: 1.0,
                                                                self.i_s: next_state})
             ys.append(y)
-        return np.vstack(ys)
+        return np.argmax(np.vstack(ys), 1)
     # end method infer
 
 

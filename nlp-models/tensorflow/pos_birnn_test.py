@@ -28,8 +28,7 @@ if __name__ == '__main__':
     final_acc = (y_pred == Y_test.ravel()).mean()
     print("final testing accuracy: %.4f" % final_acc)
 
-    preds = clf.infer([word2idx[w] for w in sample])
-    indices = np.argmax(preds, 1)
     idx2tag = {idx : tag for tag, idx in tag2idx.items()}
+    labels = clf.infer([word2idx[w] for w in sample])
     print(' '.join(sample))
-    print(' '.join([idx2tag[idx] for idx in indices]))
+    print(' '.join([idx2tag[idx] for idx in labels]))

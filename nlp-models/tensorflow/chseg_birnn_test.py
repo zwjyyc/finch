@@ -10,8 +10,8 @@ from collections import Counter
 
 SEQ_LEN = 50
 N_CLASS = 4 # B: 0, M: 1, E: 2, S: 3
-N_EPOCH = 3
-sample = '我来到大学读书，希望学到知识'
+N_EPOCH = 1
+sample = '我来到大学读书，希望学习知识'
 py = int(sys.version[0])
 
 
@@ -32,8 +32,7 @@ if __name__ == '__main__':
     clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=N_EPOCH)
     
     chars = list(sample) if py == 3 else list(sample.decode('utf-8'))
-    preds = clf.infer([char2idx[c] for c in chars])
-    labels = np.argmax(preds, 1)
+    labels = clf.infer([char2idx[c] for c in chars])
     res = ''
     for i, l in enumerate(labels):
         c = sample[i] if py == 3 else sample.decode('utf-8')[i]

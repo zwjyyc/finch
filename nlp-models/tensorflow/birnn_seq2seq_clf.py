@@ -71,13 +71,18 @@ class BiRNN:
 
 
     def add_dynamic_rnn(self):
-        (fw_out, bw_out), _ = tf.nn.bidirectional_dynamic_rnn(self.cell_fw, self.cell_bw, self._cursor, dtype=tf.float32)
-        self._cursor = tf.concat((fw_out, bw_out), 2)
+        with tf.variable_scope('forward'):
+            self.fw_out, _ = tf.nn.dynamic_rnn(self.cell_fw, self._cursor, dtype=tf.float32)
+        with tf.variable_scope('backward'):
+            self.bw_out, _ = tf.nn.dynamic_rnn(self.cell_bw, tf.reverse(self._cursor, [1]), dtype=tf.float32)
+        self.bw_out = tf.reverse(self.bw_out, [1])
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(tf.reshape(self._cursor, [-1, 2 * self.cell_size]), self.n_out, name='output')
+        fw_logits = tf.layers.dense(tf.reshape(self.fw_out, [-1, self.cell_size]), self.n_out, name='fw_out')
+        bw_logits = tf.layers.dense(tf.reshape(self.bw_out, [-1, self.cell_size]), self.n_out, name='bw_out')
+        self.logits = fw_logits + bw_logits
     # end method add_output_layer
 
 
@@ -110,9 +115,8 @@ class BiRNN:
         with tf.variable_scope('backward', reuse=True):
             y_bw, self.f_s_bw = tf.nn.dynamic_rnn(self.cell_bw, x_bw_embedded, initial_state=self.i_s_bw)
         
-        y = tf.concat([y_fw, y_bw], 2)
-        y = tf.layers.dense(tf.reshape(y, [-1, 2 * self.cell_size]), self.n_out, name='output', reuse=True)
-        self.y_softmax = tf.nn.softmax(y)
+        self.y_fw = tf.layers.dense(tf.reshape(y_fw, [-1, self.cell_size]), self.n_out, name='fw_out', reuse=True)
+        self.y_bw = tf.layers.dense(tf.reshape(y_bw, [-1, self.cell_size]), self.n_out, name='bw_out', reuse=True)
     # end add_sample_model
 
 
@@ -192,18 +196,20 @@ class BiRNN:
     def infer(self, xs):
         n_s_fw = self.sess.run(self.i_s_fw)
         n_s_bw = self.sess.run(self.i_s_bw)
-        ys = []
+        ys_fw = []
+        ys_bw = []
         for x_fw, x_bw in zip(xs, list(reversed(xs))):
             x_fw = np.atleast_2d(x_fw)
             x_bw = np.atleast_2d(x_bw)
-            y, n_s_fw, n_s_bw = self.sess.run([self.y_softmax, self.f_s_fw, self.f_s_bw], 
+            y_fw, y_bw, n_s_fw, n_s_bw = self.sess.run([self.y_fw, self.y_bw, self.f_s_fw, self.f_s_bw], 
                                               {self.x_fw: x_fw,
                                                self.x_bw: x_bw,
                                                self.keep_prob: 1.0,
                                                self.i_s_fw: n_s_fw,
                                                self.i_s_bw: n_s_bw})
-            ys.append(y)
-        return np.vstack(ys)
+            ys_fw.append(y_fw)
+            ys_bw.append(y_bw)
+        return np.argmax((np.vstack(ys_fw) + np.vstack(ys_bw)[::-1]), 1)
     # end method infer
 
 

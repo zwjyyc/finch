@@ -37,7 +37,7 @@ def load_data():
     else:
         text = preprocess('temp/icwb2-data/training/pku_training.utf8')
         text += preprocess('temp/icwb2-data/training/msr_training.utf8')
-    cutoff = int(0.7 * len(text))
+    cutoff = int(0.8 * len(text))
     segs_train = text[:cutoff].split()
     segs_test = text[cutoff:].split()
 

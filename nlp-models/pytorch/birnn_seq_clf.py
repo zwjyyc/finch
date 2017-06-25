@@ -3,15 +3,13 @@ import numpy as np
 import math
 
 
-class RNNTextClassifier(torch.nn.Module):
-    def __init__(self, vocab_size, n_out, embedding_dim=128, cell_size=128, n_layer=1, dropout=0.3, stateful=False):
-        super(RNNTextClassifier, self).__init__()
+class BiRNN(torch.nn.Module):
+    def __init__(self, vocab_size, n_out, embedding_dim=128, cell_size=128, dropout=0.0):
+        super(BiRNN, self).__init__()
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.cell_size = cell_size
-        self.n_layer = n_layer
         self.n_out = n_out
-        self.stateful = stateful
         self.dropout = dropout
         self.build_model()
     # end constructor
@@ -19,24 +17,36 @@ class RNNTextClassifier(torch.nn.Module):
 
     def build_model(self):
         self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
-        self.lstm = torch.nn.LSTM(input_size=self.embedding_dim,
-                                  hidden_size=self.cell_size,
-                                  num_layers=self.n_layer,
-                                  batch_first=True,
-                                  dropout=self.dropout)
-        self.fc = torch.nn.Linear(self.cell_size, self.n_out)
+        self.fw_lstm = torch.nn.LSTM(input_size=self.embedding_dim,
+                                     hidden_size=self.cell_size,
+                                     batch_first=True,
+                                     dropout=self.dropout)
+        self.bw_lstm = torch.nn.LSTM(input_size=self.embedding_dim,
+                                     hidden_size=self.cell_size,
+                                     batch_first=True,
+                                     dropout=self.dropout)
+        self.fc = torch.nn.Linear(2 * self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters())
     # end method build_model    
 
 
-    def forward(self, X, init_state=None):
-        X = self.encoder(X)
-        Y, final_state = self.lstm(X, init_state) # forward propagate
-        Y = Y.view(-1, self.cell_size)
-        Y = self.fc(Y)                  
-        return Y, final_state
+    def forward(self, X):
+        X_reversed = self.reverse(X, 1)
+        fw_out, _ = self.fw_lstm(self.encoder(X), None)
+        bw_out, _ = self.bw_lstm(self.encoder(X_reversed), None)
+        bi_out = torch.cat((fw_out, self.reverse(bw_out, 1)), 2)
+        bi_out = bi_out.view(-1, 2 * self.cell_size)
+        logits = self.fc(bi_out)                  
+        return logits
     # end method forward
+
+
+    def reverse(self, X, dim):
+        idx = [i for i in range(X.size(dim)-1, -1, -1)]
+        idx = torch.autograd.Variable(torch.LongTensor(idx))
+        inverted = X.index_select(dim, idx)
+        return inverted
 
 
     def fit(self, X, Y, n_epoch=10, batch_size=128, en_shuffle=True):
@@ -54,18 +64,14 @@ class RNNTextClassifier(torch.nn.Module):
                 y_batch = Y_batch.ravel()
                 X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
                 y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
-                
-                if (self.stateful) and (len(X_batch) == batch_size):
-                    y_pred_batch, state = self.forward(X_train_batch, state)
-                    state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
-                else:
-                    y_pred_batch, _ = self.forward(X_train_batch)
+                y_pred_batch = self.forward(X_train_batch)
 
                 loss = self.criterion(y_pred_batch, y_train_batch)     # cross entropy loss
                 self.optimizer, lr = self.adjust_lr(self.optimizer, global_step, total_steps)
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
+
                 local_step += 1
                 global_step += 1
                 acc = (torch.max(y_pred_batch,1)[1].data.numpy().squeeze() == y_batch).mean()
@@ -83,12 +89,7 @@ class RNNTextClassifier(torch.nn.Module):
             y_batch = Y_batch.ravel()
             X_test_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
             y_test_batch = torch.from_numpy(y_batch.astype(np.int64))
-
-            if (self.stateful) and (len(X_batch) == batch_size):
-                y_pred_batch, state = self.forward(X_test_batch, state)
-                state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
-            else:
-                y_pred_batch, _ = self.forward(X_test_batch)
+            y_pred_batch = self.forward(X_test_batch)
 
             _, y_pred_batch = torch.max(y_pred_batch.data, 1)
             total += y_test_batch.size(0)
@@ -100,7 +101,7 @@ class RNNTextClassifier(torch.nn.Module):
     def infer(self, x):
         x = np.atleast_2d(x)
         x = torch.autograd.Variable(torch.from_numpy(x.astype(np.int64)))
-        y , _ = self.forward(x)
+        y = self.forward(x)
         return y.data.numpy()
     # end method infer
 

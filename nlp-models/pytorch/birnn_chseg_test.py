@@ -4,7 +4,7 @@ import sys
 import chseg
 import numpy as np
 import tensorflow as tf
-from birnn_seq2seq_clf import BiRNN
+from birnn_seq_clf import BiRNN
 from collections import Counter
 
 
@@ -28,11 +28,13 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = to_seq(x_train, x_test, y_train, y_test)
     print('Vocab size: %d' % vocab_size)
 
-    clf = BiRNN(SEQ_LEN, vocab_size, N_CLASS)
-    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=N_EPOCH)
+    clf = BiRNN(vocab_size, N_CLASS, dropout=0.0)
+    clf.fit(X_train, Y_train, n_epoch=N_EPOCH)
+    clf.evaluate(X_test, Y_test)
     
     chars = list(sample) if py == 3 else list(sample.decode('utf-8'))
-    labels = clf.infer([char2idx[c] for c in chars])
+    preds = clf.infer([char2idx[c] for c in chars])
+    labels = np.argmax(preds, 1)
     res = ''
     for i, l in enumerate(labels):
         c = sample[i] if py == 3 else sample.decode('utf-8')[i]
@@ -40,4 +42,3 @@ if __name__ == '__main__':
             c += ' '
         res += c
     print(res)
-    

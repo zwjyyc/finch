@@ -4,7 +4,7 @@ import sys
 import chseg
 import numpy as np
 import tensorflow as tf
-from rnn_seq2seq_clf import RNNTextClassifier
+from birnn_seq2seq_clf import BiRNN
 from collections import Counter
 
 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = to_seq(x_train, x_test, y_train, y_test)
     print('Vocab size: %d' % vocab_size)
 
-    clf = RNNTextClassifier(SEQ_LEN, vocab_size, N_CLASS)
+    clf = BiRNN(SEQ_LEN, vocab_size, N_CLASS)
     clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=N_EPOCH)
     
     chars = list(sample) if py == 3 else list(sample.decode('utf-8'))
@@ -41,3 +41,4 @@ if __name__ == '__main__':
             c += ' '
         res += c
     print(res)
+    

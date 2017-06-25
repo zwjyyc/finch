@@ -83,8 +83,7 @@ class RNNTextGen:
 
     def add_dynamic_rnn(self):
         self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
-        self._cursor, final_state = tf.nn.dynamic_rnn(self.cells, self._cursor,
-                                                      initial_state=self.init_state, time_major=False)   
+        self._cursor, final_state = tf.nn.dynamic_rnn(self.cells, self._cursor, initial_state=self.init_state)   
     # end method add_dynamic_rnn
 
 
@@ -112,13 +111,12 @@ class RNNTextGen:
 
 
     def add_inference(self):
-        self.X_ = tf.placeholder(tf.int32, [None, 1])
-        self.init_state_ = self.cells.zero_state(1, tf.float32)
-        X = tf.nn.embedding_lookup(tf.get_variable('E'), self.X_)
-        Y, self.final_state_ = tf.nn.dynamic_rnn(self.cells, X, initial_state=self.init_state_, time_major=False)
-        Y = tf.reshape(Y, [-1, self.cell_size])
-        Y = tf.layers.dense(Y, self.vocab_size, name='output', reuse=True)
-        self.softmax_out_ = tf.nn.softmax(Y)
+        self.x = tf.placeholder(tf.int32, [None, 1])
+        self.i_s = self.cells.zero_state(1, tf.float32)
+        x_embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x)
+        y, self.f_s = tf.nn.dynamic_rnn(self.cells, x_embedded, initial_state=self.i_s)
+        y = tf.layers.dense(tf.reshape(y, [-1, self.cell_size]), self.vocab_size, name='output', reuse=True)
+        self.y = tf.nn.softmax(y)
     # end add_sample_model
 
 
@@ -204,19 +202,19 @@ class RNNTextGen:
 
     def infer(self, prime_text, n_gen):
         # warming up
-        next_state = self.sess.run(self.init_state_)
+        next_state = self.sess.run(self.i_s)
         char_list = list(prime_text)
         for char in char_list[:-1]:
             x = np.atleast_2d(self.char2idx[char]) 
-            next_state = self.sess.run(self.final_state_, {self.X_:x, self.init_state_:next_state})
+            next_state = self.sess.run(self.f_s, {self.x:x, self.i_s:next_state})
         # end warming up
 
         out_sentence = 'IN: ' + prime_text + '\nOUT: ' + prime_text
         char = char_list[-1]
         for _ in range(n_gen):
             x = np.atleast_2d(self.char2idx[char])
-            softmax_out, next_state = self.sess.run([self.softmax_out_, self.final_state_],
-                                                    {self.X_:x, self.init_state_:next_state})
+            softmax_out, next_state = self.sess.run([self.y, self.f_s],
+                                                    {self.x:x, self.i_s:next_state})
             probas = softmax_out[0].astype('float64')
             probas = probas / np.sum(probas)
             actions = np.random.multinomial(1, probas, 1)

@@ -53,7 +53,6 @@ class RNNTextClassifier:
         self.batch_size = tf.placeholder(tf.int32, [])
         self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self.train_flag = tf.placeholder(tf.bool)
         self._cursor = self.X
     # end method add_input_layer
 

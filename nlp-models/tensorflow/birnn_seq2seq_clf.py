@@ -51,7 +51,6 @@ class BiRNN:
         self.batch_size = tf.placeholder(tf.int32, [])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self.train_flag = tf.placeholder(tf.bool)
         self._cursor = self.X
     # end method add_input_layer
 

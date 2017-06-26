@@ -63,26 +63,19 @@ class BiRNN:
 
 
     def add_lstm_cells(self):
-        with tf.variable_scope('forward'):
-            self.cell_fw = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
-        with tf.variable_scope('backward'):
-            self.cell_bw = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
+        self.cell_fw = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
+        self.cell_bw = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
     # end method add_rnn_cells
 
 
     def add_dynamic_rnn(self):
-        with tf.variable_scope('forward'):
-            self.fw_out, _ = tf.nn.dynamic_rnn(self.cell_fw, self._cursor, dtype=tf.float32)
-        with tf.variable_scope('backward'):
-            self.bw_out, _ = tf.nn.dynamic_rnn(self.cell_bw, tf.reverse(self._cursor, [1]), dtype=tf.float32)
-        self.bw_out = tf.reverse(self.bw_out, [1])
+        birnn_outs, _ = tf.nn.bidirectional_dynamic_rnn(self.cell_fw, self.cell_bw, self._cursor, dtype=tf.float32)
+        self._cursor = tf.concat(birnn_outs, 2)
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        fw_logits = tf.layers.dense(tf.reshape(self.fw_out, [-1, self.cell_size]), self.n_out, name='fw_out')
-        bw_logits = tf.layers.dense(tf.reshape(self.bw_out, [-1, self.cell_size]), self.n_out, name='bw_out')
-        self.logits = fw_logits + bw_logits
+        self.logits = tf.layers.dense(tf.reshape(self._cursor, [-1, 2*self.cell_size]), self.n_out, name='out')
     # end method add_output_layer
 
 
@@ -101,22 +94,13 @@ class BiRNN:
 
 
     def add_inference(self):
-        self.x_fw = tf.placeholder(tf.int32, [None, 1])
-        self.x_bw = tf.placeholder(tf.int32, [None, 1])
-
-        self.i_s_fw = self.cell_fw.zero_state(1, tf.float32)
-        self.i_s_bw = self.cell_bw.zero_state(1, tf.float32)
-
-        x_fw_embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x_fw)
-        x_bw_embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x_bw)
-
-        with tf.variable_scope('forward', reuse=True):
-            y_fw, self.f_s_fw = tf.nn.dynamic_rnn(self.cell_fw, x_fw_embedded, initial_state=self.i_s_fw)
-        with tf.variable_scope('backward', reuse=True):
-            y_bw, self.f_s_bw = tf.nn.dynamic_rnn(self.cell_bw, x_bw_embedded, initial_state=self.i_s_bw)
-        
-        self.y_fw = tf.layers.dense(tf.reshape(y_fw, [-1, self.cell_size]), self.n_out, name='fw_out', reuse=True)
-        self.y_bw = tf.layers.dense(tf.reshape(y_bw, [-1, self.cell_size]), self.n_out, name='bw_out', reuse=True)
+        self.x = tf.placeholder(tf.int32, [None, self.seq_len])
+        self.real_seq_len = tf.placeholder(tf.int32, [None])
+        embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x)
+        birnn_outs, _ = tf.nn.bidirectional_dynamic_rnn(self.cell_fw, self.cell_bw, embedded, dtype=tf.float32,
+                                                     sequence_length=self.real_seq_len)
+        birnn_out = tf.concat(birnn_outs, 2)
+        self.y = tf.layers.dense(tf.reshape(birnn_out, [-1, 2*self.cell_size]), self.n_out, name='out', reuse=True)
     # end add_sample_model
 
 
@@ -135,16 +119,13 @@ class BiRNN:
                 shuffled = np.random.permutation(len(X))
                 X = X[shuffled]
                 Y = Y[shuffled]
-            local_step = 1
-
-            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size),
-                                        self.gen_batch(Y, batch_size)):
+            for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                                self.gen_batch(Y, batch_size))):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)           
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                              {self.X:X_batch, self.Y:Y_batch,
                                               self.batch_size:len(X_batch), self.lr:lr,
                                               self.keep_prob:keep_prob})
-                local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
                     print ('Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f'
@@ -194,22 +175,11 @@ class BiRNN:
 
 
     def infer(self, xs):
-        n_s_fw = self.sess.run(self.i_s_fw)
-        n_s_bw = self.sess.run(self.i_s_bw)
-        ys_fw = []
-        ys_bw = []
-        for x_fw, x_bw in zip(xs, list(reversed(xs))):
-            x_fw = np.atleast_2d(x_fw)
-            x_bw = np.atleast_2d(x_bw)
-            y_fw, y_bw, n_s_fw, n_s_bw = self.sess.run([self.y_fw, self.y_bw, self.f_s_fw, self.f_s_bw], 
-                                              {self.x_fw: x_fw,
-                                               self.x_bw: x_bw,
-                                               self.keep_prob: 1.0,
-                                               self.i_s_fw: n_s_fw,
-                                               self.i_s_bw: n_s_bw})
-            ys_fw.append(y_fw)
-            ys_bw.append(y_bw)
-        return np.argmax((np.vstack(ys_fw) + np.vstack(ys_bw)[::-1]), 1)
+        xs_padded = xs + [0] * (self.seq_len - len(xs))
+        logits = self.sess.run(self.y, {self.x: np.atleast_2d(xs_padded),
+                                        self.real_seq_len: np.atleast_1d(len(xs)),
+                                        self.keep_prob: 1.0})
+        return np.argmax(logits[:len(xs)], 1)
     # end method infer
 
 

@@ -35,17 +35,17 @@ class BiRNN(torch.nn.Module):
         X_reversed = self.reverse(X, 1)
         fw_out, _ = self.fw_lstm(self.encoder(X), None)
         bw_out, _ = self.bw_lstm(self.encoder(X_reversed), None)
-        bi_out = torch.cat((fw_out, self.reverse(bw_out, 1)), 2)
-        bi_out = bi_out.view(-1, 2 * self.cell_size)
-        logits = self.fc(bi_out)                  
+        bi_rnn_out = torch.cat((fw_out, self.reverse(bw_out, 1)), 2)
+        reshaped = bi_rnn_out.view(-1, 2 * self.cell_size)
+        logits = self.fc(reshaped)                  
         return logits
     # end method forward
 
 
     def reverse(self, X, dim):
-        idx = [i for i in range(X.size(dim)-1, -1, -1)]
-        idx = torch.autograd.Variable(torch.LongTensor(idx))
-        inverted = X.index_select(dim, idx)
+        indices = [i for i in range(X.size(dim)-1, -1, -1)]
+        indices = torch.autograd.Variable(torch.LongTensor(indices))
+        inverted = torch.index_select(X, dim, indices)
         return inverted
 
 
@@ -58,9 +58,8 @@ class BiRNN(torch.nn.Module):
                 shuffled = np.random.permutation(len(X))
                 X = X[shuffled]
                 Y = Y[shuffled]
-            local_step = 0
-            state = None
-            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
+            for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                                self.gen_batch(Y, batch_size))):
                 y_batch = Y_batch.ravel()
                 X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
                 y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
@@ -72,7 +71,6 @@ class BiRNN(torch.nn.Module):
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
 
-                local_step += 1
                 global_step += 1
                 acc = (torch.max(y_pred_batch,1)[1].data.numpy().squeeze() == y_batch).mean()
                 if local_step % 100 == 0:
@@ -84,7 +82,6 @@ class BiRNN(torch.nn.Module):
     def evaluate(self, X_test, Y_test, batch_size=128):
         correct = 0
         total = 0
-        state = None
         for X_batch, Y_batch in zip(self.gen_batch(X_test, batch_size), self.gen_batch(Y_test, batch_size)):
             y_batch = Y_batch.ravel()
             X_test_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))

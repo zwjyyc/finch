@@ -14,6 +14,7 @@ git clone https://github.com/zhedongzheng/finch.git
     * [tensorflow 1.2](http://tensorflow.org/)
     * [pytorch 0.12](http://pytorch.org/)
     * [sklearn 0.18](http://scikit-learn.org/stable/)
+    * [libsvm](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)
 * data processing libraries
     * [numpy](http://www.numpy.org/)
     * [nltk](http://www.nltk.org/)

@@ -10,9 +10,8 @@ git clone https://github.com/zhedongzheng/finch.git
 ```
 ## Dependence
 
-The full dependence is huge because some models are implemented multiple times in different libraries / languages.
+The full dependence listed below is huge, because many models are implemented multiple times in different libraries / languages.
 
-The full dependence is listed below, however running a single model and test would just require a small part of them.
 * environment
     * [python 3 / python 2.7](https://www.python.org/)
     * [java](http://www.oracle.com/technetwork/java/javase/downloads/index.html)

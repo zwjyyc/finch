@@ -7,6 +7,7 @@ Work in process ......
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
+* python 3 / python 2
 * tensorflow 1.2
 * pytorch 0.12
 * sklearn 0.18

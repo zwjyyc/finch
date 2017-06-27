@@ -15,6 +15,7 @@ git clone https://github.com/zhedongzheng/finch.git
     * pytorch 0.12
     * sklearn 0.18
 * data processing libraries
+    * numpy
     * nltk
     * opencv-python
 * visualization libraries

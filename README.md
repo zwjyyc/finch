@@ -3,7 +3,10 @@
 This repository contains a wide range of my API models and tests written on machine learning topics based on various frameworks (e.g. TensorFlow, PyTorch)
 
 Work in process ......
-
+## Installation
+```
+git clone https://github.com/zhedongzheng/finch.git
+```
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

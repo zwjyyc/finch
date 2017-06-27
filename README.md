@@ -1,6 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-This repository contains a wide range of my API models and tests written on machine learning topics based on modern frameworks (e.g. TensorFlow, PyTorch)
+This repository contains a wide range of my API models and tests written on machine learning topics based on modern technology (e.g. TensorFlow, PyTorch)
 
 Work in process ......
 ## Installation

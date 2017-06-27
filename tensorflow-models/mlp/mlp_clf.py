@@ -102,13 +102,12 @@ class MLPClassifier:
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
-            local_step = 1
-            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), self.gen_batch(Y, batch_size)):
+            for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                                self.gen_batch(Y, batch_size))):
                 lr = self.adjust_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                              {self.X: X_batch, self.Y: Y_batch, self.lr: lr,
                                               self.keep_prob:keep_prob, self.train_flag:True})
-                local_step += 1
                 global_step += 1
                 if local_step % 100 == 0:
                     print ('Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f'

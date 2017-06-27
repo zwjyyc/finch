@@ -100,14 +100,12 @@ class RNNClassifier:
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch): # batch training
-
             if en_shuffle:
                 X, Y = sklearn.utils.shuffle(X, Y)
-            local_step = 1
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
 
-            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size),
-                                        self.gen_batch(Y, batch_size)):
+            for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                                self.gen_batch(Y, batch_size))):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 if (self.stateful) and (len(X_batch) == batch_size):
                     _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
@@ -122,7 +120,6 @@ class RNNClassifier:
                                                   self.batch_size:len(X_batch),
                                                   self.in_keep_prob:keep_prob_tuple[0],
                                                   self.out_keep_prob:keep_prob_tuple[1]})
-                local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
                     print ('Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f'

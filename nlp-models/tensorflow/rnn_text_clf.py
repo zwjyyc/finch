@@ -84,13 +84,8 @@ class RNNTextClassifier:
 
     def add_backward_path(self):
         self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1),
-                                                             self.Y), tf.float32))
-        # gradient clipping
-        tvars = tf.trainable_variables()
-        grads, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tvars), self.grad_clip)
-        optimizer = tf.train.AdamOptimizer(self.lr)
-        self.train_op = optimizer.apply_gradients(zip(grads, tvars))
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1), self.Y), tf.float32))
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 
 
@@ -107,11 +102,10 @@ class RNNTextClassifier:
         for epoch in range(n_epoch): # batch training
             if en_shuffle:
                 X, Y = sklearn.utils.shuffle(X, Y)
-            local_step = 1
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
 
-            for X_batch, Y_batch in zip(self.gen_batch(X, batch_size),
-                                        self.gen_batch(Y, batch_size)):
+            for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                                self.gen_batch(Y, batch_size))):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
                 if (self.stateful) and (len(X_batch) == batch_size):
                     _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
@@ -124,7 +118,6 @@ class RNNTextClassifier:
                                                  {self.X:X_batch, self.Y:Y_batch,
                                                   self.batch_size:len(X_batch), self.lr:lr,
                                                   self.rnn_keep_prob:rnn_keep_prob})
-                local_step += 1
                 global_step += 1
                 if local_step % 50 == 0:
                     print ('Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f'

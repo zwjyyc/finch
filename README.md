@@ -7,12 +7,19 @@ Work in process ......
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-* python 3 / python 2.7
-* tensorflow 1.2
-* pytorch 0.12
-* sklearn 0.18
-* nltk
-* opencv-python
+## Dependence
+* environment
+    * python 3 / python 2.7
+* machine learning libraries
+    * tensorflow 1.2
+    * pytorch 0.12
+    * sklearn 0.18
+* data processing libraries
+    * nltk
+    * opencv-python
+* visualization libraries
+    * matplotlib
+    * seaborn
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

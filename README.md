@@ -7,6 +7,8 @@ Work in process ......
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
+* TensorFlow 1.2
+* PyTorch 0.12
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

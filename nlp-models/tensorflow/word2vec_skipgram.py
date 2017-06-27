@@ -7,8 +7,8 @@ from collections import Counter
 
 
 class SkipGram:
-    def __init__(self, text, sample_words, skip_window=5, embedding_dim=200, n_sampled=100, min_freq=5, useless_words=None,
-                 loss_fn=tf.nn.sampled_softmax_loss, sess=tf.Session()):
+    def __init__(self, text, sample_words, skip_window=5, embedding_dim=200, n_sampled=100, min_freq=5,
+                 useless_words=None, loss_fn=tf.nn.sampled_softmax_loss, sess=tf.Session()):
         self.text = text
         self.sample_words = sample_words
         self.skip_window = skip_window
@@ -36,7 +36,7 @@ class SkipGram:
         self.y = tf.placeholder(tf.int32, shape=[None, 1])
         self.w = tf.get_variable('softmax_w', [self.vocab_size, self.embedding_dim], tf.float32,
                                   tf.contrib.layers.variance_scaling_initializer())
-        self.b = tf.get_variable('softmax_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.0))
+        self.b = tf.get_variable('softmax_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.01))
         self.lr = tf.placeholder(tf.float32)
     # end method add_input_layer
 

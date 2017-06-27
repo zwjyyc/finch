@@ -7,9 +7,11 @@ Work in process ......
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-* [TensorFlow 1.2](https://www.tensorflow.org/)
-* [PyTorch 0.12](http://pytorch.org/)
-* [Sklearn 0.18](http://scikit-learn.org/stable/)
+* tensorflow 1.2
+* pytorch 0.12
+* sklearn 0.18
+* nltk
+* opencv-python
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

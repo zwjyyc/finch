@@ -7,10 +7,11 @@ Work in process ......
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-## Full Dependence
+## Dependence
+The depdence is huge because some models are implemented multiple times in different libraries / language, the full dependence is listed below:
 * environment
     * [python 3 / python 2.7](https://www.python.org/)
-    * [java](https://www.java.com/en/)
+    * [java](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 * machine learning libraries
     * [tensorflow 1.2](http://tensorflow.org/)
     * [pytorch 0.12](http://pytorch.org/)

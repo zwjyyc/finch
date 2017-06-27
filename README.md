@@ -11,16 +11,16 @@ git clone https://github.com/zhedongzheng/finch.git
 * environment
     * python 3 / python 2.7
 * machine learning libraries
-    * tensorflow 1.2
-    * pytorch 0.12
-    * sklearn 0.18
+    * [tensorflow 1.2](http://tensorflow.org/)
+    * [pytorch 0.12](http://pytorch.org/)
+    * [sklearn 0.18](http://scikit-learn.org/stable/)
 * data processing libraries
-    * numpy
-    * nltk
-    * opencv-python
+    * [numpy](http://www.numpy.org/)
+    * [nltk](http://www.nltk.org/)
+    * [opencv-python](http://opencv.org/)
 * visualization libraries
-    * matplotlib
-    * seaborn
+    * [matplotlib](https://matplotlib.org/)
+    * [seaborn](https://seaborn.pydata.org/)
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

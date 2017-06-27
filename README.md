@@ -10,7 +10,7 @@ git clone https://github.com/zhedongzheng/finch.git
 ```
 ## Dependence
 
-The full dependence is huge, because many models are implemented multiple times in different libraries.
+The full dependence is huge, because many models are implemented in different libraries for multiple times.
 
 * environment
     * [python 3 / python 2.7](https://www.python.org/)

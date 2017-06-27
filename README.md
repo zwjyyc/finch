@@ -1,15 +1,16 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
+Work in process ...
+
 This repository contains a wide range of my API models and tests written on machine learning topics based on modern technology (e.g. TensorFlow, PyTorch)
 
-Work in process ......
 ## Installation
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
 ## Dependence
 
-The depdence is huge because some models are implemented multiple times in different libraries / language. The full dependence is listed below, however running a single model and test would just require a small part of them.
+The full dependence is huge because some models are implemented multiple times in different libraries / language. The full dependence is listed below, however running a single model and test would just require a small part of them.
 * environment
     * [python 3 / python 2.7](https://www.python.org/)
     * [java](http://www.oracle.com/technetwork/java/javase/downloads/index.html)

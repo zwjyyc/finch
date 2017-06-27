@@ -9,7 +9,7 @@ git clone https://github.com/zhedongzheng/finch.git
 ```
 ## Dependence
 * environment
-    * python 3 / python 2.7
+    * [python 3 / python 2.7](https://www.python.org/)
 * machine learning libraries
     * [tensorflow 1.2](http://tensorflow.org/)
     * [pytorch 0.12](http://pytorch.org/)

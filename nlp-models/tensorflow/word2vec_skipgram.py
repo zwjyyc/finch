@@ -134,7 +134,7 @@ class SkipGram:
     # end method get_y
 
 
-    def fit(self, n_epoch=10, batch_size=1000, top_k=5, en_exp_decay=True, eval_step=500):
+    def fit(self, n_epoch=10, batch_size=1000, top_k=5, en_exp_decay=True, eval_step=1000):
         self.sess.run(tf.global_variables_initializer())
         global_step = 0
         n_batch = int(len(self.indexed) / batch_size)
@@ -162,8 +162,8 @@ class SkipGram:
 
 
     def adjust_lr(self, current_step, total_steps):
-        max_lr = 0.005
-        min_lr = 0.0005
+        max_lr = 1e-2
+        min_lr = 1e-3
         decay_rate = math.log(min_lr/max_lr) / (-total_steps)
         lr = max_lr * math.exp(-decay_rate * current_step)
         return lr

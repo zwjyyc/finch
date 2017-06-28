@@ -37,7 +37,6 @@ class SkipGram:
         self.w = tf.get_variable('softmax_w', [self.vocab_size, self.embedding_dim], tf.float32,
                                   tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('softmax_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.01))
-        self.lr = tf.placeholder(tf.float32)
     # end method add_input_layer
 
 
@@ -51,7 +50,7 @@ class SkipGram:
         self.loss = tf.reduce_mean(self.loss_fn(weights=self.w, biases=self.b,
                                                 labels=self.y, inputs=self.embedded,
                                                 num_sampled=self.n_sampled, num_classes=self.vocab_size))
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 
 
@@ -134,7 +133,7 @@ class SkipGram:
     # end method get_y
 
 
-    def fit(self, n_epoch=10, batch_size=1000, top_k=5, en_exp_decay=True, eval_step=1000):
+    def fit(self, n_epoch=10, batch_size=1000, top_k=5, eval_step=1000):
         self.sess.run(tf.global_variables_initializer())
         global_step = 0
         n_batch = int(len(self.indexed) / batch_size)
@@ -143,8 +142,7 @@ class SkipGram:
         for epoch in range(n_epoch):
             for local_step, (x, y) in enumerate(self.next_batch(self.indexed, batch_size)):
                 y = np.array(y)[:, np.newaxis]
-                lr = self.adjust_lr(global_step, total_steps) if en_exp_decay else 1e-3
-                _, loss = self.sess.run([self.train_op, self.loss], {self.x: x, self.y: y, self.lr:lr})
+                _, loss = self.sess.run([self.train_op, self.loss], {self.x: x, self.y: y})
                 if local_step % 50 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | LR: %.4f' %
                            (epoch+1, n_epoch, local_step, n_batch, loss, lr))
@@ -159,13 +157,4 @@ class SkipGram:
                             log = '%s %s,' % (log, analogy)
                         print(log)
     # end method fit
-
-
-    def adjust_lr(self, current_step, total_steps):
-        max_lr = 1e-2
-        min_lr = 1e-3
-        decay_rate = math.log(min_lr/max_lr) / (-total_steps)
-        lr = max_lr * math.exp(-decay_rate * current_step)
-        return lr
-    # end method adjust_lr
 # end class

@@ -8,4 +8,4 @@ if __name__ == '__main__':
     sample_words = ['one', 'game', 'american', 'college']
 
     model = SkipGram(text, sample_words, skip_window=10, useless_words=string.punctuation)
-    model.fit(en_exp_decay=False)
+    model.fit()

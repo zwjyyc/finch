@@ -28,10 +28,10 @@ class Adaboost:
 
 
     def predict(self, X):
-        fx = np.zeros(X.shape[0])
+        y = np.zeros(X.shape[0])
         for alpha, model in zip(self.alphas, self.models):
-            fx += alpha * model.predict(X)
-        return np.sign(fx)
+            y += alpha * model.predict(X)
+        return np.sign(y)
 
 
     def score(self, X, y):

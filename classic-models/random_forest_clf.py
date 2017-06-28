@@ -1,7 +1,7 @@
 from sklearn.tree import DecisionTreeClassifier
 import math
 import numpy as np
-import tensorflow as tf
+from utils import one_hot
 
 
 class RandomForestClassifier:
@@ -23,7 +23,7 @@ class RandomForestClassifier:
 
     def predict(self, X):
         ys = [tree.predict(X[:, self._features[i]]) for i, tree in enumerate(self._forest)]
-        ys_one_hot = [tf.contrib.keras.utils.to_categorical(y) for y in ys]
+        ys_one_hot = [one_hot(y) for y in ys]
         return np.argmax(np.sum(ys_one_hot, axis=0), axis=1)
     
 

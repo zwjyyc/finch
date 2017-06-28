@@ -1,5 +1,5 @@
 import numpy as np
-import tensorflow as tf
+from utils import one_hot
 from sklearn.tree import DecisionTreeClassifier
 
 
@@ -19,7 +19,7 @@ class BaggingClassifier:
 
     def predict(self, X):
         ys = [model.predict(X) for model in self.models]
-        ys_one_hot = [tf.contrib.keras.utils.to_categorical(y) for y in ys]
+        ys_one_hot = [one_hot(y) for y in ys]
         return np.argmax(np.sum(ys_one_hot, axis=0), axis=1)
     
     

@@ -144,7 +144,7 @@ class SkipGram:
                 y = np.array(y)[:, np.newaxis]
                 _, loss = self.sess.run([self.train_op, self.loss], {self.x: x, self.y: y})
                 if local_step % 50 == 0:
-                    print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f |' %
+                    print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f' %
                            (epoch+1, n_epoch, local_step, n_batch, loss))
                 global_step += 1
                 if local_step % eval_step == 0:

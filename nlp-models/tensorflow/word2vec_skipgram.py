@@ -109,12 +109,10 @@ class SkipGram:
     # end method filter_high_freq
 
 
-    def next_batch(self, words, batch_size):
-        n_batch = int(len(words) / batch_size)
-        words = words[:n_batch * batch_size]
-        for idx in range(0, len(words), batch_size):
+    def next_batch(self, batch_size):
+        for idx in range(0, len(self.indexed), batch_size):
             x, y = [], []
-            batch = words[idx: idx+batch_size]
+            batch = self.indexed[idx: idx+batch_size]
             for i in range(len(batch)):
                 batch_x = batch[i]
                 batch_y = self.get_y(batch, i)
@@ -140,7 +138,7 @@ class SkipGram:
         total_steps = int(n_epoch * n_batch)
 
         for epoch in range(n_epoch):
-            for local_step, (x, y) in enumerate(self.next_batch(self.indexed, batch_size)):
+            for local_step, (x, y) in enumerate(self.next_batch(batch_size)):
                 y = np.array(y)[:, np.newaxis]
                 _, loss = self.sess.run([self.train_op, self.loss], {self.x: x, self.y: y})
                 if local_step % 50 == 0:

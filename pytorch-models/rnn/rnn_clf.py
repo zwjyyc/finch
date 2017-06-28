@@ -23,18 +23,17 @@ class RNNClassifier(torch.nn.Module):
 
 
     def forward(self, X, init_state=None):
-        Y, final_state = self.lstm(X, init_state) # forward propagate
-        Y = self.fc(Y[:, -1, :])                  # decode hidden state of last time step
-        return Y, final_state
+        rnn_out, final_state = self.lstm(X, init_state) # forward propagate
+        last_time_step = self.fc(rnn_out[:, -1, :])                  # decode hidden state of last time step
+        return last_time_step, final_state
     # end method forward
 
 
     def fit(self, X, y, num_epochs, batch_size):
         for epoch in range(num_epochs):
-            i = 0
             state = None
-            for X_batch, y_batch in zip(self.gen_batch(X, batch_size),
-                                        self.gen_batch(y, batch_size)):
+            for i, (X_batch, y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                       self.gen_batch(y, batch_size))):
                 X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
                 y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
@@ -49,7 +48,6 @@ class RNNClassifier(torch.nn.Module):
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
-                i+=1 
                 acc = (torch.max(y_pred_batch,1)[1].data.numpy().squeeze() == y_batch).astype(float).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'

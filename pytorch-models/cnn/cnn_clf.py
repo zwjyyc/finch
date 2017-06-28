@@ -32,11 +32,11 @@ class CNNClassifier(torch.nn.Module):
 
 
     def forward(self, X):
-        Y = self.conv1(X)
-        Y = self.conv2(Y)
-        Y = self.shrink(Y)
-        Y = self.fc(Y)
-        return Y
+        conv1_out = self.conv1(X)
+        conv2_out = self.conv2(conv1_out)
+        fully_connected = self.shrink(conv2_out)
+        logits = self.fc(fully_connected)
+        return logits
     # end method forward
 
 
@@ -47,9 +47,8 @@ class CNNClassifier(torch.nn.Module):
 
     def fit(self, X, y, num_epochs, batch_size):
         for epoch in range(num_epochs):
-            i = 0
-            for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size),
-                                                    self.gen_batch(y, batch_size)):
+            for i, (X_train_batch, y_train_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                                   self.gen_batch(y, batch_size))):
                 images = torch.autograd.Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
                 labels = torch.autograd.Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
 
@@ -58,7 +57,6 @@ class CNNClassifier(torch.nn.Module):
                 self.optimizer.zero_grad()              # clear gradients for this training step
                 loss.backward()                         # backpropagation, compute gradients
                 self.optimizer.step()                   # apply gradients
-                i+=1 
                 acc = (torch.max(pred,1)[1].data.numpy().squeeze() == y_train_batch).astype(float).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'

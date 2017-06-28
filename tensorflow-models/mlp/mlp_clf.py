@@ -46,16 +46,14 @@ class MLPClassifier:
     def add_forward_path(self):
         new_layer = self._cursor
         forward = [self.n_in] + self.hidden_unit_list
-        for i in range( len(forward)-1 ):
-            new_layer = self.fc('layer'+str(i), new_layer, forward[i], forward[i+1])
+        for i in range(1, len(forward)):
+            new_layer = self.fc('layer'+str(i), new_layer, forward[i])
         self._cursor = new_layer
     # end method add_forward_path
 
 
     def add_output_layer(self):
-        W = self.call_W('logits_w', [self.hidden_unit_list[-1], self.n_out])
-        b = self.call_b('logits_b', [self.n_out])
-        self.logits = tf.nn.bias_add(tf.matmul(self._cursor, W), b)
+        self.logits = tf.layers.dense(self._cursor, self.n_out)
     # end method add_output_layer
 
 
@@ -71,25 +69,13 @@ class MLPClassifier:
     # end method add_backward_path
 
 
-    def fc(self, name, X, fan_in, fan_out):
-        W = self.call_W(name+'_w', [fan_in,fan_out])
-        b = self.call_b(name+'_b', [fan_out])
-        Y = tf.nn.bias_add(tf.matmul(X, W), b)
+    def fc(self, name, X, fan_out):
+        Y = tf.layers.dense(X, fan_out)
         Y = tf.layers.batch_normalization(Y, training=self.train_flag)
         Y = tf.nn.relu(Y)
         Y = tf.nn.dropout(Y, self.keep_prob)
         return Y
     # end method fc (fully-connected)
-
-
-    def call_W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
-    # end method _W
-
-
-    def call_b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
-    # end method _b
 
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, keep_prob=1.0):

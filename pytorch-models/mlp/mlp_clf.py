@@ -38,9 +38,8 @@ class MLPClassifier(torch.nn.Module):
 
     def fit(self, X, y, num_epochs, batch_size):
         for epoch in range(num_epochs):
-            i = 0
-            for X_train_batch, y_train_batch in zip(self.gen_batch(X, batch_size),
-                                                    self.gen_batch(y, batch_size)):
+            for i, (X_train_batch, y_train_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                                   self.gen_batch(y, batch_size))):
                 images = torch.autograd.Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
                 labels = torch.autograd.Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
 
@@ -49,7 +48,6 @@ class MLPClassifier(torch.nn.Module):
                 self.optimizer.zero_grad()              # clear gradients for this training step
                 loss.backward()                         # backpropagation, compute gradients
                 self.optimizer.step()                   # apply gradients
-                i+=1 
                 acc = (torch.max(pred,1)[1].data.numpy().squeeze() == y_train_batch).astype(float).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'

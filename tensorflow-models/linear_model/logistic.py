@@ -37,7 +37,8 @@ class Logistic:
 
 
     def add_output_layer(self):
-        self.W = tf.get_variable('W', [self.n_in, self.n_out], tf.float32, tf.random_normal_initializer())
+        self.W = tf.get_variable('W', [self.n_in, self.n_out], tf.float32,
+                                  tf.contrib.layers.variance_scaling_initializer())
         self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.01))
         self.logits = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
     # end method add_output_layer

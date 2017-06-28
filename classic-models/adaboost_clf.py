@@ -10,18 +10,18 @@ class Adaboost:
 
 
     def fit(self, X, y):
-        N = X.shape[0]
-        W = np.ones(N) / N 
+        n_samples = X.shape[0]
+        w = np.ones(n_samples) / n_samples
         for _ in range(self.n_models):
             tree = DecisionTreeClassifier(max_depth=1)
-            tree.fit(X, y, sample_weight=W)
-            preds = tree.predict(X)
+            tree.fit(X, y, sample_weight=w)
+            pred = tree.predict(X)
 
-            err = np.dot(W, preds != y)
+            err = np.dot(w, pred != y)
             alpha = 0.5 * (np.log(1 - err) - np.log(err))
 
-            W = W * np.exp(-alpha * y * preds)
-            W = W / W.sum()
+            w = w * np.exp(-alpha * y * pred)
+            w = w / w.sum()
 
             self.models.append(tree)
             self.alphas.append(alpha)
@@ -35,6 +35,6 @@ class Adaboost:
 
 
     def score(self, X, y):
-        preds = self.predict(X)
-        return np.mean(preds == y)
+        pred = self.predict(X)
+        return np.mean(pred == y)
 # end class

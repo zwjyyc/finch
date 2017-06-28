@@ -126,9 +126,9 @@ class SkipGram:
 
     def get_y(self, words, idx):
         skip_window = np.random.randint(1, self.skip_window+1)
-        start = idx - skip_window if (idx - skip_window) > 0 else 0
-        end = idx + skip_window
-        y = words[start: idx] + words[idx+1: end+1]
+        left = idx - skip_window if (idx - skip_window) > 0 else 0
+        right = idx + skip_window
+        y = words[left: idx] + words[idx+1: right+1]
         return list(set(y))
     # end method get_y
 

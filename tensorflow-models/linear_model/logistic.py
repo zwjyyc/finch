@@ -37,8 +37,8 @@ class Logistic:
 
 
     def add_output_layer(self):
-        self.W = self.call_W('W', [self.n_in, self.n_out])
-        self.b = self.call_b('b', shape=[self.n_out])
+        self.W = tf.get_variable('W', [self.n_in, self.n_out], tf.float32, tf.random_normal_initializer())
+        self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.01))
         self.logits = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
     # end method add_output_layer
 
@@ -54,7 +54,7 @@ class Logistic:
     # end method add_backward_path
 
 
-    def fit(self, X, Y, val_data, n_epoch=50, batch_size=100):
+    def fit(self, X, Y, val_data, n_epoch=70, batch_size=100):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch):
@@ -97,14 +97,4 @@ class Logistic:
     def list_avg(self, l):
         return sum(l) / len(l)
     # end method list_avg
-
-
-    def call_W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
-    # end method _W
-
-
-    def call_b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
-    # end method _b
 # end class

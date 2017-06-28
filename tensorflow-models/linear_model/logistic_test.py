@@ -2,12 +2,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
 from sklearn.svm import SVC
 from logistic import Logistic
-import tensorflow as tf
-import numpy as np
 
 
 if __name__ == '__main__':
-    X, y = make_classification(5000)
+    X, y = make_classification(5000, flip_y=0.5)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
     
     clf = Logistic(X.shape[1], 2)

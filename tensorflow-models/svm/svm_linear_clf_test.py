@@ -6,7 +6,7 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    X, y = make_classification(5000)
+    X, y = make_classification(5000, flip_y=0.5)
     y = np.array([1 if label == 1 else -1 for label in y])
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     Y_train = y_train.reshape(-1, 1)

@@ -36,8 +36,8 @@ class LinearSVMClassifier:
 
 
     def add_forward_path(self):
-        self.W = self.call_W('W', [self.n_in, 1])
-        self.b = self.call_b('b', [1])
+        self.W = tf.get_variable('W', [self.n_in, 1], tf.float32, tf.random_normal_initializer())
+        self.b = tf.get_variable('b', [1], tf.float32, tf.constant_initializer(0.01))
         self.logits = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
     # end method add_forward_path
 
@@ -56,17 +56,7 @@ class LinearSVMClassifier:
     # end method add_backward_path
 
 
-    def call_W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
-    # end method _W
-
-
-    def call_b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
-    # end method _b
-
-
-    def fit(self, X, Y, val_data, n_epoch=20, batch_size=100):
+    def fit(self, X, Y, val_data, n_epoch=100, batch_size=100):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         

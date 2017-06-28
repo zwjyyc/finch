@@ -35,7 +35,7 @@ class SkipGram:
         self.x = tf.placeholder(tf.int32, shape=[None])
         self.y = tf.placeholder(tf.int32, shape=[None, 1])
         self.w = tf.get_variable('softmax_w', [self.vocab_size, self.embedding_dim], tf.float32,
-                                  tf.contrib.layers.variance_scaling_initializer())
+                                  tf.truncated_normal_initializer(stddev=0.1))
         self.b = tf.get_variable('softmax_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.01))
     # end method add_input_layer
 

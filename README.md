@@ -8,25 +8,7 @@ This repository contains a wide range of my API models and tests written on mach
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-## Dependence
 
-The full dependence is huge, because many models are implemented in different libraries for multiple times.
-
-* environment
-    * [python 3 / python 2.7](https://www.python.org/)
-    * [java](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-* machine learning libraries
-    * [tensorflow 1.2](http://tensorflow.org/)
-    * [pytorch 0.12](http://pytorch.org/)
-    * [sklearn 0.18](http://scikit-learn.org/stable/)
-    * [libsvm](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)
-* data processing libraries
-    * [numpy](http://www.numpy.org/)
-    * [nltk](http://www.nltk.org/)
-    * [opencv-python](http://opencv.org/)
-* visualization libraries
-    * [matplotlib](https://matplotlib.org/)
-    * [seaborn](https://seaborn.pydata.org/)
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

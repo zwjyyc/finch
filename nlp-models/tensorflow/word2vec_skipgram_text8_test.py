@@ -7,5 +7,5 @@ if __name__ == '__main__':
         text = f.read()
     sample_words = ['one', 'game', 'american', 'college']
 
-    model = SkipGram(text, sample_words, window_size=10, useless_words=string.punctuation)
+    model = SkipGram(text, sample_words, skip_window=10, useless_words=string.punctuation)
     model.fit()

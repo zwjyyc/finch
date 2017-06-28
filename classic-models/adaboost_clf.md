@@ -1,3 +1,4 @@
+fit
 ```
 for i = 1 : n_models
     models[i].train(X, y, sample_weight=w)      # train a weighted classifier
@@ -8,6 +9,7 @@ for i = 1 : n_models
     w /= sum(w)
 end
 ```
+predict
 ```
-sign( sum( alphas[i] * models[i].predict(X_test), axis=0 ) )
+sign( add( alphas[i] * models[i].predict(X_test) ) )
 ```

@@ -1,14 +1,5 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-Work in process ...
-
-This repository contains a wide range of my API models and tests written on machine learning topics based on modern technology (e.g. TensorFlow, PyTorch)
-
-## Installation
-```
-git clone https://github.com/zhedongzheng/finch.git
-```
-
 ## Contents
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)
     * [线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#线性模型)

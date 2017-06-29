@@ -3,11 +3,8 @@
 ## Contents
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)
     * [线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#线性模型)
-    
     * [支持向量机](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#支持向量机)
-    
     * [集成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#集成)
-    
     * [分解](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#分解)
 * [Deep Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#deep-learning)
     * [Multilayer Perceptron](https://github.com/zhedongzheng/finch/blob/master/README.md#multilayer-perceptron)

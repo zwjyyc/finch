@@ -8,7 +8,7 @@ from collections import Counter
 
 class SkipGram:
     def __init__(self, text, sample_words, skip_window=5, embedding_dim=200, n_sampled=100, min_freq=5,
-                 useless_words=None, loss_fn=tf.nn.sampled_softmax_loss, sess=tf.Session()):
+                 useless_words=None, loss_fn=tf.nn.nce_loss, sess=tf.Session()):
         self.text = text
         self.sample_words = sample_words
         self.skip_window = skip_window
@@ -41,7 +41,8 @@ class SkipGram:
 
 
     def add_word_embedding(self):
-        self.embedding = tf.Variable(tf.random_uniform([self.vocab_size, self.embedding_dim], -1.0, 1.0))
+        self.embedding = tf.get_variable('word_embedding', [self.vocab_size, self.embedding_dim], tf.float32,
+                                          tf.random_uniform_initializer(-1.0, 1.0))
         self.embedded = tf.nn.embedding_lookup(self.embedding, self.x) # forward activation of the input network
     # end method add_word_embedding
 

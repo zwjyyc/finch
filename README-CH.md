@@ -8,11 +8,10 @@ This repository contains a wide range of my API models and tests written on mach
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-## Language Support
-[中文]()
+
 ## Contents
-* [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#机器学习)
-  * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)
+* [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)
+  * [线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#线性模型)
   * [Support Vector Machine](https://github.com/zhedongzheng/finch/blob/master/README.md#support-vector-machine)
   * [Ensemble](https://github.com/zhedongzheng/finch/blob/master/README.md#ensemble)
   * [Decomposition](https://github.com/zhedongzheng/finch/blob/master/README.md#decomposition)

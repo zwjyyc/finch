@@ -8,7 +8,7 @@ This repository contains a wide range of my API models and tests written on mach
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-## Language Support
+## Other Language Support
 [中文](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
 
 ## Contents

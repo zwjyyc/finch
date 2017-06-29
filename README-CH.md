@@ -9,7 +9,7 @@
 * [深度学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#深度学习)
     * [Multilayer Perceptron](https://github.com/zhedongzheng/finch/blob/master/README.md#multilayer-perceptron)
     * [Convolutional Network](https://github.com/zhedongzheng/finch/blob/master/README.md#convolutional-network)
-    * [循环网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#循环网络)
+    * [循环网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#循环网络)
     * [Autoencoder](https://github.com/zhedongzheng/finch/blob/master/README.md#autoencoder)
     * [Highway Network](https://github.com/zhedongzheng/finch/blob/master/README.md#highway-network)
     * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)

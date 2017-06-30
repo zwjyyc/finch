@@ -68,9 +68,9 @@ class RNNTextGen:
 
     def add_word_embedding(self):
         # (batch_size, seq_len) -> (batch_size, seq_len, embedding_dims)
-        E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32,
-                             tf.random_uniform_initializer(-1.0, 1.0))
-        self._cursor = tf.nn.embedding_lookup(E, self._cursor)
+        embedding = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32,
+                                     tf.random_uniform_initializer(-1.0, 1.0))
+        self._cursor = tf.nn.embedding_lookup(embedding, self._cursor)
     # end method add_word_embedding
 
 

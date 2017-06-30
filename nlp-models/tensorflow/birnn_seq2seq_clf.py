@@ -56,8 +56,9 @@ class BiRNN:
 
 
     def add_word_embedding_layer(self):
-        E = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32, tf.random_uniform_initializer(-1, 1))
-        embedded = tf.nn.embedding_lookup(E, self._cursor)
+        embedding = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32,
+                                     tf.random_uniform_initializer(-1.0, 1.0))
+        embedded = tf.nn.embedding_lookup(embedding, self._cursor)
         self._cursor = tf.nn.dropout(embedded, self.keep_prob)
     # end method add_word_embedding_layer
 

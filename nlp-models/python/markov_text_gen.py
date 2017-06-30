@@ -1,8 +1,8 @@
 """
-d: dictionary
-k: key
-v: value
-l: list
+like a bird silent in flight
+he read in one self station
+has been to
+than lifes victories of doubt
 """
 import string
 import numpy as np
@@ -13,6 +13,7 @@ def remove_punct(s):
 # end function remove_punct
 
 
+# d: dictionary, k: key, v: value, l: list
 def add2dict(d, k, v):
     if k not in d:
         d[k] = []

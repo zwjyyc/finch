@@ -34,21 +34,21 @@ def sample_word(d):
     return tokens[idx]
 
 
-def main():
+def preprocess(f_path):
     first_words = {}
     second_words = {}
     transitions = {}
 
-    for line in open('./temp/robert_frost.txt'):
+    for line in open(f_path):
         tokens = remove_punct(line.rstrip().lower()).split()
         
         for i, token in enumerate(tokens):
-            if i == 0: # first word
+            if i == 0:                   # first word
                 first_words[token] = first_words.get(token, 0) + 1
             else:
                 if i == len(tokens) - 1: # last word
                     add2dict(transitions, (tokens[i-1], token), 'END')
-                if i == 1: # second word
+                if i == 1:               # second word
                     add2dict(second_words, tokens[i-1], token)
                 else:
                     add2dict(transitions, (tokens[i-2], tokens[i-1]), token)
@@ -63,6 +63,10 @@ def main():
     for k, v in transitions.items():
         transitions[k] = list2proba_dict(v)
 
+    return first_words, second_words, transitions
+
+
+def generate(first_words, second_words, transitions):
     for _ in range(4):
         sentence = []
 
@@ -81,6 +85,10 @@ def main():
             second_word = next_word
 
         print(' '.join(sentence))
+
+
+def main():
+    generate(*preprocess('./temp/robert_frost.txt'))
 
 
 if __name__ == '__main__':

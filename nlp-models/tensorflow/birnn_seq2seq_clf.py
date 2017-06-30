@@ -98,7 +98,7 @@ class BiRNN:
         self.real_seq_len = tf.placeholder(tf.int32, [None])
         embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x)
         birnn_outs, _ = tf.nn.bidirectional_dynamic_rnn(self.cell_fw, self.cell_bw, embedded, dtype=tf.float32,
-                                                     sequence_length=self.real_seq_len)
+                                                        sequence_length=self.real_seq_len)
         birnn_out = tf.concat(birnn_outs, 2)
         self.y = tf.layers.dense(tf.reshape(birnn_out, [-1, 2*self.cell_size]), self.n_out, name='out', reuse=True)
     # end add_sample_model

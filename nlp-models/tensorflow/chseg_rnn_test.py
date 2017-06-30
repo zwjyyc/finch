@@ -9,8 +9,8 @@ from collections import Counter
 
 SEQ_LEN = 50
 N_CLASS = 4 # B: 0, M: 1, E: 2, S: 3
-N_EPOCH = 3
-sample = '我来到大学读书，努力学习知识'
+N_EPOCH = 2
+sample = '我来到大学读书，希望学到知识'
 py = int(sys.version[0])
 
 

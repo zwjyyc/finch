@@ -47,7 +47,7 @@ class MLPClassifier:
         new_layer = self._cursor
         forward = [self.n_in] + self.hidden_unit_list
         for i in range(1, len(forward)):
-            new_layer = self.fc('layer'+str(i), new_layer, forward[i])
+            new_layer = self.fc(new_layer, forward[i])
         self._cursor = new_layer
     # end method add_forward_path
 
@@ -69,7 +69,7 @@ class MLPClassifier:
     # end method add_backward_path
 
 
-    def fc(self, name, X, fan_out):
+    def fc(self, X, fan_out):
         Y = tf.layers.dense(X, fan_out)
         Y = tf.layers.batch_normalization(Y, training=self.train_flag)
         Y = tf.nn.relu(Y)

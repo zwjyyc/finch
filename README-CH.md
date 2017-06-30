@@ -123,14 +123,14 @@
 
 ## Computer Vision
 #### OpenCV
-* OP &nbsp; | &nbsp; [调整大小](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
+* 基本操作 &nbsp; | &nbsp; [调整大小](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
 
-* OP &nbsp; | &nbsp; [旋转](https://github.com/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
+* 基本操作 &nbsp; | &nbsp; [旋转](https://github.com/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
 
-* Segmentation &nbsp; | &nbsp; [轮廓](https://github.com/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
+* 分割 &nbsp; | &nbsp; [轮廓](https://github.com/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
 
-* Segmentation &nbsp; | &nbsp; [轮廓排序](https://github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
+* 分割 &nbsp; | &nbsp; [轮廓排序](https://github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
 
-* Detection &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
+* 探测 &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
 
-* Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
+* 探测 &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)

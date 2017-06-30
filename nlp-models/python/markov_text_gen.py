@@ -10,12 +10,14 @@ import numpy as np
 
 def remove_punct(s):
     return s.translate(None, string.punctuation)
+# end function remove_punct
 
 
 def add2dict(d, k, v):
     if k not in d:
         d[k] = []
     d[k].append(v)
+# end function add2dict
 
 
 def list2proba_dict(l):
@@ -25,6 +27,7 @@ def list2proba_dict(l):
     for token, c in d.items():
         d[token] = float(c) / len(l)
     return d
+# end function list2proba_dict
 
 
 def sample_word(d):
@@ -32,6 +35,7 @@ def sample_word(d):
     tokens = d.keys()
     idx = np.argmax(np.random.multinomial(1, probas, size=1)[0])
     return tokens[idx]
+# end function sample_word
 
 
 def preprocess(f_path):
@@ -64,6 +68,7 @@ def preprocess(f_path):
         transitions[k] = list2proba_dict(v)
 
     return first_words, second_words, transitions
+# end function preprocess
 
 
 def generate(first_words, second_words, transitions):
@@ -85,6 +90,7 @@ def generate(first_words, second_words, transitions):
             second_word = next_word
 
         print(' '.join(sentence))
+# end function generate
 
 
 def main():

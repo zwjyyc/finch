@@ -7,8 +7,7 @@ class Seq2Seq:
     def __init__(self, rnn_size, n_layers,
                  X_word2idx, encoder_embedding_dim,
                  Y_word2idx, decoder_embedding_dim,
-                 batch_size, sess=tf.Session(),
-                 ):
+                 batch_size, sess=tf.Session()):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.X_word2idx = X_word2idx

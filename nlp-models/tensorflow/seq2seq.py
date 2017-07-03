@@ -44,8 +44,8 @@ class Seq2Seq:
 
     def add_encoder_layer(self):            
         _, self.encoder_state = tf.nn.dynamic_rnn(
-            tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]), 
-            tf.contrib.layers.embed_sequence(self.X, len(self.X_word2idx), self.encoder_embedding_dim),
+            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]), 
+            inputs = tf.contrib.layers.embed_sequence(self.X, len(self.X_word2idx), self.encoder_embedding_dim),
             sequence_length = self.X_seq_len,
             dtype = tf.float32,
         )
@@ -63,11 +63,8 @@ class Seq2Seq:
         decoder_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)])
         decoder_input = self.process_decoder_input(self.Y, self.Y_word2idx, self.batch_size)
         Y_vocab_size = len(self.Y_word2idx)
-        decoder_embedding = tf.get_variable('decoder_embedding',
-                                            [Y_vocab_size, self.decoder_embedding_dim],
-                                            tf.float32,
-                                            tf.random_uniform_initializer(-1.0, 1.0))
-        output_layer = Dense(Y_vocab_size, kernel_initializer = tf.truncated_normal_initializer(stddev=0.1))
+        decoder_embedding = tf.Variable(tf.random_uniform([Y_vocab_size, self.decoder_embedding_dim], -1.0, 1.0))
+        output_layer = Dense(Y_vocab_size, kernel_initializer=tf.truncated_normal_initializer(stddev=0.1))
         self.max_Y_seq_len = tf.reduce_max(self.Y_seq_len)
 
         with tf.variable_scope('decode'):
@@ -164,9 +161,9 @@ class Seq2Seq:
                                                                      self.Y_seq_len: Y_train_batch_lens})
                 if local_step % display_step == 0:
                     val_loss = self.sess.run(self.loss, {self.X: X_test_batch,
-                                                        self.Y: Y_test_batch,
-                                                        self.X_seq_len: X_test_batch_lens,
-                                                        self.Y_seq_len: Y_test_batch_lens})
+                                                         self.Y: Y_test_batch,
+                                                         self.X_seq_len: X_test_batch_lens,
+                                                         self.Y_seq_len: Y_test_batch_lens})
                     print("Epoch %d/%d | Batch %d/%d | Train Loss %.3f | Test Loss %.3f"
                         % (epoch, n_epoch, local_step, len(X_train)//self.batch_size, loss, val_loss))
     # end method fit
@@ -179,8 +176,8 @@ class Seq2Seq:
         pad = self.X_word2idx['<PAD>']
         indexed = preprocess(input_word)
         logits = self.sess.run(self.predicting_logits, {self.X: [indexed] * self.batch_size,
-                                                                self.X_seq_len: [len(indexed)] * self.batch_size,
-                                                                self.Y_seq_len: [len(indexed)] * self.batch_size})[0]
+                                                        self.X_seq_len: [len(indexed)] * self.batch_size,
+                                                        self.Y_seq_len: [len(indexed)] * self.batch_size})[0]
         
         print('Source')
         print('Word: {}'.format([i for i in indexed]))

@@ -122,7 +122,7 @@ class Seq2Seq:
     # end method pad_sentence_batch
 
 
-    def gen_batch(self, X, Y, X_pad_int=None, Y_pad_int=None):
+    def next_batch(self, X, Y, X_pad_int=None, Y_pad_int=None):
         if X_pad_int is None:
             X_pad_int = self.X_word2idx['<PAD>']
         if Y_pad_int is None:
@@ -142,12 +142,12 @@ class Seq2Seq:
 
     def fit(self, X_train, Y_train, val_data, n_epoch=60, display_step=50):
         X_test, Y_test = val_data
-        X_test_batch, Y_test_batch, X_test_batch_lens, Y_test_batch_lens = next(self.gen_batch(X_test, Y_test))
+        X_test_batch, Y_test_batch, X_test_batch_lens, Y_test_batch_lens = next(self.next_batch(X_test, Y_test))
 
         self.sess.run(tf.global_variables_initializer())
         for epoch in range(1, n_epoch+1):
             for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) in enumerate(
-                self.gen_batch(X_train, Y_train)):
+                self.next_batch(X_train, Y_train)):
                 _, loss = self.sess.run([self.train_op, self.loss], {self.X: X_train_batch,
                                                                      self.Y: Y_train_batch,
                                                                      self.X_seq_len: X_train_batch_lens,
@@ -157,7 +157,7 @@ class Seq2Seq:
                                                          self.Y: Y_test_batch,
                                                          self.X_seq_len: X_test_batch_lens,
                                                          self.Y_seq_len: Y_test_batch_lens})
-                    print("Epoch %d/%d | Batch %d/%d | Train Loss %.3f | Test Loss %.3f"
+                    print("Epoch %d/%d | Batch %d/%d | train_loss: %.3f | test_loss: %.3f"
                         % (epoch, n_epoch, local_step, len(X_train)//self.batch_size, loss, val_loss))
     # end method fit
 

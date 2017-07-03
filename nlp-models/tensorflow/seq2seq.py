@@ -110,50 +110,41 @@ class Seq2Seq:
         
         optimizer = tf.train.AdamOptimizer()
         gradients = optimizer.compute_gradients(self.loss)
-        capped_gradients = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gradients if grad is not None]
-        self.train_op = optimizer.apply_gradients(capped_gradients)
+        clipped_gradients = [(tf.clip_by_value(grad, -5.0, 5.0), var) for grad, var in gradients if grad is not None]
+        self.train_op = optimizer.apply_gradients(clipped_gradients)
     # end method add_backward_path
 
 
     def pad_sentence_batch(self, sentence_batch, pad_int):
         max_sentence_len = max([len(sentence) for sentence in sentence_batch])
-        pad_sentence_batch = []
-        pad_length_batch = []
-
-        for sentence in sentence_batch:
-            pad_sentence_batch.append(sentence + [pad_int] * (max_sentence_len - len(sentence)))
-            pad_length_batch.append(max_sentence_len)
-
-        return pad_sentence_batch, pad_length_batch
+        return ([sentence + [pad_int] * (max_sentence_len - len(sentence)) for sentence in sentence_batch],
+                [max_sentence_len] * self.batch_size)
     # end method pad_sentence_batch
 
 
-    def gen_batch(self, sources, targets, batch_size, source_pad_int=None, target_pad_int=None):
-        if source_pad_int is None:
-            source_pad_int = self.X_word2idx['<PAD>']
-        if target_pad_int is None:
-            target_pad_int = self.Y_word2idx['<PAD>']
+    def gen_batch(self, X, Y, X_pad_int=None, Y_pad_int=None):
+        if X_pad_int is None:
+            X_pad_int = self.X_word2idx['<PAD>']
+        if Y_pad_int is None:
+            Y_pad_int = self.Y_word2idx['<PAD>']
         
-        for batch_i in range(0, len(sources)//batch_size):
-            start_i = batch_i * batch_size
-            sources_batch = sources[start_i : start_i + batch_size]
-            targets_batch = targets[start_i : start_i + batch_size]
-            
-            pad_sources_batch, pad_sources_len = self.pad_sentence_batch(sources_batch, source_pad_int)
-            pad_targets_batch, pad_targets_len = self.pad_sentence_batch(targets_batch, target_pad_int)
-            
-            yield np.array(pad_sources_batch), np.array(pad_targets_batch), pad_sources_len, pad_targets_len
+        for i in range(0, len(X) - len(X) % self.batch_size, self.batch_size):
+            X_batch = X[i : i + self.batch_size]
+            Y_batch = Y[i : i + self.batch_size]
+            padded_X_batch, padded_X_lens = self.pad_sentence_batch(X_batch, X_pad_int)
+            padded_Y_batch, padded_Y_lens = self.pad_sentence_batch(Y_batch, Y_pad_int)
+            yield np.array(padded_X_batch), np.array(padded_Y_batch), padded_X_lens, padded_Y_lens
     # end method gen_batch
 
 
     def fit(self, X_train, Y_train, val_data, n_epoch=60, display_step=50):
         X_test, Y_test = val_data
-        X_test_batch, Y_test_batch, X_test_batch_lens, Y_test_batch_lens = next(self.gen_batch(X_test, Y_test, self.batch_size))
+        X_test_batch, Y_test_batch, X_test_batch_lens, Y_test_batch_lens = next(self.gen_batch(X_test, Y_test))
 
         self.sess.run(tf.global_variables_initializer())
         for epoch in range(1, n_epoch+1):
             for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) in enumerate(
-                self.gen_batch(X_train, Y_train, self.batch_size)):
+                self.gen_batch(X_train, Y_train)):
                 _, loss = self.sess.run([self.train_op, self.loss], {self.X: X_train_batch,
                                                                      self.Y: Y_train_batch,
                                                                      self.X_seq_len: X_train_batch_lens,

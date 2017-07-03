@@ -31,6 +31,7 @@ git clone https://github.com/zhedongzheng/finch.git
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
   * [POS Tagging](https://github.com/zhedongzheng/finch/blob/master/README.md#pos-tagging)
   * [Segmentation](https://github.com/zhedongzheng/finch/blob/master/README.md#segmentation)
+  * [Machine Translation](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-translation)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 

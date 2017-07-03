@@ -146,8 +146,8 @@ class Seq2Seq:
 
         self.sess.run(tf.global_variables_initializer())
         for epoch in range(1, n_epoch+1):
-            for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) in enumerate(
-                self.next_batch(X_train, Y_train)):
+            for local_step, (X_train_batch, Y_train_batch,
+                             X_train_batch_lens, Y_train_batch_lens) in enumerate(self.next_batch(X_train, Y_train)):
                 _, loss = self.sess.run([self.train_op, self.loss], {self.X: X_train_batch,
                                                                      self.Y: Y_train_batch,
                                                                      self.X_seq_len: X_train_batch_lens,

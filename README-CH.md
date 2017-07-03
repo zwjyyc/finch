@@ -20,7 +20,7 @@
     * [文本生成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本生成)
     * [词性标记](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#词性标记)
     * [分词](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#分词)
-    * 【机器翻译](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器翻译)
+    * [机器翻译](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器翻译)
 * [计算机视觉](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#计算机视觉)
     * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#opencv)
 

@@ -133,7 +133,10 @@ class Seq2Seq:
             Y_batch = Y[i : i + self.batch_size]
             padded_X_batch, padded_X_lens = self.pad_sentence_batch(X_batch, X_pad_int)
             padded_Y_batch, padded_Y_lens = self.pad_sentence_batch(Y_batch, Y_pad_int)
-            yield np.array(padded_X_batch), np.array(padded_Y_batch), padded_X_lens, padded_Y_lens
+            yield (np.array(padded_X_batch),
+                   np.array(padded_Y_batch),
+                   padded_X_lens,
+                   padded_Y_lens)
     # end method gen_batch
 
 

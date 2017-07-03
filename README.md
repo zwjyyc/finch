@@ -31,6 +31,7 @@ git clone https://github.com/zhedongzheng/finch.git
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
   * [POS Tagging](https://github.com/zhedongzheng/finch/blob/master/README.md#pos-tagging)
   * [Segmentation](https://github.com/zhedongzheng/finch/blob/master/README.md#segmentation)
+  * [Machine Translation](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-translation)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 
@@ -131,6 +132,9 @@ git clone https://github.com/zhedongzheng/finch.git
 * TensorFlow &nbsp; | &nbsp; LSTM &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_seq2seq_clf.py) &nbsp; &nbsp; [ICWB2 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/chseg_rnn_test.py) &nbsp; | &nbsp; Bi-directional LSTM &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/birnn_seq2seq_clf.py) &nbsp; &nbsp; [ICWB2 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/chseg_birnn_test.py) &nbsp; | &nbsp;
 
 * PyTorch &nbsp; | &nbsp; LSTM &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/rnn_seq_clf.py) &nbsp; &nbsp; [ICWB2 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/rnn_chseg_test.py) &nbsp; | &nbsp; Bi-directional LSTM &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/birnn_seq_clf.py) &nbsp; &nbsp; [ICWB2 Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/birnn_chseg_test.py) &nbsp; | &nbsp;
+
+#### Machine Translation
+* TensorFlow &nbsp; | &nbsp; Seq2Seq &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_test.py) &nbsp; | &nbsp;
 
 ## Computer Vision
 #### OpenCV

@@ -66,38 +66,36 @@ class Seq2Seq:
         output_layer = Dense(Y_vocab_size, kernel_initializer=tf.truncated_normal_initializer(stddev=0.1))
         self.max_Y_seq_len = tf.reduce_max(self.Y_seq_len)
 
-        with tf.variable_scope('decode'):
-            training_helper = tf.contrib.seq2seq.TrainingHelper(
-                inputs = tf.nn.embedding_lookup(decoder_embedding, decoder_input),
-                sequence_length = self.Y_seq_len,
-                time_major = False)
-            training_decoder = tf.contrib.seq2seq.BasicDecoder(
-                cell = decoder_cell,
-                helper = training_helper,
-                initial_state = self.encoder_state,
-                output_layer = output_layer)
-            training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                decoder = training_decoder,
-                impute_finished = True,
-                maximum_iterations = self.max_Y_seq_len)
-            self.training_logits = training_decoder_output.rnn_output
+        training_helper = tf.contrib.seq2seq.TrainingHelper(
+            inputs = tf.nn.embedding_lookup(decoder_embedding, decoder_input),
+            sequence_length = self.Y_seq_len,
+            time_major = False)
+        training_decoder = tf.contrib.seq2seq.BasicDecoder(
+            cell = decoder_cell,
+            helper = training_helper,
+            initial_state = self.encoder_state,
+            output_layer = output_layer)
+        training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+            decoder = training_decoder,
+            impute_finished = True,
+            maximum_iterations = self.max_Y_seq_len)
+        self.training_logits = training_decoder_output.rnn_output
         
-        with tf.variable_scope('decode', reuse=True):
-            start_tokens = tf.tile(tf.constant([self.Y_word2idx['<GO>']], dtype=tf.int32), [self.batch_size])
-            predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
-                embedding = decoder_embedding,
-                start_tokens = start_tokens,
-                end_token = self.Y_word2idx['<EOS>'])
-            predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
-                cell = decoder_cell,
-                helper = predicting_helper,
-                initial_state = self.encoder_state,
-                output_layer = output_layer)
-            predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                decoder = predicting_decoder,
-                impute_finished = True,
-                maximum_iterations = self.max_Y_seq_len)
-            self.predicting_logits = predicting_decoder_output.sample_id
+        start_tokens = tf.tile(tf.constant([self.Y_word2idx['<GO>']], dtype=tf.int32), [self.batch_size])
+        predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
+            embedding = decoder_embedding,
+            start_tokens = start_tokens,
+            end_token = self.Y_word2idx['<EOS>'])
+        predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
+            cell = decoder_cell,
+            helper = predicting_helper,
+            initial_state = self.encoder_state,
+            output_layer = output_layer)
+        predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+            decoder = predicting_decoder,
+            impute_finished = True,
+            maximum_iterations = self.max_Y_seq_len)
+        self.predicting_logits = predicting_decoder_output.sample_id
     # end method add_decoder_layer
 
 

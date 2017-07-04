@@ -78,43 +78,40 @@ class Seq2Seq:
         output_layer = Dense(Y_vocab_size, kernel_initializer=tf.truncated_normal_initializer(stddev=0.1))
         self.max_Y_seq_len = tf.reduce_max(self.Y_seq_len)
 
-        with tf.variable_scope('decoder'):
-            training_helper = tf.contrib.seq2seq.TrainingHelper(
-                inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
-                sequence_length = self.Y_seq_len,
-                time_major = False)
-            training_decoder = tf.contrib.seq2seq.BasicDecoder(
-                cell = decoder_cell,
-                helper = training_helper,
-                initial_state = self.encoder_state,
-                output_layer = output_layer)
-            training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                decoder = training_decoder,
-                impute_finished = True,
-                maximum_iterations = self.max_Y_seq_len)
-            self.training_logits = training_decoder_output.rnn_output
+        training_helper = tf.contrib.seq2seq.TrainingHelper(
+            inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
+            sequence_length = self.Y_seq_len,
+            time_major = False)
+        training_decoder = tf.contrib.seq2seq.BasicDecoder(
+            cell = decoder_cell,
+            helper = training_helper,
+            initial_state = self.encoder_state,
+            output_layer = output_layer)
+        training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+            decoder = training_decoder,
+            impute_finished = True,
+            maximum_iterations = self.max_Y_seq_len)
+        self.training_logits = training_decoder_output.rnn_output
         
-        with tf.variable_scope('decoder', reuse=True):
-            predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
-                embedding = decoder_embedding,
-                start_tokens = tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
-                end_token = self._y_eos)
-            predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
-                cell = decoder_cell,
-                helper = predicting_helper,
-                initial_state = self.encoder_state,
-                output_layer = output_layer)
-            predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                decoder = predicting_decoder,
-                impute_finished = True,
-                maximum_iterations = self.max_Y_seq_len)
-            self.predicting_logits = predicting_decoder_output.sample_id
+        predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
+            embedding = decoder_embedding,
+            start_tokens = tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
+            end_token = self._y_eos)
+        predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
+            cell = decoder_cell,
+            helper = predicting_helper,
+            initial_state = self.encoder_state,
+            output_layer = output_layer)
+        predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+            decoder = predicting_decoder,
+            impute_finished = True,
+            maximum_iterations = self.max_Y_seq_len)
+        self.predicting_logits = predicting_decoder_output.sample_id
     # end method add_decoder_layer
 
 
     def add_backward_path(self):
         masks = tf.sequence_mask(self.Y_seq_len, self.max_Y_seq_len, dtype=tf.float32)
-
         self.loss = tf.contrib.seq2seq.sequence_loss(logits = self.training_logits,
                                                      targets = self.Y,
                                                      weights = masks)

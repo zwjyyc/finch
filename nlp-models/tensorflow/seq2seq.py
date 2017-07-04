@@ -171,7 +171,7 @@ class Seq2Seq:
                                                         self.X_seq_len: [len(indexed)] * self.batch_size,
                                                         self.Y_seq_len: [len(indexed)] * self.batch_size})[0]
         
-        print('Source')
+        print('\nSource')
         print('Word: {}'.format([i for i in indexed]))
         print('Input Words: {}'.format(' '.join([X_idx2char[i] for i in indexed])))
         

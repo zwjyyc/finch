@@ -53,6 +53,7 @@ def main():
     )
     model.fit(X_train, Y_train, val_data=(X_test, Y_test))
     model.infer('common', X_idx2char, Y_idx2char)
+    model.infer('zhedong', X_idx2char, Y_idx2char)
 # end function main
 
 

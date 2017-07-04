@@ -16,8 +16,23 @@ class Seq2Seq:
         self.decoder_embedding_dim = decoder_embedding_dim
         self.batch_size = batch_size
         self.sess = sess
+
+        self.register_symbols()
         self.build_graph()
     # end constructor
+
+
+    def register_symbols(self):
+        self._x_go = self.X_word2idx['<GO>']
+        self._x_eos = self.X_word2idx['<EOS>']
+        self._x_pad = self.X_word2idx['<PAD>']
+        self._x_unk = self.X_word2idx['<UNK>']
+
+        self._y_go = self.Y_word2idx['<GO>']
+        self._y_eos = self.Y_word2idx['<EOS>']
+        self._y_pad = self.Y_word2idx['<PAD>']
+        self._y_unk = self.Y_word2idx['<UNK>']
+    # end method add_symbols
 
 
     def build_graph(self):
@@ -51,51 +66,51 @@ class Seq2Seq:
     # end method add_encoder_layer
     
 
-    def process_decoder_input(self, data, word2idx, batch_size):
-        ending = tf.strided_slice(data, [0, 0], [batch_size, -1], [1, 1]) # remove last char
-        decoder_input = tf.concat([tf.fill([batch_size, 1], word2idx['<GO>']), ending], 1)
+    def processed_decoder_input(self):
+        main = tf.strided_slice(self.Y, [0, 0], [self.batch_size, -1], [1, 1]) # remove last char
+        decoder_input = tf.concat([tf.fill([self.batch_size, 1], self._y_go), main], 1)
         return decoder_input
     # end method add_decoder_layer
 
 
     def add_decoder_layer(self):
         decoder_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)])
-        decoder_input = self.process_decoder_input(self.Y, self.Y_word2idx, self.batch_size)
         Y_vocab_size = len(self.Y_word2idx)
         decoder_embedding = tf.Variable(tf.random_uniform([Y_vocab_size, self.decoder_embedding_dim], -1.0, 1.0))
         output_layer = Dense(Y_vocab_size, kernel_initializer=tf.truncated_normal_initializer(stddev=0.1))
         self.max_Y_seq_len = tf.reduce_max(self.Y_seq_len)
 
-        training_helper = tf.contrib.seq2seq.TrainingHelper(
-            inputs = tf.nn.embedding_lookup(decoder_embedding, decoder_input),
-            sequence_length = self.Y_seq_len,
-            time_major = False)
-        training_decoder = tf.contrib.seq2seq.BasicDecoder(
-            cell = decoder_cell,
-            helper = training_helper,
-            initial_state = self.encoder_state,
-            output_layer = output_layer)
-        training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-            decoder = training_decoder,
-            impute_finished = True,
-            maximum_iterations = self.max_Y_seq_len)
-        self.training_logits = training_decoder_output.rnn_output
+        with tf.variable_scope('decoder'):
+            training_helper = tf.contrib.seq2seq.TrainingHelper(
+                inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
+                sequence_length = self.Y_seq_len,
+                time_major = False)
+            training_decoder = tf.contrib.seq2seq.BasicDecoder(
+                cell = decoder_cell,
+                helper = training_helper,
+                initial_state = self.encoder_state,
+                output_layer = output_layer)
+            training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+                decoder = training_decoder,
+                impute_finished = True,
+                maximum_iterations = self.max_Y_seq_len)
+            self.training_logits = training_decoder_output.rnn_output
         
-        start_tokens = tf.tile(tf.constant([self.Y_word2idx['<GO>']], dtype=tf.int32), [self.batch_size])
-        predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
-            embedding = decoder_embedding,
-            start_tokens = start_tokens,
-            end_token = self.Y_word2idx['<EOS>'])
-        predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
-            cell = decoder_cell,
-            helper = predicting_helper,
-            initial_state = self.encoder_state,
-            output_layer = output_layer)
-        predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-            decoder = predicting_decoder,
-            impute_finished = True,
-            maximum_iterations = self.max_Y_seq_len)
-        self.predicting_logits = predicting_decoder_output.sample_id
+        with tf.variable_scope('decoder', reuse=True):
+            predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
+                embedding = decoder_embedding,
+                start_tokens = tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
+                end_token = self._y_eos)
+            predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
+                cell = decoder_cell,
+                helper = predicting_helper,
+                initial_state = self.encoder_state,
+                output_layer = output_layer)
+            predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+                decoder = predicting_decoder,
+                impute_finished = True,
+                maximum_iterations = self.max_Y_seq_len)
+            self.predicting_logits = predicting_decoder_output.sample_id
     # end method add_decoder_layer
 
 
@@ -122,9 +137,9 @@ class Seq2Seq:
 
     def next_batch(self, X, Y, X_pad_int=None, Y_pad_int=None):
         if X_pad_int is None:
-            X_pad_int = self.X_word2idx['<PAD>']
+            X_pad_int = self._x_pad
         if Y_pad_int is None:
-            Y_pad_int = self.Y_word2idx['<PAD>']
+            Y_pad_int = self._y_pad
         
         for i in range(0, len(X) - len(X) % self.batch_size, self.batch_size):
             X_batch = X[i : i + self.batch_size]
@@ -160,23 +175,19 @@ class Seq2Seq:
                         % (epoch, n_epoch, local_step, len(X_train)//self.batch_size, loss, val_loss))
     # end method fit
 
-    def infer(self, input_word, X_idx2char, Y_idx2char):
-        def preprocess(word):
-            seq_len = len(word) + 1
-            return [self.X_word2idx.get(char, self.X_word2idx['<UNK>']) for char in word] + [pad]*(seq_len-len(word))
-        
-        pad = self.X_word2idx['<PAD>']
-        indexed = preprocess(input_word)
-        logits = self.sess.run(self.predicting_logits, {self.X: [indexed] * self.batch_size,
-                                                        self.X_seq_len: [len(indexed)] * self.batch_size,
-                                                        self.Y_seq_len: [len(indexed)] * self.batch_size})[0]
+
+    def infer(self, input_word, X_idx2word, Y_idx2word):        
+        input_idx = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
+        out_idx = self.sess.run(self.predicting_logits, {self.X: [input_idx] * self.batch_size,
+                                                        self.X_seq_len: [len(input_idx)] * self.batch_size,
+                                                        self.Y_seq_len: [len(input_idx)] * self.batch_size})[0]
         
         print('\nSource')
-        print('Word: {}'.format([i for i in indexed]))
-        print('Input Words: {}'.format(' '.join([X_idx2char[i] for i in indexed])))
+        print('Word: {}'.format([i for i in input_idx]))
+        print('Input Words: {}'.format(' '.join([X_idx2word[i] for i in input_idx])))
         
         print('\nTarget')
-        print('Word: {}'.format([i for i in logits if i != pad]))
-        print('Response Words: {}'.format(' '.join([Y_idx2char[i] for i in logits if i != pad])))
+        print('Word: {}'.format([i for i in out_idx]))
+        print('Response Words: {}'.format(' '.join([Y_idx2word[i] for i in out_idx])))
     # end method infer
 # end class

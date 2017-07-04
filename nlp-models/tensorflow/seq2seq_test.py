@@ -11,7 +11,7 @@ def read_data(path):
 
 
 def build_map(data):
-    specials = ['<PAD>', '<UNK>', '<GO>',  '<EOS>']
+    specials = ['<GO>',  '<EOS>', '<PAD>', '<UNK>']
     chars = list(set([char for line in data.split('\n') for char in line]))
     idx2char = {idx: char for idx, char in enumerate(specials + chars)}
     char2idx = {char: idx for idx, char in idx2char.items()}
@@ -53,6 +53,7 @@ def main():
     )
     model.fit(X_train, Y_train, val_data=(X_test, Y_test))
     model.infer('common', X_idx2char, Y_idx2char)
+    model.infer('apple', X_idx2char, Y_idx2char)
     model.infer('zhedong', X_idx2char, Y_idx2char)
 # end function main
 

@@ -26,9 +26,12 @@ def preprocess_data():
     X_idx2char, X_char2idx = build_map(X_data)
     Y_idx2char, Y_char2idx = build_map(Y_data)
 
-    X_indices = [[X_char2idx.get(char, X_char2idx['<UNK>']) for char in line] for line in X_data.split('\n')]
-    Y_indices = [[Y_char2idx.get(char, Y_char2idx['<UNK>']) for char in line] + [Y_char2idx['<EOS>']]
-                  for line in Y_data.split('\n')]
+    x_unk = X_char2idx['<UNK>']
+    y_unk = Y_char2idx['<UNK>']
+    y_eos = Y_char2idx['<EOS>']
+
+    X_indices = [[X_char2idx.get(char, x_unk) for char in line] for line in X_data.split('\n')]
+    Y_indices = [[Y_char2idx.get(char, y_unk) for char in line] + [y_eos] for line in Y_data.split('\n')]
 
     return X_indices, Y_indices, X_char2idx, Y_char2idx, X_idx2char, Y_idx2char
 # end function preprocess_data

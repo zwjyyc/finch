@@ -177,11 +177,11 @@ class BiRNN_CRF:
 
     def infer(self, xs):
         xs_padded = xs + [0] * (self.seq_len - len(xs))
-        logits, transition_params = self.sess.run([self.score, self.transition_params],
-                                                  {self.x: np.atleast_2d(xs_padded),
-                                                   self.real_seq_len: np.atleast_1d(len(xs)),
-                                                   self.keep_prob: 1.0})
-        viterbi_seq, viterbi_score = tf.contrib.crf.viterbi_decode(logits[:len(xs)], transition_params)
+        score, transition_params = self.sess.run([self.score, self.transition_params],
+                                                 {self.x: np.atleast_2d(xs_padded),
+                                                  self.real_seq_len: np.atleast_1d(len(xs)),
+                                                  self.keep_prob: 1.0})
+        viterbi_seq, viterbi_score = tf.contrib.crf.viterbi_decode(score[:len(xs)], transition_params)
         return viterbi_seq
     # end method infer
 

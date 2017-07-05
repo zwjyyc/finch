@@ -3,9 +3,8 @@ import numpy as np
 import math
 
 
-class RNNTextClassifier:
-    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128*2,
-                 stateful=False, sess=tf.Session()):
+class BiRNN_CRF:
+    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -28,7 +27,6 @@ class RNNTextClassifier:
         self.cell_size = cell_size
         self.n_out = n_out
         self.sess = sess
-        self.stateful = stateful
         self._cursor = None
         self.build_graph()
     # end constructor
@@ -49,9 +47,9 @@ class RNNTextClassifier:
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.Y = tf.placeholder(tf.int64, [None, self.seq_len])
+        self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
         self.batch_size = tf.placeholder(tf.int32, [])
-        self.rnn_keep_prob = tf.placeholder(tf.float32)
+        self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
         self._cursor = self.X
     # end method add_input_layer
@@ -60,53 +58,55 @@ class RNNTextClassifier:
     def add_word_embedding_layer(self):
         embedding = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
-        self._cursor = tf.nn.embedding_lookup(embedding, self._cursor)
+        embedded = tf.nn.embedding_lookup(embedding, self._cursor)
+        self._cursor = tf.nn.dropout(embedded, self.keep_prob)
     # end method add_word_embedding_layer
 
 
     def add_lstm_cells(self):
-        cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
-        cell = tf.nn.rnn_cell.DropoutWrapper(cell, self.rnn_keep_prob)
-        self.cell = cell
+        self.cell_fw = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
+        self.cell_bw = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
     # end method add_rnn_cells
 
 
     def add_dynamic_rnn(self):
-        self.init_state = self.cell.zero_state(self.batch_size, tf.float32)        
-        self._cursor, self.final_state = tf.nn.dynamic_rnn(self.cell, self._cursor, initial_state=self.init_state)
+        birnn_outs, _ = tf.nn.bidirectional_dynamic_rnn(self.cell_fw, self.cell_bw, self._cursor, dtype=tf.float32)
+        self._cursor = tf.concat(birnn_outs, 2)
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(tf.reshape(self._cursor, [-1, self.cell_size]), self.n_out, name='out')
+        self.logits = tf.layers.dense(tf.reshape(self._cursor, [-1, 2*self.cell_size]), self.n_out, name='out')
     # end method add_output_layer
 
 
     def add_backward_path(self):
-        self.loss = tf.contrib.seq2seq.sequence_loss(
-            logits = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.n_out]),
-            targets = self.Y,
-            weights = tf.ones([self.batch_size, self.seq_len]),
-            average_across_timesteps = True,
-            average_across_batch = True,
+        log_likelihood, self.transition_params = tf.contrib.crf.crf_log_likelihood(
+            inputs = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.n_out]),
+            tag_indices = self.Y,
+            sequence_lengths = tf.fill([self.batch_size], self.seq_len),
         )
+        self.loss = tf.reduce_mean(-log_likelihood)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),
-                                                   tf.reshape(self.Y, [-1])), tf.float32))
+                                                   tf.reshape(tf.cast(self.Y, tf.int64), [-1])), tf.float32))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
 
 
     def add_inference(self):
-        self.x = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.real_seq_len = tf.placeholder(tf.int32, [None])
+        self.x = tf.placeholder(tf.int32, [1, self.seq_len])
+        self.real_seq_len = tf.placeholder(tf.int32, [1])
         embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x)
-        rnn_out, _ = tf.nn.dynamic_rnn(self.cell, embedded, dtype=tf.float32, sequence_length=self.real_seq_len)
-        self.y = tf.layers.dense(tf.reshape(rnn_out, [-1, self.cell_size]), self.n_out, name='out', reuse=True)
+        birnn_outs, _ = tf.nn.bidirectional_dynamic_rnn(self.cell_fw, self.cell_bw, embedded, dtype=tf.float32,
+                                                        sequence_length=self.real_seq_len)
+        birnn_out = tf.concat(birnn_outs, 2)
+        logits = tf.layers.dense(tf.reshape(birnn_out, [-1, 2*self.cell_size]), self.n_out, name='out', reuse=True)
+        self.score = tf.reshape(logits, [self.seq_len, self.n_out])
     # end add_sample_model
 
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True,
-            rnn_keep_prob=1.0):
+            keep_prob=1.0):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -120,22 +120,13 @@ class RNNTextClassifier:
                 shuffled = np.random.permutation(len(X))
                 X = X[shuffled]
                 Y = Y[shuffled]
-            next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
-
             for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
                                                                 self.gen_batch(Y, batch_size))):
-                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)
-                if (self.stateful) and (len(X_batch) == batch_size):
-                    _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
-                                                             {self.X:X_batch, self.Y:Y_batch,
-                                                              self.batch_size:batch_size,
-                                                              self.rnn_keep_prob:rnn_keep_prob,
-                                                              self.lr:lr, self.init_state:next_state})
-                else:             
-                    _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                                 {self.X:X_batch, self.Y:Y_batch,
-                                                  self.batch_size:len(X_batch), self.lr:lr,
-                                                  self.rnn_keep_prob:rnn_keep_prob})
+                lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)           
+                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
+                                             {self.X:X_batch, self.Y:Y_batch,
+                                              self.batch_size:len(X_batch), self.lr:lr,
+                                              self.keep_prob:keep_prob})
                 global_step += 1
                 if local_step % 50 == 0:
                     print ('Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f'
@@ -143,20 +134,12 @@ class RNNTextClassifier:
 
             if val_data is not None: # go through testing data, average validation loss and ac 
                 val_loss_list, val_acc_list = [], []
-                next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
                 for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
-                    if (self.stateful) and (len(X_test_batch) == batch_size):
-                        v_loss, v_acc, next_state = self.sess.run([self.loss, self.acc, self.final_state],
-                                                                  {self.X:X_test_batch, self.Y:Y_test_batch,
-                                                                   self.batch_size:batch_size,
-                                                                   self.rnn_keep_prob:1.0,
-                                                                   self.init_state:next_state})
-                    else:
-                        v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                                      {self.X:X_test_batch, self.Y:Y_test_batch,
-                                                       self.batch_size:len(X_test_batch),
-                                                       self.rnn_keep_prob:1.0})
+                    v_loss, v_acc = self.sess.run([self.loss, self.acc],
+                                                    {self.X:X_test_batch, self.Y:Y_test_batch,
+                                                     self.batch_size:len(X_test_batch),
+                                                     self.keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -183,17 +166,10 @@ class RNNTextClassifier:
 
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            if (self.stateful) and (len(X_test_batch) == batch_size):
-                batch_pred, next_state = self.sess.run([self.logits, self.final_state], 
-                                                       {self.X:X_test_batch, self.batch_size:batch_size,
-                                                        self.rnn_keep_prob:1.0,
-                                                        self.init_state:next_state})
-            else:
-                batch_pred = self.sess.run(self.logits,
-                                          {self.X:X_test_batch, self.batch_size:len(X_test_batch),
-                                           self.rnn_keep_prob:1.0})
+            batch_pred = self.sess.run(self.logits,
+                                      {self.X:X_test_batch, self.batch_size:len(X_test_batch),
+                                       self.keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.argmax(np.vstack(batch_pred_list), 1)
     # end method predict
@@ -201,10 +177,12 @@ class RNNTextClassifier:
 
     def infer(self, xs):
         xs_padded = xs + [0] * (self.seq_len - len(xs))
-        logits = self.sess.run(self.y, {self.x: np.atleast_2d(xs_padded),
-                                        self.real_seq_len: np.atleast_1d(len(xs)),
-                                        self.rnn_keep_prob: 1.0})
-        return np.argmax(logits[:len(xs)], 1)
+        logits, transition_params = self.sess.run([self.score, self.transition_params],
+                                                  {self.x: np.atleast_2d(xs_padded),
+                                                   self.real_seq_len: np.atleast_1d(len(xs)),
+                                                   self.keep_prob: 1.0})
+        viterbi_seq, viterbi_score = tf.contrib.crf.viterbi_decode(logits[:len(xs)], transition_params)
+        return viterbi_seq
     # end method infer
 
 

@@ -56,7 +56,7 @@ class Conv1DClassifier:
  
  
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int64, [None, self.seq_len])
+        self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int64, [None])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)

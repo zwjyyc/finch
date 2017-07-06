@@ -4,7 +4,7 @@ import math
 
 
 class BiRNN:
-    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, sess=tf.Session()):
+    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, n_layer=1, sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -25,6 +25,7 @@ class BiRNN:
         self.vocab_size = vocab_size
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
+        self.n_layer = n_layer
         self.n_out = n_out
         self.sess = sess
         self._cursor = None
@@ -36,8 +37,7 @@ class BiRNN:
         with tf.variable_scope('main_model'):
             self.add_input_layer()
             self.add_word_embedding_layer()
-            self.add_lstm_cells()
-            self.add_dynamic_rnn()
+            self.add_bidirectional_dynamic_rnn()
             self.add_output_layer()
             self.add_backward_path()
         with tf.variable_scope('main_model', reuse=True):
@@ -63,15 +63,22 @@ class BiRNN:
     # end method add_word_embedding_layer
 
 
-    def add_lstm_cells(self):
-        self.cell_fw = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
-        self.cell_bw = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
-    # end method add_rnn_cells
+    def lstm_cell(self):
+        return tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
+    # end method lstm_cell
 
 
-    def add_dynamic_rnn(self):
-        birnn_outs, _ = tf.nn.bidirectional_dynamic_rnn(self.cell_fw, self.cell_bw, self._cursor, dtype=tf.float32)
-        self._cursor = tf.concat(birnn_outs, 2)
+    def add_bidirectional_dynamic_rnn(self):
+        self.cells = [(self.lstm_cell(), self.lstm_cell()) for n in range(self.n_layer)]
+        birnn_out = self._cursor
+        for n in range(self.n_layer):
+            (out_fw, out_bw), _ = tf.nn.bidirectional_dynamic_rnn(
+                cell_fw = self.cells[n][0], cell_bw = self.cells[n][1],
+                inputs = birnn_out,
+                dtype=tf.float32,
+                scope='bidirectional_rnn_'+str(n))
+            birnn_out = tf.concat((out_fw, out_bw), 2)
+        self._cursor = birnn_out
     # end method add_dynamic_rnn
 
 
@@ -98,9 +105,16 @@ class BiRNN:
         self.x = tf.placeholder(tf.int32, [None, self.seq_len])
         self.real_seq_len = tf.placeholder(tf.int32, [None])
         embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x)
-        birnn_outs, _ = tf.nn.bidirectional_dynamic_rnn(self.cell_fw, self.cell_bw, embedded, dtype=tf.float32,
-                                                        sequence_length=self.real_seq_len)
-        birnn_out = tf.concat(birnn_outs, 2)
+
+        birnn_out = embedded
+        for n in range(self.n_layer):
+            (out_fw, out_bw), _ = tf.nn.bidirectional_dynamic_rnn(
+                cell_fw = self.cells[n][0], cell_bw = self.cells[n][1],
+                inputs = birnn_out,
+                dtype=tf.float32,
+                scope='bidirectional_rnn_'+str(n))
+            birnn_out = tf.concat((out_fw, out_bw), 2)
+
         self.y = tf.layers.dense(tf.reshape(birnn_out, [-1, 2*self.cell_size]), self.n_out, name='out', reuse=True)
     # end add_sample_model
 

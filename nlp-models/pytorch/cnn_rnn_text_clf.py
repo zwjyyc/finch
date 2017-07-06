@@ -21,10 +21,13 @@ class ConvLSTMClassifier(torch.nn.Module):
 
     def build_model(self):
         self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
-        self.conv1d = torch.nn.Conv1d(in_channels = self.embedding_dim,
-                                      out_channels = self.n_filters,
-                                      kernel_size = self.kernel_size)
-        self.pool1d = torch.nn.MaxPool1d(kernel_size = self.pool_size)
+        self.conv1d = torch.nn.Sequential(
+            torch.nn.Conv1d(in_channels = self.embedding_dim,
+                            out_channels = self.n_filters,
+                            kernel_size = self.kernel_size),
+            torch.nn.ReLU(),
+            torch.nn.MaxPool1d(kernel_size = self.pool_size)
+        )
         self.lstm = torch.nn.LSTM(input_size = self.n_filters,
                                   hidden_size = self.cell_size,
                                   batch_first = True)
@@ -37,8 +40,7 @@ class ConvLSTMClassifier(torch.nn.Module):
     def forward(self, X):
         embedded = self.encoder(X)
         conv_out = self.conv1d(embedded.permute(0, 2, 1))
-        pool_out = self.pool1d(conv_out)
-        lstm_out, _ = self.lstm(pool_out.permute(0, 2, 1), None)
+        lstm_out, _ = self.lstm(conv_out.permute(0, 2, 1), None)
         reshaped = lstm_out[:, -1, :]
         logits = self.fc(reshaped)
         return logits

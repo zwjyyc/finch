@@ -19,10 +19,13 @@ class CNNTextClassifier(torch.nn.Module):
 
     def build_model(self):
         self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
-        self.conv1d = torch.nn.Conv1d(in_channels = self.embedding_dim,
-                                      out_channels = self.n_filters,
-                                      kernel_size = self.kernel_size)
-        self.pool1d = torch.nn.MaxPool1d(kernel_size = (self.seq_len - self.kernel_size + 1))
+        self.conv1d = torch.nn.Sequential(
+            torch.nn.Conv1d(in_channels = self.embedding_dim,
+                            out_channels = self.n_filters,
+                            kernel_size = self.kernel_size),
+            torch.nn.ReLU(),
+            torch.nn.MaxPool1d(kernel_size = (self.seq_len - self.kernel_size + 1))
+        )
         self.fc = torch.nn.Linear(self.n_filters, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters())
@@ -32,8 +35,7 @@ class CNNTextClassifier(torch.nn.Module):
     def forward(self, X, batch_size):
         embedded = self.encoder(X)
         conv_out = self.conv1d(embedded.permute(0, 2, 1))
-        pool_out = self.pool1d(conv_out)
-        reshaped = pool_out.view(batch_size, self.n_filters)
+        reshaped = conv_out.view(batch_size, self.n_filters)
         logits = self.fc(reshaped)
         return logits
     # end method forward

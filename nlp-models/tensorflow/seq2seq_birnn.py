@@ -4,11 +4,12 @@ import numpy as np
 
 
 class Seq2Seq:
-    def __init__(self, rnn_size,
+    def __init__(self, rnn_size, n_layer,
                  X_word2idx, encoder_embedding_dim,
                  Y_word2idx, decoder_embedding_dim,
                  batch_size, sess=tf.Session()):
         self.rnn_size = rnn_size
+        self.n_layer = n_layer
         self.X_word2idx = X_word2idx
         self.encoder_embedding_dim = encoder_embedding_dim
         self.Y_word2idx = Y_word2idx
@@ -56,11 +57,17 @@ class Seq2Seq:
 
 
     def add_encoder_layer(self):
-        _, self.encoder_state = tf.nn.bidirectional_dynamic_rnn(
-            cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
-            inputs = tf.contrib.layers.embed_sequence(self.X, len(self.X_word2idx), self.encoder_embedding_dim),
-            sequence_length = self.X_seq_len,
-            dtype = tf.float32)
+        birnn_out = tf.contrib.layers.embed_sequence(self.X, len(self.X_word2idx), self.encoder_embedding_dim)
+        self.encoder_state = ()
+        for n in range(self.n_layer):
+            (out_fw, out_bw), (state_fw, state_bw) = tf.nn.bidirectional_dynamic_rnn(
+                cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
+                inputs = birnn_out,
+                sequence_length = self.X_seq_len,
+                dtype = tf.float32,
+                scope = 'bidirectional_rnn_'+str(n))
+            birnn_out = tf.concat((out_fw, out_bw), 2)
+            self.encoder_state += (state_fw, state_bw)
     # end method add_encoder_layer
     
 
@@ -72,7 +79,7 @@ class Seq2Seq:
 
 
     def add_decoder_layer(self):
-        decoder_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(2)])
+        decoder_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(2 * self.n_layer)])
         Y_vocab_size = len(self.Y_word2idx)
         decoder_embedding = tf.Variable(tf.random_uniform([Y_vocab_size, self.decoder_embedding_dim], -1.0, 1.0))
         output_layer = Dense(Y_vocab_size, kernel_initializer=tf.truncated_normal_initializer(stddev=0.1))

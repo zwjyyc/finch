@@ -44,9 +44,8 @@ class Conv1DClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding()
-        self.add_conv1d('conv1d', self.n_filters)
+        self.add_conv1d(self.n_filters)
         self.add_global_pooling()
-        self.add_fc()
         self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
@@ -62,21 +61,21 @@ class Conv1DClassifier:
 
 
     def add_word_embedding(self):
-        embedding = tf.get_variable('E', [self.vocab_size,self.embedding_dims], tf.float32,
+        embedding = tf.get_variable('encoder', [self.vocab_size,self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
         embedded = tf.nn.embedding_lookup(embedding, self._cursor)
         self._cursor = tf.nn.dropout(embedded, self.keep_prob)
     # end method add_word_embedding_layer
 
 
-    def add_conv1d(self, name, n_filters, strides=1):
+    def add_conv1d(self, n_filters, strides=1):
         Y = tf.layers.conv1d(inputs = self._cursor,
                              filters = n_filters,
                              kernel_size  = self.kernel_size,
                              strides = strides,
-                             padding=self.padding)
-        Y = tf.nn.bias_add(Y, self.call_b(name+'_b', [n_filters]))
-        Y = tf.nn.relu(Y)
+                             padding = self.padding,
+                             use_bias = True,
+                             activation = tf.nn.relu)
         self._cursor = Y
         if self.padding == 'valid':
             self._seq_len = int((self._seq_len - self.kernel_size + 1) / strides)
@@ -93,13 +92,6 @@ class Conv1DClassifier:
         Y = tf.reshape(Y, [-1, self.n_filters])
         self._cursor = Y
     # end method add_global_maxpool_layer
-
-
-    def add_fc(self):
-        Y = tf.layers.dense(self._cursor, self.n_filters)
-        Y = tf.nn.dropout(Y, self.keep_prob)
-        self._cursor = tf.nn.relu(Y)
-    # end method add_fc
 
 
     def add_output_layer(self):
@@ -202,9 +194,4 @@ class Conv1DClassifier:
     def list_avg(self, l):
         return sum(l) / len(l)
     # end method list_avg
-
-    
-    def call_b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
-    # end method call_b
 # end class

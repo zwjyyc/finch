@@ -40,11 +40,11 @@ class Conv2DClassifier:
 
     def build_graph(self):
         self.add_input_layer()
-        self.add_conv('conv1', 32)
+        self.add_conv(32)
         self.add_pooling()
-        self.add_conv('conv2', 64)
+        self.add_conv(64)
         self.add_pooling()
-        self.add_fully_connected('fc', 1024)
+        self.add_fully_connected(1024)
         self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
@@ -59,16 +59,15 @@ class Conv2DClassifier:
     # end method add_input_layer
 
 
-    def add_conv(self, name, out_dim, strides=(1, 1)):
+    def add_conv(self, out_dim, strides=(1, 1)):
         Y = tf.layers.conv2d(inputs = self._cursor,
                              filters = out_dim,
                              kernel_size = self.kernel_size,
                              strides = strides,
-                             padding = self.padding)
-        Y = tf.nn.bias_add(Y, self.call_b(name+'_b', [out_dim]))
-        Y = tf.layers.batch_normalization(Y, training=self.train_flag)
-        Y = tf.nn.relu(Y)
-        self._cursor = Y
+                             padding = self.padding,
+                             use_bias = True,
+                             activation = tf.nn.relu)
+        self._cursor = tf.layers.batch_normalization(Y, training=self.train_flag)
         self._n_filter = out_dim
         if self.padding == 'valid':
             self._img_h = int((self._img_h-self.kernel_size[0]+1) / strides[0])
@@ -89,11 +88,10 @@ class Conv2DClassifier:
     # end method add_maxpool_layer
 
 
-    def add_fully_connected(self, name, out_dim):
+    def add_fully_connected(self, out_dim):
         flat = tf.reshape(self._cursor, [-1, self._img_h * self._img_w * self._n_filter])
-        fc = tf.layers.dense(flat, out_dim)
+        fc = tf.layers.dense(flat, out_dim, tf.nn.relu)
         fc = tf.layers.batch_normalization(fc, training=self.train_flag)
-        fc = tf.nn.relu(fc)
         self._cursor = tf.nn.dropout(fc, self.keep_prob)
     # end method add_fully_connected
 

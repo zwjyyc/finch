@@ -8,7 +8,7 @@ kernel_size = 5
 pool_size = 2
 n_out = 10
 batch_size = 128
-n_epoch = 2
+n_epoch = 1
 
 
 if __name__ == '__main__':

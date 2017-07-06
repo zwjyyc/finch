@@ -12,5 +12,5 @@ if __name__ == '__main__':
     X_test = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=seq_len)
 
     clf = ConvLSTMClassifier(vocab_size)
-    clf.fit(X_train, y_train, n_epoch=3)
+    clf.fit(X_train, y_train, n_epoch=1)
     clf.evaluate(X_test, y_test)

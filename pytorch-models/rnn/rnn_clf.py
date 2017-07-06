@@ -34,21 +34,23 @@ class RNNClassifier(torch.nn.Module):
             state = None
             for i, (X_batch, y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
                                                        self.gen_batch(y, batch_size))):
-                X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
-                y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
+                inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
+                labels = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
                 if (self.stateful) and (len(X_batch) == batch_size):
-                    y_pred_batch, state = self.forward(X_train_batch, state)
+                    preds, state = self.forward(inputs, state)
                     state = (torch.autograd.Variable(state[0].data),
                              torch.autograd.Variable(state[1].data))
                 else:
-                    y_pred_batch, _ = self.forward(X_train_batch)
+                    preds, _ = self.forward(inputs)
 
-                loss = self.criterion(y_pred_batch, y_train_batch)     # cross entropy loss
+                loss = self.criterion(preds, labels)     # cross entropy loss
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
-                acc = (torch.max(y_pred_batch,1)[1].data.numpy().squeeze() == y_batch).astype(float).mean()
+
+                preds = torch.max(preds, 1)[1].data.numpy().squeeze() 
+                acc = (preds == y_batch).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
                            %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
@@ -61,19 +63,19 @@ class RNNClassifier(torch.nn.Module):
         state = None
         for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size),
                                     self.gen_batch(y_test, batch_size)):
-            X_test_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
-            y_test_batch = torch.from_numpy(y_batch.astype(np.int64))
+            inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
+            labels = torch.from_numpy(y_batch.astype(np.int64))
 
             if (self.stateful) and (len(X_batch) == batch_size):
-                y_pred_batch, state = self.forward(X_test_batch, state)
+                preds, state = self.forward(inputs, state)
                 state = (torch.autograd.Variable(state[0].data),
                          torch.autograd.Variable(state[1].data))
             else:
-                y_pred_batch, _ = self.forward(X_test_batch)
+                preds, _ = self.forward(inputs)
 
-            _, y_pred_batch = torch.max(y_pred_batch.data, 1)
-            total += y_test_batch.size(0)
-            correct += (y_pred_batch == y_test_batch).sum()
+            _, preds = torch.max(preds.data, 1)
+            total += labels.size(0)
+            correct += (preds == labels).sum()
         print('Test Accuracy of the model on the 10000 test images: %d %%' % (100 * correct / total)) 
     # end method evaluate
 

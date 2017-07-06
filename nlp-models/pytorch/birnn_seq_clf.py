@@ -61,18 +61,19 @@ class BiRNN(torch.nn.Module):
             for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
                                                                 self.gen_batch(Y, batch_size))):
                 y_batch = Y_batch.ravel()
-                X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
-                y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
-                y_pred_batch = self.forward(X_train_batch)
+                inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
+                labels = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
 
-                loss = self.criterion(y_pred_batch, y_train_batch)     # cross entropy loss
+                preds = self.forward(inputs)
+                loss = self.criterion(preds, labels)     # cross entropy loss
                 self.optimizer, lr = self.adjust_lr(self.optimizer, global_step, total_steps)
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
 
                 global_step += 1
-                acc = (torch.max(y_pred_batch,1)[1].data.numpy().squeeze() == y_batch).mean()
+                preds = torch.max(preds, 1)[1].data.numpy().squeeze()
+                acc = (preds == y_batch).mean()
                 if local_step % 100 == 0:
                     print ('Epoch [%d/%d] | Step [%d/%d] | Loss: %.4f | Acc: %.4f | LR: %.4f'
                            %(epoch+1, n_epoch, local_step, n_batch, loss.data[0], acc, lr))
@@ -84,13 +85,13 @@ class BiRNN(torch.nn.Module):
         total = 0
         for X_batch, Y_batch in zip(self.gen_batch(X_test, batch_size), self.gen_batch(Y_test, batch_size)):
             y_batch = Y_batch.ravel()
-            X_test_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
-            y_test_batch = torch.from_numpy(y_batch.astype(np.int64))
-            y_pred_batch = self.forward(X_test_batch)
+            inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
+            labels = torch.from_numpy(y_batch.astype(np.int64))
+            preds = self.forward(inputs)
 
-            _, y_pred_batch = torch.max(y_pred_batch.data, 1)
-            total += y_test_batch.size(0)
-            correct += (y_pred_batch == y_test_batch).sum()
+            _, preds = torch.max(preds.data, 1)
+            total += labels.size(0)
+            correct += (preds == labels).sum()
         print('Test Accuracy of the model: %.4f' % (float(correct) / total)) 
     # end method evaluate
 

@@ -4,7 +4,7 @@ import tensorflow as tf
 
 vocab_size = 5000
 seq_len = 400
-n_epoch = 3
+n_epoch = 1
 
 
 if __name__ == '__main__':

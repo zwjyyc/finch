@@ -38,53 +38,55 @@ class RNNTextClassifier(torch.nn.Module):
         global_step = 0
         n_batch = int(len(X) / batch_size)
         total_steps = int(n_epoch * n_batch)
+
         for epoch in range(n_epoch):
             if en_shuffle:
                 X, y = shuffle(X, y)
             state = None
             for local_step, (X_batch, y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
                                                                 self.gen_batch(y, batch_size))):
-                X_train_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
-                y_train_batch = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
+                inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
+                labels = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
                 if (self.stateful) and (len(X_batch) == batch_size):
-                    y_pred_batch, state = self.forward(X_train_batch, state)
+                    preds, state = self.forward(inputs, state)
                     state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
                 else:
-                    y_pred_batch, _ = self.forward(X_train_batch)
+                    preds, _ = self.forward(inputs)
 
-                loss = self.criterion(y_pred_batch, y_train_batch)     # cross entropy loss
+                loss = self.criterion(preds, labels)                   # cross entropy loss
                 self.optimizer, lr = self.adjust_lr(self.optimizer, global_step, total_steps)
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
                 global_step += 1
-                acc = (torch.max(y_pred_batch,1)[1].data.numpy().squeeze() == y_batch).mean()
+
+                preds = torch.max(preds,1)[1].data.numpy().squeeze()
+                acc = (preds == y_batch).mean()
                 if local_step % 100 == 0:
                     print ('Epoch [%d/%d] | Step [%d/%d] | Loss: %.4f | Acc: %.4f | LR: %.4f'
                            %(epoch+1, n_epoch, local_step, n_batch, loss.data[0], acc, lr))
     # end method fit
 
 
-    def evaluate(self, X_test, y_test, batch_size=1):
+    def evaluate(self, X_test, y_test, batch_size=32):
         correct = 0
         total = 0
         state = None
+
         for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size), self.gen_batch(y_test, batch_size)):
-            print(len(X_batch[0]))
-            X_batch = np.atleast_2d(X_batch[0])
-            X_test_batch = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
-            y_test_batch = torch.from_numpy(y_batch.astype(np.int64))
+            inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
+            labels = torch.from_numpy(y_batch.astype(np.int64))
 
             if (self.stateful) and (len(X_batch) == batch_size):
-                y_pred_batch, state = self.forward(X_test_batch, state)
+                preds, state = self.forward(inputs, state)
                 state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
             else:
-                y_pred_batch, _ = self.forward(X_test_batch)
+                preds, _ = self.forward(inputs)
 
-            _, y_pred_batch = torch.max(y_pred_batch.data, 1)
-            total += y_test_batch.size(0)
-            correct += (y_pred_batch == y_test_batch).sum()
+            _, preds = torch.max(preds.data, 1)
+            total += labels.size(0)
+            correct += (preds == labels).sum()
         print('Test Accuracy of the model: %.4f' % (float(correct) / total)) 
     # end method evaluate
 

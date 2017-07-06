@@ -43,22 +43,25 @@ class CNNTextClassifier(torch.nn.Module):
         global_step = 0
         n_batch = int(len(X) / batch_size)
         total_steps = int(n_epoch * n_batch)
+
         for epoch in range(n_epoch):
             if en_shuffle:
                 X, y = shuffle(X, y)
-            for local_step, (X_, y_) in enumerate(zip(self.gen_batch(X, batch_size),
-                                                      self.gen_batch(y, batch_size))):
-                X_batch = torch.autograd.Variable(torch.from_numpy(X_.astype(np.int64)))
-                y_batch = torch.autograd.Variable(torch.from_numpy(y_.astype(np.int64)))
-                y_pred = self.forward(X_batch, len(X_))
+            for local_step, (X_batch, y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                                self.gen_batch(y, batch_size))):
+                inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
+                labels = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
+                preds = self.forward(inputs, len(X_batch))
 
-                loss = self.criterion(y_pred, y_batch)     # cross entropy loss
+                loss = self.criterion(preds, labels)                   # cross entropy loss
                 self.optimizer, lr = self.adjust_lr(self.optimizer, global_step, total_steps)
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
+
                 global_step += 1
-                acc = (torch.max(y_pred,1)[1].data.numpy().squeeze() == y_).mean()
+                preds = torch.max(preds, 1)[1].data.numpy().squeeze()
+                acc = (preds == y_batch).mean()
                 if local_step % 100 == 0:
                     print ('Epoch [%d/%d] | Step [%d/%d] | Loss: %.4f | Acc: %.4f | LR: %.4f'
                            %(epoch+1, n_epoch, local_step, n_batch, loss.data[0], acc, lr))
@@ -68,13 +71,15 @@ class CNNTextClassifier(torch.nn.Module):
     def evaluate(self, X_test, y_test, batch_size=32):
         correct = 0
         total = 0
-        for X_, y_ in zip(self.gen_batch(X_test, batch_size), self.gen_batch(y_test, batch_size)):
-            X_batch = torch.autograd.Variable(torch.from_numpy(X_.astype(np.int64)))
-            y_batch = torch.from_numpy(y_.astype(np.int64))
-            y_pred = self.forward(X_batch, len(X_))
-            _, y_pred = torch.max(y_pred.data, 1)
-            total += y_batch.size(0)
-            correct += (y_pred == y_batch).sum()
+
+        for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size), self.gen_batch(y_test, batch_size)):
+            inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
+            labels = torch.from_numpy(y_batch.astype(np.int64))
+
+            preds = self.forward(inputs, len(X_batch))
+            _, preds = torch.max(preds.data, 1)
+            total += labels.size(0)
+            correct += (preds == labels).sum()
         print('Test Accuracy of the model: %.4f' % (float(correct) / total)) 
     # end method evaluate
 

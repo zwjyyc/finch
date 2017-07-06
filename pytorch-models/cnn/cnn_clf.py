@@ -47,17 +47,18 @@ class CNNClassifier(torch.nn.Module):
 
     def fit(self, X, y, num_epochs, batch_size):
         for epoch in range(num_epochs):
-            for i, (X_train_batch, y_train_batch) in enumerate(zip(self.gen_batch(X, batch_size),
-                                                                   self.gen_batch(y, batch_size))):
-                images = torch.autograd.Variable(torch.from_numpy(X_train_batch.astype(np.float32)))
-                labels = torch.autograd.Variable(torch.from_numpy(y_train_batch.astype(np.int64)))
+            for i, (X_batch, y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
+                                                       self.gen_batch(y, batch_size))):
+                inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
+                labels = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
 
-                pred = self.forward(images)             # rnn output
-                loss = self.criterion(pred, labels)     # cross entropy loss
+                preds = self.forward(inputs)            # cnn output
+                loss = self.criterion(preds, labels)    # cross entropy loss
                 self.optimizer.zero_grad()              # clear gradients for this training step
                 loss.backward()                         # backpropagation, compute gradients
                 self.optimizer.step()                   # apply gradients
-                acc = (torch.max(pred,1)[1].data.numpy().squeeze() == y_train_batch).astype(float).mean()
+                preds = torch.max(preds, 1)[1].data.numpy().squeeze()
+                acc = (preds == y_batch).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
                            %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
@@ -67,14 +68,14 @@ class CNNClassifier(torch.nn.Module):
     def evaluate(self, X_test, y_test, batch_size):
         correct = 0
         total = 0
-        for X_test_batch, y_test_batch in zip(self.gen_batch(X_test, batch_size),
+        for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size),
                                               self.gen_batch(y_test, batch_size)):
-            images = torch.autograd.Variable(torch.from_numpy(X_test_batch.astype(np.float32)))
-            labels = torch.from_numpy(y_test_batch.astype(np.int64))
-            outputs = self.forward(images)
-            _, predicted = torch.max(outputs.data, 1)
+            inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
+            labels = torch.from_numpy(y_batch.astype(np.int64))
+            preds = self.forward(inputs)
+            _, preds = torch.max(preds.data, 1)
             total += labels.size(0)
-            correct += (predicted == labels).sum()
+            correct += (preds == labels).sum()
         print('Test Accuracy of the model on the 10000 test images: %d %%' % (100 * correct / total)) 
     # end method evaluate
 

@@ -5,7 +5,7 @@ from birnn_seq_clf import BiRNN
 
 SEQ_LEN = 20
 BATCH_SIZE = 32
-N_EPOCH = 3
+N_EPOCH = 1
 sample = ['I', 'love', 'you']
 
 

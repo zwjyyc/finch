@@ -122,8 +122,7 @@ class ConvLSTMClassifier:
 
     def add_backward_path(self):
         self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),
-                                                   self.Y), tf.float32))
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1), self.Y), tf.float32))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
 

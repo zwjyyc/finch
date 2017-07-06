@@ -68,7 +68,7 @@ class RNNTextGen:
 
     def add_word_embedding(self):
         # (batch_size, seq_len) -> (batch_size, seq_len, embedding_dims)
-        embedding = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32,
+        embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
         self._cursor = tf.nn.embedding_lookup(embedding, self._cursor)
     # end method add_word_embedding
@@ -112,9 +112,9 @@ class RNNTextGen:
 
 
     def add_inference(self):
-        self.x = tf.placeholder(tf.int32, [None, 1])
+        self.x = tf.placeholder(tf.int32, [1, 1])
         self.i_s = self.cells.zero_state(1, tf.float32)
-        x_embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x)
+        x_embedded = tf.nn.embedding_lookup(tf.get_variable('encoder'), self.x)
         y, self.f_s = tf.nn.dynamic_rnn(self.cells, x_embedded, initial_state=self.i_s)
         y = tf.layers.dense(tf.reshape(y, [-1, self.cell_size]), self.vocab_size, name='output', reuse=True)
         self.y = tf.nn.softmax(y)

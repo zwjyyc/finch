@@ -59,7 +59,7 @@ class RNNTextClassifier:
 
 
     def add_word_embedding_layer(self):
-        embedding = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32,
+        embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
         self._cursor = tf.nn.embedding_lookup(embedding, self._cursor)
     # end method add_word_embedding_layer
@@ -119,6 +119,7 @@ class RNNTextClassifier:
         for epoch in range(n_epoch): # batch training
             if en_shuffle:
                 X, Y = shuffle(X, Y)
+                print("Data Shuffled")
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
 
             for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),

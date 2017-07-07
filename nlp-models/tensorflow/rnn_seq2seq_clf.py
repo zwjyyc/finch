@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
+from sklearn.utils import shuffle
 
 
 class RNNTextClassifier:
@@ -117,9 +118,7 @@ class RNNTextClassifier:
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch): # batch training
             if en_shuffle:
-                shuffled = np.random.permutation(len(X))
-                X = X[shuffled]
-                Y = Y[shuffled]
+                X, Y = shuffle(X, Y)
             next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
 
             for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),

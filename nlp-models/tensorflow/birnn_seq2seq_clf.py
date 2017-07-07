@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
+from sklearn.utils import shuffle
 
 
 class BiRNN:
@@ -131,9 +132,8 @@ class BiRNN:
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch): # batch training
             if en_shuffle:
-                shuffled = np.random.permutation(len(X))
-                X = X[shuffled]
-                Y = Y[shuffled]
+                X, Y = shuffle(X, Y)
+                print("Data Shuffled")
             for local_step, (X_batch, Y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
                                                                 self.gen_batch(Y, batch_size))):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)           

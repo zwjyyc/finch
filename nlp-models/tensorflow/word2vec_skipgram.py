@@ -4,6 +4,7 @@ import math
 import numpy as np
 import tensorflow as tf
 from collections import Counter
+from sklearn.utils import shuffle
 
 
 class SkipGram:
@@ -27,7 +28,7 @@ class SkipGram:
         self.add_input_layer()       
         self.add_word_embedding()
         self.add_backward_path()
-        self.add_sampler()
+        self.add_similarity_test()
     # end method build_graph
 
 
@@ -55,7 +56,7 @@ class SkipGram:
     # end method add_backward_path
 
 
-    def add_sampler(self):
+    def add_similarity_test(self):
         self.sample_indices = [self.word2idx[w] for w in self.sample_words]
         sample_indices = tf.constant(self.sample_indices, dtype=tf.int32)
 
@@ -64,7 +65,7 @@ class SkipGram:
 
         sample_embedded = tf.nn.embedding_lookup(normalized_embedding, sample_indices)
         self.similarity = tf.matmul(sample_embedded, tf.transpose(normalized_embedding))
-    # end method add_sampler
+    # end method add_similarity_test
 
 
     def preprocess_text(self):
@@ -110,6 +111,7 @@ class SkipGram:
     # end method filter_high_freq
 
 
+    """
     def next_batch(self, batch_size):
         for idx in range(0, len(self.indexed), batch_size):
             x, y = [], []
@@ -121,6 +123,18 @@ class SkipGram:
                 y.extend(batch_y)
             yield (x, y)
     # end method next_batch
+    """
+
+
+    def make_xy(self, int_words):
+        x, y = [], []
+        for i in range(0, len(int_words)):
+            input_w = int_words[i]
+            labels = self.get_y(int_words, i)
+            x.extend([input_w] * len(labels))
+            y.extend(labels)
+        return x, y
+    # end method make_xy
 
 
     def get_y(self, words, idx):
@@ -132,16 +146,19 @@ class SkipGram:
     # end method get_y
 
 
-    def fit(self, n_epoch=10, batch_size=1000, top_k=5, eval_step=1000):
+    def fit(self, n_epoch=10, batch_size=1000, top_k=5, eval_step=1000, en_shuffle=True):
         self.sess.run(tf.global_variables_initializer())
+        x, y = self.make_xy(self.indexed)
+        x, y = shuffle(x, y)
         global_step = 0
-        n_batch = int(len(self.indexed) / batch_size)
+        n_batch = int(len(x) / batch_size)
         total_steps = int(n_epoch * n_batch)
 
         for epoch in range(n_epoch):
-            for local_step, (x, y) in enumerate(self.next_batch(batch_size)):
-                y = np.array(y)[:, np.newaxis]
-                _, loss = self.sess.run([self.train_op, self.loss], {self.x: x, self.y: y})
+            for local_step, (x_batch, y_batch) in enumerate(zip(self.next_batch(x, batch_size),
+                                                                self.next_batch(y, batch_size))):
+                y_batch = np.array(y_batch)[:, np.newaxis]
+                _, loss = self.sess.run([self.train_op, self.loss], {self.x: x_batch, self.y: y_batch})
                 if local_step % 50 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f' %
                            (epoch+1, n_epoch, local_step, n_batch, loss))
@@ -156,4 +173,10 @@ class SkipGram:
                             log = '%s %s,' % (log, analogy)
                         print(log)
     # end method fit
+
+
+    def next_batch(self, arr, batch_size):
+        for i in range(0, len(arr), batch_size):
+            yield arr[i : i+batch_size]
+    # end method gen_batch
 # end class

@@ -68,7 +68,7 @@ class RNNTextGen:
 
     def add_word_embedding(self):
         # (batch_size, seq_len) -> (batch_size, seq_len, embedding_dims)
-        embedding = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32,
+        embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
         self._cursor = tf.nn.embedding_lookup(embedding, self._cursor)
     # end method add_word_embedding
@@ -83,8 +83,7 @@ class RNNTextGen:
 
 
     def add_dynamic_rnn(self):
-        self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
-        self._cursor, final_state = tf.nn.dynamic_rnn(self.cells, self._cursor, initial_state=self.init_state)   
+        self._cursor, _ = tf.nn.dynamic_rnn(self.cells, self._cursor, dtype=tf.float32)   
     # end method add_dynamic_rnn
 
 
@@ -112,9 +111,9 @@ class RNNTextGen:
 
 
     def add_inference(self):
-        self.x = tf.placeholder(tf.int32, [None, 1])
+        self.x = tf.placeholder(tf.int32, [1, 1])
         self.i_s = self.cells.zero_state(1, tf.float32)
-        x_embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x)
+        x_embedded = tf.nn.embedding_lookup(tf.get_variable('encoder'), self.x)
         y, self.f_s = tf.nn.dynamic_rnn(self.cells, x_embedded, initial_state=self.i_s)
         y = tf.layers.dense(tf.reshape(y, [-1, self.cell_size]), self.vocab_size, name='output', reuse=True)
         self.y = tf.nn.softmax(y)
@@ -167,15 +166,14 @@ class RNNTextGen:
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         
         for epoch in range(n_epoch):
-            next_state = self.sess.run(self.init_state, feed_dict={self.batch_size:batch_size})
             if en_shuffle:
                 X_train, Y_train = shuffle(X_train, Y_train)
             for local_step, (X_train_batch, Y_train_batch) in enumerate(zip(self.gen_batch(X_train, batch_size),
                                                                             self.gen_batch(Y_train, batch_size))):
                 lr = self.adjust_lr(global_step, total_steps) if en_exp_decay else 0.001
                 _, train_loss = self.sess.run([self.train_op, self.loss],
-                                              {self.X:X_train_batch, self.Y:Y_train_batch,
-                                               self.batch_size:len(X_train_batch), self.lr:lr})
+                                              {self.X:X_train_batch, self.Y:Y_train_batch, self.lr:lr,
+                                               self.batch_size:len(X_train_batch)})
                 if local_step % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
                             % (epoch+1, n_epoch, local_step, n_batch, train_loss, lr))

@@ -126,9 +126,18 @@ class Seq2Seq:
 
 
     def pad_sentence_batch(self, sentence_batch, pad_int):
+        """
         max_sentence_len = max([len(sentence) for sentence in sentence_batch])
         return ([sentence + [pad_int] * (max_sentence_len - len(sentence)) for sentence in sentence_batch],
                 [max_sentence_len] * self.batch_size)
+        """
+        padded_seqs = []
+        seq_lens = []
+        max_sentence_len = max([len(sentence) for sentence in sentence_batch])
+        for sentence in sentence_batch:
+            padded_seqs.append(sentence + [pad_int] * (max_sentence_len - len(sentence)))
+            seq_lens.append(len(sentence))
+        return padded_seqs, seq_lens
     # end method pad_sentence_batch
 
 
@@ -141,12 +150,12 @@ class Seq2Seq:
         for i in range(0, len(X) - len(X) % self.batch_size, self.batch_size):
             X_batch = X[i : i + self.batch_size]
             Y_batch = Y[i : i + self.batch_size]
-            padded_X_batch, padded_X_lens = self.pad_sentence_batch(X_batch, X_pad_int)
-            padded_Y_batch, padded_Y_lens = self.pad_sentence_batch(Y_batch, Y_pad_int)
+            padded_X_batch, X_batch_lens = self.pad_sentence_batch(X_batch, X_pad_int)
+            padded_Y_batch, Y_batch_lens = self.pad_sentence_batch(Y_batch, Y_pad_int)
             yield (np.array(padded_X_batch),
                    np.array(padded_Y_batch),
-                   padded_X_lens,
-                   padded_Y_lens)
+                   X_batch_lens,
+                   Y_batch_lens)
     # end method gen_batch
 
 
@@ -174,17 +183,19 @@ class Seq2Seq:
 
 
     def infer(self, input_word, X_idx2word, Y_idx2word):        
-        input_idx = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
-        out_idx = self.sess.run(self.predicting_logits, {self.X: [input_idx] * self.batch_size,
-                                                        self.X_seq_len: [len(input_idx)] * self.batch_size,
-                                                        self.Y_seq_len: [len(input_idx)] * self.batch_size})[0]
+        input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
+        out_indices = self.sess.run(self.predicting_logits, {
+            self.X: [input_indices] * self.batch_size,
+            self.X_seq_len: [len(input_indices)] * self.batch_size,
+            self.Y_seq_len: [len(input_indices)] * self.batch_size
+        })[0]
         
         print('\nSource')
-        print('Word: {}'.format([i for i in input_idx]))
-        print('Input Words: {}'.format(' '.join([X_idx2word[i] for i in input_idx])))
+        print('Word: {}'.format([i for i in input_indices]))
+        print('Input Words: {}'.format(' '.join([X_idx2word[i] for i in input_indices])))
         
         print('\nTarget')
-        print('Word: {}'.format([i for i in out_idx]))
-        print('Response Words: {}'.format(' '.join([Y_idx2word[i] for i in out_idx])))
+        print('Word: {}'.format([i for i in out_indices]))
+        print('Response Words: {}'.format(' '.join([Y_idx2word[i] for i in out_indices])))
     # end method infer
 # end class

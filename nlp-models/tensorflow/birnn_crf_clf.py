@@ -57,7 +57,7 @@ class BiRNN_CRF:
 
 
     def add_word_embedding_layer(self):
-        embedding = tf.get_variable('E', [self.vocab_size, self.embedding_dims], tf.float32,
+        embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
         embedded = tf.nn.embedding_lookup(embedding, self._cursor)
         self._cursor = tf.nn.dropout(embedded, self.keep_prob)
@@ -104,7 +104,7 @@ class BiRNN_CRF:
     def add_inference(self):
         self.x = tf.placeholder(tf.int32, [1, self.seq_len])
         self.real_seq_len = tf.placeholder(tf.int32, [1])
-        embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x)
+        embedded = tf.nn.embedding_lookup(tf.get_variable('encoder'), self.x)
 
         birnn_out = embedded
         for n in range(self.n_layer):

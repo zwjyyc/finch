@@ -149,12 +149,14 @@ class SkipGram:
     def fit(self, n_epoch=10, batch_size=1000, top_k=5, eval_step=1000, en_shuffle=True):
         self.sess.run(tf.global_variables_initializer())
         x, y = self.make_xy(self.indexed)
-        x, y = shuffle(x, y)
         global_step = 0
         n_batch = int(len(x) / batch_size)
         total_steps = int(n_epoch * n_batch)
 
         for epoch in range(n_epoch):
+            if en_shuffle:
+                x, y = shuffle(x, y)
+                print("Data Shuffled")
             for local_step, (x_batch, y_batch) in enumerate(zip(self.next_batch(x, batch_size),
                                                                 self.next_batch(y, batch_size))):
                 y_batch = np.array(y_batch)[:, np.newaxis]

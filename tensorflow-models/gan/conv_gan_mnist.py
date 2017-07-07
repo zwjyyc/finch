@@ -35,6 +35,7 @@ class Conv_GAN:
             Y = tf.nn.relu(Y)
             Y = tf.layers.conv2d_transpose(Y, 1, [5, 5], strides=(2, 2), padding='SAME')
             return Y
+        
         self.G_out = deconv(self.G_in)
     # end method add_Generator
 
@@ -81,6 +82,6 @@ class Conv_GAN:
             self.D_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.D_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='D'))
 
-        self.l2_loss = tf.nn.l2_loss(self.G_out - self.X_in)
+        self.mse = tf.reduce_mean(tf.squared_difference(self.G_out, self.X_in))
     # end method add_backward_path
 # end class

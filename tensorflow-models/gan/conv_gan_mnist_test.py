@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
             G_loss, D_loss, D_prob, G_prob, loss = sess.run([model.G_loss, model.D_loss,
                                                              model.X_true_prob, model.G_true_prob,
-                                                             model.l2_loss],
+                                                             model.mse],
                                                             {model.G_in: rand_data,
                                                              model.X_in: real_data,
                                                              model.train_flag: False})

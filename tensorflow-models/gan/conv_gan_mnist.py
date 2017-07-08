@@ -31,7 +31,8 @@ class Conv_GAN:
             X = tf.layers.dense(X, 7*7*64)
             X = tf.reshape(X, [-1, 7, 7, 64])
             Y = tf.layers.conv2d_transpose(X, 32, [5, 5], strides=(2, 2), padding='SAME')
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag,
+                                              momentum=0.9, epsilon=1e-5, center=False)
             Y = tf.nn.relu(Y)
             Y = tf.layers.conv2d_transpose(Y, 1, [5, 5], strides=(2, 2), padding='SAME')
             return Y
@@ -47,16 +48,18 @@ class Conv_GAN:
         def conv(X, reuse=False):
             # (28, 28, 1) -> (14, 14, 32) -> (7, 7, 64) -> 1
             Y = tf.layers.conv2d(X, 32, [5, 5], strides=(2, 2), padding='SAME', name='conv1', reuse=reuse)
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn1', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn1', reuse=reuse,
+                                              momentum=0.9, epsilon=1e-5, center=False)
             Y = lrelu(Y)
             Y = tf.layers.conv2d(Y, 64, [5, 5], strides=(2, 2), padding='SAME', name='conv2', reuse=reuse)
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn2', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn2', reuse=reuse,
+                                              momentum=0.9, epsilon=1e-5, center=False)
             Y = lrelu(Y)
             fc = tf.reshape(Y, [-1, 7 * 7 * 64])
             output = tf.layers.dense(fc, 1, name='out', reuse=reuse)
             return output
         
-        self.G_true_logits = conv(self.G_out)
+        self.G_true_logits = conv(tf.nn.tanh(self.G_out))
         self.X_true_logits = conv(self.X_in, reuse=True)
         self.G_true_prob = tf.nn.sigmoid(self.G_true_logits)
         self.X_true_prob = tf.nn.sigmoid(self.X_true_logits)

@@ -76,8 +76,8 @@ class BiRNNTextClassifier:
         v = tf.layers.dense(self._cursor, self.attention_size, tf.nn.tanh)
         vu = tf.layers.dense(v, 1, use_bias=False)
         exps = tf.reshape(tf.exp(vu), [-1, self.max_seq_len])
-        alphas = exps / tf.expand_dims(tf.reduce_sum(exps, 1), 1)
-        self._cursor = tf.reduce_sum(self._cursor * tf.reshape(alphas, [-1, self.max_seq_len, 1]), 1)
+        alphas = exps / tf.expand_dims(tf.reduce_sum(exps, 1), 1) # (128, seq_len) / (128, 1)
+        self._cursor = tf.reduce_sum(self._cursor * tf.expand_dims(alphas, 2), 1)
     # end method add_attention_mechanism
 
 

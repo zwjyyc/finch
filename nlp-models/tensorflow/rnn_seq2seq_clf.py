@@ -100,7 +100,7 @@ class RNNTextClassifier:
     def add_inference(self):
         self.x = tf.placeholder(tf.int32, [None, self.seq_len])
         self.real_seq_len = tf.placeholder(tf.int32, [None])
-        embedded = tf.nn.embedding_lookup(tf.get_variable('E'), self.x)
+        embedded = tf.nn.embedding_lookup(tf.get_variable('encoder'), self.x)
         rnn_out, _ = tf.nn.dynamic_rnn(self.cell, embedded, dtype=tf.float32, sequence_length=self.real_seq_len)
         self.y = tf.layers.dense(tf.reshape(rnn_out, [-1, self.cell_size]), self.n_out, name='out', reuse=True)
     # end add_sample_model

@@ -40,7 +40,7 @@ if __name__ == '__main__':
                                                              model.train_flag: False})
             
             print("Epoch %d/%d | Step %d/%d" % (epoch+1, n_epoch, step, int(len(X)/batch_size)))
-            print("G loss: %.4f | D loss: %.4f | D prob: %.4f | G prob: %.4f | l2 loss: %.4f " %
+            print("G loss: %.4f | D loss: %.4f | D prob: %.4f | G prob: %.4f | mse: %.4f " %
                 (G_loss, D_loss, D_prob.mean(), G_prob.mean(), loss))
     
     img = sess.run(model.G_out, {model.G_in: np.random.uniform(-1, 1, (1, G_size)),

@@ -20,20 +20,29 @@ class Conv_GAN:
 
     def add_input_layer(self):
         self.G_in = tf.placeholder(tf.float32, [None, self.G_size]) # random data
-        self.X_in = tf.placeholder(tf.float32, [None, 28, 28, 1]) # real data
+        self.X_in = tf.placeholder(tf.float32, [None, 64, 64, 1]) # real data
         self.train_flag = tf.placeholder(tf.bool)
     # end method input_layer
 
 
     def add_Generator(self):
         def deconv(X):
-            # 100 -> (7, 7, 64) ->  (14, 14, 32) -> (28, 28, 1)
-            X = tf.layers.dense(X, 7*7*64)
-            X = tf.reshape(X, [-1, 7, 7, 64])
-            Y = tf.layers.conv2d_transpose(X, 32, [5, 5], strides=(2, 2), padding='SAME')
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag,
-                                              momentum=0.9, epsilon=1e-5, center=False)
+            # 100 -> (4, 4, 1024) ->  (8, 8, 512) -> (16, 16, 256) -> (32, 32, 128) -> (64, 64, 1)
+            X = tf.layers.dense(X, 4 * 4 * 1024)
+            X = tf.reshape(X, [-1, 4, 4, 1024])
+
+            Y = tf.layers.conv2d_transpose(X, 512, [5, 5], strides=(2, 2), padding='SAME')
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag)
             Y = tf.nn.relu(Y)
+
+            Y = tf.layers.conv2d_transpose(Y, 256, [5, 5], strides=(2, 2), padding='SAME')
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag)
+            Y = tf.nn.relu(Y)
+
+            Y = tf.layers.conv2d_transpose(Y, 128, [5, 5], strides=(2, 2), padding='SAME')
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag)
+            Y = tf.nn.relu(Y)
+
             Y = tf.layers.conv2d_transpose(Y, 1, [5, 5], strides=(2, 2), padding='SAME')
             return Y
         
@@ -46,16 +55,24 @@ class Conv_GAN:
             return tf.maximum(X, X * leak)
         
         def conv(X, reuse=False):
-            # (28, 28, 1) -> (14, 14, 32) -> (7, 7, 64) -> 1
-            Y = tf.layers.conv2d(X, 32, [5, 5], strides=(2, 2), padding='SAME', name='conv1', reuse=reuse)
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn1', reuse=reuse,
-                                              momentum=0.9, epsilon=1e-5, center=False)
+            # (64, 64, 1) -> (32, 32, 128) -> (16, 16, 256) -> (8, 8, 512) -> (4, 4, 1024)
+            Y = tf.layers.conv2d(X, 128, [5, 5], strides=(2, 2), padding='SAME', name='conv1', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn1', reuse=reuse)
             Y = lrelu(Y)
-            Y = tf.layers.conv2d(Y, 64, [5, 5], strides=(2, 2), padding='SAME', name='conv2', reuse=reuse)
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn2', reuse=reuse,
-                                              momentum=0.9, epsilon=1e-5, center=False)
+
+            Y = tf.layers.conv2d(Y, 256, [5, 5], strides=(2, 2), padding='SAME', name='conv2', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn2', reuse=reuse)
             Y = lrelu(Y)
-            fc = tf.reshape(Y, [-1, 7 * 7 * 64])
+
+            Y = tf.layers.conv2d(Y, 512, [5, 5], strides=(2, 2), padding='SAME', name='conv3', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn3', reuse=reuse)
+            Y = lrelu(Y)
+
+            Y = tf.layers.conv2d(Y, 1024, [5, 5], strides=(2, 2), padding='SAME', name='conv4', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn4', reuse=reuse)
+            Y = lrelu(Y)
+
+            fc = tf.reshape(Y, [-1, 4 * 4 * 1024])
             output = tf.layers.dense(fc, 1, name='out', reuse=reuse)
             return output
         

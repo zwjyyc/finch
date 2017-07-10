@@ -83,7 +83,8 @@ class RNNTextGen:
 
 
     def add_dynamic_rnn(self):
-        self._cursor, _ = tf.nn.dynamic_rnn(self.cells, self._cursor, dtype=tf.float32)   
+        self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
+        self._cursor, self.final_state = tf.nn.dynamic_rnn(self.cells, self._cursor, initial_state=self.init_state)   
     # end method add_dynamic_rnn
 
 
@@ -146,50 +147,41 @@ class RNNTextGen:
         self.vocab_size = len(self.idx2char)
         print('Vocabulary size:', self.vocab_size)
 
-        self.indexed = [self.char2idx[char] for char in list(text)]
+        self.indexed = np.array([self.char2idx[char] for char in list(text)])
     # end method text_preprocessing
 
 
+    def next_batch(self, batch_size):
+        window = self.seq_len * batch_size
+        for i in range(0, len(self.indexed)-window-1):
+            yield (self.indexed[i : i+window].reshape(-1, self.seq_len),
+                   self.indexed[i+1 : i+window+1].reshape(-1, self.seq_len))
+    # end method make_xy
+
+
     def fit(self, prime_texts, text_iter_step=10, n_gen=500, n_epoch=20, batch_size=128,
-            en_exp_decay=True, en_shuffle=True):
-        window = self.seq_len + 1
-        X = np.array([self.indexed[i:i+window] for i in range(0, len(self.indexed)-window, text_iter_step)])
-        Y = np.roll(X, -1, axis=1)
-        X = X[:, :-1]
-        Y = Y[:, :-1]
-        print('X shape:', X.shape, '|', 'Y shape:', Y.shape)
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+            en_exp_decay=False):
         global_step = 0
-        n_batch = len(X_train) / batch_size
-        total_steps = int(n_epoch * n_batch)
+        n_batch = len(self.indexed) // (batch_size * self.seq_len)
+        total_steps = n_epoch * n_batch
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         
         for epoch in range(n_epoch):
-            if en_shuffle:
-                X_train, Y_train = shuffle(X_train, Y_train)
-            for local_step, (X_train_batch, Y_train_batch) in enumerate(zip(self.gen_batch(X_train, batch_size),
-                                                                            self.gen_batch(Y_train, batch_size))):
+            next_state = self.sess.run(self.init_state, {self.batch_size: batch_size})
+            for local_step, (X_batch, Y_batch) in enumerate(self.next_batch(batch_size)):
                 lr = self.adjust_lr(global_step, total_steps) if en_exp_decay else 0.001
-                _, train_loss = self.sess.run([self.train_op, self.loss],
-                                              {self.X:X_train_batch, self.Y:Y_train_batch, self.lr:lr,
-                                               self.batch_size:len(X_train_batch)})
+                _, train_loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
+                                                          {self.X: X_batch,
+                                                           self.Y: Y_batch,
+                                                           self.init_state: next_state,
+                                                           self.lr: lr,
+                                                           self.batch_size: len(X_batch)})
                 if local_step % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
                             % (epoch+1, n_epoch, local_step, n_batch, train_loss, lr))
                 if local_step % 100 == 0:
                     for prime_text in prime_texts:
                         print(self.infer(prime_text, n_gen)+'\n')
-                    
-                    test_losses = []
-                    for X_test_batch, Y_test_batch in zip(self.gen_batch(X_test, batch_size),
-                                                          self.gen_batch(Y_test, batch_size)):
-                        test_loss = self.sess.run(self.loss, {self.X:X_test_batch, self.Y:Y_test_batch,
-                                                              self.batch_size:len(X_test_batch)})
-                        test_losses.append(test_loss)
-                    avg_test_loss = sum(test_losses) / len(test_losses)
-                    print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | test loss: %.4f'
-                            % (epoch+1, n_epoch, local_step, n_batch, train_loss, avg_test_loss))
                 global_step += 1
             
         return log
@@ -218,11 +210,5 @@ class RNNTextGen:
             char = self.idx2char[idx]
             out_sentence = out_sentence + char
         return out_sentence
-    # end method sample
-
-
-    def gen_batch(self, arr, batch_size):
-        for i in range(0, len(arr), batch_size):
-            yield arr[i : i+batch_size]
-    # end method gen_batch
+    # end method infer
 # end class

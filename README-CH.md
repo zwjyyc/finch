@@ -12,7 +12,7 @@
     * [循环网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#循环网络)
     * [自动解码](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#自动解码)
     * [高速公路网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#高速公路网络)
-    * [生成对抗网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#生成对抗网络)
+    * [对抗生成网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#对抗生成网络)
 * [自然语言处理](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#自然语言处理)
     * [预处理](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#预处理)
     * [语言模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#语言模型)

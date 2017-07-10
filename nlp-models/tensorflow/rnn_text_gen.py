@@ -156,7 +156,7 @@ class RNNTextGen:
         for i in range(0, len(self.indexed)-window-1):
             yield (self.indexed[i : i+window].reshape(-1, self.seq_len),
                    self.indexed[i+1 : i+window+1].reshape(-1, self.seq_len))
-    # end method make_xy
+    # end method next_batch
 
 
     def fit(self, prime_texts, text_iter_step=10, n_gen=500, n_epoch=20, batch_size=128,

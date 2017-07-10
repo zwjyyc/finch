@@ -151,9 +151,9 @@ class RNNTextGen:
     # end method text_preprocessing
 
 
-    def next_batch(self, batch_size):
+    def next_batch(self, batch_size, text_iter_step):
         window = self.seq_len * batch_size
-        for i in range(0, len(self.indexed)-window-1):
+        for i in range(0, len(self.indexed)-window-1, text_iter_step):
             yield (self.indexed[i : i+window].reshape(-1, self.seq_len),
                    self.indexed[i+1 : i+window+1].reshape(-1, self.seq_len))
     # end method next_batch
@@ -162,13 +162,13 @@ class RNNTextGen:
     def fit(self, prime_texts, text_iter_step=10, n_gen=500, n_epoch=20, batch_size=128,
             en_exp_decay=False):
         global_step = 0
-        n_batch = len(self.indexed) // (batch_size * self.seq_len)
+        n_batch = (len(self.indexed) - self.seq_len*batch_size - 1) // text_iter_step
         total_steps = n_epoch * n_batch
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         
         for epoch in range(n_epoch):
             next_state = self.sess.run(self.init_state, {self.batch_size: batch_size})
-            for local_step, (X_batch, Y_batch) in enumerate(self.next_batch(batch_size)):
+            for local_step, (X_batch, Y_batch) in enumerate(self.next_batch(batch_size, text_iter_step)):
                 lr = self.adjust_lr(global_step, total_steps) if en_exp_decay else 0.001
                 _, train_loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                                                           {self.X: X_batch,

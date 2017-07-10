@@ -17,8 +17,8 @@ def gen_batch(arr, batch_size):
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.mnist.load_data()
-    X = np.expand_dims((X_train / 255.), 3)[y_train == 6]
+    (X_train, y_train), (_, _) = tf.contrib.keras.datasets.mnist.load_data()
+    X = np.expand_dims((X_train / 255.), 3)[y_train == 7]
     
     model = Conv_GAN(G_size, batch_size)
     sess = tf.Session()

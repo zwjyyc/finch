@@ -138,7 +138,8 @@ class RNNTextGen:
                 table = str.maketrans({useless: ' ' for useless in self.useless_words})
                 text = text.translate(table)
             else:
-                text = re.sub(r'[{}]'.format(''.join(self.useless_words)), ' ', text)
+                for useless_word in self.useless_words:
+                    text = text.replace(useless_word, '')
         text = re.sub('\s+', ' ', text).strip().lower()
         
         chars = set(text)

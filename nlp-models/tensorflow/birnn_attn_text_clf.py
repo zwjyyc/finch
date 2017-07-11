@@ -35,7 +35,7 @@ class BiRNNTextClassifier:
         self.add_input_layer()
         self.add_word_embedding_layer()
         self.add_bi_dynamic_rnn()
-        self.add_attention_mechanism()
+        self.add_attention()
         self.add_output_layer()
         self.add_backward_path()
     # end method build_graph
@@ -72,13 +72,12 @@ class BiRNNTextClassifier:
     # end method add_dynamic_rnn
 
 
-    def add_attention_mechanism(self):
-        v = tf.layers.dense(self._cursor, self.attention_size, tf.nn.tanh)
-        vu = tf.layers.dense(v, 1, use_bias=False)
+    def add_attention(self):
+        vu = tf.layers.dense(self._cursor, 1)
         exps = tf.reshape(tf.exp(vu), [-1, self.max_seq_len])
         alphas = exps / tf.reduce_sum(exps, 1, keep_dims=True) # (128, seq_len) / (128, 1)
         self._cursor = tf.reduce_sum(self._cursor * tf.expand_dims(alphas, 2), 1)
-    # end method add_attention_mechanism
+    # end method add_attention
 
 
     def add_output_layer(self):

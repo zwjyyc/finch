@@ -12,7 +12,7 @@ import sys
 class ConvRNNTextGen:
     def __init__(self, text, seq_len=50, embedding_dims=15,
                  cell_size=512, n_layer=2, grad_clip=5,
-                 n_filters=[25, 50, 64], kernel_sizes=[1, 2, 3],
+                 n_filters=[25, 50, 64], kernel_sizes=[2, 3, 5],
                  stopwords=None, useless_words=None, sess=tf.Session()):
         """
         Parameters:
@@ -153,8 +153,8 @@ class ConvRNNTextGen:
         self.x = tf.placeholder(tf.int32, [1, 1, self.max_word_len])
         self.i_s = self.cells.zero_state(1, tf.float32)
         x_embedded = tf.nn.embedding_lookup(tf.get_variable('encoder'), self.x)
-
         reshaped = tf.reshape(x_embedded, [1*1, self.max_word_len, self.embedding_dims])
+
         parallels = []
         for i, (n_filter, kernel_size) in enumerate(zip(self.n_filters, self.kernel_sizes)):
             conv_out = tf.layers.conv1d(inputs = reshaped,
@@ -164,17 +164,18 @@ class ConvRNNTextGen:
                                         use_bias = True,
                                         activation = tf.nn.tanh,
                                         name = 'conv1d'+str(i),
-                                        reuse=True)
+                                        reuse = True)
             reduced_len = self.max_word_len - kernel_size + 1
             pool_out = tf.layers.max_pooling1d(inputs = conv_out,
-                                        pool_size = reduced_len,
-                                        strides = 1,
-                                        padding = 'valid')
+                                               pool_size = reduced_len,
+                                               strides = 1,
+                                               padding = 'valid')
             parallels.append(tf.reshape(pool_out, [1, 1, n_filter]))
         rnn_in = tf.concat(parallels, 2)
 
         rnn_out, self.f_s = tf.nn.dynamic_rnn(self.cells, rnn_in, initial_state=self.i_s)
-        logits = tf.layers.dense(tf.reshape(rnn_out, [-1, self.cell_size]), self.vocab_word, name='output', reuse=True)
+        logits = tf.layers.dense(tf.reshape(rnn_out, [-1, self.cell_size]), self.vocab_word, name='output',
+                                 reuse=True)
         self.y = tf.nn.softmax(logits)
     # end add_sample_model
 
@@ -193,7 +194,7 @@ class ConvRNNTextGen:
         text = text.replace('\n', ' ')
 
         if self.stopwords is not None:
-            if sys.version[0] == 3:
+            if sys.version[0] >= 3:
                 table = str.maketrans({stopword: ' '+stopword+' ' for stopword in self.stopwords})
                 text = text.translate(table)
             else:
@@ -201,12 +202,13 @@ class ConvRNNTextGen:
                     text = text.replace(stopword, ' '+stopword+' ')
 
         if self.useless_words is not None:
-            if sys.version[0] == 3:
+            if sys.version[0] >= 3:
                 table = str.maketrans({useless: ' ' for useless in self.useless_words})
                 text = text.translate(table)
             else:
                 for useless_word in self.useless_words:
                     text = text.replace(useless_word, '')
+        
         text = re.sub('\s+', ' ', text).strip().lower()
         print("Text Cleaned")
         

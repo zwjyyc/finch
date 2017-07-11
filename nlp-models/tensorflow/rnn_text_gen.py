@@ -134,7 +134,7 @@ class RNNTextGen:
         text = self.text
         text = text.replace('\n', ' ')
         if self.useless_words is not None:
-            if sys.version[0] == 3:
+            if sys.version[0] >= 3:
                 table = str.maketrans({useless: ' ' for useless in self.useless_words})
                 text = text.translate(table)
             else:

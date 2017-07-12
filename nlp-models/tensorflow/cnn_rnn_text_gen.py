@@ -56,6 +56,8 @@ class ConvRNNTextGen:
             self.add_input_layer()       
             self.add_word_embedding()
             self.add_concat_conv()
+            for i in range(2):
+                self.add_highway(i)
             self.add_lstm_cells()
             self.add_dynamic_rnn()
             self.add_output_layer()
@@ -91,7 +93,7 @@ class ConvRNNTextGen:
                                         kernel_size  = kernel_size,
                                         padding = 'valid',
                                         use_bias = True,
-                                        activation = tf.nn.tanh,
+                                        activation = tf.tanh,
                                         name = 'conv1d'+str(i))
             reduced_len = self.max_word_len - kernel_size + 1
             pool_out = tf.layers.max_pooling1d(inputs = conv_out,
@@ -103,13 +105,17 @@ class ConvRNNTextGen:
     # end method add_concat_conv
 
 
-    def add_global_pooling(self):
-        Y = tf.layers.max_pooling1d(inputs = self._cursor,
-                                    pool_size = self.reduced_len,
-                                    strides = 1,
-                                    padding = 'valid')
-        self._cursor = tf.reshape(Y, [self.batch_size, self.seq_len, self.n_filters])
-    # end method add_pooling
+    def add_highway(self, i):
+        size = sum(self.n_filters)
+        reshaped = tf.reshape(self._cursor, [-1, size])
+
+        H = tf.layers.dense(reshaped, size, tf.nn.relu, name='activation'+str(i))
+        T = tf.layers.dense(reshaped, size, tf.sigmoid, name='transform_gate'+str(i))
+        C = tf.subtract(1.0, T)
+        highway_out = tf.add(tf.multiply(H, T), tf.multiply(reshaped, C))
+
+        self._cursor = tf.reshape(highway_out, [self.batch_size, self.seq_len, size])
+    # end method add_highway
 
 
     def add_lstm_cells(self):
@@ -142,10 +148,10 @@ class ConvRNNTextGen:
         )
         self.loss = tf.reduce_sum(losses)
         # gradient clipping
-        tvars = tf.trainable_variables()
-        grads, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tvars), self.grad_clip)
         optimizer = tf.train.AdamOptimizer(self.lr)
-        self.train_op = optimizer.apply_gradients(zip(grads, tvars))
+        gradients = optimizer.compute_gradients(self.loss)
+        clipped_gradients = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gradients if grad is not None]
+        self.train_op = optimizer.apply_gradients(clipped_gradients)
     # end method add_backward_path
 
 
@@ -154,7 +160,7 @@ class ConvRNNTextGen:
         self.i_s = self.cells.zero_state(1, tf.float32)
         x_embedded = tf.nn.embedding_lookup(tf.get_variable('encoder'), self.x)
         reshaped = tf.reshape(x_embedded, [1*1, self.max_word_len, self.embedding_dims])
-
+        # convolution
         parallels = []
         for i, (n_filter, kernel_size) in enumerate(zip(self.n_filters, self.kernel_sizes)):
             conv_out = tf.layers.conv1d(inputs = reshaped,
@@ -171,11 +177,20 @@ class ConvRNNTextGen:
                                                strides = 1,
                                                padding = 'valid')
             parallels.append(tf.reshape(pool_out, [1, 1, n_filter]))
-        rnn_in = tf.concat(parallels, 2)
-
+        highway_in = tf.concat(parallels, 2)
+        # highway
+        size = sum(self.n_filters)
+        for i in range(2):
+            reshaped = tf.reshape(highway_in, [-1, size])
+            H = tf.layers.dense(reshaped, size, tf.nn.relu, name='activation'+str(i), reuse=True)
+            T = tf.layers.dense(reshaped, size, tf.sigmoid, name='transform_gate'+str(i), reuse=True)
+            C = tf.subtract(1.0, T)
+            highway_out = tf.add(tf.multiply(H, T), tf.multiply(reshaped, C))
+            highway_in = highway_out
+        rnn_in = tf.reshape(highway_out, [1, 1, size])
+        # recurrent
         rnn_out, self.f_s = tf.nn.dynamic_rnn(self.cells, rnn_in, initial_state=self.i_s)
-        logits = tf.layers.dense(tf.reshape(rnn_out, [-1, self.cell_size]), self.vocab_word, name='output',
-                                 reuse=True)
+        logits = tf.layers.dense(tf.reshape(rnn_out, [-1, self.cell_size]), self.vocab_word, name='output', reuse=True)
         self.y = tf.nn.softmax(logits)
     # end add_sample_model
 
@@ -194,7 +209,7 @@ class ConvRNNTextGen:
         text = text.replace('\n', ' ')
 
         if self.stopwords is not None:
-            if sys.version[0] >= 3:
+            if int(sys.version[0]) >= 3:
                 table = str.maketrans({stopword: ' '+stopword+' ' for stopword in self.stopwords})
                 text = text.translate(table)
             else:
@@ -202,7 +217,7 @@ class ConvRNNTextGen:
                     text = text.replace(stopword, ' '+stopword+' ')
 
         if self.useless_words is not None:
-            if sys.version[0] >= 3:
+            if int(sys.version[0]) >= 3:
                 table = str.maketrans({useless: ' ' for useless in self.useless_words})
                 text = text.translate(table)
             else:
@@ -268,8 +283,8 @@ class ConvRNNTextGen:
                                                            self.lr: lr,
                                                            self.batch_size: len(X_batch)})
                 
-                print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
-                        % (epoch+1, n_epoch, local_step, n_batch, train_loss, lr))
+                print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f'
+                        % (epoch+1, n_epoch, local_step, n_batch, train_loss))
                 if local_step % 10 == 0:
                     for prime_text in prime_texts:
                         print(self.infer(prime_text, n_gen)+'\n')

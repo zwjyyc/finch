@@ -104,10 +104,10 @@ class RNNTextGen:
         )
         self.loss = tf.reduce_sum(losses)
         # gradient clipping
-        tvars = tf.trainable_variables()
-        grads, _ = tf.clip_by_global_norm(tf.gradients(self.loss, tvars), self.grad_clip)
         optimizer = tf.train.AdamOptimizer(self.lr)
-        self.train_op = optimizer.apply_gradients(zip(grads, tvars))
+        gradients = optimizer.compute_gradients(self.loss)
+        clipped_gradients = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gradients if grad is not None]
+        self.train_op = optimizer.apply_gradients(clipped_gradients)
     # end method add_backward_path
 
 
@@ -134,7 +134,7 @@ class RNNTextGen:
         text = self.text
         text = text.replace('\n', ' ')
         if self.useless_words is not None:
-            if sys.version[0] >= 3:
+            if int(sys.version[0]) >= 3:
                 table = str.maketrans({useless: ' ' for useless in self.useless_words})
                 text = text.translate(table)
             else:

@@ -6,7 +6,7 @@ import re
 
 class ConvRNNTextGen:
     def __init__(self, text, seq_len=50, embedding_dims=15,
-                 cell_size=128, n_layer=2,
+                 cell_size=512, n_layer=2,
                  n_filters=[25, 50, 64], kernel_sizes=[2, 3, 5],
                  sess=tf.Session()):
         """

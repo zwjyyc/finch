@@ -5,7 +5,7 @@ import re
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=128, n_layer=2, sess=tf.Session()):
+    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=512, n_layer=2, sess=tf.Session()):
         """
         Parameters:
         -----------

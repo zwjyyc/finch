@@ -2,12 +2,10 @@ import tensorflow as tf
 import math
 import numpy as np
 import re
-import sys
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=128, n_layer=2, grad_clip=5,
-                 useless_words=None, sess=tf.Session()):
+    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=128, n_layer=2, sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -32,8 +30,6 @@ class RNNTextGen:
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
         self.n_layer = n_layer
-        self.useless_words = useless_words
-        self.grad_clip = grad_clip
         self._cursor = None
         self.preprocessing()
         self.build_graph()
@@ -129,13 +125,6 @@ class RNNTextGen:
     def preprocessing(self):
         text = self.text
         text = text.replace('\n', ' ')
-        if self.useless_words is not None:
-            if int(sys.version[0]) >= 3:
-                table = str.maketrans({useless: ' ' for useless in self.useless_words})
-                text = text.translate(table)
-            else:
-                for useless_word in self.useless_words:
-                    text = text.replace(useless_word, '')
         text = re.sub('\s+', ' ', text).strip().lower()
         
         chars = set(text)

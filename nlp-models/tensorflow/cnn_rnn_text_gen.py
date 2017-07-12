@@ -2,14 +2,13 @@ import tensorflow as tf
 import math
 import numpy as np
 import re
-import sys
 
 
 class ConvRNNTextGen:
     def __init__(self, text, seq_len=50, embedding_dims=15,
-                 cell_size=512, n_layer=2, grad_clip=5,
+                 cell_size=128, n_layer=2,
                  n_filters=[25, 50, 64], kernel_sizes=[2, 3, 5],
-                 stopwords=None, useless_words=None, sess=tf.Session()):
+                 sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -34,9 +33,6 @@ class ConvRNNTextGen:
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
         self.n_layer = n_layer
-        self.useless_words = useless_words
-        self.stopwords = stopwords
-        self.grad_clip = grad_clip
 
         self.n_filters = n_filters
         self.kernel_sizes = kernel_sizes
@@ -202,26 +198,8 @@ class ConvRNNTextGen:
 
     def preprocessing(self):
         text = self.text
-        text = text.replace('\n', ' ')
-
-        if self.stopwords is not None:
-            if int(sys.version[0]) >= 3:
-                table = str.maketrans({stopword: ' '+stopword+' ' for stopword in self.stopwords})
-                text = text.translate(table)
-            else:
-                for stopword in self.stopwords:
-                    text = text.replace(stopword, ' '+stopword+' ')
-
-        if self.useless_words is not None:
-            if int(sys.version[0]) >= 3:
-                table = str.maketrans({useless: ' ' for useless in self.useless_words})
-                text = text.translate(table)
-            else:
-                for useless_word in self.useless_words:
-                    text = text.replace(useless_word, '')
-        
+        text = text.replace('\n', ' ')        
         text = re.sub('\s+', ' ', text).strip().lower()
-        print("Text Cleaned")
         
         chars = set(text)
         self.char2idx = {c: i+1 for i, c in enumerate(chars)}

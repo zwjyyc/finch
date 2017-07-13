@@ -29,8 +29,8 @@ class HighwayClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_fc(self.highway_units)
-        for n in range(self.n_highway):
-            self.add_highway(n)
+        for i in range(self.n_highway):
+            self.add_highway(i)
         self.add_output_layer()
         self.add_backward_path()
     # end method build_graph
@@ -51,20 +51,16 @@ class HighwayClassifier:
     # end add_fc
 
 
-    def add_highway(self, n, carry_bias=-1.0):
+    def add_highway(self, i, carry_bias=-1.0):
         size = self.highway_units
         X = self._cursor
 
-        W_T = self.call_W(str(n)+'_wt', [size,size])
-        b_T = self.call_b(str(n)+'_bt', [size])
-        W = self.call_W(str(n)+'_w', [size,size])
-        b = self.call_b(str(n)+'_b', [size])
-
-        T = tf.sigmoid(tf.matmul(X, W_T) + b_T, name="transform_gate")
-        H = tf.nn.relu(tf.matmul(X, W) + b, name="activation")
-        C = tf.subtract(1.0, T, name="carry_gate")
-
+        H = tf.layers.dense(X, size, tf.nn.relu, name='activation_'+str(i))
+        T = tf.layers.dense(X, size, tf.sigmoid, name='transform_gate_'+str(i),
+                            bias_initializer=tf.constant_initializer(carry_bias))
+        C = tf.subtract(1.0, T, name='carry_gate_'+str(i))
         Y = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # Y = (H * T) + (x * C)
+
         self._cursor = Y
     # end add_highway
 

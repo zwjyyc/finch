@@ -6,7 +6,7 @@ import sklearn
 
 class HighwayClassifier:
     def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(),
-                 embedding_dims=50, n_filters=50, kernel_size=3, padding='VALID'):
+                 embedding_dims=50, n_filters=50, kernel_size=3, padding='valid'):
         """
         Parameters:
         -----------
@@ -36,7 +36,6 @@ class HighwayClassifier:
         self.n_out = n_out
         self.sess = sess
         self._cursor = None
-        self._seq_len = seq_len
         self.build_graph()
     # end constructor
  
@@ -44,7 +43,7 @@ class HighwayClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding()
-        self.add_conv1d_highway('highway', filter_shape=[self.kernel_size, self.embedding_dims, self.n_filters])
+        self.add_conv1d_highway()
         self.add_global_pooling()
         self.add_output_layer()   
         self.add_backward_path()
@@ -68,32 +67,27 @@ class HighwayClassifier:
     # end method add_word_embedding_layer
 
 
-    def add_conv1d_highway(self, name, filter_shape, stride=1, carry_bias=-1.0):
+    def add_conv1d_highway(self, carry_bias=-1.0):
         X = self._cursor
 
-        W = self.call_W(name+'_W', filter_shape)
-        b = tf.get_variable(name+'_b', filter_shape[-1], tf.float32, tf.constant_initializer(carry_bias))
-        W_T = self.call_W(name+'_W_T', filter_shape)
-        b_T = self.call_b(name+'_b_T', [filter_shape[-1]])
-
-        H = tf.nn.relu(tf.nn.conv1d(X, W, stride, 'SAME') + b, name='activation')
-        T = tf.sigmoid(tf.nn.conv1d(X, W_T, stride, 'SAME') + b_T, name='transform_gate')
+        H = tf.layers.conv1d(X, self.n_filters, self.kernel_size, padding='same', activation=tf.nn.relu, name='activation')
+        T = tf.layers.conv1d(X, self.n_filters, self.kernel_size, padding='same', activation=tf.sigmoid,
+                             bias_initializer=tf.constant_initializer(carry_bias), name='transform_gate')
         C = tf.subtract(1.0, T, name="carry_gate")
-
         Y = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # Y = (H * T) + (X * C)
 
-        self._seq_len = int(self._seq_len / stride)
         self._cursor = Y
     # end method add_conv1d_highway
 
 
     def add_global_pooling(self):
-        k = self._seq_len
-        Y = tf.expand_dims(self._cursor, 1)
-        Y = tf.nn.avg_pool(Y, ksize=[1,1,k,1], strides=[1,1,k,1], padding=self.padding)
-        Y = tf.squeeze(Y)
-        self._cursor = tf.reshape(Y, [-1, self.n_filters])
-    # end method add_global_maxpool_layer
+        Y = tf.layers.average_pooling1d(inputs = self._cursor,
+                                        pool_size = self.seq_len,
+                                        strides = self.seq_len,
+                                        padding = self.padding)
+        Y = tf.reshape(Y, [-1, self.n_filters])
+        self._cursor = Y
+    # end method add_global_pooling
 
 
     def add_output_layer(self):

@@ -2,7 +2,7 @@
 
 Work in process ...
 
-This repository contains a wide range of my API models and tests written on machine learning topics based on modern technology (e.g. TensorFlow, PyTorch)
+This repository contains a wide range of my models and tests written on machine learning based on TensorFlow / PyTorch and other libraries.
 
 ## Installation
 ```

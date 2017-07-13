@@ -39,7 +39,7 @@ class DCGAN:
             Y = tf.layers.conv2d_transpose(Y, 1, [5, 5], strides=(2, 2), padding='SAME')
             return Y
         
-        self.G_out = tf.nn.tanh(deconv(self.G_in))
+        self.G_out = tf.tanh(deconv(self.G_in))
     # end method add_Generator
 
 
@@ -60,8 +60,8 @@ class DCGAN:
         
         self.G_logits = conv(self.G_out)
         self.X_logits = conv(self.X_in, reuse=True)
-        self.G_prob = tf.nn.sigmoid(self.G_logits)
-        self.X_prob = tf.nn.sigmoid(self.X_logits)
+        self.G_prob = tf.sigmoid(self.G_logits)
+        self.X_prob = tf.sigmoid(self.X_logits)
     # end method add_Discriminator
 
 

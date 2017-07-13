@@ -1,10 +1,10 @@
 import tensorflow as tf
 
 
-class Conv_GAN:
-    def __init__(self, G_size, batch_size):
+
+class DCGAN:
+    def __init__(self, G_size):
         self.G_size = G_size
-        self.batch_size = batch_size
         self.build_graph()
     # end constructor
 
@@ -20,41 +20,38 @@ class Conv_GAN:
 
 
     def add_input_layer(self):
-        self.G_in = tf.random_uniform([self.batch_size, self.G_size], minval=-1.0, maxval=1.0)
-        self.X_in = tf.placeholder(tf.float32, [self.batch_size, 28, 28, 1])
+        self.G_in = tf.placeholder(tf.float32, [None, self.G_size])
+        self.X_in = tf.placeholder(tf.float32, [None, 28, 28, 1])
         self.train_flag = tf.placeholder(tf.bool)
     # end method input_layer
 
 
     def add_Generator(self):
         def deconv(X):
-            # 100 -> (7, 7, 64) ->  (14, 14, 32) -> (28, 28, 1)
-            X = tf.layers.dense(X, 7 * 7 * 64)
-            X = tf.reshape(X, [-1, 7, 7, 64])
+            # 100 -> (7, 7, 128) ->  (14, 14, 64) -> (28, 28, 1)
+            X = tf.layers.dense(X, 7 * 7 * 128, lrelu)
+            X = tf.reshape(X, [-1, 7, 7, 128])
 
-            Y = tf.layers.conv2d_transpose(X, 32, [5, 5], strides=(2, 2), padding='SAME')
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag)
-            Y = tf.nn.relu(Y)
+            Y = tf.layers.conv2d_transpose(X, 64, [5, 5], strides=(2, 2), padding='SAME')
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, momentum=0.9)
+            Y = lrelu(Y)
 
             Y = tf.layers.conv2d_transpose(Y, 1, [5, 5], strides=(2, 2), padding='SAME')
             return Y
         
-        self.G_out = deconv(self.G_in)
+        self.G_out = tf.nn.tanh(deconv(self.G_in))
     # end method add_Generator
 
 
-    def add_Discriminator(self):
-        def lrelu(X, leak=0.2):
-            return tf.maximum(X, X * leak)
-        
+    def add_Discriminator(self):        
         def conv(X, reuse=False):
-            # (28, 28, 1) -> (14, 14, 32) -> (7, 7, 64) -> 1
-            Y = tf.layers.conv2d(X, 32, [5, 5], strides=(2, 2), padding='SAME', name='conv1', reuse=reuse)
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn1', reuse=reuse)
+            # (28, 28, 1) -> (14, 14, 64) -> (7, 7, 128) -> 1
+            Y = tf.layers.conv2d(X, 64, [5, 5], strides=(2, 2), padding='SAME', name='conv1', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn1', reuse=reuse, momentum=0.9)
             Y = lrelu(Y)
 
-            Y = tf.layers.conv2d(Y, 64, [5, 5], strides=(2, 2), padding='SAME', name='conv2', reuse=reuse)
-            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn2', reuse=reuse)
+            Y = tf.layers.conv2d(Y, 128, [5, 5], strides=(2, 2), padding='SAME', name='conv2', reuse=reuse)
+            Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn2', reuse=reuse, momentum=0.9)
             Y = lrelu(Y)
 
             flat = tf.reshape(Y, [-1, 7 * 7 * 64])
@@ -69,8 +66,8 @@ class Conv_GAN:
 
 
     def add_backward_path(self):
-        ones = tf.ones([self.batch_size, 1], tf.float32)
-        zeros = tf.zeros([self.batch_size, 1], tf.float32)
+        ones = tf.ones_like(self.G_logits)
+        zeros = tf.zeros_like(self.G_logits)
 
         self.G_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=ones, logits=self.G_logits))
         D_loss_X = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=ones, logits=self.X_logits))
@@ -90,3 +87,6 @@ class Conv_GAN:
         self.mse = tf.reduce_mean(tf.squared_difference(self.G_out, self.X_in))
     # end method add_backward_path
 # end class
+
+def lrelu(X, alpha=0.2):
+    return tf.maximum(X, X * alpha)

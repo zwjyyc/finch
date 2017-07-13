@@ -202,10 +202,7 @@ class ConvRNNTextGen:
 
 
     def preprocessing(self):
-        text = self.text
-        text = text.replace('\n', ' ')        
-        text = re.sub('\s+', ' ', text).strip().lower()
-        
+        text = self.text        
         chars = set(text)
         self.char2idx = {c: i+1 for i, c in enumerate(chars)}
         self.char2idx['<PAD>'] = 0
@@ -214,9 +211,9 @@ class ConvRNNTextGen:
         print("Vocabulary of Char:", self.vocab_char)
 
         words = set(text.split())
+        self.max_word_len = max([len(w) for w in words])
         self.word2idx = {w: i for i, w in enumerate(words)}
         self.idx2word = {i: w for i, w in enumerate(words)}
-        self.max_word_len = max([len(w) for w in words])
         self.vocab_word = len(self.word2idx)
         print("Vocabulary of Word:", self.vocab_word)
 

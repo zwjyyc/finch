@@ -123,10 +123,7 @@ class RNNTextGen:
 
 
     def preprocessing(self):
-        text = self.text
-        text = text.replace('\n', ' ')
-        text = re.sub('\s+', ' ', text).strip().lower()
-        
+        text = self.text 
         chars = set(text)
         self.char2idx = {c: i for i, c in enumerate(chars)}
         self.idx2char = {i: c for i, c in enumerate(chars)}

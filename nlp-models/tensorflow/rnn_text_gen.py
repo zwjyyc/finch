@@ -145,7 +145,7 @@ class RNNTextGen:
     # end method next_batch
 
 
-    def fit(self, prime_texts, text_iter_step=10, n_gen=500, n_epoch=20, batch_size=128,
+    def fit(self, start_word, text_iter_step=10, n_gen=500, n_epoch=20, batch_size=128,
             en_exp_decay=False):
         global_step = 0
         n_batch = (len(self.indexed) - self.seq_len*batch_size - 1) // text_iter_step
@@ -166,24 +166,23 @@ class RNNTextGen:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
                             % (epoch+1, n_epoch, local_step, n_batch, train_loss, lr))
                 if local_step % 100 == 0:
-                    for prime_text in prime_texts:
-                        print(self.infer(prime_text, n_gen)+'\n')
+                    print(self.infer(start_word, n_gen)+'\n')
                 global_step += 1
             
         return log
     # end method fit
 
 
-    def infer(self, prime_text, n_gen):
+    def infer(self, start_word, n_gen):
         # warming up
         next_state = self.sess.run(self.i_s)
-        char_list = list(prime_text)
+        char_list = list(start_word)
         for char in char_list[:-1]:
             x = np.atleast_2d(self.char2idx[char]) 
             next_state = self.sess.run(self.f_s, {self.x:x, self.i_s:next_state})
         # end warming up
 
-        out_sentence = 'IN: ' + prime_text + '\nOUT: ' + prime_text
+        out_sentence = 'IN: ' + start_word + '\nOUT: ' + start_word
         char = char_list[-1]
         for _ in range(n_gen):
             x = np.atleast_2d(self.char2idx[char])

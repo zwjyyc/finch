@@ -2,6 +2,8 @@ import tensorflow as tf
 import math
 import numpy as np
 import re
+import sys
+import os
 
 
 class ConvRNNTextGen:
@@ -40,6 +42,9 @@ class ConvRNNTextGen:
         self._cursor = None
         self.preprocessing()
         self.build_graph()
+
+        self.saver = tf.train.Saver()
+        self.model_path = './saved/'+sys.argv[0][:-3]
     # end constructor
 
 
@@ -239,13 +244,17 @@ class ConvRNNTextGen:
     # end method next_batch
 
 
-    def fit(self, prime_texts, text_iter_step=10, n_gen=100, n_epoch=20, batch_size=128,
+    def fit(self, start_word, text_iter_step=10, n_gen=80, n_epoch=20, batch_size=128,
             en_exp_decay=False):
         global_step = 0
         n_batch = (len(self.word_indexed) - self.seq_len*batch_size - 1) // text_iter_step
         total_steps = n_epoch * n_batch
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
-        
+        """
+        if os.path.isfile(self.model_path+'.meta'):
+            print("Loading trained model ...")
+            self.saver.restore(self.sess, self.model_path)
+        """
         for epoch in range(n_epoch):
             next_state = self.sess.run(self.init_state, {self.batch_size: batch_size})
             for local_step, (X_batch, Y_batch) in enumerate(self.next_batch(batch_size, text_iter_step)):
@@ -260,20 +269,24 @@ class ConvRNNTextGen:
                 print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f'
                         % (epoch+1, n_epoch, local_step, n_batch, train_loss))
                 if local_step % 10 == 0:
-                    for prime_text in prime_texts:
-                        print(self.infer(prime_text, n_gen)+'\n')
+                    print(self.infer(start_word, n_gen)+'\n')
+                    """
+                    save_path = self.saver.save(self.sess, self.model_path)
+                    print("Model saved in file: %s" % save_path)
+                    """
                 global_step += 1
             
         return log
     # end method fit
 
 
-    def infer(self, prime_text, n_gen):
+    def infer(self, start_word, n_gen):
         next_state = self.sess.run(self.i_s)
-        char_list = [self.char2idx[c] for c in list(prime_text)] + [0] * (self.max_word_len - len(list(prime_text)))
-        out_sentence = 'IN: ' + prime_text + '\nOUT: ' + prime_text
+        chars = list(start_word)
+        char_indices = [self.char2idx[c] for c in chars] + [0] * (self.max_word_len - len(chars))
+        out_sentence = 'IN: ' + start_word + '\nOUT: ' + start_word
         for _ in range(n_gen):
-            x = np.reshape(char_list, [1, 1, self.max_word_len])
+            x = np.reshape(char_indices, [1, 1, self.max_word_len])
             softmax_out, next_state = self.sess.run([self.y, self.f_s],
                                                     {self.x: x, self.i_s: next_state})
             probas = softmax_out[0].astype('float64')
@@ -281,8 +294,9 @@ class ConvRNNTextGen:
             actions = np.random.multinomial(1, probas, 1)
             idx = np.argmax(actions)
             word = self.idx2word[idx]
-            out_sentence = (out_sentence + word) if (word == ',' or word == '.') else (out_sentence + ' ' + word) 
-            char_list = [self.char2idx[c] for c in list(word)] + [0] * (self.max_word_len - len(list(word)))
+            out_sentence = (out_sentence + word) if (word == ',' or word == '.') else (out_sentence + ' ' + word)
+            chars = list(word) 
+            char_indices = [self.char2idx[c] for c in chars] + [0] * (self.max_word_len - len(chars))
         return out_sentence
     # end method infer
 # end class

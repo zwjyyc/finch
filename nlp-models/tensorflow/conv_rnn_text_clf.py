@@ -103,7 +103,7 @@ class ConvLSTMClassifier:
 
 
     def add_lstm_cells(self):
-        self.cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
+        self.cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer())
     # end method add_rnn_cells
 
 

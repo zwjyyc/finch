@@ -1,5 +1,5 @@
-import sys
 from seq2seq_birnn import Seq2Seq
+import sys
 if int(sys.version[0]) == 2:
     from io import open
 

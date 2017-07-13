@@ -61,7 +61,7 @@ class BiRNNTextClassifier:
 
 
     def lstm_cell(self):
-        return tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
+        return tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer())
     # end method lstm_cell
 
 

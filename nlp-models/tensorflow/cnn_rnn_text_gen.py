@@ -117,7 +117,7 @@ class ConvRNNTextGen:
 
     def add_lstm_cells(self):
         def cell():
-            cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer)
+            cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer())
             return cell
         self.cells = tf.nn.rnn_cell.MultiRNNCell([cell() for _ in range(self.n_layer)])
     # end method add_rnn_cells

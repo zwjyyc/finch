@@ -74,13 +74,11 @@ class DCGAN:
         D_loss_G = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=zeros, logits=self.G_logits))
         self.D_loss = D_loss_X + D_loss_G
 
-        G_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='G')
-        with tf.control_dependencies(G_update_ops):
+        with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='G')):
             self.G_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.G_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='G'))
 
-        D_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='D')
-        with tf.control_dependencies(D_update_ops):
+        with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='D')):
             self.D_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.D_loss,
                 var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='D'))
 

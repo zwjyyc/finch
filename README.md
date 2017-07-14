@@ -11,7 +11,7 @@ First get the project folder
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-Then any test file can be directly run
+Then run the test file that you are interested in
 ```
 python xxxx_test.py
 ```

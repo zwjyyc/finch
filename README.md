@@ -8,7 +8,7 @@ This repository contains a wide range of my models and tests written on machine 
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-Then feel free to run any test file
+Then run any test file as you want
 ```
 python xxxx_test.py
 ```

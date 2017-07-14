@@ -38,7 +38,7 @@ class DCGAN:
 
             Y = tf.layers.conv2d_transpose(Y, 1, [5, 5], strides=(2, 2), padding='SAME')
             return Y
-        
+        # end function deconv
         self.G_out = tf.tanh(deconv(self.G_in))
     # end method add_Generator
 
@@ -57,7 +57,7 @@ class DCGAN:
             flat = tf.reshape(Y, [-1, 7 * 7 * 64])
             output = tf.layers.dense(flat, 1, name='out', reuse=reuse)
             return output
-        
+        # end function conv
         self.G_logits = conv(self.G_out)
         self.X_logits = conv(self.X_in, reuse=True)
         self.G_prob = tf.sigmoid(self.G_logits)

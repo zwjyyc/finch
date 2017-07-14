@@ -12,6 +12,10 @@ Then run any test file as you want
 ```
 python xxxx_test.py
 ```
+The main dependence is:
+* TensorFlow 1.2
+* PyTorch 0.12
+* Sklearn
 ## Other Language Support
 [中文](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
 

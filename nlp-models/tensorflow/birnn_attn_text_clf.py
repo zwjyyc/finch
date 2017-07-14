@@ -73,9 +73,9 @@ class BiRNNTextClassifier:
 
 
     def add_attention(self):
-        vu = tf.layers.dense(tf.reshape(self._cursor, [-1, 2*self.cell_size]), 1)
-        exps = tf.reshape(tf.exp(vu), [-1, self.max_seq_len])
-        alphas = exps / tf.reduce_sum(exps, 1, keep_dims=True) # (128, seq_len) / (128, 1)
+        reshaped = tf.reshape(self._cursor, [-1, 2*self.cell_size])
+        reduced = tf.layers.dense(reshaped, 1)
+        alphas = self.softmax(tf.reshape(reduced, [self.batch_size, self.max_seq_len]))
         self._cursor = tf.reduce_sum(self._cursor * tf.expand_dims(alphas, 2), 1)
     # end method add_attention
 
@@ -86,7 +86,8 @@ class BiRNNTextClassifier:
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
+        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
+                                                                                  labels=self.Y))
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1), self.Y), tf.float32))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
@@ -208,4 +209,10 @@ class BiRNNTextClassifier:
     def list_avg(self, l):
         return sum(l) / len(l)
     # end method list_avg
+
+
+    def softmax(self, tensor):
+        exps = tf.exp(tensor)
+        return exps / tf.reduce_sum(exps, 1, keep_dims=True)
+    # end method softmax
 # end class

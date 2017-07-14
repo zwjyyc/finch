@@ -9,7 +9,7 @@ First get the project folder
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-Then run any test file as you want
+Then any test file can be run
 ```
 python xxxx_test.py
 ```

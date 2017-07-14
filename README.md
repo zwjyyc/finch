@@ -5,6 +5,7 @@ Work in process ...
 This repository contains a wide range of my models and tests written on machine learning topics based on TensorFlow / PyTorch and other libraries.
 
 ## Installation
+First get the project folder
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
@@ -13,9 +14,9 @@ Then run any test file as you want
 python xxxx_test.py
 ```
 The main dependence is:
-* TensorFlow 1.2
-* PyTorch 0.12
-* Sklearn
+* [TensorFlow 1.2](https://www.tensorflow.org/)
+* [PyTorch 0.12](http://pytorch.org/)
+* [Sklearn](http://scikit-learn.org/)
 ## Other Language Support
 [中文](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
 

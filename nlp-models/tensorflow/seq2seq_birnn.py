@@ -7,9 +7,10 @@ class Seq2Seq:
     def __init__(self, rnn_size, n_layer,
                  X_word2idx, encoder_embedding_dim,
                  Y_word2idx, decoder_embedding_dim,
-                 batch_size, sess=tf.Session()):
+                 batch_size, sess=tf.Session(), grad_clip=5.0):
         self.rnn_size = rnn_size
         self.n_layer = n_layer
+        self.grad_clip = grad_clip
         self.X_word2idx = X_word2idx
         self.encoder_embedding_dim = encoder_embedding_dim
         self.Y_word2idx = Y_word2idx
@@ -82,7 +83,7 @@ class Seq2Seq:
         decoder_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(2 * self.n_layer)])
         Y_vocab_size = len(self.Y_word2idx)
         decoder_embedding = tf.Variable(tf.random_uniform([Y_vocab_size, self.decoder_embedding_dim], -1.0, 1.0))
-        output_layer = Dense(Y_vocab_size, kernel_initializer=tf.truncated_normal_initializer(stddev=0.1))
+        output_layer = Dense(Y_vocab_size, use_bias=False)
         self.max_Y_seq_len = tf.reduce_max(self.Y_seq_len)
 
         training_helper = tf.contrib.seq2seq.TrainingHelper(
@@ -122,11 +123,11 @@ class Seq2Seq:
         self.loss = tf.contrib.seq2seq.sequence_loss(logits = self.training_logits,
                                                      targets = self.Y,
                                                      weights = masks)
-        
-        optimizer = tf.train.AdamOptimizer()
-        gradients = optimizer.compute_gradients(self.loss)
-        clipped_gradients = [(tf.clip_by_value(grad, -5.0, 5.0), var) for grad, var in gradients if grad is not None]
-        self.train_op = optimizer.apply_gradients(clipped_gradients)
+        # gradient clipping
+        params = tf.trainable_variables()
+        gradients = tf.gradients(self.loss, params)
+        clipped_gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)
+        self.train_op = tf.train.AdamOptimizer().apply_gradients(zip(clipped_gradients, params))
     # end method add_backward_path
 
 

@@ -5,7 +5,8 @@ import re
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=512, n_layer=2, sess=tf.Session()):
+    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=512, n_layer=2, grad_clip=5., 
+                 sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -30,6 +31,7 @@ class RNNTextGen:
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
         self.n_layer = n_layer
+        self.grad_clip = grad_clip
         self._cursor = None
         self.preprocessing()
         self.build_graph()
@@ -96,10 +98,10 @@ class RNNTextGen:
         )
         self.loss = tf.reduce_sum(losses)
         # gradient clipping
-        optimizer = tf.train.AdamOptimizer(self.lr)
-        gradients = optimizer.compute_gradients(self.loss)
-        clipped_gradients = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gradients if grad is not None]
-        self.train_op = optimizer.apply_gradients(clipped_gradients)
+        params = tf.trainable_variables()
+        gradients = tf.gradients(self.loss, params)
+        clipped_gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)
+        self.train_op = tf.train.AdamOptimizer(self.lr).apply_gradients(zip(clipped_gradients, params))
     # end method add_backward_path
 
 

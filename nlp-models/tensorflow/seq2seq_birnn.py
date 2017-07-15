@@ -84,7 +84,7 @@ class Seq2Seq:
         
         Y_vocab_size = len(self.Y_word2idx)
         decoder_embedding = tf.Variable(tf.random_uniform([Y_vocab_size, self.decoder_embedding_dim], -1.0, 1.0))
-        output_layer = Dense(Y_vocab_size, use_bias=False)
+        output_layer = Dense(Y_vocab_size)
 
         training_helper = tf.contrib.seq2seq.TrainingHelper(
             inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),

@@ -193,8 +193,7 @@ class Seq2Seq:
         out_indices = self.sess.run(self.predicting_logits, {
             self.X: [input_indices] * self.batch_size,
             self.X_seq_len: [len(input_indices)] * self.batch_size,
-            self.Y_seq_len: [len(input_indices)] * self.batch_size
-        })[0]
+            self.Y_seq_len: [len(input_indices)] * self.batch_size})[0]
         
         print('\nSource')
         print('Word: {}'.format([i for i in input_indices]))

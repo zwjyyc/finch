@@ -45,9 +45,8 @@ class MLPClassifier:
 
     def add_forward_path(self):
         new_layer = self._cursor
-        forward = [self.n_in] + self.hidden_unit_list
-        for i in range(1, len(forward)):
-            new_layer = self.fc(new_layer, forward[i])
+        for hidden_unit in self.hidden_unit_list:
+            new_layer = self.fc(new_layer, hidden_unit)
         self._cursor = new_layer
     # end method add_forward_path
 

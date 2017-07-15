@@ -8,7 +8,7 @@ if __name__ == '__main__':
     X_train = (X_train/255.0).reshape(-1, 28*28)
     X_test = (X_test/255.0).reshape(-1, 28*28)
 
-    clf = MLPClassifier(28*28, 10, [100]*3)
+    clf = MLPClassifier(28*28, 10, [100, 200, 100])
     log = clf.fit(X_train, y_train, val_data=(X_test, y_test))
     pred = clf.predict(X_test)
 

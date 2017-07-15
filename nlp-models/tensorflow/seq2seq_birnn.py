@@ -81,10 +81,10 @@ class Seq2Seq:
 
     def add_decoder_layer(self):
         decoder_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(2 * self.n_layer)])
+        
         Y_vocab_size = len(self.Y_word2idx)
         decoder_embedding = tf.Variable(tf.random_uniform([Y_vocab_size, self.decoder_embedding_dim], -1.0, 1.0))
         output_layer = Dense(Y_vocab_size, use_bias=False)
-        self.max_Y_seq_len = tf.reduce_max(self.Y_seq_len)
 
         training_helper = tf.contrib.seq2seq.TrainingHelper(
             inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
@@ -98,7 +98,7 @@ class Seq2Seq:
         training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
             decoder = training_decoder,
             impute_finished = True,
-            maximum_iterations = self.max_Y_seq_len)
+            maximum_iterations = tf.reduce_max(self.Y_seq_len))
         self.training_logits = training_decoder_output.rnn_output
         
         predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
@@ -113,13 +113,13 @@ class Seq2Seq:
         predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
             decoder = predicting_decoder,
             impute_finished = True,
-            maximum_iterations = self.max_Y_seq_len)
+            maximum_iterations = 2 * tf.reduce_max(self.X_seq_len))
         self.predicting_logits = predicting_decoder_output.sample_id
     # end method add_decoder_layer
 
 
     def add_backward_path(self):
-        masks = tf.sequence_mask(self.Y_seq_len, self.max_Y_seq_len, dtype=tf.float32)
+        masks = tf.sequence_mask(self.Y_seq_len, tf.reduce_max(self.Y_seq_len), dtype=tf.float32)
         self.loss = tf.contrib.seq2seq.sequence_loss(logits = self.training_logits,
                                                      targets = self.Y,
                                                      weights = masks)
@@ -132,11 +132,6 @@ class Seq2Seq:
 
 
     def pad_sentence_batch(self, sentence_batch, pad_int):
-        """
-        max_sentence_len = max([len(sentence) for sentence in sentence_batch])
-        return ([sentence + [pad_int] * (max_sentence_len - len(sentence)) for sentence in sentence_batch],
-                [max_sentence_len] * self.batch_size)
-        """
         padded_seqs = []
         seq_lens = []
         max_sentence_len = max([len(sentence) for sentence in sentence_batch])
@@ -192,8 +187,7 @@ class Seq2Seq:
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
         out_indices = self.sess.run(self.predicting_logits, {
             self.X: [input_indices] * self.batch_size,
-            self.X_seq_len: [len(input_indices)] * self.batch_size,
-            self.Y_seq_len: [len(input_indices)] * self.batch_size})[0]
+            self.X_seq_len: [len(input_indices)] * self.batch_size})[0]
         
         print('\nSource')
         print('Word: {}'.format([i for i in input_indices]))

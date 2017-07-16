@@ -16,8 +16,8 @@ class ConvAE:
 
     def build_graph(self):
         self.add_input_layer()
-        self.add_conv('tied_layer_1', [self.kernel_size[0], self.kernel_size[1], self.img_ch, 32])
-        self.add_deconv('tied_layer_1', [self.batch_size, self.img_size[0], self.img_size[1], self.img_ch])
+        self.add_conv('tied_layer_1', 32)
+        self.add_deconv('tied_layer_1')
         self.add_backward_path()
     # end method build_graph
 
@@ -29,21 +29,23 @@ class ConvAE:
     # end method add_input_layer
 
 
-    def add_conv(self, name, filter_shape, strides=1):
+    def add_conv(self, name, n_filter, strides=1):
         with tf.variable_scope('weights_tied'):
-            W = self.call_W(name+'_W', filter_shape)
+            W = self.call_W(name+'_W',[self.kernel_size[0], self.kernel_size[1], self.img_ch, n_filter])
         Y = tf.nn.conv2d(self._cursor, W, strides=[1,strides,strides,1], padding='SAME')
-        Y = tf.nn.bias_add(Y, self.call_b(name+'_conv_b', [filter_shape[-1]]))
+        Y = tf.nn.bias_add(Y, self.call_b(name+'_conv_b', [n_filter]))
         Y = tf.nn.relu(Y)
         self._cursor = Y
     # end method add_conv
 
 
-    def add_deconv(self, name, output_shape, strides=1):
+    def add_deconv(self, name, strides=1):
         with tf.variable_scope('weights_tied', reuse=True):
             W = tf.get_variable(name+'_W')
-        Y = tf.nn.conv2d_transpose(self._cursor, W, output_shape, [1,strides,strides,1], 'SAME')
-        Y = tf.nn.bias_add(Y, self.call_b(name+'_deconv_b', [output_shape[-1]]))
+        Y = tf.nn.conv2d_transpose(self._cursor, W,
+                                  [self.batch_size, self.img_size[0], self.img_size[1], self.img_ch],
+                                  [1,strides,strides,1], 'SAME')
+        Y = tf.nn.bias_add(Y, self.call_b(name+'_deconv_b', [self.img_ch]))
         self.decoder_op = Y
     # end method add_deconv
 
@@ -72,11 +74,9 @@ class ConvAE:
             for local_step, X_batch in enumerate(self.gen_batch(X_train, batch_size)):
                 _, loss = self.sess.run([self.train_op, self.loss], {self.X:X_batch,
                                                                      self.batch_size:len(X_batch)})
-                if global_step == 0:
-                    print("Initial loss: ", loss)
-                if (local_step + 1) % 100 == 0:
+                if local_step % 100 == 0:
                     print ("Epoch %d/%d | Step %d/%d | train loss: %.4f"
-                           %(epoch+1, n_epoch, local_step+1, int(len(X_train)/batch_size), loss))
+                           %(epoch+1, n_epoch, local_step, int(len(X_train)/batch_size), loss))
                 global_step += 1
             
             val_loss_list = []

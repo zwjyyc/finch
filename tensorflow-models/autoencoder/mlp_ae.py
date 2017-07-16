@@ -29,36 +29,18 @@ class Autoencoder:
 
     def add_encoders(self):
         new_layer = self.X
-        forward = [self.n_in] + self.encoder_units
-        names = ['layer%s'%i for i in range(len(forward)-1)]
-        for i in range(len(names)-1):
-            new_layer = self.fc(names[i], new_layer, forward[i], forward[i+1], 'encoder')
+        names = ['layer%s' % i for i in range(len(self.encoder_units))]
+        for i, unit in enumerate(self.encoder_units[:-1]):
+            new_layer = self.fc(names[i], new_layer, unit, 'encoder')
             new_layer = tf.nn.relu(new_layer)
-        self.encoder_op = self.fc(names[-1], new_layer, forward[-2], forward[-1], 'encoder')
+        self.encoder_op = self.fc(names[-1], new_layer, self.encoder_units[-1], 'encoder')
     # end method add_encoders
 
 
-    def add_decoders(self):
-        new_layer = self.encoder_op
-        forward = self.decoder_units + [self.n_in]
-        names = list(reversed(['layer%s'%i for i in range(len(forward)-1)]))
-        for i in range(len(names)-1):
-            new_layer = self.fc(names[i], new_layer, forward[i], forward[i+1], 'decoder')
-            new_layer = tf.nn.relu(new_layer)
-        self.decoder_op = self.fc(names[-1], new_layer, forward[-2], forward[-1], 'decoder')
-    # end method add_decoders
-
-
-    def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.squared_difference(self.X, self.decoder_op))
-        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
-    # end method add_backward_path
-
-
-    def fc(self, name, X, fan_in, fan_out, mode):
+    def fc(self, name, X, fan_out, mode):
         if mode == 'encoder':
             with tf.variable_scope('weights_tied'):
-                W = self.call_W(name+'_w', [fan_in,fan_out])
+                W = self.call_W(name+'_w', [X.shape[1], fan_out])
             b = self.call_b(name+'_'+mode+'_b', shape=[fan_out])
         if mode == 'decoder':
             with tf.variable_scope('weights_tied', reuse=True):
@@ -67,6 +49,23 @@ class Autoencoder:
         Y = tf.nn.bias_add(tf.matmul(X, W), b)
         return Y
     # end method fc
+
+
+    def add_decoders(self):
+        new_layer = self.encoder_op
+        forward = self.decoder_units + [self.n_in]
+        names = list(reversed(['layer%s' % i for i in range(len(self.decoder_units))]))
+        for i, unit in enumerate(forward[1:-1]):
+            new_layer = self.fc(names[i], new_layer, unit, 'decoder')
+            new_layer = tf.nn.relu(new_layer)
+        self.decoder_op = self.fc(names[-1], new_layer, forward[-1], 'decoder')
+    # end method add_decoders
+
+
+    def add_backward_path(self):
+        self.loss = tf.reduce_mean(tf.squared_difference(self.X, self.decoder_op))
+        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
+    # end method add_backward_path
 
 
     def call_W(self, name, shape):

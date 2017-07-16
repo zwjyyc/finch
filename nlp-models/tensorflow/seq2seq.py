@@ -62,8 +62,7 @@ class Seq2Seq:
             cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]), 
             inputs = tf.contrib.layers.embed_sequence(self.X, len(self.X_word2idx), self.encoder_embedding_dim),
             sequence_length = self.X_seq_len,
-            dtype = tf.float32,
-        )
+            dtype = tf.float32)
     # end method add_encoder_layer
     
 

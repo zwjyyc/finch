@@ -63,14 +63,16 @@ class Seq2Seq:
             cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]), 
             inputs = tf.contrib.layers.embed_sequence(self.X, len(self.X_word2idx), self.encoder_embedding_dim),
             sequence_length = self.X_seq_len,
-            dtype = tf.float32,
-        )
+            dtype = tf.float32)
     # end method add_encoder_layer
     
 
     def add_attention(self):
         self.attention_mechanism = tf.contrib.seq2seq.LuongAttention(
-            self.rnn_size, self.encoder_out, memory_sequence_length=self.X_seq_len)
+            num_units = self.rnn_size, 
+            memory = self.encoder_out,
+            memory_sequence_length = self.X_seq_len)
+    # end method add_attention
 
 
     def processed_decoder_input(self):
@@ -83,7 +85,9 @@ class Seq2Seq:
     def prepare_decoder_components(self):
         decoder_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)])
         self.decoder_cell = tf.contrib.seq2seq.AttentionWrapper(
-            decoder_cell, self.attention_mechanism, attention_layer_size=self.rnn_size)
+            cell = decoder_cell,
+            attention_mechanism = self.attention_mechanism,
+            attention_layer_size = self.rnn_size)
         Y_vocab_size = len(self.Y_word2idx)
         self.decoder_embedding = tf.get_variable('decoder_embedding', [Y_vocab_size, self.decoder_embedding_dim],
                                                  tf.float32, tf.random_uniform_initializer(-1.0, 1.0))

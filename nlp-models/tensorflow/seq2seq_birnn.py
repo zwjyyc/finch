@@ -198,10 +198,10 @@ class Seq2Seq:
         
         print('\nSource')
         print('Word: {}'.format([i for i in input_indices]))
-        print('Input Words: {}'.format(' '.join([X_idx2word[i] for i in input_indices])))
+        print('IN: {}'.format(' '.join([X_idx2word[i] for i in input_indices])))
         
         print('\nTarget')
         print('Word: {}'.format([i for i in out_indices]))
-        print('Response Words: {}'.format(' '.join([Y_idx2word[i] for i in out_indices])))
+        print('OUT: {}'.format(' '.join([Y_idx2word[i] for i in out_indices])))
     # end method infer
 # end class

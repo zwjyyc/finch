@@ -1,4 +1,5 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
+欢迎写邮件到我的邮箱（zhedongzheng@outlook.com），不管是任何问题，看到就回复。
 
 ## 安装
 首先下载本目录，可以在命令行用下面的 git 命令，也可以在网页上用右上角的 download zip

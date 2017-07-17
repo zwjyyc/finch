@@ -19,7 +19,7 @@ The main dependence is:
 ## Other Language Support
 [中文](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
 ## Style of My Code
-Other deep learning projects on GitHub usually have several scripts such as ```train.py```, ```model.py```, ```main.py``` and so on. However, personally I'd like to build a model with ```fit()``` and ```predict()``` interfaces (```Sklearn``` API Style), and write separate test files for different data. All the code below follow this kind of convention.
+Other deep learning projects on GitHub usually have several scripts such as ```train.py```, ```model.py```, ```main.py``` and so on. However, personally I'd like to put all the functionalities into a model with ```fit()``` and ```predict()``` interfaces (```Sklearn``` API Style), and write separate test files for different incoming data. All the code below follow this kind of convention.
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

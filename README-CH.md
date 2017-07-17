@@ -16,6 +16,9 @@ python xxxx_test.py
 * [PyTorch 0.12](http://pytorch.org/)
 * [Sklearn](http://scikit-learn.org/)
 
+## 编码风格
+其他 GitHub 上的深度学习项目通常会有若干个脚本比如 ```train.py```, ```model.py```, ```main.py``` 等等. 然而, 我个人喜欢把所有的功能融合成一个模型带有```fit()```和```predict()```接口(```Sklearn``` API 风格)integrate all the functionalities into a single model with ```fit()``` and ```predict()``` interfaces (```Sklearn``` API Style), and then write separate test files for different incoming data. All the code below follow this kind of convention.
+
 ## 目录
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)
     * [线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#线性模型)

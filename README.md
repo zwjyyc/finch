@@ -1,6 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-Work in process and I promise there will be more models in the future ...
+Work in process, and there will be more models in the future ...
 
 ## Installation
 First get the project folder

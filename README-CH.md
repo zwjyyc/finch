@@ -18,7 +18,7 @@
     * [语言模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#语言模型)
     * [文本分类](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本分类)
     * [文本生成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本生成)
-    * [序列标注](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列标注)
+    * [序列标注](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列标注)
     * [机器翻译](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器翻译)
 * [计算机视觉](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#计算机视觉)
     * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#opencv)

@@ -4,8 +4,6 @@ Work in process and I promise there will be more models in the future ...
 
 This repository contains a wide range of my models and tests written on machine learning topics based on TensorFlow / PyTorch and other libraries.
 
-You are more than welcome to write email to me (zhedongzheng@outlook.com) in English / Chinese for questions and suggestions
-
 ## Installation
 First get the project folder
 ```

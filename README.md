@@ -18,7 +18,8 @@ The main dependence is:
 * [Sklearn](http://scikit-learn.org/)
 ## Other Language Support
 [中文](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
-
+## Style of My Code
+Other deep learning repos usually have several scripts such as ```train.py```, ```model.py```, ```main.py``` and so on. However, personally I'd like to put all 
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

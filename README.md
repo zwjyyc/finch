@@ -1,7 +1,7 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
 Work in process, and there will be more models in the future ...
-
+You are more than welcome to send an email to me (zhedongzheng@outlook.com) in English / Chinese for any suggestion or question, I will try my best to answer as soon as I see it.
 ## Installation
 First get the project folder
 ```

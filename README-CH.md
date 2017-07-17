@@ -14,7 +14,7 @@ python xxxx_test.py
 * [PyTorch 0.12](http://pytorch.org/)
 * [Sklearn](http://scikit-learn.org/)
 
-## Contents
+## 目录
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)
     * [线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#线性模型)
     * [支持向量机](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#支持向量机)

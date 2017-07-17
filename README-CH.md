@@ -1,7 +1,7 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
 ## 安装
-首先下载本目录，可以用下面的git命令，也可以用右上角的 download zip
+首先下载本目录，可以在命令行用下面的 git 命令，也可以在网页上用右上角的 download zip
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```

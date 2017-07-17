@@ -1,5 +1,19 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
+## 安装
+首先下载本目录，可以用下面的git命令，也可以用右上角的 download zip
+```
+git clone https://github.com/zhedongzheng/finch.git
+```
+然后可以直接运行任何测试脚本
+```
+python xxxx_test.py
+```
+主要依赖于下面三个库：
+* [TensorFlow 1.2](https://www.tensorflow.org/)
+* [PyTorch 0.12](http://pytorch.org/)
+* [Sklearn](http://scikit-learn.org/)
+
 ## Contents
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)
     * [线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#线性模型)

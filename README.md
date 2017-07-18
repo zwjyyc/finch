@@ -19,7 +19,7 @@ The main dependence is:
 ## Other Language Support
 [中文](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
 ## Style of My Code
-Most deep learning projects on GitHub usually have several scripts such as ```train.py```, ```model.py```, ```main.py``` and ... However, personally I prefer integrating all the functionalities into a single model with ```fit()``` and ```predict()``` interfaces (scikit-learn API style), and then write separate test files for different incoming data. All the code below follow this style.
+Most deep learning projects on GitHub usually have several scripts such as ```train.py```, ```model.py```, ```main.py``` and so on. However, personally I prefer integrating all the functionalities into a single model with ```fit()``` and ```predict()``` interfaces (scikit-learn API style), and then write separate test files for different incoming data. All the code below follow this style.
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

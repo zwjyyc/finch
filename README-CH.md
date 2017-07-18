@@ -14,7 +14,7 @@ python xxxx_test.py
 主要依赖于下面三个库：
 * [TensorFlow 1.2](https://www.tensorflow.org/)
 * [PyTorch 0.12](http://pytorch.org/)
-* [Sklearn](http://scikit-learn.org/)
+* [scikit-learn](http://scikit-learn.org/)
 
 ## 编码风格
 GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```train.py```, ```model.py```, ```main.py``` 等等。然而，我个人喜欢把所有的功能融合成一个带有 ```fit()``` 和 ```predict()``` 接口的模型（scikit-learn API 风格），然后对于不同的数据集编写不同的测试文件。下面所有代码都遵从这种风格。

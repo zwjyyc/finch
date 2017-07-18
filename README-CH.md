@@ -102,13 +102,13 @@ GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```tra
 * Python &nbsp; | &nbsp; [词语索引](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
 #### 语言模型
-* Sklearn &nbsp; | &nbsp; 隐含语义分析 [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; | &nbsp; [书名-词云测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
+* Sklearn &nbsp; | &nbsp; 隐含语义分析[模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; | &nbsp; [书名-词云测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
 
-* Python &nbsp; | &nbsp; 三元词袋 [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram.py) &nbsp; | &nbsp; [Amazon客户评价-换词测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram_test.py) &nbsp; | &nbsp;
+* Python &nbsp; | &nbsp; 三元词袋[模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram.py) &nbsp; | &nbsp; [Amazon客户评价-换词测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram_test.py) &nbsp; | &nbsp;
 
 * Sklearn &nbsp; | &nbsp; TF-IDF &nbsp; &nbsp; [Brown文集-词语相似度测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf_brown_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; 词语向量化 Skip-Gram [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/word2vec_skipgram.py) &nbsp; &nbsp; [Text8文集-词语相似度测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/word2vec_skipgram_text8_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; 词语向量化 Skip-Gram[模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/word2vec_skipgram.py) &nbsp; &nbsp; [Text8文集-词语相似度测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/word2vec_skipgram_text8_test.py) &nbsp; | &nbsp;
 
 #### 文本分类
 * Sklearn &nbsp; | &nbsp; TF-IDF + 逻辑回归 &nbsp; &nbsp; [IMDB数据集测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf_imdb_test.py) &nbsp; | &nbsp;

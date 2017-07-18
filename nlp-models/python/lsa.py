@@ -14,6 +14,7 @@ class LSA:
         self.documents = []
         self.token_idx = 0
         self.X = None
+    # end constructor
 
 
     def fit(self, documents):
@@ -31,6 +32,7 @@ class LSA:
         self.X = np.zeros((len(self.token2idx), len(self.documents))) # tokens x documents
         for i, tokens in enumerate(self.documents):
             self.X[:, i] = self.tokens2vec(tokens)
+    # end method fit
 
     
     def plot(self):
@@ -40,6 +42,7 @@ class LSA:
         for i in range(len(self.idx2token)):
             plt.annotate(s=self.idx2token[i], xy=(X_2d[i, 0], X_2d[i, 1]))
         plt.show()
+    # end method plot
 
 
     def tokenize(self, string):
@@ -50,6 +53,7 @@ class LSA:
         tokens = [token for token in tokens if token not in self.stopwords] # remove stopwords
         tokens = [token for token in tokens if not any(c.isdigit() for c in token)] # remove any token that contains number
         return tokens
+    # end method tokenize
 
 
     def tokens2vec(self, tokens):
@@ -58,3 +62,4 @@ class LSA:
             idx = self.token2idx[token]
             vec[idx] = 1
         return vec
+    # end method tokens2vec

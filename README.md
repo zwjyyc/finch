@@ -103,9 +103,9 @@ Most deep learning projects on GitHub usually have several scripts such as ```tr
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
 #### Language Model
-* Sklearn &nbsp; | &nbsp; LSA &nbsp; &nbsp; [Book Titles Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
+* Sklearn &nbsp; | &nbsp; LSA &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; &nbsp; [Book Titles Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
 
-* Python &nbsp; | &nbsp; Tri-Gram &nbsp; &nbsp; [Amazon Review Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram_test.py) &nbsp; | &nbsp;
+* Python &nbsp; | &nbsp; Tri-Gram &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram.py) &nbsp; &nbsp; [Amazon Review Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram_test.py) &nbsp; | &nbsp;
 
 * Sklearn &nbsp; | &nbsp; TF-IDF &nbsp; &nbsp; [Brown Corpus Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf_brown_test.py) &nbsp; | &nbsp;
 

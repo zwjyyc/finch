@@ -45,7 +45,6 @@ class BiRNNTextClassifier:
         self.X = tf.placeholder(tf.int32, [None, self.max_seq_len])
         self.Y = tf.placeholder(tf.int64, [None])
         self.X_seq_lens = tf.placeholder(tf.int32, [None])
-        self.batch_size = tf.placeholder(tf.int32, [])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
         self._cursor = self.X
@@ -75,7 +74,7 @@ class BiRNNTextClassifier:
     def add_attention(self):
         reshaped = tf.reshape(self._cursor, [-1, 2*self.cell_size])
         reduced = tf.layers.dense(reshaped, 1)
-        alphas = self.softmax(tf.reshape(reduced, [self.batch_size, self.max_seq_len]))
+        alphas = self.softmax(tf.reshape(reduced, [-1, self.max_seq_len]))
         self._cursor = tf.reduce_sum(self._cursor * tf.expand_dims(alphas, 2), 1)
     # end method add_attention
 
@@ -113,7 +112,6 @@ class BiRNNTextClassifier:
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                              {self.X :X_batch, self.Y: Y_batch,
                                               self.X_seq_lens: X_batch_lens,
-                                              self.batch_size: len(X_batch),
                                               self.lr: lr,
                                               self.keep_prob: keep_prob})
                 global_step += 1
@@ -128,7 +126,6 @@ class BiRNNTextClassifier:
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
                                                   {self.X: X_test_batch, self.Y: Y_test_batch,
                                                    self.X_seq_lens: X_test_batch_lens,
-                                                   self.batch_size: len(X_test_batch),
                                                    self.keep_prob: 1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
@@ -160,7 +157,6 @@ class BiRNNTextClassifier:
             batch_pred = self.sess.run(self.logits,
                                       {self.X: X_test_batch,
                                        self.X_seq_lens: X_test_batch_lens,
-                                       self.batch_size: len(X_test_batch),
                                        self.keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.argmax(np.vstack(batch_pred_list), 1)

@@ -29,7 +29,7 @@ class LSA:
                     self.token_idx += 1
         assert len(self.idx2token) == len(self.token2idx), "The length of idx2token is unequal to token2idx"
 
-        self.X = np.zeros((len(self.token2idx), len(self.documents))) # tokens x documents
+        self.X = np.zeros((len(self.token2idx), len(self.documents))) # Term-Document Matrix
         for i, tokens in enumerate(self.documents):
             self.X[:, i] = self.tokens2vec(tokens)
     # end method fit

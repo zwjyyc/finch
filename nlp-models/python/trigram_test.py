@@ -1,56 +1,34 @@
-# amazon review spinning
-import random
-import numpy as np
+from __future__ import print_function
 from bs4 import BeautifulSoup
 from nltk.tokenize import word_tokenize
+from trigram import Trigram
+import random
 
 
-trigram = {}
-trigram2proba = {}
 replace_rate = 0.2
 
 
-def predict(token2proba):
-    probas = list(token2proba.values())
-    tokens = token2proba.keys()
-    idx = np.argmax(np.random.multinomial(1, probas, size=1)[0])
-    return tokens[idx]
-
-
-
 if __name__ == '__main__':
-    pos_reviews = BeautifulSoup(open('temp/positive.review').read(), 'lxml').findAll('review_text')
+    reviews = BeautifulSoup(open('temp/positive.review').read(), 'lxml').findAll('review_text')
+    documents = [review.text for review in reviews]
+    print("Data Loaded")
 
-    for review in pos_reviews:
-        string = review.text.lower()
-        tokens = word_tokenize(string)
-        for i in range(len(tokens) - 2):
-            key = (tokens[i], tokens[i+2])
-            if key not in trigram:
-                trigram[key] = []
-            trigram[key].append(tokens[i+1])
+    model = Trigram()
+    model.fit(documents)
 
-    for key, words in trigram.iteritems():
-        if len(set(words)) > 1:
-            word2proba = {}
-            for word in words:
-                if word not in word2proba:
-                    word2proba[word] = 1
-                word2proba[word] += 1
-            total_count = sum(list(word2proba.values()))
-            for word, count in word2proba.iteritems():
-                word2proba[word] = float(count) / total_count
-            trigram2proba[key] = word2proba
+    while True:
+        review = random.choice(documents)
+        if len(review.split()) < 30:
+            break
+    string = review.lower().strip()
+    print(string, end='\n\n')
 
-    review = random.choice(pos_reviews)
-    string = review.text.lower().strip()
-    print(string)
     tokens = word_tokenize(string)
     for i in range(len(tokens) - 2):
         if random.random() < replace_rate:
             key = (tokens[i], tokens[i+2])
-            if key in trigram2proba:
-                next_word = predict(trigram2proba[key])
+            if key in model.trigram2proba:
+                next_word = model.predict(key)
                 tokens[i+1] = next_word
-    print()
     print(' '.join(tokens).replace(' .', '.').replace(" '", "'").replace(' ,', ',').replace(' $', '$').replace(' !', '!'))
+    

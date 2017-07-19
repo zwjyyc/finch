@@ -1,15 +1,14 @@
-"""
-like a bird silent in flight
-he read in one self station
-has been to
-than lifes victories of doubt
-"""
+import sys
 import string
-import numpy as np
+from io import open
 
 
 def remove_punct(s):
-    return s.translate(None, string.punctuation)
+    if int(sys.version[0]) == 2:
+        return s.translate(None, string.punctuation)
+    else:
+        table = str.maketrans({p: '' for p in string.punctuation})
+        return s.translate(table)
 # end function remove_punct
 
 
@@ -31,20 +30,12 @@ def list2proba_dict(l):
 # end function list2proba_dict
 
 
-def sample_word(d):
-    probas = list(d.values())
-    tokens = d.keys()
-    idx = np.argmax(np.random.multinomial(1, probas, size=1)[0])
-    return tokens[idx]
-# end function sample_word
-
-
-def preprocess(f_path):
+def build_model(f_path):
     first_words = {}
     second_words = {}
     transitions = {}
 
-    for line in open(f_path):
+    for line in open(f_path, encoding='utf-8'):
         tokens = remove_punct(line.rstrip().lower()).split()
         
         for i, token in enumerate(tokens):
@@ -69,34 +60,4 @@ def preprocess(f_path):
         transitions[k] = list2proba_dict(v)
 
     return first_words, second_words, transitions
-# end function preprocess
-
-
-def generate(first_words, second_words, transitions):
-    for _ in range(4):
-        sentence = []
-
-        first_word = sample_word(first_words)
-        sentence.append(first_word)
-
-        second_word = sample_word(second_words[first_word])
-        sentence.append(second_word)
-
-        while True:
-            next_word = sample_word(transitions[(first_word, second_word)])
-            if next_word == 'END':
-                break
-            sentence.append(next_word)
-            first_word = second_word
-            second_word = next_word
-
-        print(' '.join(sentence))
-# end function generate
-
-
-def main():
-    generate(*preprocess('./temp/robert_frost.txt'))
-
-
-if __name__ == '__main__':
-    main()
+# end function build_model

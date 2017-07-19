@@ -103,7 +103,7 @@ Most deep learning projects on GitHub usually have several scripts such as ```tr
 * Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
 #### Language Model
-* Sklearn &nbsp; | &nbsp; LSA &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; &nbsp; [Book Titles (Word Cloud) Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
+* Sklearn &nbsp; | &nbsp; Latent Semantic Analysis &nbsp; &nbsp; [Wiki](https://en.wikipedia.org/wiki/Latent_semantic_analysis) &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; &nbsp; [Book Titles (Word Cloud) Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
 
 * Python &nbsp; | &nbsp; Tri-Gram &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram.py) &nbsp; &nbsp; [Amazon Review (Spinning) Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram_test.py) &nbsp; | &nbsp;
 

@@ -130,7 +130,7 @@ GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```tra
 #### 文本生成
 * Python &nbsp; | &nbsp; 二阶马尔可夫模型 &nbsp; &nbsp; [Robert Frost 文集测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/markov_text_gen.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; 字符循环网络 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; 字符循环网络 &nbsp; &nbsp; [Karpathy大神当时的文章](https://arxiv.org/abs/1508.06615) &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; 卷积网络+循环网络 &nbsp; &nbsp; [原论文](https://arxiv.org/abs/1508.06615) &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/cnn_rnn_text_gen.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/cnn_rnn_text_gen_test.py) &nbsp; | &nbsp;
 

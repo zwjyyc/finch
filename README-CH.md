@@ -102,9 +102,9 @@ GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```tra
 * Python &nbsp; | &nbsp; [词语索引](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 
 #### 语言模型
-* Sklearn &nbsp; | &nbsp; 隐含语义分析[模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; &nbsp; [书名-词云测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
+* Sklearn &nbsp; | &nbsp; 隐含语义分析 &nbsp; &nbsp; [Wiki资料](https://en.wikipedia.org/wiki/Latent_semantic_analysis) &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; &nbsp; [书名-词云测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
 
-* Python &nbsp; | &nbsp; 三元词袋[模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram.py) &nbsp; &nbsp; [Amazon客户评价-换词测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram_test.py) &nbsp; | &nbsp;
+* Python &nbsp; | &nbsp; 三元词袋 &nbsp; &nbsp; [Wiki资料](https://en.wikipedia.org/wiki/Trigram) &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram.py) &nbsp; &nbsp; [Amazon客户评价-换词测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/trigram_test.py) &nbsp; | &nbsp;
 
 * Sklearn &nbsp; | &nbsp; TF-IDF &nbsp; &nbsp; [Brown文集-词语相似度测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf_brown_test.py) &nbsp; | &nbsp;
 

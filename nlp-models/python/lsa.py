@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from nltk.tokenize import word_tokenize
@@ -19,7 +20,8 @@ class LSA:
 
     def fit(self, documents):
         for line in documents:
-            line = line.decode('ascii', 'ignore') # this is done in py2, py3 needs to test again
+            if int(sys.version[0]) == 2:
+                line = line.decode('ascii', 'ignore')
             tokens = self.tokenize(line)
             self.documents.append(tokens)
             for token in tokens:

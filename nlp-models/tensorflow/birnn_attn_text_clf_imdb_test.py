@@ -1,3 +1,4 @@
+from __future__ import print_function
 from birnn_attn_text_clf import BiRNNTextClassifier
 import tensorflow as tf
 import numpy as np

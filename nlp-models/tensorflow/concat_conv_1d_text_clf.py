@@ -95,7 +95,7 @@ class Conv1DClassifier:
     def add_global_pooling(self):
         Y = tf.layers.average_pooling1d(inputs = self._cursor,
                                         pool_size = self._seq_len,
-                                        strides = self._seq_len,
+                                        strides = 1,
                                         padding = self.padding)
         Y = tf.reshape(Y, [-1, self.n_filters])
         self._cursor = Y

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from brown import get_indexed
 from sklearn.feature_extraction.text import TfidfTransformer
 import numpy as np

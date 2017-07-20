@@ -6,8 +6,7 @@ import sklearn
 
 
 class Conv1DClassifier:
-    def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(),
-                 embedding_dims=50, n_filters=250, padding='valid'):
+    def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(), embedding_dims=50, padding='valid'):
         """
         Parameters:
         -----------
@@ -31,7 +30,6 @@ class Conv1DClassifier:
         self.seq_len = seq_len
         self.vocab_size = vocab_size
         self.embedding_dims = embedding_dims
-        self.n_filters = n_filters
         self.padding = padding
         self.n_out = n_out
         self.sess = sess
@@ -44,9 +42,9 @@ class Conv1DClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding()
-        self.conv1 = self.add_conv1d(self.n_filters, kernel_size=3)
-        self.conv2 = self.add_conv1d(self.n_filters, kernel_size=4)
-        self.conv3 = self.add_conv1d(self.n_filters, kernel_size=5)
+        self.conv1 = self.add_conv1d(250, kernel_size=3)
+        self.conv2 = self.add_conv1d(250, kernel_size=4)
+        self.conv3 = self.add_conv1d(250, kernel_size=5)
         self.merge_layers([self.conv1, self.conv2, self.conv3])
         self.add_global_pooling()
         self.add_output_layer()   

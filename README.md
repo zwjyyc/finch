@@ -39,7 +39,7 @@ Most deep learning projects on GitHub usually have several scripts such as ```tr
   * [Text Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#text-classification)
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
   * [Sequence Labelling](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-labelling)
-  * [Machine Translation](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-translation)
+  * [Sequence to Sequence](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-to-sequence)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 
@@ -146,7 +146,7 @@ Most deep learning projects on GitHub usually have several scripts such as ```tr
 
 * PyTorch &nbsp; | &nbsp; Bi-directional LSTM &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/birnn_seq_clf.py) &nbsp; | &nbsp; [POS Tagging Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/birnn_tagging_test.py) &nbsp; | &nbsp; [Chinese Segmentation Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/birnn_chseg_test.py) &nbsp; | &nbsp;
 
-#### Machine Translation
+#### Sequence to Sequence
 * TensorFlow &nbsp; | &nbsp; Dynamic Seq2Seq &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Dynamic Seq2Seq + Bi-directional Encoder &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_birnn.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_birnn_test.py) &nbsp; | &nbsp;

@@ -6,7 +6,7 @@ import math
 
 class BiRNNTextClassifier:
     def __init__(self, max_seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, attention_size=50,
-                 sess=tf.Session()):
+                 grad_clip=5.0, sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -24,6 +24,7 @@ class BiRNNTextClassifier:
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
         self.attention_size = attention_size
+        self.grad_clip = grad_clip
         self.n_out = n_out
         self.sess = sess
         self._cursor = None
@@ -35,7 +36,7 @@ class BiRNNTextClassifier:
         self.add_input_layer()
         self.add_word_embedding_layer()
         self.add_bi_dynamic_rnn()
-        self.add_attention()
+        self.add_mini_attention()
         self.add_output_layer()
         self.add_backward_path()
     # end method build_graph
@@ -71,12 +72,12 @@ class BiRNNTextClassifier:
     # end method add_dynamic_rnn
 
 
-    def add_attention(self):
+    def add_mini_attention(self):
         reshaped = tf.reshape(self._cursor, [-1, 2*self.cell_size])
         reduced = tf.layers.dense(reshaped, 1)
         alphas = self.softmax(tf.reshape(reduced, [-1, self.max_seq_len]))
         self._cursor = tf.reduce_sum(self._cursor * tf.expand_dims(alphas, 2), 1)
-    # end method add_attention
+    # end method add_mini_attention
 
 
     def add_output_layer(self):
@@ -88,7 +89,11 @@ class BiRNNTextClassifier:
         self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
                                                                                   labels=self.Y))
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits,1), self.Y), tf.float32))
-        self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
+        # gradient clipping
+        params = tf.trainable_variables()
+        gradients = tf.gradients(self.loss, params)
+        clipped_gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)
+        self.train_op = tf.train.AdamOptimizer(self.lr).apply_gradients(zip(clipped_gradients, params))
     # end method add_backward_path
 
 

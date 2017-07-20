@@ -152,7 +152,7 @@ Most deep learning projects on GitHub usually have several scripts such as ```tr
 
 * TensorFlow &nbsp; | &nbsp; Dynamic Seq2Seq + Bi-directional Encoder &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_birnn.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_birnn_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; Dynamic Seq2Seq + Attention Mechanism &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Dynamic Seq2Seq + Attention Mechanism &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn.py) &nbsp; &nbsp;
     * [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn_test.py) &nbsp; &nbsp; [Result](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn_test.md)
 
 ## Computer Vision

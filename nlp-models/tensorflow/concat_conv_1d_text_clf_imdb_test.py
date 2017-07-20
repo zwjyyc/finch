@@ -17,7 +17,7 @@ if __name__ == '__main__':
     print('X_train shape:', X_train.shape, 'X_test shape:', X_test.shape)
 
     clf = Conv1DClassifier(seq_len, vocab_size, n_out)
-    log = clf.fit(X_train, y_train, n_epoch=3, batch_size=32, keep_prob=0.8, en_exp_decay=True,
+    log = clf.fit(X_train, y_train, n_epoch=2, batch_size=32, keep_prob=0.8, en_exp_decay=True,
                   val_data=(X_test, y_test))
     pred = clf.predict(X_test)
 

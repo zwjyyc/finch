@@ -1,3 +1,4 @@
+from __future__ import print_function
 from concat_conv_1d_text_clf import Conv1DClassifier
 import tensorflow as tf
 import numpy as np

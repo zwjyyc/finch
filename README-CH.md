@@ -39,7 +39,7 @@ GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```tra
     * [序列标注](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列标注)
     * [序列到序列](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列到序列)
 * [信息检索](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#信息检索)
-  * [推荐系统](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#推荐系统)
+    * [推荐系统](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#推荐系统)
 * [计算机视觉](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#计算机视觉)
     * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#opencv)
 

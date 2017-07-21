@@ -160,7 +160,11 @@ GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```tra
 * TensorFlow &nbsp; | &nbsp; 动态 Seq2Seq + 注意力机制 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn.py) &nbsp; &nbsp;
 
     * [排序测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn_test.py) &nbsp; &nbsp; [结果](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn_test.md)
-    
+
+## 信息检索
+#### 推荐系统
+* TensorFlow &nbsp; | &nbsp; 矩阵分解 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/decomposition/nmf.py) &nbsp; &nbsp; [MovieLens测试](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/decomposition/nmf_movielens_test.py) &nbsp; | &nbsp;
+
 ## 计算机视觉
 #### OpenCV
 * 基本操作 &nbsp; | &nbsp; [调整大小](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)

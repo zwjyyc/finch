@@ -24,7 +24,6 @@ GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```tra
     * [线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#线性模型)
     * [支持向量机](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#支持向量机)
     * [集成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#集成)
-    * [分解](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#分解)
 * [深度学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#深度学习)
     * [多层感知](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#多层感知)
     * [卷积网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#卷积网络)
@@ -39,6 +38,8 @@ GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```tra
     * [文本生成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本生成)
     * [序列标注](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列标注)
     * [序列到序列](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列到序列)
+* [信息检索](https://github.com/zhedongzheng/finch/blob/master/README.md#信息检索)
+  * [推荐系统](https://github.com/zhedongzheng/finch/blob/master/README.md#推荐系统)
 * [计算机视觉](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#计算机视觉)
     * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#opencv)
 
@@ -61,8 +62,7 @@ GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```tra
 * NumPy &nbsp; | &nbsp; Adaboost 分类器 &nbsp; &nbsp; [伪代码](https://github.com/zhedongzheng/finch/blob/master/classic-models/adaboost_clf.md) &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/classic-models/adaboost_clf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/classic-models/adaboost_clf_test.py) &nbsp; | &nbsp;
 
 * NumPy &nbsp; | &nbsp; 随机森林 分类器 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/classic-models/random_forest_clf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/classic-models/random_forest_clf_test.py) &nbsp; | &nbsp;
-#### 分解
-* TensorFlow &nbsp; | &nbsp; 非负矩阵分解 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/decomposition/nmf.py) &nbsp; &nbsp; [MovieLens数据集测试](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/decomposition/nmf_movielens_test.py) &nbsp; | &nbsp;
+
 ## 深度学习
 #### 多层感知
 * TensorFlow &nbsp; | &nbsp; 多层感知 分类器 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp/mlp_clf.py) &nbsp; &nbsp; [MNIST数据集测试](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp/mlp_clf_mnist_test.py) &nbsp; &nbsp; [CIFAR10数据集测试](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp/mlp_clf_cifar10_test.py) &nbsp; | &nbsp;

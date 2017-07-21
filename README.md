@@ -41,7 +41,8 @@ Most deep learning projects on GitHub usually have several scripts such as ```tr
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
   * [Sequence Labelling](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-labelling)
   * [Sequence to Sequence](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-to-sequence)
-* [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
+* [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
+  * [Recommender System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommender-system)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 ## Machine Learning
@@ -159,7 +160,8 @@ Most deep learning projects on GitHub usually have several scripts such as ```tr
 * TensorFlow &nbsp; | &nbsp; Dynamic Seq2Seq + Attention Mechanism &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn.py) &nbsp; &nbsp;
     * [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn_test.py) &nbsp; &nbsp; [Result](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn_test.md)
 
-## Recommendation System
+## Information Retrieval
+#### Recommender System
 * TensorFlow &nbsp; | &nbsp; Non-negative Matrix Factorization &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/decomposition/nmf.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/decomposition/nmf_movielens_test.py) &nbsp; | &nbsp;
 
 ## Computer Vision

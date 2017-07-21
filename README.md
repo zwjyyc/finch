@@ -42,7 +42,7 @@ Most deep learning projects on GitHub usually have several scripts such as ```tr
   * [Sequence Labelling](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-labelling)
   * [Sequence to Sequence](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-to-sequence)
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
-  * [Recommender System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommender-system)
+  * [Recommender System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommender-system)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 ## Machine Learning

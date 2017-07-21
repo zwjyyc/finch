@@ -167,11 +167,11 @@ class SkipGram:
                 if local_step % eval_step == 0:
                     similarity = self.sess.run(self.similarity)
                     for i in range(len(self.sample_words)):
-                        analogies = (-similarity[i]).argsort()[1:top_k+1]
+                        neighbours = (-similarity[i]).argsort()[1:top_k+1]
                         log = 'Nearest to [%s]:' % self.idx2word[self.sample_indices[i]]
                         for k in range(top_k):
-                            analogy = self.idx2word[analogies[k]]
-                            log = '%s %s,' % (log, analogy)
+                            neighbour = self.idx2word[neighbours[k]]
+                            log = '%s %s,' % (log, neighbour)
                         print(log)
     # end method fit
 

@@ -163,6 +163,7 @@ GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```tra
 
 ## 信息检索
 #### 推荐系统
+* Python &nbsp; | &nbsp; 基于邻近位置的协同过滤 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [MovieLens测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;
 * TensorFlow &nbsp; | &nbsp; 矩阵分解 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf.py) &nbsp; &nbsp; [MovieLens测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf_movielens_test.py) &nbsp; | &nbsp;
 
 ## 计算机视觉

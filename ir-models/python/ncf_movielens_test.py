@@ -2,9 +2,10 @@ import pandas as pd
 from ncf import recommender
 
 
-def favourite(active_user, top_n, df, movie_info):
-    top_movies = pd.DataFrame.sort_values(df[df.userid==active_user], ['rating'], ascending=[0])[:top_n]
-    top_movies = movie_info.loc[movie_info.itemid.isin(top_movies.itemid)]
+def favourite(active_user, top_n, rating_info, movie_info):
+    df = rating_info[rating_info.userid == active_user]
+    top_ratings = df.sort_values(['rating'], ascending=[0])[:top_n]
+    top_movies = movie_info.loc[movie_info.itemid.isin(top_ratings.itemid)]
     return list(top_movies.title)
 
 

@@ -1,18 +1,17 @@
-from scipy.spatial.distance import correlation 
 import numpy as np
 import pandas as pd
 
 
 def similarity(user1, user2):
-    user1 = np.array(user1) - np.nanmean(user1)
-    user2 = np.array(user2) - np.nanmean(user2)
-    commons = [i for i in range(len(user1)) if user1[i]>0 and user2[i]>0]
+    user1 = np.array(user1)
+    user2 = np.array(user2)
+    commons = [i for i in range(len(user1)) if (user1[i] > 0 and user2[i] > 0)]
     if len(commons) == 0:
         return 0
     else:
-        r1 = np.array([user1[i] for i in commons])
-        r2 = np.array([user2[i] for i in commons])
-        return correlation(r1, r2)
+        u = np.array([user1[i] for i in commons])
+        v = np.array([user2[i] for i in commons])
+        return 1 - np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v))
 
 
 def nearest_ratings(active_user, top_k, rating_matrix):
@@ -22,16 +21,14 @@ def nearest_ratings(active_user, top_k, rating_matrix):
     sim_matrix.sort_values(['similarity'], ascending=[0], inplace=True)
 
     neighbour_sims = sim_matrix[:top_k]
-    neighbour_ratings = rating_matrix.loc[neighbour_sims.index]
 
     predicted_item_ratings = pd.DataFrame(index=rating_matrix.columns, columns=['rating'])
     for i in rating_matrix.columns:
-        # predicted_item_rating = np.nanmean(rating_matrix.loc[active_user])
         predicted_item_rating = 0
-        for u in neighbour_ratings.index:
+        for u in neighbour_sims.index:
             if rating_matrix.loc[u, i] > 0:
                 weight = neighbour_sims.loc[u, 'similarity']
-                predicted_item_rating += (rating_matrix.loc[u, i] - np.nanmean(rating_matrix.loc[u])) * weight
+                predicted_item_rating += rating_matrix.loc[u, i] * weight
         predicted_item_ratings.loc[i, 'rating'] = predicted_item_rating
     return predicted_item_ratings
 

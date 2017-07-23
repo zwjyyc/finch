@@ -162,7 +162,7 @@ Most deep learning projects on GitHub usually have several scripts such as ```tr
 
 ## Information Retrieval
 #### Recommender System
-* Pandas &nbsp; | &nbsp; Collborative Filtering &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;
+* Pandas &nbsp; | &nbsp; MovieLens Collborative Filtering &nbsp; &nbsp; [Functions](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Non-negative Matrix Factorization &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf_movielens_test.py) &nbsp; | &nbsp;
 

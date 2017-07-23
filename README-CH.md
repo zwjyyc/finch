@@ -17,7 +17,7 @@ python xxxx_test.py
 * [scikit-learn](http://scikit-learn.org/)
 
 ## 编码风格
-GitHub 上的大多数深度学习项目通常会有若干个脚本比如 ```train.py```, ```model.py```, ```main.py``` 等等。我个人倾向于把功能融合成一个带有 ```fit()``` 和 ```predict()``` 接口的模型（scikit-learn API 风格），然后对于不同的数据集编写不同的测试文件。下面所有代码都遵从这种风格。
+我把每一个模型写成一个配有 ```fit()``` 和 ```predict()``` 方法的类（scikit-learn API 风格），然后对于不同的数据集编写不同的测试脚本。下面所有代码都遵从这种风格。
 
 ## 目录
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)

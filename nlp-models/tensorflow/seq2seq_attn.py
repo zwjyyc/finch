@@ -23,19 +23,6 @@ class Seq2Seq:
     # end constructor
 
 
-    def register_symbols(self):
-        self._x_go = self.X_word2idx['<GO>']
-        self._x_eos = self.X_word2idx['<EOS>']
-        self._x_pad = self.X_word2idx['<PAD>']
-        self._x_unk = self.X_word2idx['<UNK>']
-
-        self._y_go = self.Y_word2idx['<GO>']
-        self._y_eos = self.Y_word2idx['<EOS>']
-        self._y_pad = self.Y_word2idx['<PAD>']
-        self._y_unk = self.Y_word2idx['<UNK>']
-    # end method add_symbols
-
-
     def build_graph(self):
         self.add_input_layer()
         self.add_encoder_layer()
@@ -58,10 +45,12 @@ class Seq2Seq:
     # end method lstm_cell
 
 
-    def add_encoder_layer(self):            
+    def add_encoder_layer(self):
+        encoder_embedding = tf.get_variable('encoder_embedding', [len(self.X_word2idx), self.encoder_embedding_dim],
+                                             tf.float32, tf.random_uniform_initializer(-1.0, 1.0))            
         self.encoder_out, self.encoder_state = tf.nn.dynamic_rnn(
             cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]), 
-            inputs = tf.contrib.layers.embed_sequence(self.X, len(self.X_word2idx), self.encoder_embedding_dim),
+            inputs = tf.nn.embedding_lookup(encoder_embedding, self.X),
             sequence_length = self.X_seq_len,
             dtype = tf.float32)
     # end method add_encoder_layer
@@ -212,4 +201,17 @@ class Seq2Seq:
         print('Word: {}'.format([i for i in out_indices]))
         print('OUT: {}'.format(' '.join([Y_idx2word[i] for i in out_indices])))
     # end method infer
+
+
+    def register_symbols(self):
+        self._x_go = self.X_word2idx['<GO>']
+        self._x_eos = self.X_word2idx['<EOS>']
+        self._x_pad = self.X_word2idx['<PAD>']
+        self._x_unk = self.X_word2idx['<UNK>']
+
+        self._y_go = self.Y_word2idx['<GO>']
+        self._y_eos = self.Y_word2idx['<EOS>']
+        self._y_pad = self.Y_word2idx['<PAD>']
+        self._y_unk = self.Y_word2idx['<UNK>']
+    # end method add_symbols
 # end class

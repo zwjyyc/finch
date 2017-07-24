@@ -163,7 +163,7 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 * Pandas &nbsp; | &nbsp; Collborative Filtering
     * MovieLens &nbsp; &nbsp; [Function](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py)
     
-    * NBA 2013-14 Player Data &nbsp; &nbsp; [Function](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba_test.py)
+    * NBA 2013-14 Player Data &nbsp; &nbsp; [Function](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba_test.py)
 
 * TensorFlow &nbsp; | &nbsp; Non-negative Matrix Factorization &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf_movielens_test.py) &nbsp; | &nbsp;
 

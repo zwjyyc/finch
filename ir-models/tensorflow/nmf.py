@@ -51,10 +51,13 @@ class NMF:
     def add_backward_path(self):
         R_flatten = tf.reshape(self.R, [-1])
         R_pred_flatten = tf.reshape(self.R_pred, [-1])
-        zeros = tf.zeros([self.n_user*self.n_item])
+
+        zeros = tf.zeros([self.n_user * self.n_item])
         self.non_zero_indices = tf.where(tf.not_equal(R_flatten, zeros))
+
         R_non_zero = tf.gather(R_flatten, self.non_zero_indices)
         R_pred_non_zero = tf.gather(R_pred_flatten, self.non_zero_indices)
+        
         cost = tf.reduce_sum(tf.abs(tf.subtract(R_non_zero, R_pred_non_zero)))
 
         norm_sums = tf.reduce_sum(tf.abs(self.U)) + tf.reduce_sum(tf.abs(self.I))

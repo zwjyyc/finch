@@ -15,8 +15,8 @@ Then run the test file that you are interested in
 python xxxx_test.py
 ```
 The main dependence is:
-* [>= TensorFlow 1.2](https://www.tensorflow.org/)
-* [>= PyTorch 0.12](http://pytorch.org/)
+* [TensorFlow >=1.2](https://www.tensorflow.org/)
+* [PyTorch >=0.12](http://pytorch.org/)
 * [scikit-learn](http://scikit-learn.org/)
 ## Other Language Support
 [中文](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)

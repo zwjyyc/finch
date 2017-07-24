@@ -160,7 +160,7 @@ python xxxx_test.py
 ## 信息检索
 #### 推荐系统
 * Pandas &nbsp; | &nbsp; 协同过滤
-    * MovieLens &nbsp; &nbsp; [函数](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py)
+    * MovieLens 电影数据 &nbsp; &nbsp; [函数](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py)
     
     * NBA 2013-14 球员数据 &nbsp; &nbsp; [函数](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba_test.py)
 

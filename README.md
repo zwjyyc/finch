@@ -35,7 +35,7 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
   * [Highway Network](https://github.com/zhedongzheng/finch/blob/master/README.md#highway-network)
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
-  * [Policy Gradients](https://github.com/zhedongzheng/finch/blob/master/README.md#policy-gradients)
+  * [Policy Gradient](https://github.com/zhedongzheng/finch/blob/master/README.md#policy-gradient)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
   * [Language Model](https://github.com/zhedongzheng/finch/blob/master/README.md#language-model)
@@ -100,7 +100,7 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 * TensorFlow &nbsp; | &nbsp; DCGAN &nbsp; &nbsp; MNIST &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/dcgan.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/dcgan_mnist_test.py) &nbsp; &nbsp; [Result](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/gan/dcgan_mnist_test.md) &nbsp; | &nbsp;
 
 ## Reinforcement Learning
-#### Policy Gradients
+#### Policy Gradient
 * TensorFlow &nbsp; | &nbsp; CartPole &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg_cartpole_test.py)
 
 ## Natural Language Processing

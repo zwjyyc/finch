@@ -1,9 +1,9 @@
-from pg import PolicyGradients
+from pg import PolicyGradient
 import gym
 
 
 def main():
-    model = PolicyGradients()
+    model = PolicyGradient()
     model.learn(gym.make("CartPole-v0"))
     model.play(gym.make("CartPole-v0"))
 

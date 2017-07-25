@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 
-class PolicyGradients:
+class PolicyGradient:
     def __init__(self, n_in=4, n_hidden=4, n_out=2, lr=0.01, sess=tf.Session()):
         self.n_in = n_in
         self.n_hidden = n_hidden

@@ -8,8 +8,8 @@ import os
 
 class ConvRNNTextGen:
     def __init__(self, text, seq_len=50, embedding_dims=15,
-                 cell_size=512, n_layer=2,
-                 n_filters=[25, 50, 64], kernel_sizes=[2, 3, 5],
+                 cell_size=128, n_layer=2,
+                 n_filters=[16, 32, 64], kernel_sizes=[2, 3, 5],
                  sess=tf.Session()):
         """
         Parameters:
@@ -287,11 +287,10 @@ class ConvRNNTextGen:
             softmax_out, next_state = self.sess.run([self.y, self.f_s],
                                                     {self.x: x, self.i_s: next_state})
             probas = softmax_out[0].astype('float64')
-            probas = probas / np.sum(probas)
             actions = np.random.multinomial(1, probas, 1)
             idx = np.argmax(actions)
             word = self.idx2word[idx]
-            out_sentence = (out_sentence + word) if (word == ',' or word == '.') else (out_sentence + ' ' + word)
+            out_sentence = out_sentence + ' ' + word
             chars = list(word) 
             char_indices = [self.char2idx[c] for c in chars] + [0] * (self.max_word_len - len(chars))
         return out_sentence

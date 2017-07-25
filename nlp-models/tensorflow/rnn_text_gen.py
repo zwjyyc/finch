@@ -5,7 +5,7 @@ import re
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=512, n_layer=2, grad_clip=5., 
+    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=128, n_layer=2, grad_clip=5., 
                  sess=tf.Session()):
         """
         Parameters:
@@ -189,7 +189,6 @@ class RNNTextGen:
             softmax_out, next_state = self.sess.run([self.softmax_pred, self.final_state_pred],
                                                     {self.X_pred:X_pred, self.init_state_pred:next_state})
             probas = softmax_out[0].astype('float64')
-            probas = probas / np.sum(probas)
             actions = np.random.multinomial(1, probas, 1)
             idx = np.argmax(actions)
             char = self.idx2char[idx]

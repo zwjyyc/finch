@@ -34,6 +34,8 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
   * [Autoencoder](https://github.com/zhedongzheng/finch/blob/master/README.md#autoencoder)
   * [Highway Network](https://github.com/zhedongzheng/finch/blob/master/README.md#highway-network)
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
+* [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
+  * [Policy Gradients](https://github.com/zhedongzheng/finch/blob/master/README.md#policy-gradients)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
   * [Language Model](https://github.com/zhedongzheng/finch/blob/master/README.md#language-model)

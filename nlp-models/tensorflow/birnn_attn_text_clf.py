@@ -74,6 +74,12 @@ class BiRNNTextClassifier:
 
 
     def add_attention(self):
+        """
+        we no longer consider each output (sentiment) only by reading the last hidden state of rnn, which means
+        converting a long sentence into a single vector with information loss
+        however, we consider each hidden state based on the importance (probability) of each word from input sentence
+        by multiplying that importance as weight, and finally convert to a context vector
+        """
         reshaped = tf.reshape(self._cursor, [-1, 2*self.cell_size])
         reduced = tf.layers.dense(reshaped, 1, tf.tanh)
         alphas = self.softmax(tf.reshape(reduced, [-1, self.max_seq_len]))

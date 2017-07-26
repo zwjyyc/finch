@@ -45,7 +45,7 @@ class RNNTextClassifier(torch.nn.Module):
     def attention(self, X, batch_size):
         reshaped = X.view(-1, 2*self.cell_size)
         reduced = torch.nn.functional.tanh(self.attn_fc(reshaped))
-        alphas = torch.nn.functional.softmax(reduced.view(batch_size, -1, 1)) # [batch_size, max_seq_len, 1]
+        alphas = torch.nn.functional.softmax(reduced.view(batch_size, -1, 1)) # (batch_size, max_seq_len, 1)
         # (batch, cell_size, seq_len) * (batch, seq_len, 1) -> (batch, cell_size)
         return torch.bmm(torch.transpose(X, 1, 2), alphas).squeeze(2)
     # end method attention

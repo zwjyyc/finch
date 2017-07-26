@@ -78,8 +78,8 @@ class BiRNNTextClassifier:
         we no longer consider each output (sentiment) only by considering the rnn output at last time step,
         which means converting a long sentence into a single vector with information loss
         however, we consider the rnn output at each time step with all the words from input sentence,
-        where the importance of each word is represented as the probability after softmax
-        finally, the context vector is the weighted sum of rnn outpus and probabilities
+        where the contribution of each word is represented as the probability after softmax
+        finally, the context vector is the weighted sum of rnn outputs and contributions
         """
         reshaped = tf.reshape(self._cursor, [-1, 2*self.cell_size])
         reduced = tf.layers.dense(reshaped, 1, tf.tanh)

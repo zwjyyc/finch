@@ -5,9 +5,8 @@ from sklearn.utils import shuffle
 
 
 class RNNTextClassifier(torch.nn.Module):
-    def __init__(self, max_seq_len, vocab_size, n_out=2, embedding_dim=128, cell_size=128, n_layer=1, dropout=0.2):
+    def __init__(self, vocab_size, n_out=2, embedding_dim=128, cell_size=128, n_layer=1, dropout=0.2):
         super(RNNTextClassifier, self).__init__()
-        self.max_seq_len = max_seq_len
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.cell_size = cell_size
@@ -43,18 +42,18 @@ class RNNTextClassifier(torch.nn.Module):
     # end method bidirectional_rnn
 
 
-    def attention(self, X):
+    def attention(self, X, batch_size):
         reshaped = X.view(-1, 2*self.cell_size)
         reduced = torch.nn.functional.tanh(self.attn_fc(reshaped))
-        alphas = torch.nn.functional.softmax(reduced.view(-1, self.max_seq_len, 1))
+        alphas = torch.nn.functional.softmax(reduced.view(batch_size, -1, 1)) # [batch_size, max_seq_len, 1]
         # (batch, cell_size, seq_len) * (batch, seq_len, 1) -> (batch, cell_size)
         return torch.bmm(torch.transpose(X, 1, 2), alphas).squeeze(2)
     # end method attention
 
 
-    def forward(self, X):
+    def forward(self, X, batch_size):
         birnn_out = self.bidirectional_rnn(X)
-        attn_out = self.attention(birnn_out)
+        attn_out = self.attention(birnn_out, batch_size)
         logits = self.fc(attn_out)
         return logits
     # end method forward
@@ -74,7 +73,7 @@ class RNNTextClassifier(torch.nn.Module):
                 inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
                 labels = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
                 
-                preds = self.forward(inputs)
+                preds = self.forward(inputs, len(X_batch))
 
                 loss = self.criterion(preds, labels)                   # cross entropy loss
                 self.optimizer, lr = self.adjust_lr(self.optimizer, global_step, total_steps)
@@ -100,7 +99,7 @@ class RNNTextClassifier(torch.nn.Module):
             inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.int64)))
             labels = torch.from_numpy(y_batch.astype(np.int64))
 
-            preds = self.forward(inputs)
+            preds = self.forward(inputs, len(X_batch))
 
             _, preds = torch.max(preds.data, 1)
             total += labels.size(0)

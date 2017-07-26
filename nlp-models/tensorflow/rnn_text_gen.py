@@ -189,6 +189,7 @@ class RNNTextGen:
             softmax_out, next_state = self.sess.run([self.softmax_pred, self.final_state_pred],
                                                     {self.X_pred:X_pred, self.init_state_pred:next_state})
             probas = softmax_out[0].astype('float64')
+            probas = probas / np.sum(probas) # prevent error from sum > 1
             actions = np.random.multinomial(1, probas, 1)
             idx = np.argmax(actions)
             char = self.idx2char[idx]

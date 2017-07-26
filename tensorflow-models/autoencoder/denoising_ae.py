@@ -27,7 +27,7 @@ class Autoencoder:
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
         self.keep_prob = tf.placeholder(tf.float32)
         X_drop = tf.nn.dropout(self.X, self.keep_prob)
-        self.X_noisy = X_drop + tf.random_normal(tf.shape(X_drop))
+        self.X_noisy = X_drop + self.noise_level * tf.random_normal(tf.shape(X_drop))
     # end method add_input_layer
 
 
@@ -51,16 +51,6 @@ class Autoencoder:
         self.loss = tf.reduce_mean(tf.squared_difference(self.X, self.decoder_op))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
-
-
-    def call_W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
-    # end method _W
-
-
-    def call_b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
-    # end method _b
 
 
     def fit(self, X_train, val_data, n_epoch=10, batch_size=128, en_shuffle=True, keep_prob=0.8):

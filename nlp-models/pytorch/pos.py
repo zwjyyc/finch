@@ -8,7 +8,7 @@ def load_data():
     x_test = []
     y_test = []
 
-    for line in open('temp/train.txt'):
+    for line in open('temp/pos_train.txt'):
         line = line.rstrip()
         if line:
             word, tag, _ = line.split()
@@ -23,7 +23,7 @@ def load_data():
 
     word2idx['_unknown'] = word_idx
 
-    for line in open('temp/test.txt'):
+    for line in open('temp/pos_test.txt'):
         line = line.rstrip()
         if line:
             word, tag, _ = line.split()

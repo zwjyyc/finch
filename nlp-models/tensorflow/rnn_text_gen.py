@@ -1,7 +1,6 @@
 import tensorflow as tf
-import math
 import numpy as np
-import re
+import math
 
 
 class RNNTextGen:
@@ -188,11 +187,10 @@ class RNNTextGen:
             X_pred = np.atleast_2d(self.char2idx[char])
             softmax_out, next_state = self.sess.run([self.softmax_pred, self.final_state_pred],
                                                     {self.X_pred:X_pred, self.init_state_pred:next_state})
-            probas = softmax_out[0].astype('float64')
-            probas = probas / np.sum(probas) # sum -> 1
+            probas = softmax_out[0].astype(np.float64)
+            probas = probas / np.sum(probas)
             actions = np.random.multinomial(1, probas, 1)
-            idx = np.argmax(actions)
-            char = self.idx2char[idx]
+            char = self.idx2char[np.argmax(actions)]
             out_sentence = out_sentence + char
         return out_sentence
     # end method infer

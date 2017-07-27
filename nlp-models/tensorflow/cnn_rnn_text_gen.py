@@ -1,7 +1,6 @@
 import tensorflow as tf
-import math
 import numpy as np
-import re
+import math
 import sys
 import os
 
@@ -286,11 +285,10 @@ class ConvRNNTextGen:
             x = np.reshape(char_indices, [1, 1, self.max_word_len])
             softmax_out, next_state = self.sess.run([self.y, self.f_s],
                                                     {self.x: x, self.i_s: next_state})
-            probas = softmax_out[0].astype('float64')
-            probas = probas / np.sum(probas) # sum -> 1
+            probas = softmax_out[0].astype(np.float64)
+            probas = probas / np.sum(probas)
             actions = np.random.multinomial(1, probas, 1)
-            idx = np.argmax(actions)
-            word = self.idx2word[idx]
+            word = self.idx2word[np.argmax(actions)]
             out_sentence = out_sentence + ' ' + word
             chars = list(word) 
             char_indices = [self.char2idx[c] for c in chars] + [0] * (self.max_word_len - len(chars))

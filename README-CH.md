@@ -163,10 +163,7 @@ python xxxx_test.py
 
 ## 信息检索
 #### 推荐系统
-* Pandas &nbsp; | &nbsp; 协同过滤
-    * MovieLens 电影数据 &nbsp; &nbsp; [函数](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py)
-    
-    * NBA 2013-14 球员数据 &nbsp; &nbsp; [函数](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba_test.py)
+* Pandas &nbsp; | &nbsp; 协同过滤 &nbsp; &nbsp; MovieLens 电影数据 &nbsp; &nbsp; [函数](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp; NBA 2013-14 球员数据 &nbsp; &nbsp; [函数](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba_test.py)
 
 * TensorFlow &nbsp; | &nbsp; 矩阵分解 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf.py) &nbsp; &nbsp; [MovieLens测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf_movielens_test.py) &nbsp; | &nbsp;
 

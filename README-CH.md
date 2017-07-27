@@ -136,7 +136,7 @@ python xxxx_test.py
 #### 文本生成
 * Python &nbsp; | &nbsp; 二阶马尔可夫 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/markov_text_gen.py) &nbsp; &nbsp; [Robert Frost 文集测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/markov_text_gen_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; 字符循环网络 &nbsp; &nbsp; [背景介绍](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen.py) &nbsp; | &nbsp; [生成《安娜·卡列尼娜》风格](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_test.py) &nbsp; | &nbsp; [生成周杰伦歌词风格](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; 字符循环网络 &nbsp; &nbsp; [背景介绍](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen.py) &nbsp; | &nbsp; [生成《安娜·卡列尼娜》风格](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_test.py) &nbsp; | &nbsp; [生成北京地址](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_addr_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; 卷积网络 + 循环网络 &nbsp; &nbsp; [原论文](https://arxiv.org/abs/1508.06615) &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/cnn_rnn_text_gen.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/cnn_rnn_text_gen_test.py) &nbsp; | &nbsp;
 #### 序列标注

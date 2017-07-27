@@ -1,5 +1,9 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
+```finch``` 是一个包含了大量我在机器学习实现（模型+测试）上的集合，主要基于 TensorFlow 和 PyTorch
+
+这个项目会长期被更新
+
 欢迎写邮件到我的邮箱，任何问题都可以，看到就回复。
 
 ## 安装

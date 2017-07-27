@@ -1,6 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-```finch``` 是一个包含了大量我在机器学习实现（模型+测试）上的代码集合，主要基于 TensorFlow 和 PyTorch
+```finch``` 是一个收录了大量我在机器学习实现（模型+测试）上的代码集合，主要基于 TensorFlow 和 PyTorch
 
 这个项目会长期被更新
 

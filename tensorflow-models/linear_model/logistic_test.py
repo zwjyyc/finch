@@ -1,6 +1,6 @@
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
-from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
 from logistic import Logistic
 
 
@@ -14,6 +14,6 @@ if __name__ == '__main__':
     final_acc = (y_pred == y_test).mean()
     print("logistic (tensorflow): %.4f" % final_acc)
 
-    clf = SVC(kernel='linear')
+    clf = LogisticRegression()
     y_pred = clf.fit(X_train, y_train).predict(X_test)
     print("logistic (sklearn):", (y_pred == y_test).mean())

@@ -56,7 +56,7 @@ class LinearSVMClassifier:
     # end method add_backward_path
 
 
-    def fit(self, X, Y, val_data, n_epoch=100, batch_size=100):
+    def fit(self, X, Y, val_data, n_epoch=50, batch_size=100):
         print("Train %d samples | Test %d samples" % (len(X), len(val_data[0])))
         log = {'loss':[], 'acc':[], 'val_loss':[], 'val_acc':[]}
         

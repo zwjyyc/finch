@@ -1,4 +1,4 @@
-from varational_ae import Autoencoder
+from variational_ae import Autoencoder
 import matplotlib.pyplot as plt
 import tensorflow as tf
 

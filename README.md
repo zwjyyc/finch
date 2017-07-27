@@ -1,10 +1,10 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-```finch``` is a project that contains the collection of my implementations on machine learning (models + tests) mainly based on TensorFlow and PyTorch.
+```finch``` is a project that contains the collection of my implementations on machine learning (models + tests) mainly based on TensorFlow and PyTorch
 
 I am actively responsible for this project, and there will be more models in the future ...
 
-You are more than welcome to send an email to me in English / Chinese for any suggestion or question, I will try my best to answer as soon as I see it.
+You are more than welcome to send an email to me in English / Chinese for any suggestion or question, I will try my best to answer as soon as I see it
 ## Installation
 The following command downloads the whole project, however it is large. It is recommended to manually download the files (you need)
 ```

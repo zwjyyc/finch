@@ -287,8 +287,8 @@ class ConvRNNTextGen:
             softmax_out, next_state = self.sess.run([self.y, self.f_s],
                                                     {self.x: x, self.i_s: next_state})
             probas = softmax_out[0].astype('float64')
-            probas = probas / np.sum(probas) # prevent error from sum > 1
-            actions = np.random.multinomial(1, probas, 1)
+            probas = probas / np.sum(probas)                # softmax could give sum like 0.999
+            actions = np.random.multinomial(1, probas, 1)   # this makes sure sum = 1.0
             idx = np.argmax(actions)
             word = self.idx2word[idx]
             out_sentence = out_sentence + ' ' + word

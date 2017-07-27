@@ -6,7 +6,7 @@ I am actively responsible for this project, and there will be more models in the
 
 You are more than welcome to send an email to me in English / Chinese for any suggestion or question, I will try my best to answer as soon as I see it.
 ## Installation
-The following command downloads the whole project, however it is large. It is recommended to partially download the files (you need)
+The following command downloads the whole project, however it is large. It is recommended to manually download the files (you need)
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```

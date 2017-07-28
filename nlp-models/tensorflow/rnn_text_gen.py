@@ -4,7 +4,7 @@ import math
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=128, n_layer=2, grad_clip=5., 
+    def __init__(self, text, seq_len=50, embedding_dims=128, cell_size=256, n_layer=2, grad_clip=5., 
                  sess=tf.Session()):
         """
         Parameters:

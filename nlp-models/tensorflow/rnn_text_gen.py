@@ -148,7 +148,7 @@ class RNNTextGen:
             en_exp_decay=False):
         global_step = 0
         if text_iter_step is None:
-            text_iter_step = self.seq_len * batch_size
+            text_iter_step = self.seq_len * 3
         n_batch = (len(self.indexed) - self.seq_len*batch_size - 1) // text_iter_step
         total_steps = n_epoch * n_batch
         self.sess.run(tf.global_variables_initializer()) # initialize all variables

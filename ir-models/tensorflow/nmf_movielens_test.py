@@ -6,7 +6,7 @@ from nmf import NMF
 
 if __name__ == '__main__':
     df = pd.read_csv('./temp/ml-100k/u.data', sep='\t', header=None, usecols=[0, 1, 2],
-                    names=['userid', 'itemid', 'rating'])
+                      names=['userid', 'itemid', 'rating'])
     R = pd.pivot_table(df, values='rating', index=['userid'], columns=['itemid'])
     R.fillna(0, inplace=True)
 

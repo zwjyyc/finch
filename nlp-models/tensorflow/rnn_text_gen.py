@@ -181,7 +181,7 @@ class RNNTextGen:
             next_state = self.sess.run(self.final_state_pred, {self.X_pred:X_pred, self.init_state_pred:next_state})
         # end warming up
 
-        out_sentence = 'IN:\n' + start_word + '\nOUT:\n' + start_word
+        out_sentence = 'IN:\n' + start_word + '\n\nOUT:\n' + start_word
         char = char_list[-1]
         for _ in range(n_gen):
             X_pred = np.atleast_2d(self.char2idx[char])

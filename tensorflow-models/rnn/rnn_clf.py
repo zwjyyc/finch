@@ -113,7 +113,7 @@ class RNNClassifier:
                                                               self.in_keep_prob:keep_prob_tuple[0],
                                                               self.out_keep_prob:keep_prob_tuple[1],
                                                               self.batch_size:len(X_batch),
-                                                              self.init_state:next_state })
+                                                              self.init_state:next_state})
                 else:             
                     _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                                  {self.X:X_batch, self.Y:Y_batch, self.lr:lr,

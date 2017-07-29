@@ -97,9 +97,7 @@ class Seq2Seq:
             embedding = self.decoder_embedding,
             start_tokens = tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
             end_token = self._y_eos,
-            initial_state = (
-                tf.contrib.seq2seq.tile_batch(self.encoder_state[0], multiplier=self.beam_width),
-                tf.contrib.seq2seq.tile_batch(self.encoder_state[1], multiplier=self.beam_width)),
+            initial_state = tuple([tf.contrib.seq2seq.tile_batch(s, self.beam_width) for s in self.encoder_state]),
             beam_width = self.beam_width,
             output_layer = self.projection_layer,
             length_penalty_weight = 0.0)

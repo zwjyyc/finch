@@ -30,14 +30,15 @@ class Autoencoder:
     def add_forward_path(self):
         self.X = tf.placeholder(tf.float32, shape=[None, self.n_in])
         self.hidden = tf.layers.dense(self.X, self.n_hidden, tf.nn.sigmoid)
-        self.decoder_op = tf.layers.dense(self.hidden, self.n_in)
+        self.logits = tf.layers.dense(self.hidden, self.n_in)
+        self.decoder_op = tf.sigmoid(self.logits)
     # end method add_forward_path
 
 
     def add_backward_path(self):
         hidden_mean = tf.reduce_mean(self.hidden, axis=0) # batch mean
         self.sparsity_loss = tf.reduce_sum(self.kl_divergence(self.sparsity_target, hidden_mean))
-        self.mse_loss = tf.reduce_mean(tf.squared_difference(self.X, self.decoder_op))
+        self.mse_loss = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(labels=self.X, logits=self.logits))
         self.loss = self.mse_loss + self.sparsity_weight * self.sparsity_loss
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path

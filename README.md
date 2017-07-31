@@ -162,6 +162,8 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 
 * TensorFlow &nbsp; | &nbsp; Dynamic Seq2Seq + Attention &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn_test.py) &nbsp; &nbsp; [Result](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_attn_test.md) &nbsp; | &nbsp;
 
+* TensorFlow &nbsp; | &nbsp; Dynamic Seq2Seq + Beam-Search Decoder &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_beam.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_beam_test.py) &nbsp; | &nbsp;
+
 ## Information Retrieval
 #### Recommender System
 * Python &nbsp; | &nbsp; Collborative Filtering &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [Function](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp; NBA 2013-14 &nbsp; &nbsp; [Function](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba_test.py) &nbsp; | &nbsp;

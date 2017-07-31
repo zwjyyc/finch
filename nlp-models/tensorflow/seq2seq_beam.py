@@ -7,7 +7,7 @@ class Seq2Seq:
     def __init__(self, rnn_size, n_layers,
                  X_word2idx, encoder_embedding_dim,
                  Y_word2idx, decoder_embedding_dim,
-                 batch_size, sess=tf.Session(), grad_clip=5.0, beam_width=10):
+                 batch_size, sess=tf.Session(), grad_clip=5.0, beam_width=5):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
@@ -77,10 +77,11 @@ class Seq2Seq:
     def add_decoder_layer(self):
         self.prepare_decoder_components()
 
-        training_helper = tf.contrib.seq2seq.TrainingHelper(
+        training_helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(
             inputs = tf.nn.embedding_lookup(self.decoder_embedding, self.processed_decoder_input()),
             sequence_length = self.Y_seq_len,
-            time_major = False)
+            embedding = self.decoder_embedding,
+            sampling_probability = 0.1)
         training_decoder = tf.contrib.seq2seq.BasicDecoder(
             cell = self.decoder_cell,
             helper = training_helper,
@@ -97,7 +98,7 @@ class Seq2Seq:
             embedding = self.decoder_embedding,
             start_tokens = tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
             end_token = self._y_eos,
-            initial_state = tuple([tf.contrib.seq2seq.tile_batch(s, self.beam_width) for s in self.encoder_state]),
+            initial_state = tf.contrib.seq2seq.tile_batch(self.encoder_state, self.beam_width),
             beam_width = self.beam_width,
             output_layer = self.projection_layer,
             length_penalty_weight = 0.0)

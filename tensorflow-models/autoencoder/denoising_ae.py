@@ -5,7 +5,7 @@ import math
 
 
 class Autoencoder:
-    def __init__(self, n_in, encoder_units, noise_level=1.0, sess=tf.Session()):
+    def __init__(self, n_in, encoder_units, noise_level=0.5, sess=tf.Session()):
         self.sess = sess
         self.n_in = n_in
         self.encoder_units = encoder_units
@@ -43,12 +43,13 @@ class Autoencoder:
         new_layer = self.encoder_op
         for unit in self.decoder_units[1:]:
             new_layer = tf.layers.dense(new_layer, unit, tf.nn.relu)
-        self.decoder_op = tf.layers.dense(new_layer, self.n_in)
+        self.logits = tf.layers.dense(new_layer, self.n_in)
+        self.decoder_op = tf.sigmoid(self.logits)
     # end method add_decoders
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.squared_difference(self.X, self.decoder_op))
+        self.loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=self.X, logits=self.logits))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 

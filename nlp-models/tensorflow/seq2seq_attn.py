@@ -33,10 +33,10 @@ class Seq2Seq:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int32, [None, None])
-        self.Y = tf.placeholder(tf.int32, [None, None])
-        self.X_seq_len = tf.placeholder(tf.int32, [None])
-        self.Y_seq_len = tf.placeholder(tf.int32, [None])
+        self.X = tf.placeholder(tf.int32, [self.batch_size, None])
+        self.Y = tf.placeholder(tf.int32, [self.batch_size, None])
+        self.X_seq_len = tf.placeholder(tf.int32, [self.batch_size])
+        self.Y_seq_len = tf.placeholder(tf.int32, [self.batch_size])
     # end method add_input_layer
 
 

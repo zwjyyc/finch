@@ -52,15 +52,6 @@ class Seq2Seq:
 
 
     def add_encoder_layer(self):
-        """
-        encoder_embedding = tf.get_variable('encoder_embedding', [len(self.X_word2idx), self.encoder_embedding_dim],
-                                             tf.float32, tf.random_uniform_initializer(-1.0, 1.0))            
-        self.encoder_out, self.encoder_state = tf.nn.dynamic_rnn(
-            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]), 
-            inputs = tf.nn.embedding_lookup(encoder_embedding, self.X),
-            sequence_length = self.X_seq_len,
-            dtype = tf.float32)
-        """
         encoder_embedding = tf.get_variable('encoder_embedding', [len(self.X_word2idx), self.encoder_embedding_dim],
                                              tf.float32, tf.random_uniform_initializer(-1.0, 1.0)) 
         self.encoder_out = tf.nn.embedding_lookup(encoder_embedding, self.X)

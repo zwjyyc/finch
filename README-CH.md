@@ -165,6 +165,8 @@ python xxxx_test.py
 
 * TensorFlow &nbsp; | &nbsp; 动态 Seq2Seq + 集束搜索 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_beam.py) &nbsp; &nbsp; [排序测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_beam_test.py) &nbsp; | &nbsp;
 
+* TensorFlow &nbsp; | &nbsp; 集成版本: 双向编码 + 注意力机制 + 集束搜索 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate.py) &nbsp; &nbsp; [排序测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate_test.py)
+
 ## 信息检索
 #### 推荐系统
 * Python &nbsp; | &nbsp; 协同过滤 &nbsp; | &nbsp; MovieLens 电影数据 &nbsp; &nbsp; [基于用户](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp; NBA 2013-14 球员数据 &nbsp; &nbsp; [基于球员](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba_test.py) &nbsp; | &nbsp;

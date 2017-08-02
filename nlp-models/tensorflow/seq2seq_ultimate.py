@@ -27,11 +27,12 @@ class Seq2Seq:
     def build_graph(self):
         self.add_input_layer()
         self.add_encoder_layer()
-        with tf.variable_scope('attention'):
+        with tf.variable_scope('attention_beam_search'):
+            self.prepare_decoder_components()
             self.add_attention_for_training()
             self.add_decoder_for_training()
         self.add_tile_batch_layer()
-        with tf.variable_scope('attention', reuse=True):
+        with tf.variable_scope('attention_beam_search', reuse=True):
             self.add_attention_for_predicting()
             self.add_decoder_for_predicting()
         self.add_backward_path()
@@ -79,6 +80,7 @@ class Seq2Seq:
         Y_vocab_size = len(self.Y_word2idx)
         self.decoder_embedding = tf.get_variable('decoder_embedding', [Y_vocab_size, self.decoder_embedding_dim],
                                                   tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
+        self.attention_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(2 * self.n_layers)])
         self.projection_layer = Dense(Y_vocab_size)
         self.X_seq_max_len = tf.reduce_max(self.X_seq_len)
         self.Y_seq_max_len = tf.reduce_max(self.Y_seq_len)
@@ -90,9 +92,6 @@ class Seq2Seq:
             num_units = self.rnn_size, 
             memory = self.encoder_out,
             memory_sequence_length = self.X_seq_len)
-        
-        self.attention_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(2 * self.n_layers)])
-
         self.decoder_cell = tf.contrib.seq2seq.AttentionWrapper(
             cell = self.attention_cell,
             attention_mechanism = attention_mechanism,
@@ -101,8 +100,6 @@ class Seq2Seq:
 
 
     def add_decoder_for_training(self):
-        self.prepare_decoder_components()
-
         training_helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(
             inputs = tf.nn.embedding_lookup(self.decoder_embedding, self.processed_decoder_input()),
             sequence_length = self.Y_seq_len,
@@ -133,7 +130,6 @@ class Seq2Seq:
             num_units = self.rnn_size, 
             memory = self.encoder_out_tiled,
             memory_sequence_length = self.X_seq_len_tiled)
-
         self.decoder_cell = tf.contrib.seq2seq.AttentionWrapper(
             cell = self.attention_cell,
             attention_mechanism = attention_mechanism,

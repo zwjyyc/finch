@@ -164,7 +164,7 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 
 * TensorFlow &nbsp; | &nbsp; Dynamic Seq2Seq + Beam-Search Decoder &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_beam.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_beam_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; Ultimate Version (Bi-directional Encoder + Attention + Beam-Search Decoder) &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Ultimate Version: Bi-directional Encoder + Attention + Beam-Search Decoder &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate_test.py)
 
 ## Information Retrieval
 #### Recommender System

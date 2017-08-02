@@ -26,10 +26,10 @@ class Seq2Seq:
     def build_graph(self):
         self.add_input_layer()
         self.add_encoder_layer()
-        with tf.variable_scope('attention_beam_search'):
+        with tf.variable_scope('decode'):
             self.add_attention_for_training()
             self.add_decoder_for_training()
-        with tf.variable_scope('attention_beam_search', reuse=True):
+        with tf.variable_scope('decode', reuse=True):
             self.add_attention_for_predicting()
             self.add_decoder_for_predicting()
         self.add_backward_path()
@@ -88,11 +88,10 @@ class Seq2Seq:
     def add_decoder_for_training(self):
         decoder_embedding = tf.get_variable('decoder_embedding', [len(self.Y_word2idx), self.decoder_embedding_dim],
                                              tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
-        training_helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(
+        training_helper = tf.contrib.seq2seq.TrainingHelper(
             inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
             sequence_length = self.Y_seq_len,
-            embedding = decoder_embedding,
-            sampling_probability = 0.1)
+            time_major = False)
         training_decoder = tf.contrib.seq2seq.BasicDecoder(
             cell = self.decoder_cell,
             helper = training_helper,
@@ -106,15 +105,11 @@ class Seq2Seq:
     # end method add_decoder_layer
 
 
-    def tile_batch(self):
+    def add_attention_for_predicting(self):
         self.encoder_out_tiled = tf.contrib.seq2seq.tile_batch(self.encoder_out, self.beam_width)
         self.encoder_state_tiled = tf.contrib.seq2seq.tile_batch(self.encoder_state, self.beam_width)
         self.X_seq_len_tiled = tf.contrib.seq2seq.tile_batch(self.X_seq_len, self.beam_width)
-    # end method tile_batch
 
-
-    def add_attention_for_predicting(self):
-        self.tile_batch()
         attention_mechanism = tf.contrib.seq2seq.LuongAttention(
             num_units = self.rnn_size, 
             memory = self.encoder_out_tiled,

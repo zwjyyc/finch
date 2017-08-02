@@ -67,11 +67,10 @@ class Seq2Seq:
         with tf.variable_scope('decode'):
             decoder_embedding = tf.get_variable('decoder_embedding', [len(self.Y_word2idx), self.decoder_embedding_dim],
                                                  tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
-            training_helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(
+            training_helper = tf.contrib.seq2seq.TrainingHelper(
                 inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
                 sequence_length = self.Y_seq_len,
-                embedding = decoder_embedding,
-                sampling_probability = 0.1)
+                time_major = False)
             training_decoder = tf.contrib.seq2seq.BasicDecoder(
                 cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]),
                 helper = training_helper,
@@ -144,7 +143,7 @@ class Seq2Seq:
     # end method gen_batch
 
 
-    def fit(self, X_train, Y_train, val_data, n_epoch=60, display_step=50):
+    def fit(self, X_train, Y_train, val_data, n_epoch=70, display_step=50):
         X_test, Y_test = val_data
         X_test_batch, Y_test_batch, X_test_batch_lens, Y_test_batch_lens = next(self.next_batch(X_test, Y_test))
 

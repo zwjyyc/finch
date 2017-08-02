@@ -40,8 +40,8 @@ class Seq2Seq:
     # end method add_input_layer
 
 
-    def lstm_cell(self):
-        return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer())
+    def lstm_cell(self, reuse=False):
+        return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
     # end method lstm_cell
 
 
@@ -63,55 +63,46 @@ class Seq2Seq:
     # end method add_decoder_layer
 
 
-    def prepare_decoder_components(self):
-        self.decoder_cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)])
-        Y_vocab_size = len(self.Y_word2idx)
-        self.decoder_embedding = tf.get_variable('decoder_embedding', [Y_vocab_size, self.decoder_embedding_dim],
-                                                 tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
-        self.projection_layer = Dense(Y_vocab_size)
-        self.X_seq_max_len = tf.reduce_max(self.X_seq_len)
-        self.Y_seq_max_len = tf.reduce_max(self.Y_seq_len)
-    # end method prepare_decoder_components
-
-
     def add_decoder_layer(self):
-        self.prepare_decoder_components()
+        with tf.variable_scope('decode'):
+            decoder_embedding = tf.get_variable('decoder_embedding', [len(self.Y_word2idx), self.decoder_embedding_dim],
+                                                 tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
+            training_helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(
+                inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
+                sequence_length = self.Y_seq_len,
+                embedding = decoder_embedding,
+                sampling_probability = 0.1)
+            training_decoder = tf.contrib.seq2seq.BasicDecoder(
+                cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]),
+                helper = training_helper,
+                initial_state = self.encoder_state,
+                output_layer = Dense(len(self.Y_word2idx)))
+            training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+                decoder = training_decoder,
+                impute_finished = True,
+                maximum_iterations = tf.reduce_max(self.Y_seq_len))
+            self.training_logits = training_decoder_output.rnn_output
 
-        training_helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(
-            inputs = tf.nn.embedding_lookup(self.decoder_embedding, self.processed_decoder_input()),
-            sequence_length = self.Y_seq_len,
-            embedding = self.decoder_embedding,
-            sampling_probability = 0.1)
-        training_decoder = tf.contrib.seq2seq.BasicDecoder(
-            cell = self.decoder_cell,
-            helper = training_helper,
-            initial_state = self.encoder_state,
-            output_layer = self.projection_layer)
-        training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-            decoder = training_decoder,
-            impute_finished = True,
-            maximum_iterations = self.Y_seq_max_len)
-        self.training_logits = training_decoder_output.rnn_output
-
-        predicting_decoder = tf.contrib.seq2seq.BeamSearchDecoder(
-            cell = self.decoder_cell,
-            embedding = self.decoder_embedding,
-            start_tokens = tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
-            end_token = self._y_eos,
-            initial_state = tf.contrib.seq2seq.tile_batch(self.encoder_state, self.beam_width),
-            beam_width = self.beam_width,
-            output_layer = self.projection_layer,
-            length_penalty_weight = 0.0)
-        predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-            decoder = predicting_decoder,
-            impute_finished = False,
-            maximum_iterations = 2 * self.X_seq_max_len)
-        self.predicting_logits = predicting_decoder_output.predicted_ids[:, :, 0]
+        with tf.variable_scope('decode', reuse=True):
+            predicting_decoder = tf.contrib.seq2seq.BeamSearchDecoder(
+                cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse=True) for _ in range(self.n_layers)]),
+                embedding = tf.get_variable('decoder_embedding'),
+                start_tokens = tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
+                end_token = self._y_eos,
+                initial_state = tf.contrib.seq2seq.tile_batch(self.encoder_state, self.beam_width),
+                beam_width = self.beam_width,
+                output_layer = Dense(len(self.Y_word2idx), _reuse=True),
+                length_penalty_weight = 0.0)
+            predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+                decoder = predicting_decoder,
+                impute_finished = False,
+                maximum_iterations = 2 * tf.reduce_max(self.X_seq_len))
+            self.predicting_logits = predicting_decoder_output.predicted_ids[:, :, 0]
     # end method add_decoder_layer
 
 
     def add_backward_path(self):
-        masks = tf.sequence_mask(self.Y_seq_len, self.Y_seq_max_len, dtype=tf.float32)
+        masks = tf.sequence_mask(self.Y_seq_len, tf.reduce_max(self.Y_seq_len), dtype=tf.float32)
         self.loss = tf.contrib.seq2seq.sequence_loss(logits = self.training_logits,
                                                      targets = self.Y,
                                                      weights = masks)

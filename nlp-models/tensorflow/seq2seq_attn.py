@@ -57,14 +57,14 @@ class Seq2Seq:
     
 
     def add_attention(self):
-        self.attention_mechanism = tf.contrib.seq2seq.LuongAttention(
+        attention_mechanism = tf.contrib.seq2seq.LuongAttention(
             num_units = self.rnn_size, 
             memory = self.encoder_out,
             memory_sequence_length = self.X_seq_len)
         
         self.decoder_cell = tf.contrib.seq2seq.AttentionWrapper(
             cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]),
-            attention_mechanism = self.attention_mechanism,
+            attention_mechanism = attention_mechanism,
             attention_layer_size = self.rnn_size)
     # end method add_attention
 

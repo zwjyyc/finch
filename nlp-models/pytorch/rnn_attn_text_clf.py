@@ -31,7 +31,7 @@ class RNNTextClassifier(torch.nn.Module):
 
 
     def attention(self, rnn_out, embedded, batch_size):
-        reshaped = embedded.view(-1, 2*self.cell_size)
+        reshaped = embedded.view(-1, self.embedding_dim)
         reduced = torch.nn.functional.tanh(self.attn_fc(reshaped))
         alphas = torch.nn.functional.softmax(reduced.view(batch_size, -1, 1)) # (batch_size, max_seq_len, 1)
         # (batch, cell_size, seq_len) * (batch, seq_len, 1) -> (batch, cell_size)
@@ -41,7 +41,7 @@ class RNNTextClassifier(torch.nn.Module):
 
     def forward(self, X, batch_size):
         embedded = self.encoder(X)
-        rnn_out = self.lstm(embedded)
+        rnn_out, _ = self.lstm(embedded, None)
         attn_out = self.attention(rnn_out, embedded, batch_size)
         logits = self.fc(attn_out)
         return logits
@@ -112,12 +112,4 @@ class RNNTextClassifier(torch.nn.Module):
             param_group['lr'] = lr
         return optimizer, lr
     # end method adjust_lr
-
-
-    def reverse(self, X, dim):
-        indices = [i for i in range(X.size(dim)-1, -1, -1)]
-        indices = torch.autograd.Variable(torch.LongTensor(indices))
-        inverted = torch.index_select(X, dim, indices)
-        return inverted
-    # end method reverse
 # end class RNNClassifier

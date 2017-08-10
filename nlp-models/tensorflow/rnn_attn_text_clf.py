@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 
-class BiRNNTextClassifier:
+class RNNTextClassifier:
     def __init__(self, max_seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, attention_size=50,
                  grad_clip=5.0, sess=tf.Session()):
         """
@@ -36,7 +36,7 @@ class BiRNNTextClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding_layer()
-        self.add_bi_dynamic_rnn()
+        self.add_dynamic_rnn()
         self.add_attention()
         self.add_output_layer()
         self.add_backward_path()
@@ -56,8 +56,8 @@ class BiRNNTextClassifier:
     def add_word_embedding_layer(self):
         embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
-        embedded = tf.nn.embedding_lookup(embedding, self._cursor)
-        self._cursor = tf.nn.dropout(embedded, self.keep_prob)
+        self.embedded = tf.nn.embedding_lookup(embedding, self._cursor)
+        self._cursor = tf.nn.dropout(self.embedded, self.keep_prob)
     # end method add_word_embedding_layer
 
 
@@ -66,26 +66,18 @@ class BiRNNTextClassifier:
     # end method lstm_cell
 
 
-    def add_bi_dynamic_rnn(self):       
-        (out_fw, out_bw), _ = tf.nn.bidirectional_dynamic_rnn(
-            self.lstm_cell(), self.lstm_cell(), self._cursor, sequence_length=self.X_seq_lens, dtype=tf.float32)
-        self._cursor = tf.concat((out_fw, out_bw), 2)
+    def add_dynamic_rnn(self):       
+        self._cursor, _ = tf.nn.dynamic_rnn(self.lstm_cell(), self._cursor, sequence_length=self.X_seq_lens,
+                                            dtype=tf.float32)
     # end method add_dynamic_rnn
 
 
     def add_attention(self):
-        """
-        we no longer consider each output (sentiment) only by considering the rnn output at last time step,
-        which means converting a long sentence into a single vector with information loss
-        however, we consider the rnn output at each time step with all the words from input sentence,
-        where the contribution of each word is represented as the probability after softmax
-        finally, the context vector is the weighted sum of rnn outputs and contributions
-        """
-        reshaped = tf.reshape(self._cursor, [-1, 2*self.cell_size])
+        reshaped = tf.reshape(self.embedded, [-1, self.embedding_dims])
         reduced = tf.layers.dense(reshaped, 1, tf.tanh)
         alphas = self.softmax(tf.reshape(reduced, [-1, self.max_seq_len]))
         self._cursor = tf.reduce_sum(self._cursor * tf.expand_dims(alphas, 2), 1)
-    # end method add_mini_attention
+    # end method add_attention
 
 
     def add_output_layer(self):

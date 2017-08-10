@@ -19,41 +19,30 @@ class RNNTextClassifier(torch.nn.Module):
 
     def build_model(self):
         self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
-        self.fw_lstm = torch.nn.LSTM(input_size=self.embedding_dim,
-                                     hidden_size=self.cell_size,
-                                     batch_first=True,
-                                     dropout=self.dropout)
-        self.bw_lstm = torch.nn.LSTM(input_size=self.embedding_dim,
-                                     hidden_size=self.cell_size,
-                                     batch_first=True,
-                                     dropout=self.dropout)
-        self.attn_fc = torch.nn.Linear(2*self.cell_size, 1)
-        self.fc = torch.nn.Linear(2*self.cell_size, self.n_out)
+        self.lstm = torch.nn.LSTM(input_size=self.embedding_dim,
+                                  hidden_size=self.cell_size,
+                                  batch_first=True,
+                                  dropout=self.dropout)
+        self.attn_fc = torch.nn.Linear(self.embedding_dim, 1)
+        self.fc = torch.nn.Linear(self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters())
     # end method build_model    
 
 
-    def bidirectional_rnn(self, X):
-        X_reversed = self.reverse(X, 1)
-        fw_out, _ = self.fw_lstm(self.encoder(X), None)
-        bw_out, _ = self.bw_lstm(self.encoder(X_reversed), None)
-        return torch.cat((fw_out, self.reverse(bw_out, 1)), 2) 
-    # end method bidirectional_rnn
-
-
-    def attention(self, X, batch_size):
-        reshaped = X.view(-1, 2*self.cell_size)
+    def attention(self, rnn_out, embedded, batch_size):
+        reshaped = embedded.view(-1, 2*self.cell_size)
         reduced = torch.nn.functional.tanh(self.attn_fc(reshaped))
         alphas = torch.nn.functional.softmax(reduced.view(batch_size, -1, 1)) # (batch_size, max_seq_len, 1)
         # (batch, cell_size, seq_len) * (batch, seq_len, 1) -> (batch, cell_size)
-        return torch.bmm(torch.transpose(X, 1, 2), alphas).squeeze(2)
+        return torch.bmm(torch.transpose(rnn_out, 1, 2), alphas).squeeze(2)
     # end method attention
 
 
     def forward(self, X, batch_size):
-        birnn_out = self.bidirectional_rnn(X)
-        attn_out = self.attention(birnn_out, batch_size)
+        embedded = self.encoder(X)
+        rnn_out = self.lstm(embedded)
+        attn_out = self.attention(rnn_out, embedded, batch_size)
         logits = self.fc(attn_out)
         return logits
     # end method forward

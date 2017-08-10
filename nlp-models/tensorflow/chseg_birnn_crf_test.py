@@ -10,11 +10,19 @@ from collections import Counter
 SEQ_LEN = 50
 N_CLASS = 4 # B: 0, M: 1, E: 2, S: 3
 N_EPOCH = 1
+BATCH_SIZE = 512
 sample = '我来到大学读书，希望学到知识'
 py = int(sys.version[0])
 
 
-def to_seq(*args):
+def to_train_seq(*args):
+    data = []
+    for x in args:
+        data.append(iter_seq(x))
+    return data
+
+
+def to_test_seq(*args):
     data = []
     for x in args:
         x = x[: (len(x) - len(x) % SEQ_LEN)]
@@ -22,13 +30,18 @@ def to_seq(*args):
     return data
 
 
+def iter_seq(x):
+    return np.array([x[i:i+SEQ_LEN] for i in range(0, len(x)-SEQ_LEN)])
+
+
 if __name__ == '__main__':
     x_train, y_train, x_test, y_test, vocab_size, char2idx, idx2char = chseg.load_data()
-    X_train, X_test, Y_train, Y_test = to_seq(x_train, x_test, y_train, y_test)
+    X_train, Y_train = to_train_seq(x_train, y_train)
+    X_test, Y_test = to_test_seq(x_test, y_test)
     print('Vocab size: %d' % vocab_size)
 
     clf = BiRNN_CRF(SEQ_LEN, vocab_size, N_CLASS)
-    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=N_EPOCH)
+    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=N_EPOCH, batch_size=BATCH_SIZE)
     
     chars = list(sample) if py == 3 else list(sample.decode('utf-8'))
     labels = clf.infer([char2idx[c] for c in chars])

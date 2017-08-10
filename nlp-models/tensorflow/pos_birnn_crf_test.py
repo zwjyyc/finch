@@ -5,11 +5,18 @@ from birnn_crf_clf import BiRNN_CRF
 
 
 SEQ_LEN = 20
-BATCH_SIZE = 32
+BATCH_SIZE = 512
 sample = ['I', 'love', 'you']
 
 
-def to_seq(*args):
+def to_train_seq(*args):
+    data = []
+    for x in args:
+        data.append(iter_seq(x))
+    return data
+
+
+def to_test_seq(*args):
     data = []
     for x in args:
         x = x[: (len(x) - len(x) % SEQ_LEN)]
@@ -17,9 +24,14 @@ def to_seq(*args):
     return data
 
 
+def iter_seq(x):
+    return np.array([x[i:i+SEQ_LEN] for i in range(0, len(x)-SEQ_LEN)])
+
+
 if __name__ == '__main__':
     x_train, y_train, x_test, y_test, vocab_size, n_class, word2idx, tag2idx = pos.load_data()
-    X_train, X_test, Y_train, Y_test = to_seq(x_train, x_test, y_train, y_test)
+    X_train, Y_train = to_train_seq(x_train, y_train)
+    X_test, Y_test = to_test_seq(x_test, y_test)
     print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
 
     clf = BiRNN_CRF(SEQ_LEN, vocab_size, n_class)

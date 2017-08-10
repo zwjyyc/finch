@@ -15,7 +15,7 @@ Any test file can be run directly
 python xxxx_test.py
 ```
 The main dependence is:
-* [TensorFlow >=1.2.1](https://www.tensorflow.org/)
+* [TensorFlow >=1.2.2](https://www.tensorflow.org/)
 * [PyTorch >=0.12](http://pytorch.org/)
 * [scikit-learn](http://scikit-learn.org/)
 ## Other Language Support

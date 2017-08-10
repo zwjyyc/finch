@@ -1,4 +1,4 @@
-from birnn_attn_text_clf import RNNTextClassifier
+from rnn_attn_text_clf import RNNTextClassifier
 import tensorflow as tf
 
 

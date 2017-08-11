@@ -38,21 +38,18 @@ class RNNTextGen:
 
 
     def build_graph(self):
-        with tf.variable_scope('main_model'):
-            self.add_input_layer()       
-            self.add_word_embedding()
-            self.add_lstm_cells()
-            self.add_dynamic_rnn()
-            self.add_output_layer()
-            self.add_backward_path()
-        with tf.variable_scope('main_model', reuse=True):
-            self.add_inference()
+        self.add_input_layer()       
+        self.add_word_embedding()
+        self.add_lstm_cells()
+        self.add_dynamic_rnn()
+        self.add_output_layer()
+        self.add_backward_path()
     # end method build_graph
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
+        self.X = tf.placeholder(tf.int32, [None, None])
+        self.Y = tf.placeholder(tf.int32, [None, None])
         self.batch_size = tf.placeholder(tf.int32, [])
         self.lr = tf.placeholder(tf.float32) 
         self._cursor = self.X
@@ -76,26 +73,26 @@ class RNNTextGen:
 
 
     def add_dynamic_rnn(self):
-        self.init_state_train = self.cells.zero_state(self.batch_size, tf.float32)
-        self._cursor, self.final_state_train = tf.nn.dynamic_rnn(self.cells, self._cursor,
-                                                                 initial_state=self.init_state_train)   
+        self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
+        self._cursor, self.final_state = tf.nn.dynamic_rnn(self.cells, self._cursor,
+                                                           initial_state=self.init_state)   
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
         reshaped = tf.reshape(self._cursor, [-1, self.cell_size])
-        self.logits_train = tf.layers.dense(reshaped, self.vocab_size, name='output')
+        self.logits = tf.layers.dense(reshaped, self.vocab_size)
+        self.softmax_out = tf.nn.softmax(self.logits)
     # end method add_output_layer
 
 
     def add_backward_path(self):
         losses = tf.contrib.seq2seq.sequence_loss(
-            logits = tf.reshape(self.logits_train, [self.batch_size, self.seq_len, self.vocab_size]),
+            logits = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.vocab_size]),
             targets = self.Y,
             weights = tf.ones([self.batch_size, self.seq_len]),
             average_across_timesteps = True,
-            average_across_batch = True,
-        )
+            average_across_batch = True)
         self.loss = tf.reduce_sum(losses)
         # gradient clipping
         params = tf.trainable_variables()
@@ -103,16 +100,6 @@ class RNNTextGen:
         clipped_gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)
         self.train_op = tf.train.AdamOptimizer(self.lr).apply_gradients(zip(clipped_gradients, params))
     # end method add_backward_path
-
-
-    def add_inference(self):
-        self.X_pred = tf.placeholder(tf.int32, [1, 1])
-        self.init_state_pred = self.cells.zero_state(1, tf.float32)
-        embedded = tf.nn.embedding_lookup(tf.get_variable('encoder'), self.X_pred)
-        rnn_out, self.final_state_pred = tf.nn.dynamic_rnn(self.cells, embedded, initial_state=self.init_state_pred)
-        logits_pred = tf.layers.dense(tf.reshape(rnn_out, [-1, self.cell_size]), self.vocab_size, name='output', reuse=True)
-        self.softmax_pred = tf.nn.softmax(logits_pred)
-    # end add_sample_model
 
 
     def adjust_lr(self, current_step, total_steps):
@@ -131,7 +118,6 @@ class RNNTextGen:
         self.idx2char = {i: c for i, c in enumerate(chars)}
         self.vocab_size = len(self.idx2char)
         print('Vocabulary size:', self.vocab_size)
-
         self.indexed = np.array([self.char2idx[char] for char in list(text)])
     # end method text_preprocessing
 
@@ -151,13 +137,13 @@ class RNNTextGen:
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         
         for epoch in range(n_epoch):
-            next_state = self.sess.run(self.init_state_train, {self.batch_size: batch_size})
+            next_state = self.sess.run(self.init_state, {self.batch_size: batch_size})
             for local_step, (X_batch, Y_batch) in enumerate(self.next_batch(batch_size, text_iter_step)):
                 lr = self.adjust_lr(global_step, total_steps) if en_exp_decay else 0.001
-                _, train_loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state_train],
+                _, train_loss, next_state = self.sess.run([self.train_op, self.loss, self.final_state],
                                                           {self.X: X_batch,
                                                            self.Y: Y_batch,
-                                                           self.init_state_train: next_state,
+                                                           self.init_state: next_state,
                                                            self.lr: lr,
                                                            self.batch_size: len(X_batch)})
                 if local_step % 10 == 0:
@@ -173,19 +159,19 @@ class RNNTextGen:
 
     def infer(self, start_word, n_gen):
         # warming up
-        next_state = self.sess.run(self.init_state_pred)
+        next_state = self.sess.run(self.init_state, {self.batch_size: 1})
         char_list = list(start_word)
         for char in char_list[:-1]:
-            X_pred = np.atleast_2d(self.char2idx[char]) 
-            next_state = self.sess.run(self.final_state_pred, {self.X_pred:X_pred, self.init_state_pred:next_state})
+            next_state = self.sess.run(self.final_state, {self.X: np.atleast_2d(self.char2idx[char]),
+                                                          self.init_state: next_state})
         # end warming up
 
         out_sentence = 'IN:\n' + start_word + '\n\nOUT:\n' + start_word
         char = char_list[-1]
         for _ in range(n_gen):
-            X_pred = np.atleast_2d(self.char2idx[char])
-            softmax_out, next_state = self.sess.run([self.softmax_pred, self.final_state_pred],
-                                                    {self.X_pred:X_pred, self.init_state_pred:next_state})
+            softmax_out, next_state = self.sess.run([self.softmax_out, self.final_state],
+                                                    {self.X: np.atleast_2d(self.char2idx[char]),
+                                                     self.init_state: next_state})
             probas = softmax_out[0].astype(np.float64)
             probas = probas / np.sum(probas)
             actions = np.random.multinomial(1, probas, 1)

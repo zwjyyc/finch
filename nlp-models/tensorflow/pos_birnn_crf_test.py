@@ -24,8 +24,8 @@ def to_test_seq(*args):
     return data
 
 
-def iter_seq(x):
-    return np.array([x[i:i+SEQ_LEN] for i in range(0, len(x)-SEQ_LEN)])
+def iter_seq(x, text_iter_step=1):
+    return np.array([x[i:i+SEQ_LEN] for i in range(0, len(x)-SEQ_LEN, text_iter_step)])
 
 
 if __name__ == '__main__':
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
 
     clf = BiRNN_CRF(SEQ_LEN, vocab_size, n_class)
-    clf.fit(X_train, Y_train, keep_prob=0.8, n_epoch=3, batch_size=BATCH_SIZE)
+    clf.fit(X_train, Y_train, keep_prob=0.8, n_epoch=1, batch_size=BATCH_SIZE)
     
     y_pred = clf.predict(X_test, batch_size=BATCH_SIZE)
     final_acc = (y_pred == Y_test.ravel()).mean()

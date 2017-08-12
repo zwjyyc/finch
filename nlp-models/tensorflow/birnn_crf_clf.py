@@ -39,6 +39,7 @@ class BiRNN_CRF:
         self.add_word_embedding_layer()
         self.add_bidirectional_dynamic_rnn()
         self.add_output_layer()
+        self.add_crf_layer()
         self.add_backward_path()
     # end method build_graph
 
@@ -86,13 +87,20 @@ class BiRNN_CRF:
     # end method add_output_layer
 
 
+    def add_crf_layer(self):
+        with tf.variable_scope('crf'):
+            self.log_likelihood, _ = tf.contrib.crf.crf_log_likelihood(
+                inputs = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.n_out]),
+                tag_indices = self.Y,
+                sequence_lengths = self.X_seq_len,
+            )
+        with tf.variable_scope('crf', reuse=True):
+            self.transition_params = tf.get_variable('transitions', [self.n_out, self.n_out])
+    # end method add_crf_layer
+
+
     def add_backward_path(self):
-        log_likelihood, self.transition_params = tf.contrib.crf.crf_log_likelihood(
-            inputs = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.n_out]),
-            tag_indices = self.Y,
-            sequence_lengths = self.X_seq_len,
-        )
-        self.loss = tf.reduce_mean(-log_likelihood)
+        self.loss = tf.reduce_mean(-self.log_likelihood)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1),
                                                    tf.reshape(tf.cast(self.Y, tf.int64), [-1])), tf.float32))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
@@ -130,7 +138,6 @@ class BiRNN_CRF:
         for X_test_batch in self.gen_batch(X_test, batch_size):
             batch_pred = self.sess.run(self.logits,
                                       {self.X: X_test_batch,
-                                       self.batch_size: len(X_test_batch),
                                        self.X_seq_len: len(X_test_batch) * [self.seq_len],
                                        self.keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
@@ -143,8 +150,7 @@ class BiRNN_CRF:
         logits, transition_params = self.sess.run([self.logits, self.transition_params],
                                                   {self.X: np.atleast_2d(xs_padded),
                                                    self.X_seq_len: np.atleast_1d(len(xs)),
-                                                   self.keep_prob: 1.0,
-                                                   self.batch_size: 1})
+                                                   self.keep_prob: 1.0,})
         score = logits.reshape([self.seq_len, self.n_out])
         viterbi_seq, viterbi_score = tf.contrib.crf.viterbi_decode(score[:len(xs)], transition_params)
         return viterbi_seq

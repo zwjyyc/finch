@@ -48,7 +48,6 @@ class BiRNN_CRF:
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
         self.X_seq_len = tf.placeholder(tf.int32, [None])
-        self.batch_size = tf.placeholder(tf.int32, [])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
         self._cursor = self.X
@@ -90,10 +89,9 @@ class BiRNN_CRF:
     def add_crf_layer(self):
         with tf.variable_scope('crf'):
             self.log_likelihood, _ = tf.contrib.crf.crf_log_likelihood(
-                inputs = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.n_out]),
+                inputs = tf.reshape(self.logits, [-1, self.seq_len, self.n_out]),
                 tag_indices = self.Y,
-                sequence_lengths = self.X_seq_len,
-            )
+                sequence_lengths = self.X_seq_len)
         with tf.variable_scope('crf', reuse=True):
             self.transition_params = tf.get_variable('transitions', [self.n_out, self.n_out])
     # end method add_crf_layer
@@ -120,8 +118,8 @@ class BiRNN_CRF:
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)           
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                              {self.X: X_batch, self.Y: Y_batch,
-                                              self.X_seq_len: [self.seq_len] * len(X_batch),
-                                              self.batch_size: len(X_batch), self.lr: lr,
+                                              self.X_seq_len: [self.seq_len]*len(X_batch),
+                                              self.lr: lr,
                                               self.keep_prob: keep_prob})
                 global_step += 1
                 if local_step % 50 == 0:
@@ -138,7 +136,7 @@ class BiRNN_CRF:
         for X_test_batch in self.gen_batch(X_test, batch_size):
             batch_pred = self.sess.run(self.logits,
                                       {self.X: X_test_batch,
-                                       self.X_seq_len: len(X_test_batch) * [self.seq_len],
+                                       self.X_seq_len: len(X_test_batch)*[self.seq_len],
                                        self.keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.argmax(np.vstack(batch_pred_list), 1)

@@ -35,20 +35,18 @@ class BiRNN:
 
 
     def build_graph(self):
-        with tf.variable_scope('main_model'):
-            self.add_input_layer()
-            self.add_word_embedding_layer()
-            self.add_bidirectional_dynamic_rnn()
-            self.add_output_layer()
-            self.add_backward_path()
-        with tf.variable_scope('main_model', reuse=True):
-            self.add_inference()
+        self.add_input_layer()
+        self.add_word_embedding_layer()
+        self.add_bidirectional_dynamic_rnn()
+        self.add_output_layer()
+        self.add_backward_path()
     # end method build_graph
 
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, self.seq_len])
         self.Y = tf.placeholder(tf.int64, [None, self.seq_len])
+        self.X_seq_len = tf.placeholder(tf.int32, [None])
         self.batch_size = tf.placeholder(tf.int32, [])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
@@ -70,14 +68,14 @@ class BiRNN:
 
 
     def add_bidirectional_dynamic_rnn(self):
-        self.cells = [(self.lstm_cell(), self.lstm_cell()) for n in range(self.n_layer)]
         birnn_out = self._cursor
         for n in range(self.n_layer):
             (out_fw, out_bw), _ = tf.nn.bidirectional_dynamic_rnn(
-                cell_fw = self.cells[n][0], cell_bw = self.cells[n][1],
+                cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
                 inputs = birnn_out,
-                dtype=tf.float32,
-                scope='bidirectional_rnn_'+str(n))
+                dtype = tf.float32,
+                sequence_length = self.X_seq_len,
+                scope = 'birnn%d'%n)
             birnn_out = tf.concat((out_fw, out_bw), 2)
         self._cursor = birnn_out
     # end method add_dynamic_rnn
@@ -102,24 +100,6 @@ class BiRNN:
     # end method add_backward_path
 
 
-    def add_inference(self):
-        self.x = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.real_seq_len = tf.placeholder(tf.int32, [None])
-        embedded = tf.nn.embedding_lookup(tf.get_variable('encoder'), self.x)
-
-        birnn_out = embedded
-        for n in range(self.n_layer):
-            (out_fw, out_bw), _ = tf.nn.bidirectional_dynamic_rnn(
-                cell_fw = self.cells[n][0], cell_bw = self.cells[n][1],
-                inputs = birnn_out,
-                dtype=tf.float32,
-                scope='bidirectional_rnn_'+str(n))
-            birnn_out = tf.concat((out_fw, out_bw), 2)
-
-        self.y = tf.layers.dense(tf.reshape(birnn_out, [-1, 2*self.cell_size]), self.n_out, name='out', reuse=True)
-    # end add_sample_model
-
-
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True,
             keep_prob=1.0):
         if val_data is None:
@@ -138,9 +118,10 @@ class BiRNN:
                                                                 self.gen_batch(Y, batch_size))):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)           
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                             {self.X:X_batch, self.Y:Y_batch,
-                                              self.batch_size:len(X_batch), self.lr:lr,
-                                              self.keep_prob:keep_prob})
+                                             {self.X: X_batch, self.Y: Y_batch,
+                                              self.X_seq_len: len(X_batch) * [self.seq_len],
+                                              self.batch_size: len(X_batch), self.lr: lr,
+                                              self.keep_prob: keep_prob})
                 global_step += 1
                 if local_step % 50 == 0:
                     print ('Epoch %d/%d | Step %d/%d | train_loss: %.4f | train_acc: %.4f | lr: %.4f'
@@ -151,9 +132,10 @@ class BiRNN:
                 for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                       self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                                    {self.X:X_test_batch, self.Y:Y_test_batch,
-                                                    self.batch_size:len(X_test_batch),
-                                                    self.keep_prob:1.0})
+                                                  {self.X: X_test_batch, self.Y: Y_test_batch,
+                                                   self.X_seq_len: len(X_test_batch) * [self.seq_len],
+                                                   self.batch_size: len(X_test_batch),
+                                                   self.keep_prob: 1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
                 val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -182,8 +164,10 @@ class BiRNN:
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
             batch_pred = self.sess.run(self.logits,
-                                      {self.X:X_test_batch, self.batch_size:len(X_test_batch),
-                                       self.keep_prob:1.0})
+                                      {self.X: X_test_batch,
+                                       self.batch_size: len(X_test_batch),
+                                       self.X_seq_len: len(X_test_batch) * [self.seq_len],
+                                       self.keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.argmax(np.vstack(batch_pred_list), 1)
     # end method predict
@@ -191,9 +175,9 @@ class BiRNN:
 
     def infer(self, xs):
         xs_padded = xs + [0] * (self.seq_len - len(xs))
-        logits = self.sess.run(self.y, {self.x: np.atleast_2d(xs_padded),
-                                        self.real_seq_len: np.atleast_1d(len(xs)),
-                                        self.keep_prob: 1.0})
+        logits = self.sess.run(self.logits, {self.X: np.atleast_2d(xs_padded),
+                                             self.X_seq_len: np.atleast_1d(len(xs)),
+                                             self.keep_prob: 1.0})
         return np.argmax(logits[:len(xs)], 1)
     # end method infer
 

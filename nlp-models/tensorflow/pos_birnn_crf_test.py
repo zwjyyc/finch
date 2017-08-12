@@ -35,11 +35,12 @@ if __name__ == '__main__':
     print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
 
     clf = BiRNN_CRF(SEQ_LEN, vocab_size, n_class)
-    clf.fit(X_train, Y_train, val_data=(X_test, Y_test), keep_prob=0.8, n_epoch=5, batch_size=BATCH_SIZE)
+    clf.fit(X_train, Y_train, keep_prob=0.8, n_epoch=3, batch_size=BATCH_SIZE)
+    
     y_pred = clf.predict(X_test, batch_size=BATCH_SIZE)
     final_acc = (y_pred == Y_test.ravel()).mean()
     print("final testing accuracy: %.4f" % final_acc)
-
+    
     idx2tag = {idx : tag for tag, idx in tag2idx.items()}
     labels = clf.infer([word2idx[w] for w in sample])
     print(' '.join(sample))

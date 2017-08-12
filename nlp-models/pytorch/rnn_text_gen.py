@@ -110,4 +110,4 @@ class RNNTextGen(torch.nn.Module):
             yield (self.indexed[i : i+window].reshape(-1, self.seq_len),
                    self.indexed[i+1 : i+window+1].reshape(-1, self.seq_len))
     # end method next_batch
-# end class RNNClassifier
+# end class

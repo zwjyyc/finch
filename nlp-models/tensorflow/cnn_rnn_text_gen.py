@@ -34,38 +34,33 @@ class ConvRNNTextGen:
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
         self.n_layer = n_layer
-
         self.n_filters = n_filters
         self.kernel_sizes = kernel_sizes
 
         self._cursor = None
         self.preprocessing()
         self.build_graph()
-
         self.saver = tf.train.Saver()
         self.model_path = './saved/'+sys.argv[0][:-3]
     # end constructor
 
 
     def build_graph(self):
-        with tf.variable_scope('main_model'):
-            self.add_input_layer()       
-            self.add_word_embedding()
-            self.add_concat_conv()
-            for i in range(2):
-                self.add_highway(i)
-            self.add_lstm_cells()
-            self.add_dynamic_rnn()
-            self.add_output_layer()
-            self.add_backward_path()
-        with tf.variable_scope('main_model', reuse=True):
-            self.add_inference()
+        self.add_input_layer()       
+        self.add_word_embedding()
+        self.add_concat_conv()
+        for i in range(2):
+            self.add_highway(i)
+        self.add_lstm_cells()
+        self.add_dynamic_rnn()
+        self.add_output_layer()
+        self.add_backward_path()
     # end method build_graph
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int32, [None, self.seq_len, self.max_word_len])
-        self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
+        self.X = tf.placeholder(tf.int32, [None, None, self.max_word_len])
+        self.Y = tf.placeholder(tf.int32, [None, None])
         self.batch_size = tf.placeholder(tf.int32, [])
         self.lr = tf.placeholder(tf.float32) 
         self._cursor = self.X
@@ -81,7 +76,8 @@ class ConvRNNTextGen:
 
 
     def add_concat_conv(self):
-        reshaped = tf.reshape(self._cursor, [self.batch_size*self.seq_len, self.max_word_len, self.embedding_dims])
+        # [batch_size * seq_len, max_word_len, embedding_dims]
+        reshaped = tf.reshape(self._cursor, [-1, self.max_word_len, self.embedding_dims])
         parallels = []
         for i, (n_filter, kernel_size) in enumerate(zip(self.n_filters, self.kernel_sizes)):
             conv_out = tf.layers.conv1d(inputs = reshaped,
@@ -96,7 +92,7 @@ class ConvRNNTextGen:
                                                pool_size = reduced_len,
                                                strides = 1,
                                                padding = 'valid')
-            parallels.append(tf.reshape(pool_out, [self.batch_size, self.seq_len, n_filter]))
+            parallels.append(tf.reshape(pool_out, [self.batch_size, -1, n_filter])) # [batch_size, seq_len, n_filter]
         self._cursor = tf.concat(parallels, 2)
     # end method add_concat_conv
 
@@ -109,8 +105,8 @@ class ConvRNNTextGen:
         T = tf.layers.dense(reshaped, size, tf.sigmoid, name='transform_gate'+str(i))
         C = tf.subtract(1.0, T)
         highway_out = tf.add(tf.multiply(H, T), tf.multiply(reshaped, C))
-
-        self._cursor = tf.reshape(highway_out, [self.batch_size, self.seq_len, size])
+        
+        self._cursor = tf.reshape(highway_out, [self.batch_size, -1, size]) # [batch_size, seq_len, size]
     # end method add_highway
 
 
@@ -131,6 +127,7 @@ class ConvRNNTextGen:
     def add_output_layer(self):
         reshaped = tf.reshape(self._cursor, [-1, self.cell_size])
         self.logits = tf.layers.dense(reshaped, self.vocab_word, name='output')
+        self.softmax_out = tf.nn.softmax(self.logits)
     # end method add_output_layer
 
 
@@ -149,46 +146,6 @@ class ConvRNNTextGen:
         clipped_gradients = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gradients if grad is not None]
         self.train_op = optimizer.apply_gradients(clipped_gradients)
     # end method add_backward_path
-
-
-    def add_inference(self):
-        self.x = tf.placeholder(tf.int32, [1, 1, self.max_word_len])
-        self.i_s = self.cells.zero_state(1, tf.float32)
-        x_embedded = tf.nn.embedding_lookup(tf.get_variable('encoder'), self.x)
-        reshaped = tf.reshape(x_embedded, [1*1, self.max_word_len, self.embedding_dims])
-        # convolution
-        parallels = []
-        for i, (n_filter, kernel_size) in enumerate(zip(self.n_filters, self.kernel_sizes)):
-            conv_out = tf.layers.conv1d(inputs = reshaped,
-                                        filters = n_filter,
-                                        kernel_size  = kernel_size,
-                                        padding = 'valid',
-                                        use_bias = True,
-                                        activation = tf.nn.tanh,
-                                        name = 'conv1d'+str(i),
-                                        reuse = True)
-            reduced_len = self.max_word_len - kernel_size + 1
-            pool_out = tf.layers.max_pooling1d(inputs = conv_out,
-                                               pool_size = reduced_len,
-                                               strides = 1,
-                                               padding = 'valid')
-            parallels.append(tf.reshape(pool_out, [1, 1, n_filter]))
-        highway_in = tf.concat(parallels, 2)
-        # highway
-        size = sum(self.n_filters)
-        for i in range(2):
-            reshaped = tf.reshape(highway_in, [-1, size])
-            H = tf.layers.dense(reshaped, size, tf.nn.relu, name='activation'+str(i), reuse=True)
-            T = tf.layers.dense(reshaped, size, tf.sigmoid, name='transform_gate'+str(i), reuse=True)
-            C = tf.subtract(1.0, T)
-            highway_out = tf.add(tf.multiply(H, T), tf.multiply(reshaped, C))
-            highway_in = highway_out
-        rnn_in = tf.reshape(highway_out, [1, 1, size])
-        # recurrent
-        rnn_out, self.f_s = tf.nn.dynamic_rnn(self.cells, rnn_in, initial_state=self.i_s)
-        logits = tf.layers.dense(tf.reshape(rnn_out, [-1, self.cell_size]), self.vocab_word, name='output', reuse=True)
-        self.y = tf.nn.softmax(logits)
-    # end add_sample_model
 
 
     def adjust_lr(self, current_step, total_steps):
@@ -276,14 +233,16 @@ class ConvRNNTextGen:
 
 
     def infer(self, start_word, n_gen):
-        next_state = self.sess.run(self.i_s)
+        next_state = self.sess.run(self.init_state, {self.batch_size:1})
         chars = list(start_word)
         char_indices = [self.char2idx[c] for c in chars] + [0] * (self.max_word_len - len(chars))
         out_sentence = 'IN: ' + start_word + '\nOUT: ' + start_word
         for _ in range(n_gen):
             x = np.reshape(char_indices, [1, 1, self.max_word_len])
-            softmax_out, next_state = self.sess.run([self.y, self.f_s],
-                                                    {self.x: x, self.i_s: next_state})
+            softmax_out, next_state = self.sess.run([self.softmax_out, self.final_state],
+                                                    {self.X: x,
+                                                     self.batch_size: 1,
+                                                     self.init_state: next_state})
             probas = softmax_out[0].astype(np.float64)
             probas = probas / np.sum(probas)
             actions = np.random.multinomial(1, probas, 1)

@@ -43,7 +43,7 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
   * [Sequence Labelling](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-labelling)
   * [Sequence to Sequence](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-to-sequence)
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
-  * [Recommender System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommender-system)
+  * [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 
@@ -162,7 +162,7 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 * TensorFlow &nbsp; | &nbsp; Ultimate: Bi-directional Encoder + Attention + Beam-Search Decoder &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate_test.py) &nbsp; | &nbsp;
 
 ## Information Retrieval
-#### Recommender System
+#### Recommendation System
 * Python &nbsp; | &nbsp; Collborative Filtering &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [User-based](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp; NBA 2013-14 &nbsp; &nbsp; [Player-based](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/nba_test.py) &nbsp; | &nbsp;
 
 * Python &nbsp; | &nbsp; Apriori &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [Function](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori_movielens_test.py) &nbsp; | &nbsp;

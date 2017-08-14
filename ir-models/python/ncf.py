@@ -35,13 +35,8 @@ def nearest_ratings(active_user, top_k, rating_matrix):
 
 def recommender(active_user, top_n, rating_matrix, movie_info):
     predicted_item_ratings = nearest_ratings(active_user, 10, rating_matrix)
-    
     movies_watched = list(rating_matrix.loc[active_user].loc[rating_matrix.loc[active_user]>0].index)
-    
     predicted_item_ratings.drop(movies_watched, inplace=True)
-
     recommendations = predicted_item_ratings.sort_values(['rating'], ascending=[0])[:top_n]
-
-    titles = movie_info.loc[movie_info.itemid.isin(recommendations.index)]
-    
+    titles = movie_info.loc[movie_info.itemid.isin(recommendations.index)]    
     return list(titles.title)

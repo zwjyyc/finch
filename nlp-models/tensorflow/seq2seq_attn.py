@@ -7,7 +7,7 @@ class Seq2Seq:
     def __init__(self, rnn_size, n_layers,
                  X_word2idx, encoder_embedding_dim,
                  Y_word2idx, decoder_embedding_dim,
-                 batch_size, sess=tf.Session(), grad_clip=5.0):
+                 sess=tf.Session(), grad_clip=5.0):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
@@ -15,9 +15,7 @@ class Seq2Seq:
         self.encoder_embedding_dim = encoder_embedding_dim
         self.Y_word2idx = Y_word2idx
         self.decoder_embedding_dim = decoder_embedding_dim
-        self.batch_size = batch_size
         self.sess = sess
-
         self.register_symbols()
         self.build_graph()
     # end constructor
@@ -32,10 +30,11 @@ class Seq2Seq:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int32, [self.batch_size, None])
-        self.Y = tf.placeholder(tf.int32, [self.batch_size, None])
-        self.X_seq_len = tf.placeholder(tf.int32, [self.batch_size])
-        self.Y_seq_len = tf.placeholder(tf.int32, [self.batch_size])
+        self.X = tf.placeholder(tf.int32, [None, None])
+        self.Y = tf.placeholder(tf.int32, [None, None])
+        self.X_seq_len = tf.placeholder(tf.int32, [None])
+        self.Y_seq_len = tf.placeholder(tf.int32, [None])
+        self.batch_size = tf.placeholder(tf.int32, [])
     # end method add_input_layer
 
 
@@ -139,15 +138,15 @@ class Seq2Seq:
     # end method pad_sentence_batch
 
 
-    def next_batch(self, X, Y, X_pad_int=None, Y_pad_int=None):
+    def next_batch(self, X, Y, batch_size, X_pad_int=None, Y_pad_int=None):
         if X_pad_int is None:
             X_pad_int = self._x_pad
         if Y_pad_int is None:
             Y_pad_int = self._y_pad
         
-        for i in range(0, len(X) - len(X) % self.batch_size, self.batch_size):
-            X_batch = X[i : i + self.batch_size]
-            Y_batch = Y[i : i + self.batch_size]
+        for i in range(0, len(X) - len(X) % batch_size, batch_size):
+            X_batch = X[i : i + batch_size]
+            Y_batch = Y[i : i + batch_size]
             padded_X_batch, X_batch_lens = self.pad_sentence_batch(X_batch, X_pad_int)
             padded_Y_batch, Y_batch_lens = self.pad_sentence_batch(Y_batch, Y_pad_int)
             yield (np.array(padded_X_batch),
@@ -157,33 +156,37 @@ class Seq2Seq:
     # end method next_batch
 
 
-    def fit(self, X_train, Y_train, val_data, n_epoch=60, display_step=50):
+    def fit(self, X_train, Y_train, val_data, n_epoch=60, display_step=50, batch_size=128):
         X_test, Y_test = val_data
-        X_test_batch, Y_test_batch, X_test_batch_lens, Y_test_batch_lens = next(self.next_batch(X_test, Y_test))
+        X_test_batch, Y_test_batch, X_test_batch_lens, Y_test_batch_lens = next(
+        self.next_batch(X_test, Y_test, batch_size))
 
         self.sess.run(tf.global_variables_initializer())
         for epoch in range(1, n_epoch+1):
             for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) in enumerate(
-                self.next_batch(X_train, Y_train)):
+                self.next_batch(X_train, Y_train, batch_size)):
                 _, loss = self.sess.run([self.train_op, self.loss], {self.X: X_train_batch,
                                                                      self.Y: Y_train_batch,
                                                                      self.X_seq_len: X_train_batch_lens,
-                                                                     self.Y_seq_len: Y_train_batch_lens})
+                                                                     self.Y_seq_len: Y_train_batch_lens,
+                                                                     self.batch_size: batch_size})
                 if local_step % display_step == 0:
                     val_loss = self.sess.run(self.loss, {self.X: X_test_batch,
                                                          self.Y: Y_test_batch,
                                                          self.X_seq_len: X_test_batch_lens,
-                                                         self.Y_seq_len: Y_test_batch_lens})
+                                                         self.Y_seq_len: Y_test_batch_lens,
+                                                         self.batch_size: batch_size})
                     print("Epoch %d/%d | Batch %d/%d | train_loss: %.3f | test_loss: %.3f"
-                        % (epoch, n_epoch, local_step, len(X_train)//self.batch_size, loss, val_loss))
+                        % (epoch, n_epoch, local_step, len(X_train)//batch_size, loss, val_loss))
     # end method fit
 
 
-    def infer(self, input_word, X_idx2word, Y_idx2word):        
+    def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):        
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
         out_indices = self.sess.run(self.predicting_logits, {
-            self.X: [input_indices] * self.batch_size,
-            self.X_seq_len: [len(input_indices)] * self.batch_size})[0]
+            self.X: [input_indices] * batch_size,
+            self.X_seq_len: [len(input_indices)] * batch_size,
+            self.batch_size: batch_size})[0]
         
         print('\nSource')
         print('Word: {}'.format([i for i in input_indices]))

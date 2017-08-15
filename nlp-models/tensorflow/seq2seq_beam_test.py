@@ -52,9 +52,8 @@ def main():
         encoder_embedding_dim = 15,
         Y_word2idx = Y_char2idx,
         decoder_embedding_dim = 15,
-        batch_size = BATCH_SIZE,
     )
-    model.fit(X_train, Y_train, val_data=(X_test, Y_test))
+    model.fit(X_train, Y_train, val_data=(X_test, Y_test), batch_size=BATCH_SIZE)
     model.infer('common', X_idx2char, Y_idx2char)
     model.infer('apple', X_idx2char, Y_idx2char)
     model.infer('zhedong', X_idx2char, Y_idx2char)

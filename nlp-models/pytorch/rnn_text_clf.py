@@ -21,7 +21,8 @@ class RNNTextClassifier(torch.nn.Module):
 
     def build_model(self):
         self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
-        self.lstm = torch.nn.LSTM(self.embedding_dim, self.cell_size, self.n_layer, batch_first=True, dropout=self.dropout)
+        self.lstm = torch.nn.LSTM(self.embedding_dim, self.cell_size, self.n_layer,
+                                  batch_first=True, dropout=self.dropout)
         self.fc = torch.nn.Linear(self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters())

@@ -24,7 +24,7 @@ class RNNClassifier(torch.nn.Module):
 
     def forward(self, X, init_state=None):
         rnn_out, final_state = self.lstm(X, init_state) # forward propagate
-        last_time_step = self.fc(rnn_out[:, -1, :])                  # decode hidden state of last time step
+        last_time_step = self.fc(rnn_out[:, -1, :])     # decode hidden state of last time step
         return last_time_step, final_state
     # end method forward
 
@@ -45,9 +45,9 @@ class RNNClassifier(torch.nn.Module):
                     preds, _ = self.forward(inputs)
 
                 loss = self.criterion(preds, labels)     # cross entropy loss
-                self.optimizer.zero_grad()                             # clear gradients for this training step
-                loss.backward()                                        # backpropagation, compute gradients
-                self.optimizer.step()                                  # apply gradients
+                self.optimizer.zero_grad()               # clear gradients for this training step
+                loss.backward()                          # backpropagation, compute gradients
+                self.optimizer.step()                    # apply gradients
 
                 preds = torch.max(preds, 1)[1].data.numpy().squeeze() 
                 acc = (preds == y_batch).mean()

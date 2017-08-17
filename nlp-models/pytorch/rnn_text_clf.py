@@ -21,19 +21,21 @@ class RNNTextClassifier(torch.nn.Module):
 
     def build_model(self):
         self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
-        self.lstm = torch.nn.LSTM(self.embedding_dim, self.cell_size, self.n_layer,
-                                  batch_first=True, dropout=self.dropout)
+        self.dropout = torch.nn.Dropout(self.dropout)
+        self.lstm = torch.nn.LSTM(self.embedding_dim, self.cell_size, self.n_layer, batch_first=True)
         self.fc = torch.nn.Linear(self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters())
     # end method build_model    
 
 
-    def forward(self, X, X_lens, init_state=None):
+    def forward(self, X, X_lens, init_state=None, is_training=True):
         embedded = self.encoder(X)
+        if is_training is True:
+            embedded = self.dropout(embedded)
 
         packed = torch.nn.utils.rnn.pack_padded_sequence(embedded, X_lens, batch_first=True)
-        rnn_out, final_state = self.lstm(packed, init_state) # forward propagate
+        rnn_out, final_state = self.lstm(packed, init_state)
         # Y, Y_lens = torch.nn.utils.rnn.pad_packed_sequence(rnn_out, batch_first=True)
         h_n, c_n = final_state
 
@@ -92,10 +94,10 @@ class RNNTextClassifier(torch.nn.Module):
             labels = torch.from_numpy(y_batch.astype(np.int64))
 
             if (self.stateful) and (len(X_batch) == batch_size):
-                preds, state = self.forward(inputs, X_lens_batch, state)
+                preds, state = self.forward(inputs, X_lens_batch, state, is_training=False)
                 state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
             else:
-                preds, _ = self.forward(inputs, X_lens_batch)
+                preds, _ = self.forward(inputs, X_lens_batch, is_training=False)
 
             _, preds = torch.max(preds.data, 1)
             total += labels.size(0)

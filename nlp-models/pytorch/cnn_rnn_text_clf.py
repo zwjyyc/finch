@@ -24,6 +24,7 @@ class ConvLSTMClassifier(torch.nn.Module):
 
     def build_model(self):
         self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
+        self.dropout = torch.nn.Dropout(self.dropout)
         self.conv1d = torch.nn.Sequential(
             torch.nn.Conv1d(in_channels = self.embedding_dim,
                             out_channels = self.n_filters,
@@ -32,7 +33,6 @@ class ConvLSTMClassifier(torch.nn.Module):
             torch.nn.MaxPool1d(kernel_size = self.pool_size))
         self.lstm = torch.nn.LSTM(input_size = self.n_filters,
                                   hidden_size = self.cell_size,
-                                  dropout = self.dropout,
                                   batch_first = True)
         self.fc = torch.nn.Linear(self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
@@ -40,12 +40,14 @@ class ConvLSTMClassifier(torch.nn.Module):
     # end method build_model    
 
 
-    def forward(self, X, X_lens, init_state=None):
+    def forward(self, X, X_lens, init_state=None, is_training=True):
         embedded = self.encoder(X)
+        if is_training is True:
+            embedded = self.dropout(embedded)
         conv_out = self.conv1d(embedded.permute(0, 2, 1))
         
-        packed = torch.nn.utils.rnn.pack_padded_sequence(conv_out.permute(0, 2, 1),
-                                                         X_lens, batch_first=True)
+        packed = torch.nn.utils.rnn.pack_padded_sequence(
+            conv_out.permute(0, 2, 1), X_lens, batch_first=True)
         lstm_out, final_state = self.lstm(packed, init_state)
         h_n, c_n = final_state
 
@@ -109,10 +111,10 @@ class ConvLSTMClassifier(torch.nn.Module):
             labels = torch.from_numpy(y_batch.astype(np.int64))
 
             if (self.stateful) and (len(X_batch) == batch_size):
-                preds, state = self.forward(inputs, X_lens_batch, state)
+                preds, state = self.forward(inputs, X_lens_batch, state, is_training=False)
                 state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
             else:
-                preds, _ = self.forward(inputs, X_lens_batch)
+                preds, _ = self.forward(inputs, X_lens_batch, is_training=False)
 
             _, preds = torch.max(preds.data, 1)
             total += labels.size(0)

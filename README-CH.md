@@ -12,8 +12,8 @@ git clone https://github.com/zhedongzheng/finch.git
 python xxxx_test.py
 ```
 主要依赖于下面三个库：
-* [TensorFlow >=1.2.2](https://www.tensorflow.org/)
-* [PyTorch >=0.12](http://pytorch.org/)
+* [TensorFlow >= 1.2.2](https://www.tensorflow.org/)
+* [PyTorch >= 0.20](http://pytorch.org/)
 * [scikit-learn](http://scikit-learn.org/)
 
 ## 编码风格

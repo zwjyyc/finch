@@ -5,12 +5,10 @@ from sklearn.utils import shuffle
 
 
 class BiRNN:
-    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, n_layer=1, sess=tf.Session()):
+    def __init__(self, vocab_size, n_out, embedding_dims=128, cell_size=128, n_layer=1, sess=tf.Session()):
         """
         Parameters:
         -----------
-        seq_len: int
-            Sequence length
         vocab_size: int
             Vocabulary size
         cell_size: int
@@ -22,7 +20,6 @@ class BiRNN:
         stateful: boolean
             If true, the final state for each batch will be used as the initial state for the next batch 
         """
-        self.seq_len = seq_len
         self.vocab_size = vocab_size
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
@@ -44,9 +41,9 @@ class BiRNN:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.Y = tf.placeholder(tf.int64, [None, self.seq_len])
-        self.X_seq_len = tf.placeholder(tf.int32, [None])
+        self.X = tf.placeholder(tf.int32, [None, None])
+        self.Y = tf.placeholder(tf.int64, [None, None])
+        self.batch_size = tf.placeholder(tf.int32)
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
         self._cursor = self.X
@@ -73,7 +70,6 @@ class BiRNN:
                 cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
                 inputs = birnn_out,
                 dtype = tf.float32,
-                sequence_length = self.X_seq_len,
                 scope = 'birnn%d'%n)
             birnn_out = tf.concat((out_fw, out_bw), 2)
         self._cursor = birnn_out
@@ -81,13 +77,13 @@ class BiRNN:
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(tf.reshape(self._cursor, [-1, 2*self.cell_size]), self.n_out, name='out')
+        self.logits = tf.layers.dense(tf.reshape(self._cursor, [-1, 2*self.cell_size]), self.n_out)
     # end method add_output_layer
 
 
     def add_backward_path(self):
         self.loss = tf.contrib.seq2seq.sequence_loss(
-            logits = tf.reshape(self.logits, [-1, self.seq_len, self.n_out]),
+            logits = tf.reshape(self.logits, [self.batch_size, -1, self.n_out]),
             targets = self.Y,
             weights = tf.ones_like(self.X, tf.float32),
             average_across_timesteps = True,
@@ -118,7 +114,7 @@ class BiRNN:
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)           
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                              {self.X: X_batch, self.Y: Y_batch,
-                                              self.X_seq_len: len(X_batch)*[self.seq_len],
+                                              self.batch_size: len(X_batch),
                                               self.lr: lr,
                                               self.keep_prob: keep_prob})
                 global_step += 1
@@ -132,7 +128,7 @@ class BiRNN:
                                                       self.gen_batch(val_data[1], batch_size)):
                     v_loss, v_acc = self.sess.run([self.loss, self.acc],
                                                   {self.X: X_test_batch, self.Y: Y_test_batch,
-                                                   self.X_seq_len: len(X_test_batch)*[self.seq_len],
+                                                   self.batch_size: len(X_test_batch),
                                                    self.keep_prob: 1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
@@ -163,7 +159,7 @@ class BiRNN:
         for X_test_batch in self.gen_batch(X_test, batch_size):
             batch_pred = self.sess.run(self.logits,
                                       {self.X: X_test_batch,
-                                       self.X_seq_len: len(X_test_batch)*[self.seq_len],
+                                       self.batch_size: len(X_test_batch),
                                        self.keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.argmax(np.vstack(batch_pred_list), 1)
@@ -171,11 +167,10 @@ class BiRNN:
 
 
     def infer(self, xs):
-        xs_padded = xs + [0] * (self.seq_len - len(xs))
-        logits = self.sess.run(self.logits, {self.X: np.atleast_2d(xs_padded),
-                                             self.X_seq_len: np.atleast_1d(len(xs)),
+        logits = self.sess.run(self.logits, {self.X: np.atleast_2d(xs),
+                                             self.batch_size: 1,
                                              self.keep_prob: 1.0})
-        return np.argmax(logits[:len(xs)], 1)
+        return np.argmax(logits, 1)
     # end method infer
 
 

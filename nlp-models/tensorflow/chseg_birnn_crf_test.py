@@ -31,7 +31,7 @@ def to_test_seq(*args):
 
 
 def iter_seq(x, text_iter_step=5):
-    return np.array([x[i:i+SEQ_LEN] for i in range(0, len(x)-SEQ_LEN, text_iter_step)])
+    return np.array([x[i : i+SEQ_LEN] for i in range(0, len(x)-SEQ_LEN, text_iter_step)])
 
 
 if __name__ == '__main__':
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     X_test, Y_test = to_test_seq(x_test, y_test)
     print('Vocab size: %d' % vocab_size)
 
-    clf = BiRNN_CRF(SEQ_LEN, vocab_size, N_CLASS)
+    clf = BiRNN_CRF(vocab_size, N_CLASS)
     clf.fit(X_train, Y_train, n_epoch=N_EPOCH, batch_size=BATCH_SIZE)
     
     chars = list(sample) if py == 3 else list(sample.decode('utf-8'))

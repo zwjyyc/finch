@@ -5,12 +5,10 @@ from sklearn.utils import shuffle
 
 
 class BiRNN_CRF:
-    def __init__(self, seq_len, vocab_size, n_out, embedding_dims=128, cell_size=128, n_layer=1, sess=tf.Session()):
+    def __init__(self, vocab_size, n_out, embedding_dims=128, cell_size=128, n_layer=1, sess=tf.Session()):
         """
         Parameters:
         -----------
-        seq_len: int
-            Sequence length
         vocab_size: int
             Vocabulary size
         cell_size: int
@@ -22,7 +20,6 @@ class BiRNN_CRF:
         stateful: boolean
             If true, the final state for each batch will be used as the initial state for the next batch 
         """
-        self.seq_len = seq_len
         self.vocab_size = vocab_size
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
@@ -45,10 +42,11 @@ class BiRNN_CRF:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.int32, [None, self.seq_len])
-        self.Y = tf.placeholder(tf.int32, [None, self.seq_len])
+        self.X = tf.placeholder(tf.int32, [None, None])
+        self.Y = tf.placeholder(tf.int32, [None, None])
         self.X_seq_len = tf.placeholder(tf.int32, [None])
         self.keep_prob = tf.placeholder(tf.float32)
+        self.batch_size = tf.placeholder(tf.int32)
         self.lr = tf.placeholder(tf.float32)
         self._cursor = self.X
     # end method add_input_layer
@@ -74,7 +72,6 @@ class BiRNN_CRF:
                 cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
                 inputs = birnn_out,
                 dtype = tf.float32,
-                sequence_length = self.X_seq_len,
                 scope = 'birnn%d'%n)
             birnn_out = tf.concat((out_fw, out_bw), 2)
         self._cursor = birnn_out
@@ -89,7 +86,7 @@ class BiRNN_CRF:
     def add_crf_layer(self):
         with tf.variable_scope('crf'):
             self.log_likelihood, _ = tf.contrib.crf.crf_log_likelihood(
-                inputs = tf.reshape(self.logits, [-1, self.seq_len, self.n_out]),
+                inputs = tf.reshape(self.logits, [self.batch_size, -1, self.n_out]),
                 tag_indices = self.Y,
                 sequence_lengths = self.X_seq_len)
         with tf.variable_scope('crf', reuse=True):
@@ -105,8 +102,7 @@ class BiRNN_CRF:
     # end method add_backward_path
 
 
-    def fit(self, X, Y, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True,
-            keep_prob=1.0):
+    def fit(self, X, Y, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, keep_prob=1.0):
         global_step = 0
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch): # batch training
@@ -117,9 +113,9 @@ class BiRNN_CRF:
                                                                 self.gen_batch(Y, batch_size))):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)           
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                             {self.X: X_batch, self.Y: Y_batch,
-                                              self.X_seq_len: [self.seq_len]*len(X_batch),
-                                              self.lr: lr,
+                                             {self.X: X_batch, self.Y: Y_batch, self.lr: lr,
+                                              self.batch_size: len(X_batch),
+                                              self.X_seq_len: [X.shape[1]]*len(X_batch),
                                               self.keep_prob: keep_prob})
                 global_step += 1
                 if local_step % 50 == 0:
@@ -136,7 +132,8 @@ class BiRNN_CRF:
         for X_test_batch in self.gen_batch(X_test, batch_size):
             batch_pred = self.sess.run(self.logits,
                                       {self.X: X_test_batch,
-                                       self.X_seq_len: len(X_test_batch)*[self.seq_len],
+                                       self.batch_size: len(X_test_batch),
+                                       self.X_seq_len: len(X_test_batch)*[X_test.shape[1]],
                                        self.keep_prob: 1.0})
             batch_pred_list.append(batch_pred)
         return np.argmax(np.vstack(batch_pred_list), 1)
@@ -144,13 +141,13 @@ class BiRNN_CRF:
 
 
     def infer(self, xs):
-        xs_padded = xs + [0] * (self.seq_len - len(xs))
         logits, transition_params = self.sess.run([self.logits, self.transition_params],
-                                                  {self.X: np.atleast_2d(xs_padded),
+                                                  {self.X: np.atleast_2d(xs),
                                                    self.X_seq_len: np.atleast_1d(len(xs)),
-                                                   self.keep_prob: 1.0,})
-        score = logits.reshape([self.seq_len, self.n_out])
-        viterbi_seq, viterbi_score = tf.contrib.crf.viterbi_decode(score[:len(xs)], transition_params)
+                                                   self.batch_size: 1,
+                                                   self.keep_prob: 1.0})
+        score = logits.reshape([len(xs), self.n_out])
+        viterbi_seq, viterbi_score = tf.contrib.crf.viterbi_decode(score, transition_params)
         return viterbi_seq
     # end method infer
 

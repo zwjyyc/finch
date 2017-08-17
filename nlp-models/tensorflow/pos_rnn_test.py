@@ -22,7 +22,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = to_seq(x_train, x_test, y_train, y_test)
     print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
 
-    clf = RNNTextClassifier(SEQ_LEN, vocab_size, n_class)
+    clf = RNNTextClassifier(vocab_size, n_class)
     clf.fit(X_train, Y_train, val_data=(X_test, Y_test), rnn_keep_prob=0.8, n_epoch=5, batch_size=BATCH_SIZE)
     y_pred = clf.predict(X_test, batch_size=BATCH_SIZE)
     final_acc = (y_pred == Y_test.ravel()).mean()

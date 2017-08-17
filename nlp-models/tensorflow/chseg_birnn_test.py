@@ -27,7 +27,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = to_seq(x_train, x_test, y_train, y_test)
     print('Vocab size: %d' % vocab_size)
 
-    clf = BiRNN(SEQ_LEN, vocab_size, N_CLASS, n_layer=2)
+    clf = BiRNN(vocab_size, N_CLASS)
     clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=N_EPOCH)
     
     chars = list(sample) if py == 3 else list(sample.decode('utf-8'))

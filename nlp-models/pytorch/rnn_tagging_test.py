@@ -21,7 +21,7 @@ if __name__ == '__main__':
     print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
 
     clf = RNNTextClassifier(vocab_size, n_class)
-    clf.fit(X_train, Y_train, n_epoch=1)
+    clf.fit(X_train, Y_train, n_epoch=5)
     clf.evaluate(X_test, Y_test)
 
     preds = clf.infer([word2idx[w] for w in sample])

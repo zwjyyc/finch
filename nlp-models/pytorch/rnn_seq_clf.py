@@ -4,7 +4,7 @@ import math
 
 
 class RNNTextClassifier(torch.nn.Module):
-    def __init__(self, vocab_size, n_out, embedding_dim=128, cell_size=128, n_layer=1, dropout=0.3, stateful=False):
+    def __init__(self, vocab_size, n_out, embedding_dim=128, cell_size=128, n_layer=1, dropout=0.2, stateful=False):
         super(RNNTextClassifier, self).__init__()
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
@@ -78,6 +78,8 @@ class RNNTextClassifier(torch.nn.Module):
 
 
     def evaluate(self, X_test, Y_test, batch_size=128):
+        self.lstm.eval()
+
         correct = 0
         total = 0
         state = None

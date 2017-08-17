@@ -80,6 +80,8 @@ class RNNTextClassifier(torch.nn.Module):
 
 
     def evaluate(self, X_test, y_test, batch_size=32):
+        self.lstm.eval()
+
         correct = 0
         total = 0
         state = None

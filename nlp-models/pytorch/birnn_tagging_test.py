@@ -5,7 +5,7 @@ from birnn_seq_clf import BiRNN
 
 SEQ_LEN = 20
 BATCH_SIZE = 32
-N_EPOCH = 1
+N_EPOCH = 5
 sample = ['I', 'love', 'you']
 
 
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = to_seq(x_train, x_test, y_train, y_test)
     print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
 
-    clf = BiRNN(vocab_size, n_class, dropout=0.3)
+    clf = BiRNN(vocab_size, n_class)
     clf.fit(X_train, Y_train, n_epoch=N_EPOCH, batch_size=BATCH_SIZE)
     clf.evaluate(X_test, Y_test)
 

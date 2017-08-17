@@ -27,7 +27,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = to_seq(x_train, x_test, y_train, y_test)
     print('Vocab size: %d' % vocab_size)
 
-    clf = BiRNN(vocab_size, N_CLASS, dropout=0.0)
+    clf = BiRNN(vocab_size, N_CLASS)
     clf.fit(X_train, Y_train, n_epoch=N_EPOCH)
     clf.evaluate(X_test, Y_test)
     

@@ -24,7 +24,6 @@ class ConvLSTMClassifier(torch.nn.Module):
 
     def build_model(self):
         self.encoder = torch.nn.Embedding(self.vocab_size, self.embedding_dim)
-        self.dropout = torch.nn.Dropout(self.dropout)
         self.conv1d = torch.nn.Sequential(
             torch.nn.Conv1d(in_channels = self.embedding_dim,
                             out_channels = self.n_filters,
@@ -33,6 +32,7 @@ class ConvLSTMClassifier(torch.nn.Module):
             torch.nn.MaxPool1d(kernel_size = self.pool_size))
         self.lstm = torch.nn.LSTM(input_size = self.n_filters,
                                   hidden_size = self.cell_size,
+                                  dropout = self.dropout,
                                   batch_first = True)
         self.fc = torch.nn.Linear(self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
@@ -42,8 +42,6 @@ class ConvLSTMClassifier(torch.nn.Module):
 
     def forward(self, X, X_lens, init_state=None, is_training=True):
         embedded = self.encoder(X)
-        if is_training is True:
-            embedded = self.dropout(embedded)
         conv_out = self.conv1d(embedded.permute(0, 2, 1))
         
         packed = torch.nn.utils.rnn.pack_padded_sequence(
@@ -97,6 +95,8 @@ class ConvLSTMClassifier(torch.nn.Module):
 
 
     def evaluate(self, X_test, y_test, batch_size=32):
+        self.lstm.eval()
+
         correct = 0
         total = 0
         state = None

@@ -4,7 +4,7 @@ import math
 
 
 class BiRNN(torch.nn.Module):
-    def __init__(self, vocab_size, n_out, embedding_dim=128, cell_size=128, dropout=0.0):
+    def __init__(self, vocab_size, n_out, embedding_dim=128, cell_size=128, dropout=0.2):
         super(BiRNN, self).__init__()
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
@@ -68,6 +68,8 @@ class BiRNN(torch.nn.Module):
 
 
     def evaluate(self, X_test, Y_test, batch_size=128):
+        self.birnn.eval()
+
         correct = 0
         total = 0
         for X_batch, Y_batch in zip(self.gen_batch(X_test, batch_size), self.gen_batch(Y_test, batch_size)):

@@ -66,6 +66,7 @@ class CNNClassifier(torch.nn.Module):
 
 
     def evaluate(self, X_test, y_test, batch_size):
+        self.eval()
         correct = 0
         total = 0
         for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size),

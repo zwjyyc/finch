@@ -1,5 +1,5 @@
 import pandas as pd
-from ncf import recommender
+from ncf import recommend
 
 
 def favourite(active_user, top_n, rating_info, movie_info):
@@ -11,16 +11,16 @@ def favourite(active_user, top_n, rating_info, movie_info):
 
 def main():
     rating_info = pd.read_csv('./temp/ml-100k/u.data', sep='\t', header=None, usecols=[0, 1, 2],
-                    names=['userid', 'itemid', 'rating'])
+                              names=['userid', 'itemid', 'rating'])
 
     rating_matrix = pd.pivot_table(rating_info, values='rating', index=['userid'], columns=['itemid'])
 
     movie_info = pd.read_csv('./temp/ml-100k/u.item', sep='|', header=None, index_col=False,
                              names=['itemid', 'title'], usecols=[0,1], encoding='latin')
 
-    print(favourite(5, 10, rating_info, movie_info))
-    print()
-    print(recommender(5, 10, rating_matrix, movie_info))
+    print(favourite(5, 10, rating_info, movie_info), end='\n\n')
+    
+    print(recommend(5, 10, rating_matrix, movie_info))
 
 
 if __name__ == '__main__':

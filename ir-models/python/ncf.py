@@ -33,7 +33,7 @@ def nearest_ratings(active_user, top_k, rating_matrix):
     return predicted_item_ratings
 
 
-def recommender(active_user, top_n, rating_matrix, movie_info):
+def recommend(active_user, top_n, rating_matrix, movie_info):
     predicted_item_ratings = nearest_ratings(active_user, 10, rating_matrix)
     movies_watched = list(rating_matrix.loc[active_user].loc[rating_matrix.loc[active_user]>0].index)
     predicted_item_ratings.drop(movies_watched, inplace=True)

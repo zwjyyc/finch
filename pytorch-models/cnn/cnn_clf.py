@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from torch.utils.data import TensorDataset, DataLoader
 
+
 class CNNClassifier(torch.nn.Module):
     def __init__(self, img_size, img_ch, kernel_size, pool_size, n_out):
         super(CNNClassifier, self).__init__()
@@ -77,6 +78,7 @@ class CNNClassifier(torch.nn.Module):
         for X_batch, y_batch in loader:
             inputs = torch.autograd.Variable(X_batch)
             labels = y_batch
+
             preds = self.forward(inputs)
             _, preds = torch.max(preds.data, 1)
             total += labels.size(0)

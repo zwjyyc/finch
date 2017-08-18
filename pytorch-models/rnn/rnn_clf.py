@@ -1,21 +1,25 @@
+from __future__ import division
 import torch
 import numpy as np
+from torch.utils.data import TensorDataset, DataLoader
 
 
 class RNNClassifier(torch.nn.Module):
-    def __init__(self, n_in, n_out, cell_size=128, n_layer=2, stateful=False):
+    def __init__(self, n_in, n_out, cell_size=128, n_layer=2, stateful=False, dropout=0.2):
         super(RNNClassifier, self).__init__()
         self.n_in = n_in
         self.cell_size = cell_size
         self.n_layer = n_layer
         self.n_out = n_out
         self.stateful = stateful
+        self.dropout = dropout
         self.build_model()
     # end constructor
 
 
     def build_model(self):
-        self.lstm = torch.nn.LSTM(self.n_in, self.cell_size, self.n_layer, batch_first=True)
+        self.lstm = torch.nn.LSTM(self.n_in, self.cell_size, self.n_layer,
+                                  batch_first=True, dropout=self.dropout)
         self.fc = torch.nn.Linear(self.cell_size, self.n_out)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
@@ -30,12 +34,14 @@ class RNNClassifier(torch.nn.Module):
 
 
     def fit(self, X, y, num_epochs, batch_size):
+        dataset = TensorDataset(data_tensor = torch.from_numpy(X.astype(np.float32)),
+                                target_tensor = torch.from_numpy(y.astype(np.int64)))
+        loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
         for epoch in range(num_epochs):
             state = None
-            for i, (X_batch, y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
-                                                       self.gen_batch(y, batch_size))):
-                inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
-                labels = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
+            for i, (X_batch, y_batch) in enumerate(loader):
+                inputs = torch.autograd.Variable(X_batch)
+                labels = torch.autograd.Variable(y_batch)
                 
                 if (self.stateful) and (len(X_batch) == batch_size):
                     preds, state = self.forward(inputs, state)
@@ -50,7 +56,7 @@ class RNNClassifier(torch.nn.Module):
                 self.optimizer.step()                    # apply gradients
 
                 preds = torch.max(preds, 1)[1].data.numpy().squeeze() 
-                acc = (preds == y_batch).mean()
+                acc = (preds == y_batch.numpy()).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
                            %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
@@ -58,13 +64,16 @@ class RNNClassifier(torch.nn.Module):
 
 
     def evaluate(self, X_test, y_test, batch_size):
+        self.eval()
         correct = 0
         total = 0
         state = None
-        for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size),
-                                    self.gen_batch(y_test, batch_size)):
-            inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
-            labels = torch.from_numpy(y_batch.astype(np.int64))
+        dataset = TensorDataset(data_tensor = torch.from_numpy(X_test.astype(np.float32)),
+                                target_tensor = torch.from_numpy(y_test.astype(np.int64)))
+        loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
+        for X_batch, y_batch in loader:
+            inputs = torch.autograd.Variable(X_batch)
+            labels = y_batch
 
             if (self.stateful) and (len(X_batch) == batch_size):
                 preds, state = self.forward(inputs, state)
@@ -76,7 +85,7 @@ class RNNClassifier(torch.nn.Module):
             _, preds = torch.max(preds.data, 1)
             total += labels.size(0)
             correct += (preds == labels).sum()
-        print('Test Accuracy of the model on the 10000 test images: %d %%' % (100 * correct / total)) 
+        print('Test Accuracy of the model on the 10000 test images: %.4f %%' % (correct / total)) 
     # end method evaluate
 
 

@@ -1,5 +1,7 @@
+from __future__ import division
 import torch
 import numpy as np
+from torch.utils.data import TensorDataset, DataLoader
 
 
 class MLPClassifier(torch.nn.Module):
@@ -24,6 +26,7 @@ class MLPClassifier(torch.nn.Module):
         forward = [self.n_in] + self.hidden_units
         for i in range(len(forward)-1):
             dense.append(torch.nn.Linear(forward[i], forward[i+1]))
+            dense.append(torch.nn.BatchNorm2d(forward[i+1]))
             dense.append(torch.nn.ReLU())
         dense.append(torch.nn.Linear(self.hidden_units[-1], self.n_out))
         return dense
@@ -37,20 +40,21 @@ class MLPClassifier(torch.nn.Module):
 
 
     def fit(self, X, y, num_epochs, batch_size):
+        dataset = TensorDataset(data_tensor = torch.from_numpy(X.astype(np.float32)),
+                                target_tensor = torch.from_numpy(y.astype(np.int64)))
+        loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
         for epoch in range(num_epochs):
-            for i, (X_batch, y_batch) in enumerate(zip(self.gen_batch(X, batch_size),
-                                                       self.gen_batch(y, batch_size))):
-                inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
-                labels = torch.autograd.Variable(torch.from_numpy(y_batch.astype(np.int64)))
+            for i, (X_batch, y_batch) in enumerate(loader):
+                inputs = torch.autograd.Variable(X_batch)
+                labels = torch.autograd.Variable(y_batch)
 
-                preds = self.forward(inputs)            # mlp output
+                preds = self.forward(inputs)            # cnn output
                 loss = self.criterion(preds, labels)    # cross entropy loss
                 self.optimizer.zero_grad()              # clear gradients for this training step
                 loss.backward()                         # backpropagation, compute gradients
                 self.optimizer.step()                   # apply gradients
-
                 preds = torch.max(preds, 1)[1].data.numpy().squeeze()
-                acc = (preds == y_batch).mean()
+                acc = (preds == y_batch.numpy()).mean()
                 if (i+1) % 100 == 0:
                     print ('Epoch [%d/%d], Step [%d/%d], Loss: %.4f, Acc: %.4f'
                            %(epoch+1, num_epochs, i+1, int(len(X)/batch_size), loss.data[0], acc))
@@ -58,17 +62,21 @@ class MLPClassifier(torch.nn.Module):
 
 
     def evaluate(self, X_test, y_test, batch_size):
+        self.eval()
         correct = 0
         total = 0
-        for X_batch, y_batch in zip(self.gen_batch(X_test, batch_size),
-                                    self.gen_batch(y_test, batch_size)):
-            inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
-            labels = torch.from_numpy(y_batch.astype(np.int64))
+        dataset = TensorDataset(data_tensor = torch.from_numpy(X_test.astype(np.float32)),
+                                target_tensor = torch.from_numpy(y_test.astype(np.int64)))
+        loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
+        for X_batch, y_batch in loader:
+            inputs = torch.autograd.Variable(X_batch)
+            labels = y_batch
+
             preds = self.forward(inputs)
             _, preds = torch.max(preds.data, 1)
             total += labels.size(0)
             correct += (preds == labels).sum()
-        print('Test Accuracy of the model on the 10000 test images: %d %%' % (100 * correct / total)) 
+        print('Test Accuracy of the model on the 10000 test images: %.4f' % (correct / total)) 
     # end method evaluate
 
 

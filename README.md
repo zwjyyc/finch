@@ -2,7 +2,7 @@
 
 ```finch``` is a project that contains the collection of my implementations on machine learning (models + tests) mainly based on TensorFlow and PyTorch; I will keep adding more models ...
 ## Installation
-The following command clones the project, however it is large. You can also manually download the files (you need)
+The following command clones the project (>200MB):
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```

@@ -3,9 +3,9 @@ import numpy as np
 
 
 class PolicyGradient:
-    def __init__(self, n_in=4, n_hidden=4, n_out=2, lr=0.01, sess=tf.Session()):
+    def __init__(self, hidden_net, n_in=4, n_out=2, lr=0.01, sess=tf.Session()):
         self.n_in = n_in
-        self.n_hidden = n_hidden
+        self.hidden_net = hidden_net
         self.n_out = n_out
         self.lr = lr
         self.sess = sess
@@ -21,7 +21,7 @@ class PolicyGradient:
 
     def add_forward_path(self):
         self.X = tf.placeholder(tf.float32, shape=[None, self.n_in])
-        hidden = tf.layers.dense(self.X, self.n_hidden, activation=tf.nn.elu)
+        hidden = self.hidden_net(self.X)
         self.logits = tf.layers.dense(hidden, self.n_out)
         outputs = tf.nn.softmax(self.logits)
 
@@ -48,7 +48,7 @@ class PolicyGradient:
     # end method add_backward_path
 
 
-    def learn(self, env, n_games_per_update=10, n_max_steps=1000, n_iterations=350, discount_rate=0.95):
+    def learn(self, env, n_games_per_update=10, n_max_steps=1000, n_iterations=250, discount_rate=0.95):
         self.sess.run(tf.global_variables_initializer())
         for iteration in range(n_iterations):
             print("Iteration: {}".format(iteration))

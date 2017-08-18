@@ -3,7 +3,7 @@
 ```finch``` 是一个收录了大量我在机器学习（模型+测试）上写过的代码的集合，主要基于 TensorFlow 和 PyTorch（持续更新中）
 
 ## 安装
-下面的命令可以下载整个项目源代码，但是体积会很大，推荐的做法是手动下载你需要的文件
+下面的命令可以下载所有文件（超过200MB）
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```

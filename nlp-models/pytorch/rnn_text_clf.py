@@ -71,8 +71,8 @@ class RNNTextClassifier(torch.nn.Module):
                 self.optimizer, lr = self.adjust_lr(self.optimizer, global_step, total_steps)
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
-                self.optimizer.step()                                  # apply gradients
                 torch.nn.utils.clip_grad_norm(self.parameters(), self.grad_clip)
+                self.optimizer.step()                                  # apply gradients
                 global_step += 1
 
                 preds = torch.max(preds,1)[1].data.numpy().squeeze()

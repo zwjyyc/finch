@@ -159,9 +159,9 @@ python xxxx_test.py
 
 ## 信息检索
 #### 推荐系统
-* Python &nbsp; | &nbsp; 协同过滤 &nbsp; | &nbsp; MovieLens 电影数据 &nbsp; &nbsp; [基于用户](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;
+* Python &nbsp; | &nbsp; 协同过滤 &nbsp; | &nbsp; MovieLens 电影数据 &nbsp; &nbsp; [基于用户的模型](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;
 
-* Python &nbsp; | &nbsp; Apriori算法 &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [函数](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori_movielens_test.py) &nbsp; | &nbsp;
+* Python &nbsp; | &nbsp; Apriori算法 &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori_movielens_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; 矩阵分解 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf.py) &nbsp; &nbsp; [MovieLens测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf_movielens_test.py) &nbsp; | &nbsp;
 

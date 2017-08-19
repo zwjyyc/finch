@@ -15,9 +15,7 @@ class NMF:
         lamda: float
             Penalty parameter Lambda of the error term
         sess: object
-            tf.Session() object
-        stateful: boolean
-            If true, the final state for each batch will be used as the initial state for the next batch 
+            tf.Session() object 
         """
         self.n_user = n_user
         self.n_item = n_item
@@ -58,9 +56,9 @@ class NMF:
         R_non_zero = tf.gather(R_flatten, self.non_zero_indices)
         R_pred_non_zero = tf.gather(R_pred_flatten, self.non_zero_indices)
         
-        cost = tf.reduce_sum(tf.abs(tf.subtract(R_non_zero, R_pred_non_zero)))
+        cost = tf.reduce_sum(tf.squared_difference(R_non_zero, R_pred_non_zero))
 
-        norm_sums = tf.reduce_sum(tf.abs(self.U)) + tf.reduce_sum(tf.abs(self.I))
+        norm_sums = tf.reduce_sum(tf.square(self.U)) + tf.reduce_sum(tf.square(self.I))
         regu = tf.multiply(norm_sums, self.lamda)
         
         self.loss = tf.add(cost, regu)

@@ -21,8 +21,7 @@ if __name__ == '__main__':
     
     nmf.sess.run(tf.global_variables_initializer())
     for step in range(50000):
-        _, loss, R_pred = nmf.sess.run([nmf.train_op, nmf.loss, nmf.R_pred], {nmf.R:R.values, nmf.lr:0.005})
+        _, loss, R_pred = nmf.sess.run([nmf.train_op, nmf.loss, nmf.R_pred], {nmf.R:R.values, nmf.lr:0.001})
         if step % 100 == 0:
-            print(step, loss)
-            print(ans1, '：', R_pred[2][1], ' | ', ans2, ': ', R_pred[200][940],
-                  ' | ', ans3, ': ', R_pred[900][931])
+            print("[%d] loss: %.4f | " % (step, loss), end='')
+            print(ans1, ':', R_pred[2][1], '|', ans2, ':', R_pred[200][940], '|', ans3, ':', R_pred[900][931])

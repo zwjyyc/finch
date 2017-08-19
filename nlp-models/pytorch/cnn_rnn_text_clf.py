@@ -7,7 +7,7 @@ from sklearn.utils import shuffle
 
 class ConvLSTMClassifier(torch.nn.Module):
     def __init__(self, vocab_size, n_out=2, embedding_dim=128, n_filters=64, kernel_size=5, pool_size=4,
-                 cell_size=70, dropout=0.2, stateful=False):
+                 cell_size=70, dropout=0.2, stateful=False, grad_clip=5.0):
         super(ConvLSTMClassifier, self).__init__()
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
@@ -18,6 +18,7 @@ class ConvLSTMClassifier(torch.nn.Module):
         self.dropout = dropout
         self.stateful = stateful
         self.n_out = n_out
+        self.grad_clip = grad_clip
         self.build_model()
     # end constructor
 
@@ -83,6 +84,7 @@ class ConvLSTMClassifier(torch.nn.Module):
                 self.optimizer, lr = self.adjust_lr(self.optimizer, global_step, total_steps)
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
+                torch.nn.utils.clip_grad_norm(self.parameters(), self.grad_clip)
                 self.optimizer.step()                                  # apply gradients
                 global_step += 1
 
@@ -95,7 +97,7 @@ class ConvLSTMClassifier(torch.nn.Module):
 
 
     def evaluate(self, X_test, y_test, batch_size=32):
-        self.lstm.eval()
+        self.eval()
 
         correct = 0
         total = 0

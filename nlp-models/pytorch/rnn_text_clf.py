@@ -6,7 +6,8 @@ from sklearn.utils import shuffle
 
 
 class RNNTextClassifier(torch.nn.Module):
-    def __init__(self, vocab_size, n_out=2, embedding_dim=128, cell_size=128, n_layer=1, stateful=False, dropout=0.2):
+    def __init__(self, vocab_size, n_out=2, embedding_dim=128, cell_size=128, n_layer=1, stateful=False,
+                 dropout=0.2, grad_clip=5.0):
         super(RNNTextClassifier, self).__init__()
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
@@ -15,6 +16,7 @@ class RNNTextClassifier(torch.nn.Module):
         self.n_out = n_out
         self.stateful = stateful
         self.dropout = dropout
+        self.grad_clip = grad_clip
         self.build_model()
     # end constructor
 
@@ -70,6 +72,7 @@ class RNNTextClassifier(torch.nn.Module):
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients
                 self.optimizer.step()                                  # apply gradients
+                torch.nn.utils.clip_grad_norm(self.parameters(), self.grad_clip)
                 global_step += 1
 
                 preds = torch.max(preds,1)[1].data.numpy().squeeze()
@@ -81,7 +84,7 @@ class RNNTextClassifier(torch.nn.Module):
 
 
     def evaluate(self, X_test, y_test, batch_size=32):
-        self.lstm.eval()
+        self.eval()
 
         correct = 0
         total = 0

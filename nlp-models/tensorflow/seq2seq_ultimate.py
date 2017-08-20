@@ -51,7 +51,6 @@ class Seq2Seq:
         encoder_embedding = tf.get_variable('encoder_embedding', [len(self.X_word2idx), self.encoder_embedding_dim],
                                              tf.float32, tf.random_uniform_initializer(-1.0, 1.0)) 
         self.encoder_out = tf.nn.embedding_lookup(encoder_embedding, self.X)
-        self.encoder_state = ()
         for n in range(self.n_layers):
             (out_fw, out_bw), (state_fw, state_bw) = tf.nn.bidirectional_dynamic_rnn(
                 cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
@@ -60,6 +59,8 @@ class Seq2Seq:
                 dtype = tf.float32,
                 scope = 'bidirectional_rnn_'+str(n))
             self.encoder_out = tf.concat((out_fw, out_bw), 2)
+        self.encoder_state = ()
+        for n in range(self.n_layers): # replicate top-most state
             self.encoder_state += (state_fw, state_bw)
     # end method
     

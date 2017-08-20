@@ -51,6 +51,7 @@ class Seq2Seq:
             inputs = tf.nn.embedding_lookup(encoder_embedding, self.X),
             sequence_length = self.X_seq_len,
             dtype = tf.float32)
+        self.encoder_state = tuple(self.encoder_state[-1] for _ in range(self.n_layers))
     # end method add_encoder_layer
     
 

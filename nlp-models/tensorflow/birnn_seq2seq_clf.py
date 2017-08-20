@@ -26,7 +26,7 @@ class BiRNN:
         self.n_layer = n_layer
         self.n_out = n_out
         self.sess = sess
-        self._cursor = None
+        self._pointer = None
         self.build_graph()
     # end constructor
 
@@ -46,15 +46,15 @@ class BiRNN:
         self.batch_size = tf.placeholder(tf.int32)
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self._cursor = self.X
+        self._pointer = self.X
     # end method add_input_layer
 
 
     def add_word_embedding_layer(self):
         embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
-        embedded = tf.nn.embedding_lookup(embedding, self._cursor)
-        self._cursor = tf.nn.dropout(embedded, self.keep_prob)
+        embedded = tf.nn.embedding_lookup(embedding, self._pointer)
+        self._pointer = tf.nn.dropout(embedded, self.keep_prob)
     # end method add_word_embedding_layer
 
 
@@ -64,7 +64,7 @@ class BiRNN:
 
 
     def add_bidirectional_dynamic_rnn(self):
-        birnn_out = self._cursor
+        birnn_out = self._pointer
         for n in range(self.n_layer):
             (out_fw, out_bw), _ = tf.nn.bidirectional_dynamic_rnn(
                 cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
@@ -72,12 +72,12 @@ class BiRNN:
                 dtype = tf.float32,
                 scope = 'birnn%d'%n)
             birnn_out = tf.concat((out_fw, out_bw), 2)
-        self._cursor = birnn_out
+        self._pointer = birnn_out
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(tf.reshape(self._cursor, [-1, 2*self.cell_size]), self.n_out)
+        self.logits = tf.layers.dense(tf.reshape(self._pointer, [-1, 2*self.cell_size]), self.n_out)
     # end method add_output_layer
 
 

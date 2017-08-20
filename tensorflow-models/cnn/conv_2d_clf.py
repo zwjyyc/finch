@@ -30,7 +30,7 @@ class Conv2DClassifier:
         self.padding = padding
         self.n_out = n_out
         self.sess = sess
-        self._cursor = None
+        self._pointer = None
         self._img_h = img_size[0]
         self._img_w = img_size[1]
         self._n_filter = img_ch
@@ -55,19 +55,19 @@ class Conv2DClassifier:
         self.Y = tf.placeholder(tf.int64, [None])
         self.keep_prob = tf.placeholder(tf.float32)
         self.train_flag = tf.placeholder(tf.bool)
-        self._cursor = self.X
+        self._pointer = self.X
     # end method add_input_layer
 
 
     def add_conv(self, out_dim, strides=(1, 1)):
-        Y = tf.layers.conv2d(inputs = self._cursor,
+        Y = tf.layers.conv2d(inputs = self._pointer,
                              filters = out_dim,
                              kernel_size = self.kernel_size,
                              strides = strides,
                              padding = self.padding,
                              use_bias = True,
                              activation = tf.nn.relu)
-        self._cursor = tf.layers.batch_normalization(Y, training=self.train_flag)
+        self._pointer = tf.layers.batch_normalization(Y, training=self.train_flag)
         self._n_filter = out_dim
         if self.padding == 'valid':
             self._img_h = int((self._img_h-self.kernel_size[0]+1) / strides[0])
@@ -79,7 +79,7 @@ class Conv2DClassifier:
 
 
     def add_pooling(self):
-        self._cursor = tf.layers.max_pooling2d(inputs = self._cursor,
+        self._pointer = tf.layers.max_pooling2d(inputs = self._pointer,
                                                pool_size = self.pool_size,
                                                strides = self.pool_size,
                                                padding = self.padding)
@@ -89,15 +89,15 @@ class Conv2DClassifier:
 
 
     def add_fully_connected(self, out_dim):
-        flat = tf.reshape(self._cursor, [-1, self._img_h * self._img_w * self._n_filter])
+        flat = tf.reshape(self._pointer, [-1, self._img_h * self._img_w * self._n_filter])
         fc = tf.layers.dense(flat, out_dim, tf.nn.relu)
         fc = tf.layers.batch_normalization(fc, training=self.train_flag)
-        self._cursor = tf.nn.dropout(fc, self.keep_prob)
+        self._pointer = tf.nn.dropout(fc, self.keep_prob)
     # end method add_fully_connected
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(self._cursor, self.n_out)
+        self.logits = tf.layers.dense(self._pointer, self.n_out)
     # end method add_output_layer
 
 

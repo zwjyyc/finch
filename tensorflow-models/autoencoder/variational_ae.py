@@ -24,12 +24,11 @@ class Autoencoder:
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.float32, [None, self.n_in])
-        self._cursor = self.X
     # end method add_input_layer
 
 
     def add_encoders(self):
-        new_layer = self._cursor
+        new_layer = self.X
         for unit in self.encoder_units[:-1]:
             new_layer = tf.layers.dense(new_layer, unit, tf.nn.elu)
         self.mean = tf.layers.dense(new_layer, self.encoder_units[-1])

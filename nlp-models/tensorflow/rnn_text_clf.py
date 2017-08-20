@@ -27,7 +27,7 @@ class RNNTextClassifier:
         self.grad_clip = grad_clip
         self.n_out = n_out
         self.sess = sess
-        self._cursor = None
+        self._pointer = None
         self.build_graph()
     # end constructor
 
@@ -47,15 +47,15 @@ class RNNTextClassifier:
         self.X_seq_lens = tf.placeholder(tf.int32, [None])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self._cursor = self.X
+        self._pointer = self.X
     # end method add_input_layer
 
 
     def add_word_embedding_layer(self):
         embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
-        embedded = tf.nn.embedding_lookup(embedding, self._cursor)
-        self._cursor = tf.nn.dropout(embedded, self.keep_prob)
+        embedded = tf.nn.embedding_lookup(embedding, self._pointer)
+        self._pointer = tf.nn.dropout(embedded, self.keep_prob)
     # end method add_word_embedding_layer
 
 
@@ -65,13 +65,13 @@ class RNNTextClassifier:
 
 
     def add_dynamic_rnn(self):       
-        _, self._cursor = tf.nn.dynamic_rnn(self.lstm_cell(), self._cursor, sequence_length=self.X_seq_lens,
-                                            dtype=tf.float32)
+        _, self._pointer = tf.nn.dynamic_rnn(self.lstm_cell(), self._pointer, sequence_length=self.X_seq_lens,
+                                             dtype=tf.float32)
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(self._cursor.h, self.n_out)
+        self.logits = tf.layers.dense(self._pointer.h, self.n_out)
     # end method add_output_layer
 
 

@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 class RNNRegressor:
-    def __init__(self, n_step, n_in, n_out, cell_size, sess=tf.Session()):
+    def __init__(self, n_in, n_out, cell_size, sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -17,12 +17,11 @@ class RNNRegressor:
         sess: object
             tf.Session() object
         """
-        self.n_step = n_step
         self.n_in = n_in
         self.n_out = n_out
         self.cell_size = cell_size
         self.sess = sess
-        self._cursor = None
+        self._pointer = None
         self.build_graph()
     # end constructor
 
@@ -37,10 +36,10 @@ class RNNRegressor:
 
 
     def add_input_layer(self):
-        self.X = tf.placeholder(tf.float32, [None, self.n_step, self.n_in])
-        self.Y = tf.placeholder(tf.float32, [None, self.n_step, self.n_out])
+        self.X = tf.placeholder(tf.float32, [None, None, self.n_in])
+        self.Y = tf.placeholder(tf.float32, [None, None, self.n_out])
         self.batch_size = tf.placeholder(tf.int32, [])
-        self._cursor = self.X
+        self._pointer = self.X
     # end method add_input_layer
 
 
@@ -51,16 +50,16 @@ class RNNRegressor:
 
     def add_dynamic_rnn(self):
         self.init_state = self.cell.zero_state(self.batch_size, dtype=tf.float32)
-        self._cursor, self.final_state = tf.nn.dynamic_rnn(self.cell, self._cursor,
+        self._pointer, self.final_state = tf.nn.dynamic_rnn(self.cell, self._pointer,
                                                            initial_state=self.init_state,
                                                            time_major=False)
     # end method add_dynamic_rnn
 
 
     def add_output_layer(self):
-        reshaped = tf.reshape(self._cursor, [-1, self.cell_size])
+        reshaped = tf.reshape(self._pointer, [-1, self.cell_size])
         self.logits = tf.layers.dense(reshaped, self.n_out)
-        self.time_seq_out = tf.reshape(self.logits, [-1, self.n_step, self.n_out])
+        self.time_seq_out = tf.reshape(self.logits, [self.batch_size, -1, self.n_out])
     # end method add_output_layer
 
 

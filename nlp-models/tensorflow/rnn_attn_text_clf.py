@@ -31,7 +31,7 @@ class RNNTextClassifier:
         self.n_out = n_out
         self.sess = sess
         self.stateful = stateful
-        self._cursor = None
+        self._pointer = None
         self.build_graph()
     # end constructor
 
@@ -53,15 +53,15 @@ class RNNTextClassifier:
         self.batch_size = tf.placeholder(tf.int32, [])
         self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self._cursor = self.X
+        self._pointer = self.X
     # end method add_input_layer
 
 
     def add_word_embedding_layer(self):
         embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
-        self.embedded = tf.nn.embedding_lookup(embedding, self._cursor)
-        self._cursor = self.embedded
+        self.embedded = tf.nn.embedding_lookup(embedding, self._pointer)
+        self._pointer = self.embedded
     # end method add_word_embedding_layer
 
 
@@ -74,9 +74,9 @@ class RNNTextClassifier:
 
     def add_dynamic_rnn(self):
         self.init_state = self.cell.zero_state(self.batch_size, tf.float32)        
-        self._cursor, self.final_state = tf.nn.dynamic_rnn(self.cell, self._cursor,
-                                                           initial_state=self.init_state,
-                                                           time_major=False)
+        self._pointer, self.final_state = tf.nn.dynamic_rnn(self.cell, self._pointer,
+                                                            initial_state=self.init_state,
+                                                            time_major=False)
     # end method add_dynamic_rnn
 
 
@@ -84,12 +84,12 @@ class RNNTextClassifier:
         reshaped = tf.reshape(self.embedded, [-1, self.embedding_dims])
         reduced = tf.layers.dense(reshaped, 1, tf.tanh)
         alphas = self.softmax(tf.reshape(reduced, [-1, self.seq_len]))
-        self._cursor = tf.reduce_sum(self._cursor * tf.expand_dims(alphas, 2), 1)
+        self._pointer = tf.reduce_sum(self._pointer * tf.expand_dims(alphas, 2), 1)
     # end method add_attention
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(self._cursor, self.n_out)
+        self.logits = tf.layers.dense(self._pointer, self.n_out)
     # end method add_output_layer
 
 

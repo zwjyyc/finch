@@ -33,7 +33,7 @@ class Conv1DClassifier:
         self.padding = padding
         self.n_out = n_out
         self.sess = sess
-        self._cursor = None
+        self._pointer = None
         self._seq_len = 0
         self.build_graph()
     # end constructor
@@ -57,20 +57,20 @@ class Conv1DClassifier:
         self.Y = tf.placeholder(tf.int64, [None])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self._cursor = self.X
+        self._pointer = self.X
     # end method add_input_layer
 
 
     def add_word_embedding(self):
         embedding = tf.get_variable('encoder', [self.vocab_size,self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
-        embedded = tf.nn.embedding_lookup(embedding, self._cursor)
-        self._cursor = tf.nn.dropout(embedded, self.keep_prob)
+        embedded = tf.nn.embedding_lookup(embedding, self._pointer)
+        self._pointer = tf.nn.dropout(embedded, self.keep_prob)
     # end method add_word_embedding_layer
 
 
     def add_conv1d(self, n_filters, kernel_size, strides=1):
-        Y = tf.layers.conv1d(inputs = self._cursor,
+        Y = tf.layers.conv1d(inputs = self._pointer,
                              filters = n_filters,
                              kernel_size  = kernel_size,
                              strides = strides,
@@ -86,22 +86,22 @@ class Conv1DClassifier:
 
 
     def merge_layers(self, layers):
-        self._cursor = tf.concat(layers, axis=1)
+        self._pointer = tf.concat(layers, axis=1)
     # end method merge_layers
 
 
     def add_global_pooling(self):
-        Y = tf.layers.average_pooling1d(inputs = self._cursor,
+        Y = tf.layers.average_pooling1d(inputs = self._pointer,
                                         pool_size = self._seq_len,
                                         strides = 1,
                                         padding = self.padding)
         Y = tf.reshape(Y, [-1, self.n_filters])
-        self._cursor = Y
+        self._pointer = Y
     # end method add_global_maxpool_layer
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(self._cursor, self.n_out)
+        self.logits = tf.layers.dense(self._pointer, self.n_out)
     # end method add_output_layer
 
 

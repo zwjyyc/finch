@@ -40,7 +40,7 @@ class ConvLSTMClassifier:
         self.cell_size = cell_size
         self.n_out = n_out
         self.sess = sess
-        self._cursor = None         # used to point to the forefront of neural network
+        self._pointer = None         # used to point to the forefront of neural network
         self._seq_len = max_seq_len # used to record the current sequence length (after pooling)
         self.build_graph()
     # end constructor
@@ -64,27 +64,27 @@ class ConvLSTMClassifier:
         self.X_seq_lens = tf.placeholder(tf.int32, [None])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self._cursor = self.X
+        self._pointer = self.X
     # end method add_input_layer
 
 
     def add_word_embedding(self):
         embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
-        embedded = tf.nn.embedding_lookup(embedding, self._cursor)
-        self._cursor = tf.nn.dropout(embedded, self.keep_prob)
+        embedded = tf.nn.embedding_lookup(embedding, self._pointer)
+        self._pointer = tf.nn.dropout(embedded, self.keep_prob)
     # end method add_word_embedding
 
 
     def add_conv1d(self, n_filters, strides=1):
-        Y = tf.layers.conv1d(inputs = self._cursor,
+        Y = tf.layers.conv1d(inputs = self._pointer,
                              filters = n_filters,
                              kernel_size  = self.kernel_size,
                              strides = strides,
                              padding = self.padding,
                              use_bias = True,
                              activation = tf.nn.relu)
-        self._cursor = Y
+        self._pointer = Y
         if self.padding == 'valid':
             self._seq_len = int((self._seq_len - self.kernel_size + 1) / strides)
         if self.padding == 'same':
@@ -93,12 +93,12 @@ class ConvLSTMClassifier:
 
 
     def add_pooling(self, k=2):
-        Y = tf.layers.average_pooling1d(inputs = self._cursor,
+        Y = tf.layers.average_pooling1d(inputs = self._pointer,
                                         pool_size = k,
                                         strides = k,
                                         padding = self.padding)
         self._seq_len = int(self._seq_len / k)
-        self._cursor = tf.reshape(Y, [-1, self._seq_len, self.n_filters])
+        self._pointer = tf.reshape(Y, [-1, self._seq_len, self.n_filters])
     # end method add_maxpool
 
 
@@ -108,7 +108,7 @@ class ConvLSTMClassifier:
 
 
     def add_dynamic_rnn(self):      
-        _, self._cursor = tf.nn.dynamic_rnn(self.cell, self._cursor,
+        _, self._pointer = tf.nn.dynamic_rnn(self.cell, self._pointer,
                                             dtype = tf.float32,
                                             sequence_length = tf.divide(self.X_seq_lens, self.pool_size),
                                             time_major = False)
@@ -116,7 +116,7 @@ class ConvLSTMClassifier:
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(self._cursor.h, self.n_out)
+        self.logits = tf.layers.dense(self._pointer.h, self.n_out)
     # end method add_output_layer
 
 

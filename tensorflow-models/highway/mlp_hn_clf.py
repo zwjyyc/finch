@@ -21,7 +21,7 @@ class HighwayClassifier:
         self.highway_units = highway_units
         self.n_out = n_out
         self.sess = sess
-        self._cursor = None
+        self._pointer = None
         self.build_graph()
     # end constructor
 
@@ -41,19 +41,19 @@ class HighwayClassifier:
         self.Y = tf.placeholder(tf.int64, [None])
         self.keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
-        self._cursor = self.X
+        self._pointer = self.X
     # end method add_input_layer
 
 
     def add_fc(self, out_dim):
-        Y = tf.layers.dense(self._cursor, out_dim, tf.nn.relu)
-        self._cursor = tf.nn.dropout(Y, self.keep_prob)
+        Y = tf.layers.dense(self._pointer, out_dim, tf.nn.relu)
+        self._pointer = tf.nn.dropout(Y, self.keep_prob)
     # end add_fc
 
 
     def add_highway(self, i, carry_bias=-1.0):
         size = self.highway_units
-        X = self._cursor
+        X = self._pointer
 
         H = tf.layers.dense(X, size, tf.nn.relu, name='activation_'+str(i))
         T = tf.layers.dense(X, size, tf.sigmoid, name='transform_gate_'+str(i),
@@ -61,12 +61,12 @@ class HighwayClassifier:
         C = tf.subtract(1.0, T, name='carry_gate_'+str(i))
         Y = tf.add(tf.multiply(H, T), tf.multiply(X, C)) # Y = (H * T) + (x * C)
 
-        self._cursor = Y
+        self._pointer = Y
     # end add_highway
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(self._cursor, self.n_out)
+        self.logits = tf.layers.dense(self._pointer, self.n_out)
     # end method add_output_layer
 
 

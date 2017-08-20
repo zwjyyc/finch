@@ -27,10 +27,7 @@ class TimeSeriesGen:
 if __name__ == '__main__':
     train_gen = TimeSeriesGen(0, TIME_STEPS, BATCH_SIZE)
     test_gen = TimeSeriesGen(1000, TIME_STEPS, BATCH_SIZE)
-    model = RNNRegressor(n_step = TIME_STEPS,
-                         n_in = 1,
-                         n_out = 1,
-                         cell_size = TIME_STEPS)
+    model = RNNRegressor(n_in = 1, n_out = 1, cell_size = TIME_STEPS)
 
     model.sess.run(tf.global_variables_initializer())
     train_state = model.sess.run(model.init_state, feed_dict={model.batch_size:BATCH_SIZE})

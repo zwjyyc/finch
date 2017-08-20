@@ -21,7 +21,7 @@ class MLPClassifier:
         self.hidden_unit_list = hidden_unit_list
         self.n_out = n_out
         self.sess = sess
-        self._cursor = None
+        self._pointer = None
         self.build_graph()
     # end constructor
 
@@ -39,20 +39,20 @@ class MLPClassifier:
         self.Y = tf.placeholder(tf.int64, [None])
         self.keep_prob = tf.placeholder(tf.float32)
         self.train_flag = tf.placeholder(tf.bool)
-        self._cursor = self.X
+        self._pointer = self.X
     # end method add_input_layer
 
 
     def add_forward_path(self):
-        new_layer = self._cursor
+        new_layer = self._pointer
         for hidden_unit in self.hidden_unit_list:
             new_layer = self.fc(new_layer, hidden_unit)
-        self._cursor = new_layer
+        self._pointer = new_layer
     # end method add_forward_path
 
 
     def add_output_layer(self):
-        self.logits = tf.layers.dense(self._cursor, self.n_out)
+        self.logits = tf.layers.dense(self._pointer, self.n_out)
     # end method add_output_layer
 
 

@@ -22,8 +22,8 @@ class EncoderRNN(nn.Module):
         output, hidden = self.gru(embedded, hidden)
         return output, hidden
 
-    def initHidden(self):
-        result = Variable(torch.zeros(1, 1, self.hidden_size))
+    def initHidden(self, batch_size):
+        result = Variable(torch.zeros(1, batch_size, self.hidden_size))
         return result
 # end class
 
@@ -42,7 +42,6 @@ class DecoderRNN(nn.Module):
     def forward(self, inputs, hidden):
         embedded = self.embedding(inputs)
         output, hidden = self.gru(embedded, hidden)
-        # output = self.log_softmax(self.out(output.view(-1, self.hidden_size)))
         output = self.out(output.view(-1, self.hidden_size))
         return output, hidden
 
@@ -63,7 +62,6 @@ class Seq2Seq:
         self.decoder = DecoderRNN(len(self.Y_word2idx), rnn_size, decoder_embedding_dim, n_layers)
         self.encoder_optimizer = optim.Adam(self.encoder.parameters())
         self.decoder_optimizer = optim.Adam(self.decoder.parameters())
-        # self.criterion = nn.NLLLoss()
         self.criterion = nn.CrossEntropyLoss()
 
         self.register_symbols()
@@ -76,19 +74,12 @@ class Seq2Seq:
         self.encoder_optimizer.zero_grad()
         self.decoder_optimizer.zero_grad()
 
-        encoder_hidden = self.encoder.initHidden()
+        encoder_hidden = self.encoder.initHidden(source.size()[0])
         encoder_output, encoder_hidden = self.encoder(source, encoder_hidden)
         
-        # decoder_input = Variable(torch.LongTensor([[self._y_go]]))
         decoder_hidden = encoder_hidden
+
         decoder_input = self.process_decoder_input(target)
-        """
-        loss = 0
-        for i in range(target_len):
-            decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
-            loss += self.criterion(decoder_output, target[0][i])
-            decoder_input = target[0][i].view(-1, 1)
-        """
         decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
         loss = self.criterion(decoder_output, target.view(-1))
         loss.backward()

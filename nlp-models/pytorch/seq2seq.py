@@ -56,6 +56,7 @@ class Decoder(nn.Module):
         self.out = nn.Linear(self.hidden_size, self.output_size)
     # end method
 
+
     def forward(self, inputs, hidden):
         embedded = self.embedding(inputs)
         output, hidden = self.gru(embedded, hidden)
@@ -115,11 +116,12 @@ class Seq2Seq:
         if maxlen is None:
             maxlen = 2 * source.size()[1]
 
-        encoder_hidden = self.encoder.initHidden()
+        encoder_hidden = self.encoder.init_hidden(1)
         encoder_output, encoder_hidden = self.encoder(source, encoder_hidden)
         
+        decoder_hidden = encoder_hidden        
+
         decoder_input = Variable(torch.LongTensor([[self._y_go]]))
-        decoder_hidden = encoder_hidden
         output_indices = []
         for i in range(maxlen):
             decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)

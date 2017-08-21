@@ -81,6 +81,11 @@ class RNNTextClassifier:
 
 
     def add_attention(self):
+        """
+        Attention allows the decoder network to focus on a different part of the encoder’s outputs for
+        every step of the decoder’s own outputs. First we calculate a set of attention weights.
+        These will be multiplied by the encoder output vectors to create a weighted combination. 
+        """
         reshaped = tf.reshape(self.embedded, [-1, self.embedding_dims])
         reduced = tf.layers.dense(reshaped, 1, tf.tanh)
         alphas = self.softmax(tf.reshape(reduced, [-1, self.seq_len]))

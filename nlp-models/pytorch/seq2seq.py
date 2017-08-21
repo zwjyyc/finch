@@ -8,46 +8,60 @@ from torch import optim
 import torch.nn.functional as F
 
 
-class EncoderRNN(nn.Module):
+class Encoder(nn.Module):
     def __init__(self, input_size, hidden_size, encoder_embedding_dim, n_layers):
-        super(EncoderRNN, self).__init__()
-        self.n_layers = n_layers
+        super(Encoder, self).__init__()
+        self.input_size = input_size
         self.hidden_size = hidden_size
+        self.encoder_embedding_dim = encoder_embedding_dim
+        self.n_layers = n_layers
+        self.build_model()
+    # end constructor
 
-        self.embedding = nn.Embedding(input_size, encoder_embedding_dim)
-        self.gru = nn.GRU(encoder_embedding_dim, hidden_size, batch_first=True)
+
+    def build_model(self):
+        self.embedding = nn.Embedding(self.input_size, self.encoder_embedding_dim)
+        self.gru = nn.GRU(self.encoder_embedding_dim, self.hidden_size, batch_first=True) 
+    # end method
+
 
     def forward(self, inputs, hidden):
         embedded = self.embedding(inputs)
         output, hidden = self.gru(embedded, hidden)
         return output, hidden
+    # end method
 
-    def initHidden(self, batch_size):
+
+    def init_hidden(self, batch_size):
         result = Variable(torch.zeros(1, batch_size, self.hidden_size))
         return result
+    # end method
 # end class
 
 
-class DecoderRNN(nn.Module):
+class Decoder(nn.Module):
     def __init__(self, output_size, hidden_size, decoder_embedding_dim, n_layers):
-        super(DecoderRNN, self).__init__()
-        self.n_layers = n_layers
+        super(Decoder, self).__init__()
+        self.output_size = output_size
         self.hidden_size = hidden_size
+        self.decoder_embedding_dim = decoder_embedding_dim
+        self.n_layers = n_layers
+        self.build_model()
+    # end constructor
 
-        self.embedding = nn.Embedding(output_size, decoder_embedding_dim)
-        self.gru = nn.GRU(decoder_embedding_dim, hidden_size, batch_first=True)
-        self.out = nn.Linear(hidden_size, output_size)
-        self.log_softmax = nn.LogSoftmax()
+
+    def build_model(self):
+        self.embedding = nn.Embedding(self.output_size, self.decoder_embedding_dim)
+        self.gru = nn.GRU(self.decoder_embedding_dim, self.hidden_size, batch_first=True)
+        self.out = nn.Linear(self.hidden_size, self.output_size)
+    # end method
 
     def forward(self, inputs, hidden):
         embedded = self.embedding(inputs)
         output, hidden = self.gru(embedded, hidden)
         output = self.out(output.view(-1, self.hidden_size))
         return output, hidden
-
-    def initHidden(self):
-        result = Variable(torch.zeros(1, 1, self.hidden_size))
-        return result
+    # end method
 # end class
 
 
@@ -55,17 +69,24 @@ class Seq2Seq:
     def __init__(self, rnn_size, n_layers,
                  X_word2idx, encoder_embedding_dim,
                  Y_word2idx, decoder_embedding_dim):
+        self.rnn_size = rnn_size
+        self.n_layers = n_layers
         self.X_word2idx = X_word2idx
         self.Y_word2idx = Y_word2idx
+        self.encoder_embedding_dim = encoder_embedding_dim
+        self.decoder_embedding_dim = decoder_embedding_dim
+        self.build_model()
+        self.register_symbols()
+    # end constructor
 
-        self.encoder = EncoderRNN(len(self.X_word2idx), rnn_size, encoder_embedding_dim, n_layers)
-        self.decoder = DecoderRNN(len(self.Y_word2idx), rnn_size, decoder_embedding_dim, n_layers)
+
+    def build_model(self):
+        self.encoder = Encoder(len(self.X_word2idx), self.rnn_size, self.encoder_embedding_dim, self.n_layers)
+        self.decoder = Decoder(len(self.Y_word2idx), self.rnn_size, self.decoder_embedding_dim, self.n_layers)
         self.encoder_optimizer = optim.Adam(self.encoder.parameters())
         self.decoder_optimizer = optim.Adam(self.decoder.parameters())
         self.criterion = nn.CrossEntropyLoss()
-
-        self.register_symbols()
-    # end constructor
+    # end method
 
 
     def train(self, source, target):
@@ -74,7 +95,7 @@ class Seq2Seq:
         self.encoder_optimizer.zero_grad()
         self.decoder_optimizer.zero_grad()
 
-        encoder_hidden = self.encoder.initHidden(source.size()[0])
+        encoder_hidden = self.encoder.init_hidden(source.size()[0])
         encoder_output, encoder_hidden = self.encoder(source, encoder_hidden)
         
         decoder_hidden = encoder_hidden

@@ -157,6 +157,8 @@ python xxxx_test.py
 
 * TensorFlow &nbsp; | &nbsp; Seq2Seq + 双向编码 + 注意力机制 + 集束搜索 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate.py) &nbsp; &nbsp; [排序测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate_test.py) &nbsp; | &nbsp;
 
+* PyTorch &nbsp; | &nbsp; Seq2Seq &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq.py) &nbsp; &nbsp; [排序测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq_test.py) &nbsp; | &nbsp;
+
 ## 信息检索
 #### 推荐系统
 * Python &nbsp; | &nbsp; 协同过滤 &nbsp; | &nbsp; MovieLens 电影数据 &nbsp; &nbsp; [基于用户的模型](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;

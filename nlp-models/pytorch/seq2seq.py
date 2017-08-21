@@ -19,9 +19,7 @@ class EncoderRNN(nn.Module):
 
     def forward(self, inputs, hidden):
         embedded = self.embedding(inputs)
-        output = embedded
-        for i in range(self.n_layers):
-            output, hidden = self.gru(output, hidden)
+        output, hidden = self.gru(embedded, hidden)
         return output, hidden
 
     def initHidden(self):
@@ -39,14 +37,13 @@ class DecoderRNN(nn.Module):
         self.embedding = nn.Embedding(output_size, decoder_embedding_dim)
         self.gru = nn.GRU(decoder_embedding_dim, hidden_size, batch_first=True)
         self.out = nn.Linear(hidden_size, output_size)
-        self.softmax = nn.LogSoftmax()
+        self.log_softmax = nn.LogSoftmax()
 
     def forward(self, inputs, hidden):
-        output = self.embedding(inputs)
-        for i in range(self.n_layers):
-            output = F.relu(output)
-            output, hidden = self.gru(output, hidden)
-        output = self.softmax(self.out(output[0]))
+        embedded = self.embedding(inputs)
+        output, hidden = self.gru(embedded, hidden)
+        # output = self.log_softmax(self.out(output.view(-1, self.hidden_size)))
+        output = self.out(output.view(-1, self.hidden_size))
         return output, hidden
 
     def initHidden(self):
@@ -66,7 +63,8 @@ class Seq2Seq:
         self.decoder = DecoderRNN(len(self.Y_word2idx), rnn_size, decoder_embedding_dim, n_layers)
         self.encoder_optimizer = optim.Adam(self.encoder.parameters())
         self.decoder_optimizer = optim.Adam(self.decoder.parameters())
-        self.criterion = nn.NLLLoss()
+        # self.criterion = nn.NLLLoss()
+        self.criterion = nn.CrossEntropyLoss()
 
         self.register_symbols()
     # end constructor
@@ -81,14 +79,18 @@ class Seq2Seq:
         encoder_hidden = self.encoder.initHidden()
         encoder_output, encoder_hidden = self.encoder(source, encoder_hidden)
         
-        decoder_input = Variable(torch.LongTensor([[self._y_go]]))
+        # decoder_input = Variable(torch.LongTensor([[self._y_go]]))
         decoder_hidden = encoder_hidden
+        decoder_input = self.process_decoder_input(target)
+        """
         loss = 0
         for i in range(target_len):
             decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
             loss += self.criterion(decoder_output, target[0][i])
             decoder_input = target[0][i].view(-1, 1)
-
+        """
+        decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
+        loss = self.criterion(decoder_output, target.view(-1))
         loss.backward()
         self.encoder_optimizer.step()
         self.decoder_optimizer.step()
@@ -109,6 +111,7 @@ class Seq2Seq:
         output_indices = []
         for i in range(maxlen):
             decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
+            decoder_output = F.log_softmax(decoder_output)
             topv, topi = decoder_output.data.topk(1)
             ni = topi[0][0]
             output_indices.append(ni)
@@ -119,7 +122,7 @@ class Seq2Seq:
     # end method
 
 
-    def fit(self, X_train, Y_train, n_epoch=5, display_step=100, batch_size=1):
+    def fit(self, X_train, Y_train, n_epoch=3, display_step=100, batch_size=1):
         for epoch in range(1, n_epoch+1):
             for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) in enumerate(
                 self.next_batch(X_train, Y_train, batch_size)):
@@ -188,4 +191,12 @@ class Seq2Seq:
         self._y_pad = self.Y_word2idx['<PAD>']
         self._y_unk = self.Y_word2idx['<UNK>']
     # end method
+
+
+    def process_decoder_input(self, target):
+        target = target.data.numpy()
+        main = target[:, :-1]
+        decoder_input = np.concatenate([np.full([1, 1], self._y_go), main], 1)
+        return Variable(torch.from_numpy(decoder_input.astype(np.int64)))
+    # end method    
 # end class

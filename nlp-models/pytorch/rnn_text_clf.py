@@ -127,14 +127,13 @@ class RNNTextClassifier(torch.nn.Module):
 
 
     def sort_pad(self, X, y, thres=250):
-        X = np.array(X)
         lens = [len(x) for x in X]
         max_len = max(lens)
         if max_len >= thres:
             max_len = thres
         idx = list(reversed(np.argsort(lens)))
 
-        X = X[idx].tolist()
+        X = np.array(X)[idx].tolist()
         new_lens = []
         for i, x in enumerate(X):
             if len(x) >= max_len:
@@ -145,7 +144,7 @@ class RNNTextClassifier(torch.nn.Module):
                 new_lens.append(len(x))
         X = np.array(X)
 
-        y = np.array(y[idx])
+        y = np.array(y)[idx]
         print("Sorting and Padding", X.shape, y.shape)
         return X, y, new_lens
 # end class RNNClassifier

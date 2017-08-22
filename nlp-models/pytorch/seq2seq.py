@@ -127,9 +127,9 @@ class Seq2Seq:
             decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
             decoder_output = torch.nn.functional.log_softmax(decoder_output)
             topv, topi = decoder_output.data.topk(1)
-            ni = topi[0][0]
-            output_indices.append(ni)
-            decoder_input = torch.autograd.Variable(torch.LongTensor([[ni]]))
+            topi = topi[0][0]
+            output_indices.append(topi)
+            decoder_input = torch.autograd.Variable(torch.LongTensor([[topi]]))
             if ni == self._y_eos:
                 break
         return output_indices
@@ -138,7 +138,6 @@ class Seq2Seq:
 
     def fit(self, X_train, Y_train, n_epoch=60, display_step=100, batch_size=128):
         X_train, Y_train = self.sort(X_train, Y_train)
-        lens = [len(x) for x in X_train]
         for epoch in range(1, n_epoch+1):
             for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) in enumerate(
                 self.next_batch(X_train, Y_train, batch_size)):

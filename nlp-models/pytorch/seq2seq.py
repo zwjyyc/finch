@@ -2,13 +2,9 @@ from __future__ import print_function
 from __future__ import division
 import numpy as np
 import torch
-import torch.nn as nn
-from torch.autograd import Variable
-from torch import optim
-import torch.nn.functional as F
 
 
-class Encoder(nn.Module):
+class Encoder(torch.nn.Module):
     def __init__(self, input_size, hidden_size, encoder_embedding_dim, n_layers):
         super(Encoder, self).__init__()
         self.input_size = input_size
@@ -20,26 +16,29 @@ class Encoder(nn.Module):
 
 
     def build_model(self):
-        self.embedding = nn.Embedding(self.input_size, self.encoder_embedding_dim)
-        self.gru = nn.GRU(self.encoder_embedding_dim, self.hidden_size, batch_first=True) 
+        self.embedding = torch.nn.Embedding(self.input_size, self.encoder_embedding_dim)
+        self.gru = torch.nn.GRU(self.encoder_embedding_dim, self.hidden_size,
+                                batch_first=True, num_layers=self.n_layers) 
     # end method
 
 
-    def forward(self, inputs, hidden):
+    def forward(self, inputs, hidden, X_lens):
         embedded = self.embedding(inputs)
-        output, hidden = self.gru(embedded, hidden)
+        packed = torch.nn.utils.rnn.pack_padded_sequence(embedded, X_lens, batch_first=True)
+        rnn_out, hidden = self.gru(packed, hidden)
+        output, _ = torch.nn.utils.rnn.pad_packed_sequence(rnn_out, batch_first=True)
         return output, hidden
     # end method
 
 
     def init_hidden(self, batch_size):
-        result = Variable(torch.zeros(1, batch_size, self.hidden_size))
+        result = torch.autograd.Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size))
         return result
     # end method
 # end class
 
 
-class Decoder(nn.Module):
+class Decoder(torch.nn.Module):
     def __init__(self, output_size, hidden_size, decoder_embedding_dim, n_layers):
         super(Decoder, self).__init__()
         self.output_size = output_size
@@ -51,16 +50,17 @@ class Decoder(nn.Module):
 
 
     def build_model(self):
-        self.embedding = nn.Embedding(self.output_size, self.decoder_embedding_dim)
-        self.gru = nn.GRU(self.decoder_embedding_dim, self.hidden_size, batch_first=True)
-        self.out = nn.Linear(self.hidden_size, self.output_size)
+        self.embedding = torch.nn.Embedding(self.output_size, self.decoder_embedding_dim)
+        self.gru = torch.nn.GRU(self.decoder_embedding_dim, self.hidden_size,
+                                batch_first=True, num_layers=self.n_layers)
+        self.out = torch.nn.Linear(self.hidden_size, self.output_size)
     # end method
 
 
     def forward(self, inputs, hidden):
         embedded = self.embedding(inputs)
         output, hidden = self.gru(embedded, hidden)
-        output = self.out(output.view(-1, self.hidden_size))
+        output = self.out(output.contiguous().view(-1, self.hidden_size))
         return output, hidden
     # end method
 # end class
@@ -84,20 +84,20 @@ class Seq2Seq:
     def build_model(self):
         self.encoder = Encoder(len(self.X_word2idx), self.rnn_size, self.encoder_embedding_dim, self.n_layers)
         self.decoder = Decoder(len(self.Y_word2idx), self.rnn_size, self.decoder_embedding_dim, self.n_layers)
-        self.encoder_optimizer = optim.Adam(self.encoder.parameters())
-        self.decoder_optimizer = optim.Adam(self.decoder.parameters())
-        self.criterion = nn.CrossEntropyLoss()
+        self.encoder_optimizer = torch.optim.Adam(self.encoder.parameters())
+        self.decoder_optimizer = torch.optim.Adam(self.decoder.parameters())
+        self.criterion = torch.nn.CrossEntropyLoss()
     # end method
 
 
-    def train(self, source, target):
+    def train(self, source, target, X_lens):
         target_len = target.size()[1]
 
         self.encoder_optimizer.zero_grad()
         self.decoder_optimizer.zero_grad()
 
         encoder_hidden = self.encoder.init_hidden(source.size()[0])
-        encoder_output, encoder_hidden = self.encoder(source, encoder_hidden)
+        encoder_output, encoder_hidden = self.encoder(source, encoder_hidden, X_lens)
         
         decoder_hidden = encoder_hidden
 
@@ -117,42 +117,43 @@ class Seq2Seq:
             maxlen = 2 * source.size()[1]
 
         encoder_hidden = self.encoder.init_hidden(1)
-        encoder_output, encoder_hidden = self.encoder(source, encoder_hidden)
+        encoder_output, encoder_hidden = self.encoder(source, encoder_hidden, [source.size()[1]])
         
         decoder_hidden = encoder_hidden        
 
-        decoder_input = Variable(torch.LongTensor([[self._y_go]]))
+        decoder_input = torch.autograd.Variable(torch.LongTensor([[self._y_go]]))
         output_indices = []
         for i in range(maxlen):
             decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
-            decoder_output = F.log_softmax(decoder_output)
+            decoder_output = torch.nn.functional.log_softmax(decoder_output)
             topv, topi = decoder_output.data.topk(1)
             ni = topi[0][0]
             output_indices.append(ni)
-            decoder_input = Variable(torch.LongTensor([[ni]]))
+            decoder_input = torch.autograd.Variable(torch.LongTensor([[ni]]))
             if ni == self._y_eos:
                 break
         return output_indices
     # end method
 
 
-    def fit(self, X_train, Y_train, n_epoch=3, display_step=100, batch_size=1):
+    def fit(self, X_train, Y_train, n_epoch=60, display_step=100, batch_size=128):
+        X_train, Y_train = self.sort(X_train, Y_train)
+        lens = [len(x) for x in X_train]
         for epoch in range(1, n_epoch+1):
             for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) in enumerate(
                 self.next_batch(X_train, Y_train, batch_size)):
-                source = Variable(torch.from_numpy(X_train_batch.astype(np.int64)))
-                target = Variable(torch.from_numpy(Y_train_batch.astype(np.int64)))
-                loss = self.train(source, target)
+                source = torch.autograd.Variable(torch.from_numpy(X_train_batch.astype(np.int64)))
+                target = torch.autograd.Variable(torch.from_numpy(Y_train_batch.astype(np.int64)))
+                loss = self.train(source, target, X_train_batch_lens)
                 if local_step % display_step == 0:
                     print("Epoch %d/%d | Batch %d/%d | train_loss: %.3f |" % 
-                          (epoch, n_epoch, local_step, len(X_train)//batch_size, loss))
-                
+                          (epoch, n_epoch, local_step, len(X_train)//batch_size, loss))       
     # end method
 
 
     def infer(self, input_word, X_idx2word, Y_idx2word):        
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
-        source = Variable(torch.from_numpy(np.atleast_2d(input_indices).astype(np.int64)))
+        source = torch.autograd.Variable(torch.from_numpy(np.atleast_2d(input_indices).astype(np.int64)))
         out_indices = self.predict(source)
         
         print('\nSource')
@@ -210,7 +211,16 @@ class Seq2Seq:
     def process_decoder_input(self, target):
         target = target.data.numpy()
         main = target[:, :-1]
-        decoder_input = np.concatenate([np.full([1, 1], self._y_go), main], 1)
-        return Variable(torch.from_numpy(decoder_input.astype(np.int64)))
+        decoder_input = np.concatenate([np.full([target.shape[0], 1], self._y_go), main], 1)
+        return torch.autograd.Variable(torch.from_numpy(decoder_input.astype(np.int64)))
+    # end method
+
+
+    def sort(self, X, Y):
+        lens = [len(x) for x in X]
+        idx = list(reversed(np.argsort(lens)))
+        X = np.array(X)[idx].tolist()
+        Y = np.array(Y)[idx].tolist()
+        return X, Y
     # end method    
 # end class

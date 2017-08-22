@@ -42,12 +42,11 @@ def main():
 
     model = Seq2Seq(
         rnn_size = 50,
-        n_layers = 1,
-        X_word2idx = X_char2idx,
+        n_layers = 2,
         encoder_embedding_dim = 15,
-        Y_word2idx = Y_char2idx,
         decoder_embedding_dim = 15,
-    )
+        X_word2idx = X_char2idx,
+        Y_word2idx = Y_char2idx)
     model.fit(X_indices, Y_indices)
 
     model.infer('common', X_idx2char, Y_idx2char)

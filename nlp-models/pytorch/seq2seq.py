@@ -130,7 +130,7 @@ class Seq2Seq:
             topi = topi[0][0]
             output_indices.append(topi)
             decoder_input = torch.autograd.Variable(torch.LongTensor([[topi]]))
-            if ni == self._y_eos:
+            if topi == self._y_eos:
                 break
         return output_indices
     # end method

@@ -17,22 +17,23 @@ class Encoder(torch.nn.Module):
 
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.input_size, self.encoder_embedding_dim)
-        self.gru = torch.nn.GRU(self.encoder_embedding_dim, self.hidden_size,
-                                batch_first=True, num_layers=self.n_layers, bidirectional=True) 
+        self.lstm = torch.nn.LSTM(self.encoder_embedding_dim, self.hidden_size,
+                                  batch_first=True, num_layers=self.n_layers, bidirectional=True) 
     # end method
 
 
     def forward(self, inputs, hidden, X_lens):
         embedded = self.embedding(inputs)
         packed = torch.nn.utils.rnn.pack_padded_sequence(embedded, X_lens, batch_first=True)
-        rnn_out, hidden = self.gru(packed, hidden)
+        rnn_out, hidden = self.lstm(packed, hidden)
         output, _ = torch.nn.utils.rnn.pad_packed_sequence(rnn_out, batch_first=True)
         return output, hidden
     # end method
 
 
     def init_hidden(self, batch_size):
-        result = torch.autograd.Variable(torch.zeros(2*self.n_layers, batch_size, self.hidden_size))
+        result = (torch.autograd.Variable(torch.zeros(2*self.n_layers, batch_size, self.hidden_size)),
+                  torch.autograd.Variable(torch.zeros(2*self.n_layers, batch_size, self.hidden_size)))
         return result
     # end method
 # end class
@@ -51,15 +52,15 @@ class Decoder(torch.nn.Module):
 
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.output_size, self.decoder_embedding_dim)
-        self.gru = torch.nn.GRU(self.decoder_embedding_dim, self.hidden_size,
-                                batch_first=True, num_layers=2*self.n_layers)
+        self.lstm = torch.nn.LSTM(self.decoder_embedding_dim, self.hidden_size,
+                                  batch_first=True, num_layers=2*self.n_layers)
         self.out = torch.nn.Linear(self.hidden_size, self.output_size)
     # end method
 
 
     def forward(self, inputs, hidden):
         embedded = self.embedding(inputs)
-        output, hidden = self.gru(embedded, hidden)
+        output, hidden = self.lstm(embedded, hidden)
         output = self.out(output.contiguous().view(-1, self.hidden_size))
         return output, hidden
     # end method
@@ -92,12 +93,12 @@ class Seq2Seq:
 
 
     def train(self, source, target, X_lens):
-        target_len = target.size()[1]
+        target_len = target.size(1)
 
         self.encoder_optimizer.zero_grad()
         self.decoder_optimizer.zero_grad()
 
-        encoder_hidden = self.encoder.init_hidden(source.size()[0])
+        encoder_hidden = self.encoder.init_hidden(source.size(0))
         encoder_output, encoder_hidden = self.encoder(source, encoder_hidden, X_lens)
         
         decoder_hidden = encoder_hidden
@@ -118,10 +119,10 @@ class Seq2Seq:
 
     def predict(self, source, maxlen=None):
         if maxlen is None:
-            maxlen = 2 * source.size()[1]
+            maxlen = 2 * source.size(1)
 
         encoder_hidden = self.encoder.init_hidden(1)
-        encoder_output, encoder_hidden = self.encoder(source, encoder_hidden, [source.size()[1]])
+        encoder_output, encoder_hidden = self.encoder(source, encoder_hidden, [source.size(1)])
         
         decoder_hidden = encoder_hidden        
 

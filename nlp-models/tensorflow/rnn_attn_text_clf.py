@@ -86,10 +86,12 @@ class RNNTextClassifier:
         every step of the decoder’s own outputs. First we calculate a set of attention weights.
         These will be multiplied by the encoder output vectors to create a weighted combination. 
         """
-        reshaped = tf.reshape(self.embedded, [-1, self.embedding_dims])
-        reduced = tf.layers.dense(reshaped, 1, tf.tanh)
-        alphas = self.softmax(tf.reshape(reduced, [-1, self.seq_len]))
-        self._pointer = tf.reduce_sum(self._pointer * tf.expand_dims(alphas, 2), 1)
+        encoder_state = tf.expand_dims(self.final_state.h, 2)
+        # (batch, seq_len, cell_size) * (batch, cell_size, 1) = (batch, seq_len, 1)
+        weights = tf.tanh(tf.matmul(self._pointer, encoder_state))
+        weights = self.softmax(tf.reshape(weights, [-1, self.seq_len]))
+        # (batch, cell_size, seq_len) * (batch, seq_len, 1) = (batch, cell_size, 1)
+        self._pointer = tf.squeeze(tf.matmul(tf.transpose(self._pointer, [0, 2, 1]), tf.expand_dims(weights, 2)), 2)
     # end method add_attention
 
 

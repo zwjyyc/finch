@@ -95,7 +95,7 @@ class Seq2Seq:
                 decoder = predicting_decoder,
                 impute_finished = True,
                 maximum_iterations = 2 * tf.reduce_max(self.X_seq_len))
-            self.predicting_logits = predicting_decoder_output.sample_id
+            self.predicting_ids = predicting_decoder_output.sample_id
     # end method add_decoder_layer
 
 
@@ -169,7 +169,7 @@ class Seq2Seq:
 
     def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):        
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
-        out_indices = self.sess.run(self.predicting_logits, {
+        out_indices = self.sess.run(self.predicting_ids, {
             self.X: [input_indices] * batch_size,
             self.X_seq_len: [len(input_indices)] * batch_size,
             self.batch_size: batch_size})[0]

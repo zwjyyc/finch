@@ -106,8 +106,6 @@ class Seq2Seq:
 
 
     def train(self, source, target, X_lens):
-        target_len = target.size(1)
-
         self.encoder_optimizer.zero_grad()
         self.decoder_optimizer.zero_grad()
 
@@ -126,7 +124,7 @@ class Seq2Seq:
         self.encoder_optimizer.step()
         self.decoder_optimizer.step()
 
-        return loss.data[0] / target_len
+        return loss.data[0] / target.size(1)
     # end method
 
 

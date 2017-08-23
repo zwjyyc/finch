@@ -32,8 +32,10 @@ class RNNTextClassifier(torch.nn.Module):
 
     def attention(self, rnn_out, state, batch_size):
         state = state.squeeze(0).unsqueeze(2)
+        # (batch, seq_len, cell_size) * (batch, cell_size, 1) = (batch, seq_len, 1)
         weights = torch.nn.functional.tanh(torch.bmm(rnn_out, state))
-        weights = torch.nn.functional.softmax(weights.unsqueeze(2)).squeeze(2)
+        weights = torch.nn.functional.softmax(weights.squeeze(2)).unsqueeze(2)
+        # (batch, cell_size, seq_len) * (batch, seq_len, 1) = (batch, cell_size, 1)
         return torch.bmm(torch.transpose(rnn_out, 1, 2), weights).squeeze(2)
     # end method attention
 

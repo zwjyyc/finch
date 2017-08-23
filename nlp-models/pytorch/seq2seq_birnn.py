@@ -18,7 +18,7 @@ class Encoder(torch.nn.Module):
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.input_size, self.encoder_embedding_dim)
         self.gru = torch.nn.GRU(self.encoder_embedding_dim, self.hidden_size,
-                                batch_first=True, num_layers=self.n_layers) 
+                                batch_first=True, num_layers=self.n_layers, bidirectional=True) 
     # end method
 
 
@@ -32,7 +32,7 @@ class Encoder(torch.nn.Module):
 
 
     def init_hidden(self, batch_size):
-        result = torch.autograd.Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size))
+        result = torch.autograd.Variable(torch.zeros(2*self.n_layers, batch_size, self.hidden_size))
         return result
     # end method
 # end class
@@ -52,7 +52,7 @@ class Decoder(torch.nn.Module):
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.output_size, self.decoder_embedding_dim)
         self.gru = torch.nn.GRU(self.decoder_embedding_dim, self.hidden_size,
-                                batch_first=True, num_layers=self.n_layers)
+                                batch_first=True, num_layers=2*self.n_layers)
         self.out = torch.nn.Linear(self.hidden_size, self.output_size)
     # end method
 

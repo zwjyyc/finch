@@ -51,31 +51,44 @@ class Decoder(torch.nn.Module):
 
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.output_size, self.decoder_embedding_dim)
+        self.attn_out = torch.nn.Linear(self.hidden_size*2, self.hidden_size)
         self.gru = torch.nn.GRU(self.decoder_embedding_dim, self.hidden_size,
                                 batch_first=True, num_layers=self.n_layers)
-        self.out = torch.nn.Linear(self.hidden_size, self.output_size)
+        self.decoder_out = torch.nn.Linear(self.hidden_size, self.output_size)
     # end method
 
 
-    def forward(self, inputs, hidden):
+    def forward(self, inputs, hidden, encoder_output):
         embedded = self.embedding(inputs)
+        batch_size = embedded.size(0)
+        hidden_size = embedded.size(2)
+        input_size = encoder_output.size(1)
+
+        # (batch, out_seq_len, hidden) * (batch, in_seq_len, hidden) -> (batch, out_seq_len, in_seq_len)
+        attn = torch.bmm(embedded, encoder_output.transpose(1, 2))
+        attn = torch.nn.functional.softmax(attn.view(-1, input_size)).view(batch_size, -1, input_size)
+        # (batch, out_seq_len, in_seq_len) * (batch, in_seq_len, hidden) -> (batch, out_seq_len, hidden)
+        mix = torch.bmm(attn, encoder_output)
+        # concat -> (batch, out_seq_len, 2*hidden)
+        combined = torch.cat((mix, embedded), dim=2)
+        # output -> (batch, out_seq_len, hidden)
+        output = torch.nn.functional.tanh(self.attn_out(combined.view(-1, 2*hidden_size))).view(batch_size, -1, hidden_size)
+
         output, hidden = self.gru(embedded, hidden)
-        output = self.out(output.contiguous().view(-1, self.hidden_size))
+        output = self.decoder_out(output.contiguous().view(-1, hidden_size))
         return output, hidden
     # end method
 # end class
 
 
 class Seq2Seq:
-    def __init__(self, rnn_size, n_layers,
-                 X_word2idx, encoder_embedding_dim,
-                 Y_word2idx, decoder_embedding_dim, max_grad_norm=5.0):
+    def __init__(self, rnn_size, n_layers, X_word2idx, Y_word2idx, max_grad_norm=5.0):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.X_word2idx = X_word2idx
         self.Y_word2idx = Y_word2idx
-        self.encoder_embedding_dim = encoder_embedding_dim
-        self.decoder_embedding_dim = decoder_embedding_dim
+        self.encoder_embedding_dim = self.rnn_size
+        self.decoder_embedding_dim = self.rnn_size
         self.max_grad_norm = max_grad_norm
         self.build_model()
         self.register_symbols()
@@ -103,7 +116,7 @@ class Seq2Seq:
         decoder_hidden = encoder_hidden
 
         decoder_input = self.process_decoder_input(target)
-        decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
+        decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden, encoder_output)
 
         loss = self.criterion(decoder_output, target.view(-1))
         loss.backward()
@@ -128,7 +141,7 @@ class Seq2Seq:
         decoder_input = torch.autograd.Variable(torch.LongTensor([[self._y_go]]))
         output_indices = []
         for i in range(maxlen):
-            decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
+            decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden, encoder_output)
             decoder_output = torch.nn.functional.log_softmax(decoder_output)
             topv, topi = decoder_output.data.topk(1)
             topi = topi[0][0]

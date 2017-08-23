@@ -31,12 +31,12 @@ class RNNTextClassifier(torch.nn.Module):
     # end method build_model    
 
 
-    def forward(self, X, X_lens, init_state=None, is_training=True):
+    def forward(self, X, X_lens, init_state=None):
         embedded = self.encoder(X)
 
         packed = torch.nn.utils.rnn.pack_padded_sequence(embedded, X_lens, batch_first=True)
         rnn_out, final_state = self.lstm(packed, init_state)
-        # Y, Y_lens = torch.nn.utils.rnn.pad_packed_sequence(rnn_out, batch_first=True)
+        # rnn_out, _ = torch.nn.utils.rnn.pad_packed_sequence(rnn_out, batch_first=True)
         h_n, c_n = final_state
 
         logits = self.fc(torch.squeeze(h_n, 0))
@@ -97,10 +97,10 @@ class RNNTextClassifier(torch.nn.Module):
             labels = torch.from_numpy(y_batch.astype(np.int64))
 
             if (self.stateful) and (len(X_batch) == batch_size):
-                preds, state = self.forward(inputs, X_lens_batch, state, is_training=False)
+                preds, state = self.forward(inputs, X_lens_batch, state)
                 state = (torch.autograd.Variable(state[0].data), torch.autograd.Variable(state[1].data))
             else:
-                preds, _ = self.forward(inputs, X_lens_batch, is_training=False)
+                preds, _ = self.forward(inputs, X_lens_batch)
 
             _, preds = torch.max(preds.data, 1)
             total += labels.size(0)

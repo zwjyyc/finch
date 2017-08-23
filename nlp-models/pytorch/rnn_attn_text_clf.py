@@ -30,19 +30,18 @@ class RNNTextClassifier(torch.nn.Module):
     # end method build_model    
 
 
-    def attention(self, rnn_out, embedded, batch_size):
-        reshaped = embedded.view(-1, self.embedding_dim)
-        reduced = torch.nn.functional.tanh(self.attn_fc(reshaped))
-        alphas = torch.nn.functional.softmax(reduced.view(batch_size, -1, 1)) # (batch_size, max_seq_len, 1)
-        # (batch, cell_size, seq_len) * (batch, seq_len, 1) -> (batch, cell_size)
-        return torch.bmm(torch.transpose(rnn_out, 1, 2), alphas).squeeze(2)
+    def attention(self, rnn_out, state, batch_size):
+        state = state.squeeze(0).unsqueeze(2)
+        weights = torch.nn.functional.tanh(torch.bmm(rnn_out, state))
+        weights = torch.nn.functional.softmax(weights.unsqueeze(2)).squeeze(2)
+        return torch.bmm(torch.transpose(rnn_out, 1, 2), weights).squeeze(2)
     # end method attention
 
 
     def forward(self, X, batch_size):
         embedded = self.encoder(X)
-        rnn_out, _ = self.lstm(embedded, None)
-        attn_out = self.attention(rnn_out, embedded, batch_size)
+        rnn_out, (h_n, c_n) = self.lstm(embedded, None)
+        attn_out = self.attention(rnn_out, h_n, batch_size)
         logits = self.fc(attn_out)
         return logits
     # end method forward

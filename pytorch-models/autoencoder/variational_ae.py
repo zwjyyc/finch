@@ -68,9 +68,9 @@ class Autoencoder(torch.nn.Module):
                 X = sklearn.utils.shuffle(X)
             for local_step, X_batch in enumerate(self.gen_batch(X, batch_size)):
                 inputs = torch.autograd.Variable(torch.from_numpy(X_batch.astype(np.float32)))
-                logits, kl_loss = self.forward(inputs)
+                outputs, kl_loss = self.forward(inputs)
 
-                bce_loss = self.bce_loss(logits, inputs)
+                bce_loss = self.bce_loss(outputs, inputs)
                 loss = bce_loss + kl_loss                   
                 self.optimizer.zero_grad()                             # clear gradients for this training step
                 loss.backward()                                        # backpropagation, compute gradients

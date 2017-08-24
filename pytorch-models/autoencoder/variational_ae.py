@@ -62,10 +62,6 @@ class Autoencoder(torch.nn.Module):
 
 
     def fit(self, X, n_epoch=10, batch_size=128, en_shuffle=True):
-        global_step = 0
-        n_batch = int(len(X) / batch_size)
-        total_steps = int(n_epoch * n_batch)
-
         for epoch in range(n_epoch):
             if en_shuffle:
                 print("Data Shuffled")

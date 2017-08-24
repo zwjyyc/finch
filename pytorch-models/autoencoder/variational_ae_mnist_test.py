@@ -13,9 +13,9 @@ if __name__ == '__main__':
     auto = Autoencoder(28*28, [500,500,20])
     auto.fit(X_train)
 
-    original = torch.autograd.Variable(torch.from_numpy(np.expand_dims(X_test[21],0).astype(np.float32)))
+    original = torch.autograd.Variable(torch.from_numpy(np.expand_dims(X_test[41],0).astype(np.float32)))
     restored, _ = auto(original)
-    plt.imshow(X_test[21].reshape(28,28))
+    plt.imshow(X_test[41].reshape(28,28))
     plt.show()
     plt.imshow(restored.data.numpy().reshape(28,28))
     plt.show()

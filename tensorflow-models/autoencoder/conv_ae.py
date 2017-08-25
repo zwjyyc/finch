@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import sklearn
 import math
 
 
@@ -46,12 +47,13 @@ class ConvAE:
                                   [self.batch_size, self.img_size[0], self.img_size[1], self.img_ch],
                                   [1,strides,strides,1], 'SAME')
         Y = tf.nn.bias_add(Y, self.call_b(name+'_deconv_b', [self.img_ch]))
-        self.decoder_op = Y
+        self.logits = Y
+        self.decoder_op = tf.sigmoid(self.logits)
     # end method add_deconv
 
 
     def add_backward_path(self):
-        self.loss = tf.reduce_mean(tf.squared_difference(self.X, self.decoder_op))
+        self.loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=self.X, logits=self.logits))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 
@@ -66,11 +68,13 @@ class ConvAE:
     # end method _b
 
 
-    def fit(self, X_train, val_data, n_epoch=10, batch_size=128):
+    def fit(self, X_train, val_data, n_epoch=10, batch_size=128, en_shuffle=True):
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         global_step = 0
         for epoch in range(n_epoch):
-            # batch training
+            if en_shuffle:
+                X_train = sklearn.utils.shuffle(X_train)
+                print("Data Shuffled")
             for local_step, X_batch in enumerate(self.gen_batch(X_train, batch_size)):
                 _, loss = self.sess.run([self.train_op, self.loss], {self.X:X_batch,
                                                                      self.batch_size:len(X_batch)})

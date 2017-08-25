@@ -91,6 +91,8 @@ python xxxx_test.py
 
 * PyTorch &nbsp; | &nbsp; 多层 自动解码机 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/autoencoder/mlp_ae.py) &nbsp; &nbsp; [MNIST数据集测试](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/autoencoder/mlp_ae_mnist_test.py) &nbsp; | &nbsp;
 
+* PyTorch &nbsp; | &nbsp; 去噪 自动编码机 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/autoencoder/denoising_ae.py) &nbsp; &nbsp; [MNIST数据集测试](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/autoencoder/denoising_ae_mnist_test.py) &nbsp; | &nbsp;
+
 * PyTorch &nbsp; | &nbsp; 稀疏 自动解码机 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/autoencoder/sparse_ae.py) &nbsp; &nbsp; [MNIST数据集测试](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/autoencoder/sparse_ae_mnist_test.py) &nbsp; | &nbsp;
 
 * PyTorch &nbsp; | &nbsp; 变分 自动解码机 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/autoencoder/variational_ae.py) &nbsp; &nbsp; [MNIST数据集测试](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/autoencoder/variational_ae_mnist_test.py) &nbsp; | &nbsp;

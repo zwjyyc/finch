@@ -78,8 +78,9 @@ class DCGAN:
     # end method generate
 
 
-    def discriminate(self, nn, reuse=False):
+    def discriminate(self, X, reuse=False):
         # for example: (28, 28, 1) -> (14, 14, 64) -> (7, 7, 128) -> 1
+        nn = X
         for i, s in enumerate(list(reversed(self.shape_trace))):
             nn = tf.layers.conv2d(nn, s[2], self.kernel_size, strides=self.strides, padding='SAME',
                                   name='conv%d'%i, reuse=reuse)

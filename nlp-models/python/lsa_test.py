@@ -13,4 +13,4 @@ if __name__ == '__main__':
 
     model = LSA(stopwords)
     model.fit(documents)
-    model.plot()
+    model.transform_plot()

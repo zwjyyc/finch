@@ -1,9 +1,15 @@
 import tensorflow as tf
+import numpy as np
 
 
 class DCGAN:
-    def __init__(self, G_size):
+    def __init__(self, G_size, img_size, img_ch, shape_trace, kernel_size=(5, 5), strides=(2, 2)):
         self.G_size = G_size
+        self.img_size = img_size
+        self.img_ch = img_ch
+        self.shape_trace = shape_trace
+        self.kernel_size = kernel_size
+        self.strides = strides
         self.build_graph()
     # end constructor
 
@@ -20,7 +26,7 @@ class DCGAN:
 
     def add_input_layer(self):
         self.G_in = tf.placeholder(tf.float32, [None, self.G_size])
-        self.X_in = tf.placeholder(tf.float32, [None, 28, 28, 1])
+        self.X_in = tf.placeholder(tf.float32, [None, self.img_size[0], self.img_size[1], self.img_ch])
         self.train_flag = tf.placeholder(tf.bool)
     # end method input_layer
 
@@ -60,30 +66,27 @@ class DCGAN:
 
 
     def generate(self, X):
-        # 100 -> (7, 7, 128) ->  (14, 14, 64) -> (28, 28, 1)
-        X = tf.layers.dense(X, 7 * 7 * 128, self.lrelu)
-        X = tf.reshape(X, [-1, 7, 7, 128])
-
-        Y = tf.layers.conv2d_transpose(X, 64, [5, 5], strides=(2, 2), padding='SAME')
-        Y = tf.layers.batch_normalization(Y, training=self.train_flag, momentum=0.9)
-        Y = self.lrelu(Y)
-
-        Y = tf.layers.conv2d_transpose(Y, 1, [5, 5], strides=(2, 2), padding='SAME')
-        return tf.tanh(Y)
+        # for example: 100 -> (7, 7, 128) ->  (14, 14, 64) -> (28, 28, 1)
+        nn = tf.layers.dense(X, np.prod(self.shape_trace[0]), self.lrelu)
+        nn = tf.reshape(nn, [-1, self.shape_trace[0][0], self.shape_trace[0][1], self.shape_trace[0][2]])
+        for s in self.shape_trace[1:]:
+            nn = tf.layers.conv2d_transpose(nn, s[-1], self.kernel_size, strides=self.strides, padding='SAME')
+            nn = tf.layers.batch_normalization(nn, training=self.train_flag, momentum=0.9)
+            nn = self.lrelu(nn)
+        nn = tf.layers.conv2d_transpose(nn, self.img_ch, self.kernel_size, strides=self.strides, padding='SAME')
+        return tf.tanh(nn)
     # end method generate
 
 
-    def discriminate(self, X, reuse=False):
-        # (28, 28, 1) -> (14, 14, 64) -> (7, 7, 128) -> 1
-        Y = tf.layers.conv2d(X, 64, [5, 5], strides=(2, 2), padding='SAME', name='conv1', reuse=reuse)
-        Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn1', reuse=reuse, momentum=0.9)
-        Y = self.lrelu(Y)
-
-        Y = tf.layers.conv2d(Y, 128, [5, 5], strides=(2, 2), padding='SAME', name='conv2', reuse=reuse)
-        Y = tf.layers.batch_normalization(Y, training=self.train_flag, name='bn2', reuse=reuse, momentum=0.9)
-        Y = self.lrelu(Y)
-
-        flat = tf.reshape(Y, [-1, 7 * 7 * 64])
+    def discriminate(self, nn, reuse=False):
+        # for example: (28, 28, 1) -> (14, 14, 64) -> (7, 7, 128) -> 1
+        for i, s in enumerate(list(reversed(self.shape_trace))):
+            nn = tf.layers.conv2d(nn, s[2], self.kernel_size, strides=self.strides, padding='SAME',
+                                  name='conv%d'%i, reuse=reuse)
+            nn = tf.layers.batch_normalization(nn, training=self.train_flag, name='bn%d'%i, reuse=reuse,
+                                               momentum=0.9)
+            nn = self.lrelu(nn)
+        flat = tf.reshape(nn, [-1, np.prod(self.shape_trace[0])])
         output = tf.layers.dense(flat, 1, name='out', reuse=reuse)
         return output
     # end method discriminate

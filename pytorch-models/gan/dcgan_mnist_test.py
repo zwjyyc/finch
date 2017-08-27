@@ -1,7 +1,7 @@
 from dcgan import GAN
-from sklearn.utils import shuffle
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import sklearn
 import numpy as np
 import torch
 
@@ -31,16 +31,15 @@ if __name__ == '__main__':
     
     plt.figure()
     for i, epoch in enumerate(range(N_EPOCH)):
-        X = shuffle(X)
+        X = sklearn.utils.shuffle(X)
         for step, images in enumerate(gen_batch(X, BATCH_SIZE)):
-            noise = np.random.randn(len(images), G_SIZE)
-            G_loss, D_loss, D_prob, G_prob, mse = gan.train_op(noise, images)
+            G_loss, D_loss, D_prob, G_prob, mse = gan.train_op(images)
             print("Epoch %d/%d | Step %d/%d" % (epoch+1, N_EPOCH, step, len(X)//BATCH_SIZE))
             print("G loss: %.4f | D loss: %.4f | D prob: %.4f | G prob: %.4f | mse: %.4f" %
-                 (G_loss.data[0], D_loss.data[0], D_prob.data.numpy().mean(), G_prob.data.numpy().mean(), mse.data[0]))
+                 (G_loss.data[0], D_loss.data[0], D_prob.data.mean(), G_prob.data.mean(), mse.data[0]))
         if i in range(N_EPOCH-4, N_EPOCH):
             gan.g.eval()
-            img = gan.g(torch.autograd.Variable(torch.from_numpy(noise[0].astype(np.float32))))
+            img = gan.g(torch.autograd.Variable(torch.randn(1, G_SIZE)))
             plt.subplot(2, 2, i+1-(N_EPOCH-4))
             plt.imshow(np.squeeze(img.data.numpy()))
     plt.tight_layout()

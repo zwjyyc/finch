@@ -25,18 +25,18 @@ class Generator(torch.nn.Module):
     def _net(self):
         net = []
         for i in range(1, len(self.shape_trace)):
-            net.append(torch.nn.ConvTranspose2d(self.shape_trace[i-1][2], self.shape_trace[i][2],
-                                                self.kernel_size, self.stride, self.padding))
-            net.append(torch.nn.BatchNorm2d(self.shape_trace[i][2]))
-            net.append(torch.nn.ReLU())
-        net.append(torch.nn.ConvTranspose2d(self.shape_trace[-1][2], self.img_ch,
-                                            self.kernel_size, self.stride, self.padding))
+            net.append(torch.nn.ConvTranspose2d(
+                self.shape_trace[i-1][2], self.shape_trace[i][2], self.kernel_size, self.stride, self.padding))
+            net.append(torch.nn.BatchNorm2d(self.shape_trace[i][2], momentum=0.9))
+            net.append(torch.nn.LeakyReLU(0.2))
+        net.append(torch.nn.ConvTranspose2d(
+            self.shape_trace[-1][2], self.img_ch, self.kernel_size, self.stride, self.padding))
         return net
     # end method
 
 
     def forward(self, X):
-        X = self.linear(X)
+        X = torch.nn.functional.leaky_relu(self.linear(X), 0.2)
         X = X.view(-1, self.shape_trace[0][2], self.shape_trace[0][0], self.shape_trace[0][1])
         X = self.deconv(X)
         return torch.nn.functional.tanh(X)
@@ -68,9 +68,9 @@ class Discriminator(torch.nn.Module):
         shape_trace = [(self.img_size[0], self.img_size[1], self.img_ch)] + list(reversed(self.shape_trace))
         net = []
         for i in range(1, len(shape_trace)):
-            net.append(torch.nn.Conv2d(shape_trace[i-1][2], shape_trace[i][2],
-                       self.kernel_size, self.stride, self.padding))
-            net.append(torch.nn.BatchNorm2d(shape_trace[i][2]))
+            net.append(torch.nn.Conv2d(
+                shape_trace[i-1][2], shape_trace[i][2], self.kernel_size, self.stride, self.padding))
+            net.append(torch.nn.BatchNorm2d(shape_trace[i][2], momentum=0.9))
             net.append(torch.nn.LeakyReLU(0.2))
         return net
     # end method
@@ -105,14 +105,14 @@ class GAN:
                                self.kernel_size, self.stride, self.padding)
         self.bce_loss = torch.nn.BCELoss()
         self.mse_loss = torch.nn.MSELoss()
-        self.g_optim = torch.optim.Adam(self.g.parameters(), 2e-4, betas=(0.5, 0.999))
-        self.d_optim = torch.optim.SGD(self.d.parameters(), 2e-4)
+        self.g_optim = torch.optim.Adam(self.g.parameters(), 2e-4, (0.5, 0.999))
+        self.d_optim = torch.optim.Adam(self.d.parameters(), 2e-4, (0.5, 0.999))
     # end method
 
 
-    def train_op(self, G_in, X_in):
-        G_in = torch.autograd.Variable(torch.from_numpy(G_in.astype(np.float32)))
+    def train_op(self, X_in):
         X_in = torch.autograd.Variable(torch.from_numpy(X_in.astype(np.float32)))
+        G_in = torch.autograd.Variable(torch.randn(X_in.size(0), self.G_size))
 
         G_out = self.g(G_in)
         G_prob = self.d(G_out)
@@ -121,16 +121,16 @@ class GAN:
         ones = torch.autograd.Variable(torch.ones(G_prob.size(0), G_prob.size(1)))
         zeros = torch.autograd.Variable(torch.zeros(G_prob.size(0), G_prob.size(1)))
 
-        G_loss = self.bce_loss(G_prob, ones)
         D_loss = self.bce_loss(X_prob, ones) + self.bce_loss(G_prob, zeros)
-        
-        self.g_optim.zero_grad()
-        G_loss.backward(retain_graph=True)
-        self.g_optim.step()
-
         self.d_optim.zero_grad()
         D_loss.backward()
         self.d_optim.step()
+        
+        for _ in range(2):
+            G_loss = self.bce_loss(self.d(self.g(G_in)), ones)
+            self.g_optim.zero_grad()
+            G_loss.backward()
+            self.g_optim.step()
 
         mse_loss = self.mse_loss(G_out, X_in)
 

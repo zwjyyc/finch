@@ -118,8 +118,8 @@ class GAN:
         G_prob = self.d(G_out)
         X_prob = self.d(X_in)
         
-        ones = torch.autograd.Variable(torch.ones(G_prob.size(0), G_prob.size(1)))
-        zeros = torch.autograd.Variable(torch.zeros(G_prob.size(0), G_prob.size(1)))
+        ones = torch.autograd.Variable(torch.ones(G_prob.size(0), G_prob.size(1)) - 0.1)
+        zeros = torch.autograd.Variable(torch.zeros(G_prob.size(0), G_prob.size(1)) + 0.1)
 
         D_loss = self.bce_loss(X_prob, ones) + self.bce_loss(G_prob, zeros)
         self.d_optim.zero_grad()

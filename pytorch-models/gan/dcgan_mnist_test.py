@@ -6,7 +6,7 @@ import numpy as np
 import torch
 
 
-N_EPOCH = 10
+N_EPOCH = 15
 BATCH_SIZE = 32
 G_SIZE = 100
 

@@ -3,7 +3,8 @@ import numpy as np
 
 
 class PolicyGradient:
-    def __init__(self, hidden_net, n_in=4, n_out=2, lr=0.01, sess=tf.Session()):
+    def __init__(self, env, hidden_net, n_in=4, n_out=2, lr=0.01, sess=tf.Session()):
+        self.env = env
         self.n_in = n_in
         self.hidden_net = hidden_net
         self.n_out = n_out
@@ -24,13 +25,12 @@ class PolicyGradient:
         hidden = self.hidden_net(self.X)
         self.logits = tf.layers.dense(hidden, self.n_out)
         outputs = tf.nn.softmax(self.logits)
-
         self.action = tf.multinomial(tf.log(outputs), num_samples=1)
     # end method build_forward_path
 
 
     def add_backward_path(self):
-        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=tf.squeeze(self.action, 1), logits=self.logits)
+        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=tf.squeeze(self.action,1), logits=self.logits)
         optimizer = tf.train.AdamOptimizer(self.lr)
 
         grads_and_vars = optimizer.compute_gradients(loss)
@@ -47,20 +47,19 @@ class PolicyGradient:
     # end method add_backward_path
 
 
-    def learn(self, env, n_games_per_update=10, n_max_steps=1000, n_iterations=250, discount_rate=0.95):
+    def learn(self, n_games_per_update=10, n_max_steps=1000, n_iterations=250, discount_rate=0.95):
         self.sess.run(tf.global_variables_initializer())
         for iteration in range(n_iterations):
             print("Iteration: {}".format(iteration))
-
             all_rewards = []
             all_gradients = []
             for game in range(n_games_per_update):
                 current_rewards = []
                 current_gradients = []
-                obs = env.reset()
+                obs = self.env.reset()
                 for step in range(n_max_steps):
                     action_val, gradients_val = self.sess.run([self.action, self.gradients], {self.X: np.atleast_2d(obs)})
-                    obs, reward, done, info = env.step(action_val[0][0])
+                    obs, reward, done, info = self.env.step(action_val[0][0])
                     current_rewards.append(reward)
                     current_gradients.append(gradients_val)
                     if done:
@@ -78,14 +77,15 @@ class PolicyGradient:
             self.sess.run(self.train_op, feed_dict)
     # end method learn
 
-    def play(self, env):
-        obs = env.reset()
+
+    def play(self):
+        obs = self.env.reset()
         done = False
         count = 0
         while not done:
-            env.render()
+            self.env.render()
             action_val = self.sess.run(self.action, {self.X: np.atleast_2d(obs)})
-            obs, reward, done, info = env.step(action_val[0][0])
+            obs, reward, done, info = self.env.step(action_val[0][0])
             count += 1
         print(count)
     # end method play

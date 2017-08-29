@@ -26,12 +26,11 @@ class PolicyGradient:
         outputs = tf.nn.softmax(self.logits)
 
         self.action = tf.multinomial(tf.log(outputs), num_samples=1)
-        self.action_one_hot = tf.one_hot(tf.squeeze(self.action), self.n_out)
     # end method build_forward_path
 
 
     def add_backward_path(self):
-        loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.action_one_hot, logits=self.logits)
+        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=tf.squeeze(self.action, 1), logits=self.logits)
         optimizer = tf.train.AdamOptimizer(self.lr)
 
         grads_and_vars = optimizer.compute_gradients(loss)

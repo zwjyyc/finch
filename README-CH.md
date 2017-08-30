@@ -109,7 +109,10 @@ python xxxx_test.py
 
 ## 强化学习
 #### 策略梯度
-* TensorFlow &nbsp; | &nbsp; CartPole游戏 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg_cartpole_test.py) &nbsp; | &nbsp;
+#### Policy Gradient
+* TensorFlow &nbsp; | &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole 游戏测试](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg_cartpole_test.py) &nbsp; | &nbsp;
+
+* PyTorch &nbsp; | &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg.py) &nbsp; &nbsp; [CartPole 游戏测试](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg_cartpole_test.py) &nbsp; | &nbsp;
 
 ## 自然语言处理
 #### 预处理

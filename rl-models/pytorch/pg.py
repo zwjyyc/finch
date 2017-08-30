@@ -28,6 +28,7 @@ class PolicyGradient(torch.nn.Module):
         forward = [self.n_in] + self.n_hidden
         for i in range(1, len(forward)):
             hidden_net.append(torch.nn.Linear(forward[i-1], forward[i]))
+	    hidden_net.append(torch.nn.ReLU())
         return hidden_net
     # end method
 

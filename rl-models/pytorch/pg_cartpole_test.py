@@ -3,7 +3,7 @@ import gym
 
 
 def main():
-    model = PolicyGradient(gym.make("CartPole-v0"))
+    model = PolicyGradient(gym.make('CartPole-v0'))
     model.learn()
     model.play()
 

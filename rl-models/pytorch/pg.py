@@ -76,7 +76,7 @@ class PolicyGradient(torch.nn.Module):
         done = False
         count = 0
         while not done:
-            # self.env.render()
+            self.env.render()
             obs = torch.autograd.Variable(torch.from_numpy(np.atleast_2d(obs).astype(np.float32)))
             _, action_val = self.forward(obs)
             obs, reward, done, info = self.env.step(action_val.data.numpy()[0][0])

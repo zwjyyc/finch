@@ -30,7 +30,6 @@ python xxxx_test.py
     * [高速公路网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#高速公路网络)
     * [对抗生成网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#对抗生成网络)
 * [强化学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#强化学习)
-    * [策略梯度](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#策略梯度)
 * [自然语言处理](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#自然语言处理)
     * [预处理](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#预处理)
     * [语言模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#语言模型)
@@ -108,11 +107,9 @@ python xxxx_test.py
 * PyTorch &nbsp; | &nbsp; 卷积对抗生成网络 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/gan/dcgan.py) &nbsp; &nbsp; [MNIST数据集测试](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/gan/dcgan_mnist_test.py) &nbsp; | &nbsp;
 
 ## 强化学习
-#### 策略梯度
-#### Policy Gradient
-* TensorFlow &nbsp; | &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole 游戏测试](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg_cartpole_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; 策略梯度 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole 游戏测试](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg_cartpole_test.py) &nbsp; | &nbsp;
 
-* PyTorch &nbsp; | &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg.py) &nbsp; &nbsp; [CartPole 游戏测试](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg_cartpole_test.py) &nbsp; | &nbsp;
+* PyTorch &nbsp; | &nbsp; 策略梯度 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg.py) &nbsp; &nbsp; [CartPole 游戏测试](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg_cartpole_test.py) &nbsp; | &nbsp;
 
 ## 自然语言处理
 #### 预处理

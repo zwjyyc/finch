@@ -3,7 +3,7 @@ import numpy as np
 
 
 class PolicyGradient(torch.nn.Module):
-    def __init__(self, env, n_in=4, n_hidden=[4], n_out=2, lr=0.01):
+    def __init__(self, env, n_in, n_hidden, n_out, lr=0.01):
         super(PolicyGradient, self).__init__()
         self.env = env
         self.n_in = n_in
@@ -28,7 +28,7 @@ class PolicyGradient(torch.nn.Module):
         forward = [self.n_in] + self.n_hidden
         for i in range(1, len(forward)):
             hidden_net.append(torch.nn.Linear(forward[i-1], forward[i]))
-	    hidden_net.append(torch.nn.ReLU())
+	        hidden_net.append(torch.nn.ReLU())
         return hidden_net
     # end method
 

@@ -3,7 +3,7 @@ import numpy as np
 
 
 class PolicyGradient:
-    def __init__(self, env, hidden_net, n_in=4, n_out=2, lr=0.01, sess=tf.Session()):
+    def __init__(self, env, n_in, hidden_net, n_out, lr=0.01, sess=tf.Session()):
         self.env = env
         self.n_in = n_in
         self.hidden_net = hidden_net

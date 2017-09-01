@@ -114,7 +114,7 @@ class Seq2Seq:
         self.encoder_optimizer.step()
         self.decoder_optimizer.step()
 
-        return loss.data[0] / target.size(1)
+        return loss.data[0] / (target.size(1))
     # end method
 
 
@@ -216,10 +216,10 @@ class Seq2Seq:
 
 
     def process_decoder_input(self, target):
-        target = target.data.numpy()
-        main = target[:, :-1]
-        decoder_input = np.concatenate([np.full([target.shape[0], 1], self._y_go), main], 1)
-        return torch.autograd.Variable(torch.from_numpy(decoder_input.astype(np.int64)))
+        target = target[:, :-1]
+	go = torch.autograd.Variable((torch.zeros(target.size(0), 1) + self._y_go).long())
+        decoder_input = torch.cat((go, target), 1)
+        return decoder_input
     # end method
 
 

@@ -2,6 +2,7 @@ from __future__ import print_function
 from __future__ import division
 import numpy as np
 import torch
+from extras import nll
 
 
 class Encoder(torch.nn.Module):
@@ -92,7 +93,7 @@ class Seq2Seq:
     # end method
 
 
-    def train(self, source, target, X_lens):
+    def train(self, source, target, X_lens, Y_masks):
         self.encoder_optimizer.zero_grad()
         self.decoder_optimizer.zero_grad()
 
@@ -104,7 +105,9 @@ class Seq2Seq:
         decoder_input = self.process_decoder_input(target)
         decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
 
-        loss = self.criterion(decoder_output, target.view(-1))
+        losses = nll(torch.nn.functional.log_softmax(decoder_output), target.view(-1, 1))
+	Y_masks = torch.autograd.Variable(torch.FloatTensor(Y_masks)).view(-1)
+	loss = torch.mul(losses, Y_masks).sum() / source.size(0)
         loss.backward()
         torch.nn.utils.clip_grad_norm(self.encoder.parameters(), self.max_grad_norm)
         torch.nn.utils.clip_grad_norm(self.decoder.parameters(), self.max_grad_norm)
@@ -142,11 +145,11 @@ class Seq2Seq:
     def fit(self, X_train, Y_train, n_epoch=60, display_step=100, batch_size=128):
         X_train, Y_train = self.sort(X_train, Y_train)
         for epoch in range(1, n_epoch+1):
-            for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) in enumerate(
+            for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_masks) in enumerate(
                 self.next_batch(X_train, Y_train, batch_size)):
                 source = torch.autograd.Variable(torch.from_numpy(X_train_batch.astype(np.int64)))
                 target = torch.autograd.Variable(torch.from_numpy(Y_train_batch.astype(np.int64)))
-                loss = self.train(source, target, X_train_batch_lens)
+                loss = self.train(source, target, X_train_batch_lens, Y_train_batch_masks)
                 if local_step % display_step == 0:
                     print("Epoch %d/%d | Batch %d/%d | train_loss: %.3f |" % 
                           (epoch, n_epoch, local_step, len(X_train)//batch_size, loss))       
@@ -171,11 +174,13 @@ class Seq2Seq:
     def pad_sentence_batch(self, sentence_batch, pad_int):
         padded_seqs = []
         seq_lens = []
+	masks = []
         max_sentence_len = max([len(sentence) for sentence in sentence_batch])
         for sentence in sentence_batch:
             padded_seqs.append(sentence + [pad_int] * (max_sentence_len - len(sentence)))
             seq_lens.append(len(sentence))
-        return padded_seqs, seq_lens
+            masks.append([1] * len(sentence) + [0] * (max_sentence_len - len(sentence)))
+        return padded_seqs, seq_lens, masks
     # end method
 
 
@@ -188,12 +193,12 @@ class Seq2Seq:
         for i in range(0, len(X) - len(X) % batch_size, batch_size):
             X_batch = X[i : i + batch_size]
             Y_batch = Y[i : i + batch_size]
-            padded_X_batch, X_batch_lens = self.pad_sentence_batch(X_batch, X_pad_int)
-            padded_Y_batch, Y_batch_lens = self.pad_sentence_batch(Y_batch, Y_pad_int)
+            padded_X_batch, X_batch_lens, _ = self.pad_sentence_batch(X_batch, X_pad_int)
+            padded_Y_batch, _, Y_batch_masks = self.pad_sentence_batch(Y_batch, Y_pad_int)
             yield (np.array(padded_X_batch),
                    np.array(padded_Y_batch),
                    X_batch_lens,
-                   Y_batch_lens)
+                   Y_batch_masks)
     # end method
 
 
@@ -211,10 +216,10 @@ class Seq2Seq:
 
 
     def process_decoder_input(self, target):
-        target = target.data.numpy()
-        main = target[:, :-1]
-        decoder_input = np.concatenate([np.full([target.shape[0], 1], self._y_go), main], 1)
-        return torch.autograd.Variable(torch.from_numpy(decoder_input.astype(np.int64)))
+        target = target[:, :-1]
+	go = torch.autograd.Variable((torch.zeros(target.size(0), 1) + self._y_go).long())
+        decoder_input = torch.cat((go, target), 1)
+        return decoder_input
     # end method
 
 

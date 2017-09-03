@@ -39,7 +39,7 @@ class Apriori:
 
     def predict(self):
         for items in self.assoc_rules:
-            out = "who is watching %s is likely to watch" % items[0]
+            out = "who is using item %s is likely to use item" % items[0]
             for i in range(1, self.n_item_rule):
                 out += ' %s' % items[i]
             print(out)

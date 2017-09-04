@@ -1,5 +1,6 @@
 import mxnet as mx
 import numpy as np
+import math
 
 
 class CNNClassifier:
@@ -43,6 +44,10 @@ class CNNClassifier:
 
 
     def fit(self, X_train, y_train, batch_size=128, n_epoch=1):
+        global_step = 0
+        n_batch = len(X_train) // batch_size
+        total_steps = n_epoch * n_batch
+
         X_train, y_train = self.from_numpy(X_train, y_train)
         train_loader = mx.gluon.data.DataLoader(mx.gluon.data.ArrayDataset(X_train, y_train),
                                                 batch_size=batch_size, shuffle=True)
@@ -50,16 +55,20 @@ class CNNClassifier:
             for i, (img, label) in enumerate(train_loader):
                 img = img.as_in_context(self.ctx)
                 label = label.as_in_context(self.ctx)
-                with mx.gluon.autograd.record():
+                with mx.gluon.autograd.record(train_mode=True):
                     output = self.model(img)
                     loss = self.criterion(output, label)
+                self.optimizer, lr = self.adjust_lr(self.optimizer, global_step, total_steps)
                 loss.backward()
                 self.optimizer.step(img.shape[0])
+
+                global_step += 1
                 loss = mx.nd.mean(loss).asscalar()
-                predict = mx.nd.argmax(output, axis=1)
-                acc = mx.nd.mean(predict == label).asscalar()
+                preds = mx.nd.argmax(output, axis=1)
+                acc = mx.nd.mean(preds == label).asscalar()
                 if i % 50 == 0:
-                    print('[{}/{}] [{}/{}] Loss: {:.6f}, Acc: {:.6f}'.format(e+1, n_epoch, i, len(train_loader), loss, acc))
+                    print('[{}/{}] [{}/{}] Loss: {:.4f}, Acc: {:.4f}, LR: {:.4f}'.format(
+                          e+1, n_epoch, i, len(train_loader), loss, acc, lr))
     # end method
 
 
@@ -85,5 +94,15 @@ class CNNClassifier:
             arr[:] = _arr
             data.append(arr)
         return data
+    # end method
+
+
+    def adjust_lr(self, optimizer, current_step, total_steps):
+        max_lr = 3e-3
+        min_lr = 1e-4
+        decay_rate = math.log(min_lr/max_lr) / (-total_steps)
+        lr = max_lr * math.exp(-decay_rate * current_step)
+        optim = mx.gluon.Trainer(self.model.collect_params(), 'adam', {'learning_rate': lr})
+        return optim, lr
     # end method
 # end class

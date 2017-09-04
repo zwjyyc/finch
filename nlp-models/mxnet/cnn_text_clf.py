@@ -3,12 +3,14 @@ import numpy as np
 import math
 
 
-class CNNClassifier:
-    def __init__(self, ctx, n_out, kernel_size=5, pool_size=2, lr=1e-3):
+class CNNTextClassifier:
+    def __init__(self, ctx, vocab_size, n_out=2, embedding_dim=128, n_filters=250, kernel_size=3, lr=1e-3):
         self.ctx = ctx
+        self.vocab_size = vocab_size
         self.n_out = n_out
+        self.embedding_dim = embedding_dim
+        self.n_filters = n_filters
         self.kernel_size = kernel_size
-        self.pool_size = pool_size
         self.lr = lr
         self.build_model()
         self.compile_model()
@@ -17,21 +19,10 @@ class CNNClassifier:
 
     def build_model(self):
         self.model = mx.gluon.nn.Sequential()
-        self.model.add(mx.gluon.nn.Conv2D(32, self.kernel_size, padding=2))
-        self.model.add(mx.gluon.nn.BatchNorm())
-        self.model.add(mx.gluon.nn.MaxPool2D(self.pool_size))
-        self.model.add(mx.gluon.nn.Activation(activation='relu'))
-
-        self.model.add(mx.gluon.nn.Conv2D(64, self.kernel_size, padding=2))
-        self.model.add(mx.gluon.nn.BatchNorm())
-        self.model.add(mx.gluon.nn.MaxPool2D(self.pool_size))
-        self.model.add(mx.gluon.nn.Activation(activation='relu'))
-
-        self.model.add(mx.gluon.nn.Flatten())
-        self.model.add(mx.gluon.nn.Dense(1024))
-        self.model.add(mx.gluon.nn.BatchNorm())
-        self.model.add(mx.gluon.nn.Activation(activation='relu'))
-
+        self.model.add(mx.gluon.nn.Embedding(self.vocab_size, self.embedding_dim))
+        self.model.add(mx.gluon.nn.Dropout(0.2))
+        self.model.add(mx.gluon.nn.Conv1D(self.n_filters, self.kernel_size, activation='relu'))
+        self.model.add(mx.gluon.nn.GlobalMaxPool1D())
         self.model.add(mx.gluon.nn.Dense(self.n_out))
     # end method
         
@@ -43,7 +34,7 @@ class CNNClassifier:
     # end method
 
 
-    def fit(self, X_train, y_train, batch_size=128, n_epoch=1):
+    def fit(self, X_train, y_train, batch_size=32, n_epoch=2, val_data=None):
         global_step = 0
         n_batch = len(X_train) // batch_size
         total_steps = n_epoch * n_batch
@@ -69,6 +60,10 @@ class CNNClassifier:
                 if i % 50 == 0:
                     print('[{}/{}] [{}/{}] Loss: {:.4f}, Acc: {:.4f}, LR: {:.4f}'.format(
                           e+1, n_epoch, i, len(train_loader), loss, acc, lr))
+            if val_data is not None:
+                pred = self.predict(val_data[0])
+                final_acc = (pred == val_data[1]).mean()
+                print("Testing Accuracy: %.4f" % final_acc)
     # end method
 
 
@@ -94,8 +89,8 @@ class CNNClassifier:
 
 
     def adjust_lr(self, current_step, total_steps):
-        max_lr = 3e-3
-        min_lr = 1e-4
+        max_lr = 5e-3
+        min_lr = 1e-3
         decay_rate = math.log(min_lr/max_lr) / (-total_steps)
         lr = max_lr * math.exp(-decay_rate * current_step)
         optim = mx.gluon.Trainer(self.model.collect_params(), 'adam', {'learning_rate': lr})

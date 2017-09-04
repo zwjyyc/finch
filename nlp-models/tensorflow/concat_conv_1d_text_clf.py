@@ -34,7 +34,6 @@ class Conv1DClassifier:
         self.n_out = n_out
         self.sess = sess
         self._pointer = None
-        self._seq_len = 0
         self.build_graph()
     # end constructor
 
@@ -74,13 +73,9 @@ class Conv1DClassifier:
                              filters = n_filters,
                              kernel_size  = kernel_size,
                              strides = strides,
-                             padding=self.padding,
+                             padding = self.padding,
                              use_bias = True,
                              activation = tf.nn.relu)
-        if self.padding == 'valid':
-            self._seq_len += int((self.seq_len - kernel_size + 1) / strides)
-        if self.padding == 'same':
-            self._seq_len += int(self.seq_len / strides)
         return Y
     # end method add_conv1d_layer
 
@@ -92,10 +87,10 @@ class Conv1DClassifier:
 
     def add_global_pooling(self):
         Y = tf.layers.average_pooling1d(inputs = self._pointer,
-                                        pool_size = self._seq_len,
+                                        pool_size = self._pointer.get_shape().as_list()[1],
                                         strides = 1,
                                         padding = self.padding)
-        Y = tf.reshape(Y, [-1, self.n_filters])
+        Y = tf.reshape(Y, [-1, Y.get_shape().as_list()[-1]])
         self._pointer = Y
     # end method add_global_maxpool_layer
 

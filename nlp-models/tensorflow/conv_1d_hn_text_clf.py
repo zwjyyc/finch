@@ -83,7 +83,7 @@ class HighwayClassifier:
     def add_global_pooling(self):
         Y = tf.layers.average_pooling1d(inputs = self._pointer,
                                         pool_size = self.seq_len,
-                                        strides = self.seq_len,
+                                        strides = 1,
                                         padding = self.padding)
         Y = tf.reshape(Y, [-1, self.n_filters])
         self._pointer = Y

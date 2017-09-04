@@ -31,9 +31,6 @@ class Conv2DClassifier:
         self.n_out = n_out
         self.sess = sess
         self._pointer = None
-        self._img_h = img_size[0]
-        self._img_w = img_size[1]
-        self._n_filter = img_ch
         self.build_graph()
     # end constructor
 
@@ -68,28 +65,19 @@ class Conv2DClassifier:
                              use_bias = True,
                              activation = tf.nn.relu)
         self._pointer = tf.layers.batch_normalization(Y, training=self.train_flag)
-        self._n_filter = out_dim
-        if self.padding == 'valid':
-            self._img_h = int((self._img_h-self.kernel_size[0]+1) / strides[0])
-            self._img_w = int((self._img_w-self.kernel_size[1]+1) / strides[1])
-        if self.padding == 'same':
-            self._img_h = int(self._img_h / strides[0])
-            self._img_w = int(self._img_w / strides[1])
     # end method add_conv_layer
 
 
     def add_pooling(self):
         self._pointer = tf.layers.max_pooling2d(inputs = self._pointer,
-                                               pool_size = self.pool_size,
-                                               strides = self.pool_size,
-                                               padding = self.padding)
-        self._img_h = int(self._img_h / self.pool_size[0])
-        self._img_w = int(self._img_w / self.pool_size[1])
+                                                pool_size = self.pool_size,
+                                                strides = self.pool_size,
+                                                padding = self.padding)
     # end method add_maxpool_layer
 
 
     def add_fully_connected(self, out_dim):
-        flat = tf.reshape(self._pointer, [-1, self._img_h * self._img_w * self._n_filter])
+        flat = tf.reshape(self._pointer, [-1, np.prod(self._pointer.get_shape().as_list()[1:])])
         fc = tf.layers.dense(flat, out_dim, tf.nn.relu)
         fc = tf.layers.batch_normalization(fc, training=self.train_flag)
         self._pointer = tf.nn.dropout(fc, self.keep_prob)

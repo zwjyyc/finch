@@ -41,7 +41,6 @@ class ConvLSTMClassifier:
         self.n_out = n_out
         self.sess = sess
         self._pointer = None         # used to point to the forefront of neural network
-        self._seq_len = max_seq_len # used to record the current sequence length (after pooling)
         self.build_graph()
     # end constructor
  
@@ -85,10 +84,6 @@ class ConvLSTMClassifier:
                              use_bias = True,
                              activation = tf.nn.relu)
         self._pointer = Y
-        if self.padding == 'valid':
-            self._seq_len = int((self._seq_len - self.kernel_size + 1) / strides)
-        if self.padding == 'same':
-            self._seq_len = int(self._seq_len / strides)
     # end method add_conv1d
 
 
@@ -97,8 +92,6 @@ class ConvLSTMClassifier:
                                         pool_size = k,
                                         strides = k,
                                         padding = self.padding)
-        self._seq_len = int(self._seq_len / k)
-        self._pointer = tf.reshape(Y, [-1, self._seq_len, self.n_filters])
     # end method add_maxpool
 
 

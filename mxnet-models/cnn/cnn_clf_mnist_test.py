@@ -1,3 +1,4 @@
+import mxnet as mx
 import tensorflow as tf
 import numpy as np
 from cnn_clf import CNNClassifier
@@ -8,7 +9,7 @@ def main():
     X_train = (X_train / 255.0)[:, np.newaxis, :, :]
     X_test = (X_test / 255.0)[:, np.newaxis, :, :]
 
-    model = CNNClassifier(n_out=10)
+    model = CNNClassifier(mx.cpu(), n_out=10)
     model.fit(X_train, y_train)
     pred = model.predict(X_test)
 

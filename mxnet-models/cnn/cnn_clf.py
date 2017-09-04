@@ -3,7 +3,8 @@ import numpy as np
 
 
 class CNNClassifier:
-    def __init__(self, n_out, kernel_size=5, pool_size=2, lr=1e-3):
+    def __init__(self, ctx, n_out, kernel_size=5, pool_size=2, lr=1e-3):
+        self.ctx = ctx
         self.n_out = n_out
         self.kernel_size = kernel_size
         self.pool_size = pool_size
@@ -35,7 +36,7 @@ class CNNClassifier:
         
 
     def compile_model(self):
-        self.model.collect_params().initialize(mx.init.Xavier())
+        self.model.collect_params().initialize(mx.init.Xavier(), ctx=self.ctx)
         self.criterion = mx.gluon.loss.SoftmaxCrossEntropyLoss()
         self.optimizer = mx.gluon.Trainer(self.model.collect_params(), 'adam', {'learning_rate': self.lr})
     # end method
@@ -47,6 +48,8 @@ class CNNClassifier:
                                                 batch_size=batch_size, shuffle=True)
         for e in range(n_epoch):
             for i, (img, label) in enumerate(train_loader):
+                img = img.as_in_context(self.ctx)
+                label = label.as_in_context(self.ctx)
                 with mx.gluon.autograd.record():
                     output = self.model(img)
                     loss = self.criterion(output, label)
@@ -63,7 +66,7 @@ class CNNClassifier:
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.model(self.from_numpy(X_test_batch)[0])
+            batch_pred = self.model(self.from_numpy(X_test_batch)[0].as_in_context(self.ctx))
             batch_pred_list.append(batch_pred.asnumpy())
         return np.argmax(np.vstack(batch_pred_list), 1)
     # end method

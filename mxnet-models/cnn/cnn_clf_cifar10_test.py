@@ -1,12 +1,13 @@
 import tensorflow as tf
-import numpy as np
 from cnn_clf import CNNClassifier
 
 
 def main():
-    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.mnist.load_data()
-    X_train = (X_train / 255.0)[:, np.newaxis, :, :]
-    X_test = (X_test / 255.0)[:, np.newaxis, :, :]
+    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.cifar10.load_data()
+    X_train = (X_train / 255.0).reshape(-1, 3, 32, 32)
+    X_test = (X_test / 255.0).reshape(-1, 3, 32, 32)
+    y_train = y_train.ravel()
+    y_test = y_test.ravel()
 
     model = CNNClassifier(n_out=10)
     model.fit(X_train, y_train)

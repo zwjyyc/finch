@@ -1,4 +1,5 @@
 import mxnet as mx
+import numpy as np
 
 
 class CNNClassifier:
@@ -14,12 +15,21 @@ class CNNClassifier:
 
     def build_model(self):
         self.model = mx.gluon.nn.Sequential()
-        self.model.add(mx.gluon.nn.Conv2D(16, self.kernel_size, padding=2, activation='relu'))
+        self.model.add(mx.gluon.nn.Conv2D(32, self.kernel_size, padding=2))
+        self.model.add(mx.gluon.nn.BatchNorm())
         self.model.add(mx.gluon.nn.MaxPool2D(self.pool_size))
-        self.model.add(mx.gluon.nn.Conv2D(32, self.kernel_size, padding=2, activation='relu'))
+        self.model.add(mx.gluon.nn.Activation(activation='relu'))
+
+        self.model.add(mx.gluon.nn.Conv2D(64, self.kernel_size, padding=2))
+        self.model.add(mx.gluon.nn.BatchNorm())
         self.model.add(mx.gluon.nn.MaxPool2D(self.pool_size))
+        self.model.add(mx.gluon.nn.Activation(activation='relu'))
+
         self.model.add(mx.gluon.nn.Flatten())
-        self.model.add(mx.gluon.nn.Dense(1024, activation='relu'))
+        self.model.add(mx.gluon.nn.Dense(1024))
+        self.model.add(mx.gluon.nn.BatchNorm())
+        self.model.add(mx.gluon.nn.Activation(activation='relu'))
+
         self.model.add(mx.gluon.nn.Dense(10))
     # end method
         
@@ -47,6 +57,21 @@ class CNNClassifier:
                 acc = mx.nd.mean(predict == label).asscalar()
                 if i % 50 == 0:
                     print('[{}/{}] [{}/{}] Loss: {:.6f}, Acc: {:.6f}'.format(e+1, n_epoch, i, len(train_loader), loss, acc))
+    # end method
+
+
+    def predict(self, X_test, batch_size=128):
+        batch_pred_list = []
+        for X_test_batch in self.gen_batch(X_test, batch_size):
+            batch_pred = self.model(self.from_numpy(X_test_batch)[0])
+            batch_pred_list.append(batch_pred.asnumpy())
+        return np.argmax(np.vstack(batch_pred_list), 1)
+    # end method
+
+
+    def gen_batch(self, arr, batch_size):
+        for i in range(0, len(arr), batch_size):
+            yield arr[i : i+batch_size]
     # end method
 
 

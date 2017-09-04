@@ -2,8 +2,10 @@ import mxnet as mx
 
 
 class CNNClassifier:
-    def __init__(self, n_out, lr=1e-3):
+    def __init__(self, n_out, kernel_size=5, pool_size=2, lr=1e-3):
         self.n_out = n_out
+        self.kernel_size = kernel_size
+        self.pool_size = pool_size
         self.lr = lr
         self.build_model()
         self.compile_model()
@@ -12,11 +14,12 @@ class CNNClassifier:
 
     def build_model(self):
         self.model = mx.gluon.nn.Sequential()
-        self.model.add(mx.gluon.nn.Conv2D(16, 5, padding=2, activation='relu'))
-        self.model.add(mx.gluon.nn.MaxPool2D(2))
-        self.model.add(mx.gluon.nn.Conv2D(32, 5, padding=2, activation='relu'))
-        self.model.add(mx.gluon.nn.MaxPool2D(2))
+        self.model.add(mx.gluon.nn.Conv2D(16, self.kernel_size, padding=2, activation='relu'))
+        self.model.add(mx.gluon.nn.MaxPool2D(self.pool_size))
+        self.model.add(mx.gluon.nn.Conv2D(32, self.kernel_size, padding=2, activation='relu'))
+        self.model.add(mx.gluon.nn.MaxPool2D(self.pool_size))
         self.model.add(mx.gluon.nn.Flatten())
+        self.model.add(mx.gluon.nn.Dense(1024, activation='relu'))
         self.model.add(mx.gluon.nn.Dense(10))
     # end method
         

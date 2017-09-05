@@ -74,7 +74,7 @@ class CNNClassifier:
 
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        test_loader = mx.gluon.data.DataLoader(self.from_numpy(X_test)[0],
+        test_loader = mx.gluon.data.DataLoader(self.from_numpy(X_test),
                                                batch_size=batch_size, shuffle=False)
         for X_test_batch in test_loader:
             batch_pred = self.model(X_test_batch.as_in_context(self.ctx))
@@ -89,7 +89,7 @@ class CNNClassifier:
             arr = mx.nd.zeros(_arr.shape)
             arr[:] = _arr
             data.append(arr)
-        return data
+        return data if len(data) > 1 else data[0]
     # end method
 
 

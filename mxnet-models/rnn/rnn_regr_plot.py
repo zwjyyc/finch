@@ -7,6 +7,7 @@ import seaborn as sns
 
 TIME_STEPS = 20
 BATCH_SIZE = 50
+N_STEPS = 200
 
 
 class TimeSeriesGen:
@@ -31,16 +32,12 @@ def from_numpy(*args):
         arr = mx.nd.zeros(_arr.shape)
         arr[:] = _arr
         data.append(arr)
-    return data
+    return data if len(data) > 1 else data[0]
 # end function
 
 
-def detach(args):
-    data = []
-    for _arr in args:
-        arr = _arr.detach()
-        data.append(arr)
-    return data
+def detach(arrs):
+    return [arr.detach() for arr in arrs]
 # end function
 
 
@@ -55,7 +52,7 @@ def main():
     sns.set(style='white')
     plt.ion()
 
-    for step in range(200):
+    for step in range(N_STEPS):
         X_train, Y_train, _ = train_gen.next_batch()
         X_train, Y_train = from_numpy(X_train, Y_train)
         with mx.gluon.autograd.record(train_mode=True):
@@ -66,7 +63,7 @@ def main():
         model.optimizer.step(BATCH_SIZE)
 
         X_test, Y_test, ts = test_gen.next_batch()
-        X_test = from_numpy(X_test)[0]
+        X_test = from_numpy(X_test)
         Y_pred, test_state = model(X_test, test_state)
         Y_pred = Y_pred.asnumpy()
 
@@ -77,8 +74,8 @@ def main():
         plt.xlim((ts.ravel()[0], ts.ravel()[-1]))
         plt.legend(fontsize=15, loc=1)
         plt.draw()
-        plt.pause(0.01)
-        print('train loss: %.4f' % (mx.nd.mean(loss).asscalar()))
+        plt.pause(5e-3)
+        print('[%d/%d] train loss: %.4f' % (step, N_STEPS, mx.nd.mean(loss).asscalar()))
 
     plt.ioff()
     plt.show() 

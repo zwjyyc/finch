@@ -70,7 +70,7 @@ class RNNClassifier(mx.gluon.Block):
 
     def predict(self, X_test, batch_size=128):
         batch_pred_list = []
-        test_loader = mx.gluon.data.DataLoader(self.from_numpy(X_test)[0],
+        test_loader = mx.gluon.data.DataLoader(self.from_numpy(X_test),
                                                batch_size=batch_size, shuffle=False)
         for X_test_batch in test_loader:
             h0 = mx.nd.zeros((self.n_layer, X_test_batch.shape[0], 128), self.ctx)
@@ -87,7 +87,7 @@ class RNNClassifier(mx.gluon.Block):
             arr = mx.nd.zeros(_arr.shape)
             arr[:] = _arr
             data.append(arr)
-        return data
+        return data if len(data) > 1 else data[0]
     # end method
 
 

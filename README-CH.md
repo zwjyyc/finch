@@ -13,6 +13,7 @@ python xxxx_test.py
 主要依赖于下面三个库：
 * [TensorFlow >= 1.2.2](https://www.tensorflow.org/)
 * [PyTorch >= 0.20](http://pytorch.org/)
+* [MXNet >= 0.11](https://mxnet.incubator.apache.org/)
 * [scikit-learn](http://scikit-learn.org/)
 
 ## 编码风格

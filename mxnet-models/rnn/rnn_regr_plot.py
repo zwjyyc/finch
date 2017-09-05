@@ -49,10 +49,9 @@ def main():
     test_gen = TimeSeriesGen(1000, TIME_STEPS, BATCH_SIZE)
     model = RNNRegressor(mx.cpu(), n_out = 1, rnn_size = TIME_STEPS)
 
-    h0 = mx.nd.zeros((1, BATCH_SIZE, TIME_STEPS), model.ctx)
-    c0 = mx.nd.zeros((1, BATCH_SIZE, TIME_STEPS), model.ctx)
-    train_state = [h0, c0]
-    test_state = [h0, c0]
+    init_state = mx.nd.zeros((1, BATCH_SIZE, TIME_STEPS), model.ctx)
+    train_state = [init_state] * 2
+    test_state = [init_state] * 2
     sns.set(style='white')
     plt.ion()
 
@@ -69,10 +68,8 @@ def main():
         X_test, Y_test, ts = test_gen.next_batch()
         X_test = from_numpy(X_test)[0]
         Y_pred, test_state = model(X_test, test_state)
-        test_state = detach(test_state)
         Y_pred = Y_pred.asnumpy()
 
-        # update plotting
         plt.cla()
         plt.plot(ts.ravel(), Y_test.ravel(), label='actual')
         plt.plot(ts.ravel(), Y_pred.ravel(), color='indianred', label='predicted')

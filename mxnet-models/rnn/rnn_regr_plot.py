@@ -49,8 +49,8 @@ def main():
     test_gen = TimeSeriesGen(1000, TIME_STEPS, BATCH_SIZE)
     model = RNNRegressor(mx.cpu(), n_out = 1, rnn_size = TIME_STEPS)
 
-    h0 = mx.nd.zeros((1, BATCH_SIZE, TIME_STEPS), mx.cpu())
-    c0 = mx.nd.zeros((1, BATCH_SIZE, TIME_STEPS), mx.cpu())
+    h0 = mx.nd.zeros((1, BATCH_SIZE, TIME_STEPS), model.ctx)
+    c0 = mx.nd.zeros((1, BATCH_SIZE, TIME_STEPS), model.ctx)
     train_state = [h0, c0]
     test_state = [h0, c0]
     sns.set(style='white')

@@ -74,8 +74,7 @@ class RNNTextGen:
 
     def add_dynamic_rnn(self):
         self.init_state = self.cells.zero_state(self.batch_size, tf.float32)
-        self._pointer, self.final_state = tf.nn.dynamic_rnn(self.cells, self._pointer,
-                                                           initial_state=self.init_state)   
+        self._pointer, self.final_state = tf.nn.dynamic_rnn(self.cells, self._pointer, initial_state=self.init_state)   
     # end method add_dynamic_rnn
 
 
@@ -152,8 +151,6 @@ class RNNTextGen:
                 if local_step % 100 == 0:
                     print(self.infer(start_word, n_gen)+'\n')
                 global_step += 1
-            
-        return log
     # end method fit
 
 

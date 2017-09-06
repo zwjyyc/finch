@@ -73,8 +73,8 @@ class RNNClassifier(mx.gluon.Block):
         test_loader = mx.gluon.data.DataLoader(self.from_numpy(X_test),
                                                batch_size=batch_size, shuffle=False)
         for X_test_batch in test_loader:
-            h0 = mx.nd.zeros((self.n_layer, X_test_batch.shape[0], 128), self.ctx)
-            c0 = mx.nd.zeros((self.n_layer, X_test_batch.shape[0], 128), self.ctx)
+            h0 = mx.nd.zeros((self.n_layer, X_test_batch.shape[0], self.rnn_size), self.ctx)
+            c0 = mx.nd.zeros((self.n_layer, X_test_batch.shape[0], self.rnn_size), self.ctx)
             batch_pred = self.forward(X_test_batch.as_in_context(self.ctx), [h0, c0])
             batch_pred_list.append(batch_pred.asnumpy())
         return np.argmax(np.vstack(batch_pred_list), 1)

@@ -53,11 +53,10 @@ class RNNClassifier:
 
 
     def add_lstm_cells(self):
-        def cell():
-            cell = tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer())
-            cell = tf.nn.rnn_cell.DropoutWrapper(cell, self.in_keep_prob, self.out_keep_prob)
-            return cell
-        self.cells = tf.nn.rnn_cell.MultiRNNCell([cell() for _ in range(self.n_layer)])
+        lstm = lambda size, in_p, out_p : tf.nn.rnn_cell.DropoutWrapper(
+            tf.nn.rnn_cell.LSTMCell(size, initializer=tf.orthogonal_initializer()), in_p, out_p)
+        self.cells = tf.nn.rnn_cell.MultiRNNCell(
+            [lstm(self.cell_size, self.in_keep_prob, self.out_keep_prob) for _ in range(self.n_layer)])
     # end method add_rnn_cells
 
 

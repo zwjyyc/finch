@@ -87,10 +87,10 @@ class GAN:
         self.d = Discriminator(self.img_size, self.img_ch, self.shape_trace, self.kernel_size, self.stride, self.padding)
         self.g.collect_params().initialize(mx.init.MSRAPrelu(), ctx=self.ctx)
         self.d.collect_params().initialize(mx.init.MSRAPrelu(), ctx=self.ctx)
-        self.loss =  mx.gluon.loss.SoftmaxCrossEntropyLoss()
+        self.g_optim = mx.gluon.Trainer(self.g.collect_params(), 'adam', {'learning_rate':2e-4, 'beta1':0.5})
+        self.d_optim = mx.gluon.Trainer(self.d.collect_params(), 'adam', {'learning_rate':2e-4, 'beta1':0.5})
+        self.loss = mx.gluon.loss.SoftmaxCrossEntropyLoss()
         self.mse = mx.gluon.loss.L2Loss()
-        self.g_optim = mx.gluon.Trainer(self.g.collect_params(), 'adam', {'learning_rate': 2e-4, 'beta1': 0.5})
-        self.d_optim = mx.gluon.Trainer(self.d.collect_params(), 'adam', {'learning_rate': 2e-4, 'beta1': 0.5})
     # end method
 
 

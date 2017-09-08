@@ -33,7 +33,7 @@ python xxxx_test.py
 * [强化学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#强化学习)
 * [自然语言处理](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#自然语言处理)
     * [预处理](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#预处理)
-    * [词语表示](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#词语表示)
+    * [词语表示](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#词语表示)
     * [文本分类](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本分类)
     * [文本生成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本生成)
     * [序列标注](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列标注)
@@ -125,7 +125,7 @@ python xxxx_test.py
 * Python &nbsp; | &nbsp; [文本格式化](https://github.com/zhedongzheng/finch/blob/master/nlp-models/text-cleaning.ipynb)
 
 * Python &nbsp; | &nbsp; [词语索引](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
-#### 语言表示
+#### 词语表示
 * Python &nbsp; | &nbsp; 隐含语义分析 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
 
 * Python &nbsp; | &nbsp; 词频 - 逆向文件频率 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf.py) &nbsp; &nbsp; [Brown文集测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf_brown_test.py) &nbsp; &nbsp; [结果](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf_brown_test.md) &nbsp; | &nbsp;

@@ -33,7 +33,7 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
-  * [Language Model](https://github.com/zhedongzheng/finch/blob/master/README.md#language-model)
+  * [Word Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#word-representation)
   * [Text Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#text-classification)
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
   * [Sequence Labelling](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-labelling)

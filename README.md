@@ -11,9 +11,9 @@ Any test file can be run directly
 python xxxx_test.py
 ```
 The main dependence is:
-* [TensorFlow >= 1.2.2](https://www.tensorflow.org/)
-* [PyTorch >= 0.20](http://pytorch.org/)
-* [MXNet >= 0.11](https://mxnet.incubator.apache.org/)
+* [tensorflow >= 1.2.2](https://www.tensorflow.org/)
+* [pytorch >= 0.20](http://pytorch.org/)
+* [mxnet >= 0.11](https://mxnet.incubator.apache.org/)
 * [scikit-learn](http://scikit-learn.org/)
 ## Other Language Support
 [中文](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)

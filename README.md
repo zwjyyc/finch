@@ -22,6 +22,7 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)
+  * [Non-Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#non-linear-model)
   * [Ensemble](https://github.com/zhedongzheng/finch/blob/master/README.md#ensemble)
 * [Deep Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#deep-learning)
   * [Multilayer Perceptron](https://github.com/zhedongzheng/finch/blob/master/README.md#multilayer-perceptron)
@@ -54,6 +55,8 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp;
 
 * Java &nbsp; | &nbsp; SVM (Linear) Classifier &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java) &nbsp; | &nbsp;
+#### Non-Linear Model
+* TensorFlow &nbsp; | &nbsp; Random Forest &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/forest.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/forest_mnist_test.py) &nbsp; | &nbsp;
 #### Ensemble
 * Python &nbsp; | &nbsp; Bagging Classifier &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/classic-models/bagging_clf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/classic-models/bagging_clf_test.py) &nbsp; | &nbsp;
 

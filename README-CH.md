@@ -22,7 +22,7 @@ python xxxx_test.py
 ## 目录
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)
     * [线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#线性模型)
-    * [非线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#非线性模型)
+    * [非线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#非线性模型)
     * [集成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#集成)
 * [深度学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#深度学习)
     * [多层感知](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#多层感知)

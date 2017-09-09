@@ -11,9 +11,9 @@ git clone https://github.com/zhedongzheng/finch.git
 python xxxx_test.py
 ```
 主要依赖于下面三个库：
-* [TensorFlow >= 1.2.2](https://www.tensorflow.org/)
-* [PyTorch >= 0.20](http://pytorch.org/)
-* [MXNet >= 0.11](https://mxnet.incubator.apache.org/)
+* [tensorflow >= 1.2.2](https://www.tensorflow.org/)
+* [pytorch >= 0.20](http://pytorch.org/)
+* [mxnet >= 0.11](https://mxnet.incubator.apache.org/)
 * [scikit-learn](http://scikit-learn.org/)
 
 ## 编码风格
@@ -22,6 +22,7 @@ python xxxx_test.py
 ## 目录
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)
     * [线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#线性模型)
+    * [非线性模型](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#非线性模型)
     * [集成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#集成)
 * [深度学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#深度学习)
     * [多层感知](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#多层感知)
@@ -54,6 +55,8 @@ python xxxx_test.py
 * Java &nbsp; | &nbsp; 逻辑回归 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp;
 
 * Java &nbsp; | &nbsp; 支持向量机（线性） 分类器 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java) &nbsp; | &nbsp;
+#### 非线性模型
+* TensorFlow &nbsp; | &nbsp; 随机森林 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/forest.py) &nbsp; &nbsp; [MNIST数据集测试](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/forest_mnist_test.py) &nbsp; | &nbsp;
 #### 集成
 * Python &nbsp; | &nbsp; Bagging 分类器 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/classic-models/bagging_clf.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/classic-models/bagging_clf_test.py) &nbsp; | &nbsp;
 

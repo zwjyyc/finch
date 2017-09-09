@@ -1,4 +1,3 @@
-
 from tensorflow.contrib.tensor_forest.python import tensor_forest
 import tensorflow as tf
 import numpy as np

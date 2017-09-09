@@ -4,9 +4,7 @@ import numpy as np
 
 
 class Seq2Seq:
-    def __init__(self, rnn_size, n_layers,
-                 X_word2idx, encoder_embedding_dim,
-                 Y_word2idx, decoder_embedding_dim,
+    def __init__(self, rnn_size, n_layers, X_word2idx, encoder_embedding_dim, Y_word2idx, decoder_embedding_dim,
                  sess=tf.Session(), grad_clip=5.0):
         self.rnn_size = rnn_size
         self.n_layers  = n_layers

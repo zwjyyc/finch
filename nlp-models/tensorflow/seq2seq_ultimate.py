@@ -4,10 +4,8 @@ import numpy as np
 
 
 class Seq2Seq:
-    def __init__(self, rnn_size, n_layers,
-                 X_word2idx, encoder_embedding_dim,
-                 Y_word2idx, decoder_embedding_dim,
-                 sess=tf.Session(), grad_clip=5.0, beam_width=5):
+    def __init__(self, rnn_size, n_layers, X_word2idx, encoder_embedding_dim, Y_word2idx, decoder_embedding_dim,
+                 sess=tf.Session(), grad_clip=5.0, beam_width=5, sampling_proba=0.2):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
@@ -16,6 +14,7 @@ class Seq2Seq:
         self.Y_word2idx = Y_word2idx
         self.decoder_embedding_dim = decoder_embedding_dim
         self.beam_width = beam_width
+        self.sampling_proba = sampling_proba
         self.sess = sess
         self.register_symbols()
         self.build_graph()
@@ -89,9 +88,11 @@ class Seq2Seq:
         decoder_embedding = tf.get_variable('decoder_embedding', [len(self.Y_word2idx), self.decoder_embedding_dim],
                                              tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
         
-        training_helper = tf.contrib.seq2seq.TrainingHelper(
+        training_helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(
             inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
             sequence_length = self.Y_seq_len,
+            embedding = decoder_embedding,
+            sampling_probability = self.sampling_proba,
             time_major = False)
         training_decoder = tf.contrib.seq2seq.BasicDecoder(
             cell = self.decoder_cell,

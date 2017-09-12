@@ -37,7 +37,7 @@ class Seq2Seq:
         self.Y = tf.placeholder(tf.int32, [None, None])
         self.X_seq_len = tf.placeholder(tf.int32, [None])
         self.Y_seq_len = tf.placeholder(tf.int32, [None])
-        self.batch_size = tf.placeholder(tf.int32, [])
+        self.batch_size = tf.shape(self.X)[0]
     # end method
 
 
@@ -198,14 +198,12 @@ class Seq2Seq:
                 _, loss = self.sess.run([self.train_op, self.loss], {self.X: X_train_batch,
                                                                      self.Y: Y_train_batch,
                                                                      self.X_seq_len: X_train_batch_lens,
-                                                                     self.Y_seq_len: Y_train_batch_lens,
-                                                                     self.batch_size: batch_size})
+                                                                     self.Y_seq_len: Y_train_batch_lens})
                 if local_step % display_step == 0:
                     val_loss = self.sess.run(self.loss, {self.X: X_test_batch,
                                                          self.Y: Y_test_batch,
                                                          self.X_seq_len: X_test_batch_lens,
-                                                         self.Y_seq_len: Y_test_batch_lens,
-                                                         self.batch_size: batch_size})
+                                                         self.Y_seq_len: Y_test_batch_lens})
                     print("Epoch %d/%d | Batch %d/%d | train_loss: %.3f | test_loss: %.3f"
                         % (epoch, n_epoch, local_step, len(X_train)//batch_size, loss, val_loss))
     # end method
@@ -214,9 +212,7 @@ class Seq2Seq:
     def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):        
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
         out_indices = self.sess.run(self.predicting_ids, {
-            self.X: [input_indices] * batch_size,
-            self.X_seq_len: [len(input_indices)] * batch_size,
-            self.batch_size: batch_size})[0]
+            self.X: [input_indices], self.X_seq_len: [len(input_indices)]})[0]
         
         print('\nSource')
         print('Word: {}'.format([i for i in input_indices]))

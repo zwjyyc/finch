@@ -15,6 +15,7 @@ The main dependence is:
 * [pytorch >= 0.20](http://pytorch.org/)
 * [mxnet >= 0.11](https://mxnet.incubator.apache.org/)
 * [scikit-learn](http://scikit-learn.org/)
+* [openai/gym](https://github.com/openai/gym)
 ## Other Language Support
 [Chinese (中文)](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
 ## Style of My Code

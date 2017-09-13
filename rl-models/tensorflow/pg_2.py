@@ -18,14 +18,14 @@ class PolicyGradient:
         self.add_input_layer()
         self.add_forward_path()
         self.add_backward_path()
-    # end method build_graph
+    # end method
 
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.float32, shape=[None, self.n_in])
         self.rewards = tf.placeholder(tf.float32, shape=[None])
         self.actions = tf.placeholder(tf.int32, shape=[None])
-    # end method build_forward_path
+    # end method
 
 
     def add_forward_path(self):
@@ -34,7 +34,7 @@ class PolicyGradient:
         self.logits = tf.layers.dense(hidden, self.n_out)
         outputs = tf.nn.softmax(self.logits)
         self.action = tf.multinomial(tf.log(outputs), num_samples=1)
-    # end method build_forward_path
+    # end method
 
 
     def add_backward_path(self):
@@ -42,7 +42,7 @@ class PolicyGradient:
         xentropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.actions, logits=self.logits)
         self.loss = tf.reduce_mean(xentropy * self.rewards) # reward guided loss
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
-    # end method add_backward_path
+    # end method
 
 
     def learn(self, n_games_per_update=10, n_max_steps=1000, n_iterations=250, discount_rate=0.95):
@@ -73,7 +73,7 @@ class PolicyGradient:
             print("Iteration: %d, Loss: %.3f" % (iteration, loss))
             ep_obs = []
             ep_actions = []
-    # end method learn
+    # end method
 
 
     def play(self):
@@ -86,7 +86,7 @@ class PolicyGradient:
             obs, reward, done, info = self.env.step(action_val[0][0])
             count += 1
         print(count)
-    # end method play
+    # end method
 
 
     def discount_rewards(self, rewards, discount_rate):
@@ -96,7 +96,7 @@ class PolicyGradient:
             cumulative_rewards = rewards[step] + cumulative_rewards * discount_rate
             discounted_rewards[step] = cumulative_rewards
         return discounted_rewards
-    # end method discount_rewards
+    # end method
 
 
     def discount_and_normalize_rewards(self, all_rewards, discount_rate):
@@ -105,4 +105,5 @@ class PolicyGradient:
         reward_mean = flat_rewards.mean()
         reward_std = flat_rewards.std()
         return [(discounted_rewards - reward_mean) / reward_std for discounted_rewards in all_discounted_rewards]
-    # end method discount_and_normalize_rewards
+    # end method
+# end class

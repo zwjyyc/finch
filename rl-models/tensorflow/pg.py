@@ -17,7 +17,7 @@ class PolicyGradient:
     def build_graph(self):
         self.add_forward_path()
         self.add_backward_path()
-    # end method build_graph
+    # end method
 
 
     def add_forward_path(self):
@@ -26,7 +26,7 @@ class PolicyGradient:
         self.logits = tf.layers.dense(hidden, self.n_out)
         outputs = tf.nn.softmax(self.logits)
         self.action = tf.multinomial(tf.log(outputs), num_samples=1)
-    # end method build_forward_path
+    # end method
 
 
     def add_backward_path(self):
@@ -44,7 +44,7 @@ class PolicyGradient:
             grads_and_vars_feed.append((gradient_placeholder, variable))
         
         self.train_op = optimizer.apply_gradients(grads_and_vars_feed)
-    # end method add_backward_path
+    # end method
 
 
     def learn(self, n_games_per_update=10, n_max_steps=1000, n_iterations=250, discount_rate=0.95):
@@ -75,7 +75,7 @@ class PolicyGradient:
                                           for step, reward in enumerate(rewards)], axis=0)
                 feed_dict[gradient_placeholder] = mean_gradients
             self.sess.run(self.train_op, feed_dict)
-    # end method learn
+    # end method
 
 
     def play(self):
@@ -88,7 +88,7 @@ class PolicyGradient:
             obs, reward, done, info = self.env.step(action_val[0][0])
             count += 1
         print(count)
-    # end method play
+    # end method
 
 
     def discount_rewards(self, rewards, discount_rate):
@@ -98,7 +98,7 @@ class PolicyGradient:
             cumulative_rewards = rewards[step] + cumulative_rewards * discount_rate
             discounted_rewards[step] = cumulative_rewards
         return discounted_rewards
-    # end method discount_rewards
+    # end method
 
 
     def discount_and_normalize_rewards(self, all_rewards, discount_rate):
@@ -107,4 +107,5 @@ class PolicyGradient:
         reward_mean = flat_rewards.mean()
         reward_std = flat_rewards.std()
         return [(discounted_rewards - reward_mean) / reward_std for discounted_rewards in all_discounted_rewards]
-    # end method discount_and_normalize_rewards
+    # end method
+# end class

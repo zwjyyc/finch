@@ -4,12 +4,11 @@ from collections import Counter
 
 
 class KNN:
-    def __init__(self, n_features, k = 5, sess = tf.Session(),
-                 distance_fn=lambda x_tr,x_te: tf.reduce_sum(tf.abs(tf.subtract(x_tr, tf.expand_dims(x_te,1))), 2)
-                 ):
+    def __init__(self, n_features, k=5, sess=tf.Session(),
+                 dist_fn=lambda tr,te: tf.reduce_sum(tf.abs(tf.subtract(tr, tf.expand_dims(te,1))), 2)):
         self.n_features = n_features
         self.k = k
-        self.distance_fn = distance_fn
+        self.dist_fn = dist_fn
         self.sess = sess
         self.build_graph()
     # end constructor
@@ -20,8 +19,8 @@ class KNN:
         self.X_test = tf.placeholder(tf.float32, shape=[None, self.n_features])
         self.y_train = tf.placeholder(tf.int32, shape=[None])
 
-        self.distances = self.distance_fn(self.X_train, self.X_test)
-        top_k_x, self.top_k_idx = tf.nn.top_k(tf.negative(self.distances), self.k)
+        self.dists = self.dist_fn(self.X_train, self.X_test)
+        _, self.top_k_idx = tf.nn.top_k(tf.negative(self.dists), self.k)
         self.top_k_y = tf.gather(self.y_train, self.top_k_idx)
     # end method
 

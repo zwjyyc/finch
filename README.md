@@ -204,16 +204,16 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 
 ## Computer Vision
 #### OpenCV
-* OP &nbsp; | &nbsp; [Resize](https://nbviewer.jupyter.org/github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
+* OP &nbsp; | &nbsp; [Resize](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
 
-* OP &nbsp; | &nbsp; [Rotations](https://nbviewer.jupyter.org/github.com/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
+* OP &nbsp; | &nbsp; [Rotations](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
 
-* Segmentation &nbsp; | &nbsp; [Contours](https://nbviewer.jupyter.org/github.com/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
+* Segmentation &nbsp; | &nbsp; [Contours](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
 
-* Segmentation &nbsp; | &nbsp; [Sorting Contours](https://nbviewer.jupyter.org/github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
+* Segmentation &nbsp; | &nbsp; [Sorting Contours](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
 
 * Segmentation &nbsp; | &nbsp; [Line detection](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/line-detection.ipynb)
 
-* Detection &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
+* Detection &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
 
-* Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
+* Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)

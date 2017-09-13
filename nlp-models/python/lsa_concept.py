@@ -8,8 +8,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 class LSA:
-    def __init__(self, stopwords):
+    def __init__(self, stopwords, n_compoents=20):
         self.stopwords = stopwords
+        self.n_compoents = n_compoents
         self.vectorizer = TfidfVectorizer()
         self.X = None
     # end constructor
@@ -27,7 +28,7 @@ class LSA:
 
 
     def concepts(self, top_k=5):
-        lsa = TruncatedSVD(20, n_iter=100)
+        lsa = TruncatedSVD(self.n_compoents, n_iter=100)
         lsa.fit(self.X)
         terms = self.vectorizer.get_feature_names()
         for i, comp in enumerate(lsa.components_): # lsa.components_ is V of USV, of shape (concepts, terms)

@@ -16,7 +16,7 @@ The main dependence is:
 * [mxnet >= 0.11](https://mxnet.incubator.apache.org/)
 * [scikit-learn](http://scikit-learn.org/)
 ## Other Language Support
-[Chinese 中文](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
+[Chinese (中文)](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
 ## Style of My Code
 I write each model as a single Class with ```fit()``` and ```predict()``` methods (scikit-learn API style), and then write separate test files for different incoming data. All the code below follow this style.
 ## Contents

@@ -1,15 +1,13 @@
 import sys
+import nltk
 import numpy as np
 import matplotlib.pyplot as plt
-from nltk.tokenize import word_tokenize
-# from nltk.stem import WordNetLemmatizer
 from sklearn.decomposition import TruncatedSVD
 
 
 class LSA:
     def __init__(self, stopwords):
         self.stopwords = stopwords
-        # self.lemmatizer = WordNetLemmatizer()
         self.token2idx = {}
         self.idx2token = {}
         self.documents = []
@@ -49,9 +47,8 @@ class LSA:
 
     def tokenize(self, string):
         string = string.lower()
-        tokens = word_tokenize(string) # more powerful split()
+        tokens = nltk.tokenize.word_tokenize(string) # more powerful split()
         tokens = [token for token in tokens if len(token)>2] # remove too short words
-        # tokens = [self.lemmatizer.lemmatize(token) for token in tokens] # words into base form
         tokens = [token for token in tokens if token not in self.stopwords] # remove stopwords
         tokens = [token for token in tokens if not any(c.isdigit() for c in token)] # remove any token that contains number
         return tokens

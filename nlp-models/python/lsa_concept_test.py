@@ -1,4 +1,4 @@
-from lsa import LSA
+from lsa_concept import LSA
 
 
 if __name__ == '__main__':
@@ -13,4 +13,3 @@ if __name__ == '__main__':
 
     model = LSA(stopwords)
     model.fit(documents)
-    model.transform_plot()

@@ -11,18 +11,18 @@ class LSA:
     def __init__(self, stopwords):
         self.stopwords = stopwords
         self.vectorizer = TfidfVectorizer()
-        self.documents = []
         self.X = None
     # end constructor
 
 
     def fit(self, documents):
+        _documents = []
         for line in documents:
             if int(sys.version[0]) == 2:
                 line = line.decode('ascii', 'ignore')
             tokens = self.tokenize(line)
-            self.documents.append(' '.join(tokens))
-        self.X = self.vectorizer.fit_transform(self.documents)
+            _documents.append(' '.join(tokens))
+        self.X = self.vectorizer.fit_transform(_documents)
     # end method
 
 

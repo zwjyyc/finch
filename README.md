@@ -33,7 +33,6 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
   * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
-  * [Preprocessing](https://github.com/zhedongzheng/finch/blob/master/README.md#preprocessing)
   * [Word Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#word-representation)
   * [Text Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#text-classification)
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
@@ -127,10 +126,6 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 * PyTorch &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg_cartpole_test.py) &nbsp; | &nbsp;
 
 ## Natural Language Processing
-#### Text Preprocessing
-* Python &nbsp; | &nbsp; [Text Cleaning](https://github.com/zhedongzheng/finch/blob/master/nlp-models/text-cleaning.ipynb)
-
-* Python &nbsp; | &nbsp; [Word Indexing](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 #### Word Representation
 * Python &nbsp; | &nbsp; LSA &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
 

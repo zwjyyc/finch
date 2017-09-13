@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import nltk
 import numpy as np
@@ -22,7 +23,6 @@ class LSA:
             tokens = self.tokenize(line)
             self.documents.append(' '.join(tokens))
         self.X = self.vectorizer.fit_transform(self.documents)
-        self.concepts()
     # end method
 
 

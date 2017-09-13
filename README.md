@@ -212,6 +212,8 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 
 * Segmentation &nbsp; | &nbsp; [Sorting Contours](https://github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
 
+* Line Detection &nbsp; | &nbsp; [Line detection](https://github.com/zhedongzheng/finch/blob/master/cv-models/line-detection.ipynb)
+
 * Detection &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
 
 * Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)

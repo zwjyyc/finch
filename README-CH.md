@@ -33,7 +33,7 @@ python xxxx_test.py
     * [对抗生成网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#对抗生成网络)
 * [强化学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#强化学习)
 * [自然语言处理](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#自然语言处理)
-    * [文本表示](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本表示)
+    * [文本表示](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本表示)
     * [文本分类](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本分类)
     * [文本生成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本生成)
     * [序列标注](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列标注)

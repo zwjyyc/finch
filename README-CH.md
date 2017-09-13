@@ -33,7 +33,6 @@ python xxxx_test.py
     * [对抗生成网络](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#对抗生成网络)
 * [强化学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#强化学习)
 * [自然语言处理](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#自然语言处理)
-    * [预处理](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#预处理)
     * [词语表示](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#词语表示)
     * [文本分类](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本分类)
     * [文本生成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本生成)
@@ -128,10 +127,6 @@ python xxxx_test.py
 * PyTorch &nbsp; | &nbsp; 策略梯度 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg.py) &nbsp; &nbsp; [CartPole 游戏测试](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg_cartpole_test.py) &nbsp; | &nbsp;
 
 ## 自然语言处理
-#### 预处理
-* Python &nbsp; | &nbsp; [文本格式化](https://github.com/zhedongzheng/finch/blob/master/nlp-models/text-cleaning.ipynb)
-
-* Python &nbsp; | &nbsp; [词语索引](https://github.com/zhedongzheng/finch/blob/master/nlp-models/word-indexing.ipynb)
 #### 词语表示
 * Python &nbsp; | &nbsp; 隐含语义分析 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; | &nbsp;
 
@@ -205,14 +200,16 @@ python xxxx_test.py
 
 ## 计算机视觉
 #### OpenCV
-* 基本操作 &nbsp; | &nbsp; [调整大小](https://github.com/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
+* 基本操作 &nbsp; | &nbsp; [调整大小](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/resize.ipynb)
 
-* 基本操作 &nbsp; | &nbsp; [旋转](https://github.com/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
+* 基本操作 &nbsp; | &nbsp; [旋转](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/rotations.ipynb)
 
-* 分割 &nbsp; | &nbsp; [轮廓](https://github.com/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
+* 分割 &nbsp; | &nbsp; [轮廓](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/contours.ipynb)
 
-* 分割 &nbsp; | &nbsp; [轮廓排序](https://github.com/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
+* 分割 &nbsp; | &nbsp; [轮廓排序](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/sorting-contours.ipynb)
 
-* 探测 &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
+* 分割 &nbsp; | &nbsp; [直线探测](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/line-detection.ipynb)
 
-* 探测 &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github.com/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
+* 探测 &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
+
+* 探测 &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)

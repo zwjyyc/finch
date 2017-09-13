@@ -216,4 +216,4 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 
 * Detection &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
 
-* Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
+* Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)

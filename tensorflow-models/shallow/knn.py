@@ -5,7 +5,8 @@ from collections import Counter
 
 class KNN:
     def __init__(self, n_features, k = 5, sess = tf.Session(),
-                 distance_fn=lambda x_tr,x_te: tf.reduce_sum(tf.abs(tf.subtract(x_tr, tf.expand_dims(x_te,1))), 2)):
+                 distance_fn=lambda x_tr,x_te: tf.reduce_sum(tf.abs(tf.subtract(x_tr, tf.expand_dims(x_te,1))), 2)
+                 ):
         self.n_features = n_features
         self.k = k
         self.distance_fn = distance_fn

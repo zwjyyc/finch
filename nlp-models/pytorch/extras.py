@@ -133,7 +133,7 @@ def nll(log_prob, label):
         target = Variable(torch.LongTensor([1, 2]).view(-1, 1))
         output = torch.nll(torch.log(input), target)
         output.size()
-        # (2, 1)
+        # (2,)
         ```
     """
     if isinstance(log_prob, Variable):

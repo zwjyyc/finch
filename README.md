@@ -212,7 +212,7 @@ I write each model as a single Class with ```fit()``` and ```predict()``` method
 
 * Segmentation &nbsp; | &nbsp; [Circle detection](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/circle-detection.ipynb)
 
-* Segmentation &nbsp; | &nbsp; [Bolb detection](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/Blob-detection.ipynb)
+* Segmentation &nbsp; | &nbsp; [Blob detection](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/blob-detection.ipynb)
 
 * Detection &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
 

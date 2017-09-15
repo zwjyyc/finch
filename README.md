@@ -6,7 +6,7 @@ The following command clones all the files (>200MB)
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-Any test file can be run directly
+Any test file can be run directly, the huge contents below is used to index the model and test file
 ```
 python xxxx_test.py
 ```

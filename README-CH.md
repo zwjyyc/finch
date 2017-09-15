@@ -6,7 +6,7 @@
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-任何测试脚本可以被直接运行，下面巨大的目录是为了让你找到测试脚本
+任何测试脚本可以被直接运行，下面提供的巨大的目录是为了找到测试脚本
 ```
 python xxxx_test.py
 ```

@@ -1,3 +1,4 @@
+from __future__ import division
 import re
 import sys
 import math
@@ -64,7 +65,7 @@ class SkipGram:
         normalized_embedding = self.embedding / norm # divided by modulus for cosine similarity
 
         sample_embedded = tf.nn.embedding_lookup(normalized_embedding, sample_indices)
-        self.similarity = tf.matmul(sample_embedded, tf.transpose(normalized_embedding))
+        self.similarity = tf.matmul(sample_embedded, normalized_embedding, transpose_b=True)
     # end method add_similarity_test
 
 
@@ -102,7 +103,7 @@ class SkipGram:
         int_word_counts = Counter(int_words)
         total_count = len(int_words)
         
-        word_freqs = {w: float(c) / total_count for w, c in int_word_counts.items()}
+        word_freqs = {w: c / total_count for w, c in int_word_counts.items()}
         prob_drop = {w: 1 - np.sqrt(t / word_freqs[w]) for w in int_word_counts}
         train_words = [w for w in int_words if prob_drop[w] < threshold]
 

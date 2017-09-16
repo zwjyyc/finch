@@ -1,3 +1,4 @@
+from __future__ import division
 import sys
 import string
 from io import open
@@ -25,7 +26,7 @@ def list2proba_dict(l):
     for token in l:
         d[token] = d.get(token, 0) + 1
     for token, c in d.items():
-        d[token] = float(c) / len(l)
+        d[token] = c / len(l)
     return d
 # end function list2proba_dict
 

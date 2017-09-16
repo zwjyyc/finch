@@ -5,7 +5,7 @@ import numpy as np
 
 class Seq2Seq:
     def __init__(self, rnn_size, n_layers, X_word2idx, encoder_embedding_dim, Y_word2idx, decoder_embedding_dim,
-                 sess=tf.Session(), grad_clip=5.0, beam_width=5, sampling_proba=0.2):
+                 sess=tf.Session(), grad_clip=5.0, beam_width=5, force_teaching_ratio=0.8):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
@@ -14,7 +14,7 @@ class Seq2Seq:
         self.Y_word2idx = Y_word2idx
         self.decoder_embedding_dim = decoder_embedding_dim
         self.beam_width = beam_width
-        self.sampling_proba = sampling_proba
+        self.force_teaching_ratio = force_teaching_ratio
         self.sess = sess
         self.register_symbols()
         self.build_graph()
@@ -92,7 +92,7 @@ class Seq2Seq:
             inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
             sequence_length = self.Y_seq_len,
             embedding = decoder_embedding,
-            sampling_probability = self.sampling_proba,
+            sampling_probability = 1 - self.force_teaching_ratio,
             time_major = False)
         training_decoder = tf.contrib.seq2seq.BasicDecoder(
             cell = self.decoder_cell,

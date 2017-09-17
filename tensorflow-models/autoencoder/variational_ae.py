@@ -86,6 +86,12 @@ class Autoencoder:
     # end method predict
 
 
+    def generate(self, batch_size=128):
+        return self.sess.run(self.decoder_op,
+                            {self.encoder_op: np.random.randn(batch_size, self.encoder_units[-1])})
+    # end method generate
+
+
     def gen_batch(self, arr, batch_size):
         for i in range(0, len(arr), batch_size):
             yield arr[i : i+batch_size]

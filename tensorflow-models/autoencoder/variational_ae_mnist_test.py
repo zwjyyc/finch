@@ -10,9 +10,12 @@ if __name__ == '__main__':
 
     auto = Autoencoder(28*28, [500,500,20])
     auto.fit(X_train, val_data=X_test)
-    X_test_pred = auto.predict(X_test)
     
+    X_test_pred = auto.predict(X_test)
     plt.imshow(X_test[21].reshape(28,28))
     plt.show()
     plt.imshow(X_test_pred[21].reshape(28,28))
+    plt.show()
+    
+    plt.imshow(auto.generate()[0].reshape(28,28))
     plt.show()

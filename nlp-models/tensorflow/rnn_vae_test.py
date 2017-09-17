@@ -33,7 +33,7 @@ def main():
     X_train = X_indices[BATCH_SIZE:]
     X_test = X_indices[:BATCH_SIZE]
 
-    model = RNN_VAE(rnn_size=50, n_layers=2, X_word2idx=X_char2idx, embedding_dim=15)
+    model = RNN_VAE(rnn_size=50, n_layers=1, X_word2idx=X_char2idx, embedding_dim=15)
     model.fit(X_train, X_test, batch_size=BATCH_SIZE)
     model.infer('abcdefg', X_idx2char)
     model.infer('ahisuvz', X_idx2char)

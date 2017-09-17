@@ -37,13 +37,21 @@ class RNN_VAE:
 
 
     def add_encoder_layer(self):
-        self.encoder_embedding = tf.get_variable('encoder_embedding', [len(self.X_word2idx), self.embedding_dim],
-                                                  tf.float32, tf.random_normal_initializer())            
-        self.encoder_out, self.encoder_state = tf.nn.dynamic_rnn(
-            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]), 
-            inputs = tf.nn.embedding_lookup(self.encoder_embedding, self.X_in),
-            sequence_length = self.X_seq_len,
-            dtype = tf.float32)
+        self.encoder_embedding = tf.get_variable('encoder_embedding',
+                                                 [len(self.X_word2idx), self.embedding_dim],
+                                                  tf.float32, tf.random_normal_initializer()) 
+        self.encoder_out = tf.nn.embedding_lookup(self.encoder_embedding, self.X_in)
+        for n in range(self.n_layers):
+            (out_fw, out_bw), (state_fw, state_bw) = tf.nn.bidirectional_dynamic_rnn(
+                cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
+                inputs = self.encoder_out,
+                sequence_length = self.X_seq_len,
+                dtype = tf.float32,
+                scope = 'bidirectional_rnn_'+str(n))
+            self.encoder_out = tf.concat((out_fw, out_bw), 2)
+        self.encoder_state = ()
+        for n in range(self.n_layers): # replicate top-most state
+            self.encoder_state += (state_fw, state_bw)
     # end method
     
 
@@ -53,10 +61,10 @@ class RNN_VAE:
         sigma = tf.exp(0.5 * self.gamma)
         self.latent_vector = self.mean + sigma * tf.random_normal(tf.shape(self.gamma))
         self.decoder_init_state = tuple([tf.nn.rnn_cell.LSTMStateTuple(
-            self.latent_vector, self.latent_vector) for _ in range(self.n_layers)])
+            self.latent_vector, self.latent_vector) for _ in range(2 * self.n_layers)])
     # end method
     
-
+    
     def add_decoder_layer(self):
         self.decoder_seq_len = self.X_seq_len + 1 # because of go and eos symbol in decoder stage
 
@@ -133,7 +141,7 @@ class RNN_VAE:
             memory_sequence_length = X_seq_len)
         
         return tf.contrib.seq2seq.AttentionWrapper(
-            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse) for _ in range(self.n_layers)]),
+            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse) for _ in range(2 * self.n_layers)]),
             attention_mechanism = attention_mechanism,
             attention_layer_size = self.rnn_size)
     # end method
@@ -168,7 +176,7 @@ class RNN_VAE:
     # end method
 
 
-    def fit(self, X_train, X_test, n_epoch=60, display_step=50, batch_size=128):
+    def fit(self, X_train, X_test, n_epoch=30, display_step=50, batch_size=128):
         X_test_in_batch, X_test_out_batch, X_test_batch_lens = next(self.next_batch(X_test, batch_size))
         self.sess.run(tf.global_variables_initializer())
         
@@ -184,7 +192,8 @@ class RNN_VAE:
     # end method
 
 
-    def infer(self, input_word, X_idx2word):        
+    def infer(self, input_word, X_idx2word):
+        X_idx2word[-1] = '-1'
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
         out_indices = self.sess.run(self.predicting_ids, {
             self.X_in: np.atleast_2d(input_indices), self.X_seq_len: np.atleast_1d(len(input_indices))})[0]

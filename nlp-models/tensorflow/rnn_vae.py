@@ -122,10 +122,9 @@ class RNN_VAE:
 
 
     def _attention(self, is_training=True):
-        encoder_out = self.encoder_out if is_training else tf.contrib.seq2seq.tile_batch(self.encoder_out,
-                                                                                         self.beam_width)
-        X_seq_len = self.X_seq_len if is_training else tf.contrib.seq2seq.tile_batch(self.X_seq_len,
-                                                                                     self.beam_width)
+        t_fn = tf.contrib.seq2seq.tile_batch
+        encoder_out = self.encoder_out if is_training else t_fn(self.encoder_out, self.beam_width)
+        X_seq_len = self.X_seq_len if is_training else t_fn(self.X_seq_len, self.beam_width)
         reuse = False if is_training else True
 
         attention_mechanism = tf.contrib.seq2seq.LuongAttention(

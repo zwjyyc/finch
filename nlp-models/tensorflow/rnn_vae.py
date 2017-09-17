@@ -65,7 +65,8 @@ class RNN_VAE:
     def add_latent_layer(self):
         self.mean = tf.layers.dense(self.encoder_state[-1].h, self.rnn_size)
         self.gamma = tf.layers.dense(self.encoder_state[-1].h, self.rnn_size)
-        self.latent_vector = self.mean + tf.exp(0.5 * self.gamma) * tf.random_normal(tf.shape(self.gamma))
+        sigma = tf.exp(0.5 * self.gamma)
+        self.latent_vector = self.mean + sigma * tf.random_normal(tf.shape(self.gamma))
         self.decoder_init_state = tuple([tf.nn.rnn_cell.LSTMStateTuple(
             self.latent_vector, self.latent_vector) for _ in range(self.n_layers)])
     # end method
@@ -120,7 +121,7 @@ class RNN_VAE:
         self.gen_loss = tf.contrib.seq2seq.sequence_loss(logits = self.training_logits,
                                                          targets = self.X_out,
                                                          weights = masks)
-        # latent_loss = kl-divergence(latent_variable, unit_gaussian)
+        # the kl divergence between the gaussian distribution and the actual distribution of coding
         self.latent_loss = 0.5 * tf.reduce_sum(tf.exp(self.gamma) + tf.square(self.mean) - 1 - self.gamma)
         loss = self.gen_loss + self.latent_loss
         # gradient clipping

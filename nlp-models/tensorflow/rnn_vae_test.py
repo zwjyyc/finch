@@ -37,7 +37,7 @@ def main():
     model.fit(X_train, X_test, batch_size=BATCH_SIZE)
     model.infer('abcdefg', X_idx2char)
     model.infer('hijklmn', X_idx2char)
-    model.infer('opqrstu', X_idx2char)
+    model.infer('bbeehmm', X_idx2char)
     model.infer('skfjsld', X_idx2char)
 # end function main
 

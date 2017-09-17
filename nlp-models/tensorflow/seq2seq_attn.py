@@ -137,17 +137,12 @@ class Seq2Seq:
     # end method pad_sentence_batch
 
 
-    def next_batch(self, X, Y, batch_size, X_pad_int=None, Y_pad_int=None):
-        if X_pad_int is None:
-            X_pad_int = self._x_pad
-        if Y_pad_int is None:
-            Y_pad_int = self._y_pad
-        
+    def next_batch(self, X, Y, batch_size):
         for i in range(0, len(X) - len(X) % batch_size, batch_size):
             X_batch = X[i : i + batch_size]
             Y_batch = Y[i : i + batch_size]
-            padded_X_batch, X_batch_lens = self.pad_sentence_batch(X_batch, X_pad_int)
-            padded_Y_batch, Y_batch_lens = self.pad_sentence_batch(Y_batch, Y_pad_int)
+            padded_X_batch, X_batch_lens = self.pad_sentence_batch(X_batch, self._x_pad)
+            padded_Y_batch, Y_batch_lens = self.pad_sentence_batch(Y_batch, self._y_pad)
             yield (np.array(padded_X_batch),
                    np.array(padded_Y_batch),
                    X_batch_lens,

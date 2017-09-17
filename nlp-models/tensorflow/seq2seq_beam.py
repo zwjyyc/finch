@@ -5,7 +5,7 @@ import numpy as np
 
 class Seq2Seq:
     def __init__(self, rnn_size, n_layers, X_word2idx, encoder_embedding_dim, Y_word2idx, decoder_embedding_dim,
-                 sess=tf.Session(), grad_clip=5.0, beam_width=5, force_teaching_ratio=0.8):
+                 sess=tf.Session(), grad_clip=5.0, beam_width=5, force_teaching_ratio=0.5):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
@@ -125,17 +125,12 @@ class Seq2Seq:
     # end method pad_sentence_batch
 
 
-    def next_batch(self, X, Y, batch_size, X_pad_int=None, Y_pad_int=None):
-        if X_pad_int is None:
-            X_pad_int = self._x_pad
-        if Y_pad_int is None:
-            Y_pad_int = self._y_pad
-        
+    def next_batch(self, X, Y, batch_size):
         for i in range(0, len(X) - len(X) % batch_size, batch_size):
             X_batch = X[i : i + batch_size]
             Y_batch = Y[i : i + batch_size]
-            padded_X_batch, X_batch_lens = self.pad_sentence_batch(X_batch, X_pad_int)
-            padded_Y_batch, Y_batch_lens = self.pad_sentence_batch(Y_batch, Y_pad_int)
+            padded_X_batch, X_batch_lens = self.pad_sentence_batch(X_batch, self._x_pad)
+            padded_Y_batch, Y_batch_lens = self.pad_sentence_batch(Y_batch, self._y_pad)
             yield (np.array(padded_X_batch),
                    np.array(padded_Y_batch),
                    X_batch_lens,
@@ -143,7 +138,7 @@ class Seq2Seq:
     # end method next_batch
 
 
-    def fit(self, X_train, Y_train, val_data, n_epoch=70, display_step=50, batch_size=128):
+    def fit(self, X_train, Y_train, val_data, n_epoch=60, display_step=50, batch_size=128):
         X_test, Y_test = val_data
         X_test_batch, Y_test_batch, X_test_batch_lens, Y_test_batch_lens = next(
         self.next_batch(X_test, Y_test, batch_size))
@@ -168,7 +163,7 @@ class Seq2Seq:
     # end method fit
 
 
-    def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):        
+    def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):   
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
         out_indices = self.sess.run(self.predicting_ids, {
             self.X: [input_indices] * batch_size,

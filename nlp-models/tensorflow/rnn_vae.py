@@ -4,12 +4,15 @@ import numpy as np
 
 
 class RNN_VAE:
-    def __init__(self, rnn_size, n_layers, X_word2idx, embedding_dim, sess=tf.Session(), grad_clip=5.0):
+    def __init__(self, rnn_size, n_layers, X_word2idx, embedding_dim, sess=tf.Session(), grad_clip=5.0,
+                 force_teaching_ratio=0.5, beam_width=5):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
         self.X_word2idx = X_word2idx
         self.embedding_dim = embedding_dim
+        self.force_teaching_ratio = force_teaching_ratio
+        self.beam_width = beam_width
         self.sess = sess
         self.register_symbols()
         self.build_graph()
@@ -30,24 +33,6 @@ class RNN_VAE:
         self.X_out = tf.placeholder(tf.int32, [None, None])
         self.X_seq_len = tf.placeholder(tf.int32, [None])
         self.batch_size = tf.shape(self.X_in)[0]
-    # end method
-
-
-    def lstm_cell(self, reuse=False):
-        return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
-    # end method
-
-
-    def _attention(self, reuse=False):
-        attention_mechanism = tf.contrib.seq2seq.LuongAttention(
-            num_units = self.rnn_size, 
-            memory = self.encoder_out,
-            memory_sequence_length = self.X_seq_len)
-        
-        return tf.contrib.seq2seq.AttentionWrapper(
-            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse) for _ in range(self.n_layers)]),
-            attention_mechanism = attention_mechanism,
-            attention_layer_size = self.rnn_size)
     # end method
 
 
@@ -73,16 +58,15 @@ class RNN_VAE:
     
 
     def add_decoder_layer(self):
-        decoder_embedding = self.encoder_embedding
         self.decoder_seq_len = self.X_seq_len + 1 # because of go and eos symbol in decoder stage
-        
+
         with tf.variable_scope('decode'):
             decoder_cell = self._attention()
             training_helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(
-                inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
+                inputs = tf.nn.embedding_lookup(self.encoder_embedding, self.processed_decoder_input()),
                 sequence_length = self.decoder_seq_len,
-                embedding = decoder_embedding,
-                sampling_probability = 0.2,
+                embedding = self.encoder_embedding,
+                sampling_probability = 1 - self.force_teaching_ratio,
                 time_major = False)
             training_decoder = tf.contrib.seq2seq.BasicDecoder(
                 cell = decoder_cell,
@@ -97,22 +81,22 @@ class RNN_VAE:
             self.training_logits = training_decoder_output.rnn_output
         
         with tf.variable_scope('decode', reuse=True):
-            decoder_cell = self._attention(reuse=True)
-            predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
-                embedding = decoder_embedding,
-                start_tokens = tf.tile(tf.constant([self._x_go], dtype=tf.int32), tf.shape(self.X_seq_len)),
-                end_token = self._x_eos)
-            predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
+            decoder_cell = self._attention(is_training=False)
+            predicting_decoder = tf.contrib.seq2seq.BeamSearchDecoder(
                 cell = decoder_cell,
-                helper = predicting_helper,
-                initial_state = decoder_cell.zero_state(self.batch_size, tf.float32).clone(
-                    cell_state=self.decoder_init_state),
-                output_layer = core_layers.Dense(len(self.X_word2idx), _reuse=True))
+                embedding = self.encoder_embedding,
+                start_tokens = tf.tile(tf.constant([self._x_go], dtype=tf.int32), [self.batch_size]),
+                end_token = self._x_eos,
+                initial_state = decoder_cell.zero_state(self.batch_size * self.beam_width, tf.float32).clone(
+                    cell_state = tf.contrib.seq2seq.tile_batch(self.decoder_init_state, self.beam_width)),
+                beam_width = self.beam_width,
+                output_layer = core_layers.Dense(len(self.X_word2idx), _reuse=True),
+                length_penalty_weight = 0.0)
             predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
                 decoder = predicting_decoder,
-                impute_finished = True,
-                maximum_iterations = tf.reduce_max(self.decoder_seq_len) * 2)
-            self.predicting_ids = predicting_decoder_output.sample_id
+                impute_finished = False,
+                maximum_iterations = 2 * tf.reduce_max(self.decoder_seq_len))
+            self.predicting_ids = predicting_decoder_output.predicted_ids[:, :, 0]
     # end method
 
 
@@ -129,6 +113,30 @@ class RNN_VAE:
         gradients = tf.gradients(loss, params)
         clipped_gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)
         self.train_op = tf.train.AdamOptimizer().apply_gradients(zip(clipped_gradients, params))
+    # end method
+
+
+    def lstm_cell(self, reuse=False):
+        return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+    # end method
+
+
+    def _attention(self, is_training=True):
+        encoder_out = self.encoder_out if is_training else tf.contrib.seq2seq.tile_batch(self.encoder_out,
+                                                                                         self.beam_width)
+        X_seq_len = self.X_seq_len if is_training else tf.contrib.seq2seq.tile_batch(self.X_seq_len,
+                                                                                     self.beam_width)
+        reuse = False if is_training else True
+
+        attention_mechanism = tf.contrib.seq2seq.LuongAttention(
+            num_units = self.rnn_size, 
+            memory = encoder_out,
+            memory_sequence_length = X_seq_len)
+        
+        return tf.contrib.seq2seq.AttentionWrapper(
+            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse) for _ in range(self.n_layers)]),
+            attention_mechanism = attention_mechanism,
+            attention_layer_size = self.rnn_size)
     # end method
 
 

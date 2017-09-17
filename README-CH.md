@@ -164,8 +164,6 @@ python xxxx_test.py
 
 * TensorFlow &nbsp; | &nbsp; 字符循环网络（集束搜索） &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_beam.py) &nbsp; &nbsp; [生成《安娜·卡列尼娜》风格](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_beam_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; 变分-循环-自动解码机 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_vae.py) &nbsp; &nbsp; [测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_vae_test.py) &nbsp; | &nbsp;
-
 * PyTorch &nbsp; | &nbsp; 字符循环网络 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/rnn_text_gen.py) &nbsp; | &nbsp; [生成《安娜·卡列尼娜》风格](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/rnn_text_gen_test.py) &nbsp; &nbsp; [生成北京地址](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/rnn_text_gen_addr_test.py) &nbsp; | &nbsp;
 
 * MXNet &nbsp; | &nbsp; 字符循环网络 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/mxnet/rnn_text_gen.py) &nbsp; | &nbsp; [生成《安娜·卡列尼娜》风格](https://github.com/zhedongzheng/finch/blob/master/nlp-models/mxnet/rnn_text_gen_test.py) &nbsp; &nbsp; [生成北京地址](https://github.com/zhedongzheng/finch/blob/master/nlp-models/mxnet/rnn_text_gen_addr_test.py) &nbsp; | &nbsp;

@@ -35,10 +35,7 @@ def main():
 
     model = RNN_VAE(rnn_size=50, n_layers=1, X_word2idx=X_char2idx, embedding_dim=15)
     model.fit(X_train, X_test, batch_size=BATCH_SIZE)
-    model.infer('abcdefg', X_idx2char)
-    model.infer('ahisuvz', X_idx2char)
-    model.infer('bbeehmm', X_idx2char)
-    model.infer('rsuawxy', X_idx2char)
+    model.generate(X_idx2char)
 # end function main
 
 

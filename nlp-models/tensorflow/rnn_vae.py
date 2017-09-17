@@ -4,15 +4,12 @@ import numpy as np
 
 
 class RNN_VAE:
-    def __init__(self, rnn_size, n_layers, X_word2idx, embedding_dim, sess=tf.Session(), grad_clip=5.0,
-                 force_teaching_ratio=0.5, beam_width=5):
+    def __init__(self, rnn_size, n_layers, X_word2idx, embedding_dim, sess=tf.Session(), grad_clip=5.0):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
         self.X_word2idx = X_word2idx
         self.embedding_dim = embedding_dim
-        self.force_teaching_ratio = force_teaching_ratio
-        self.beam_width = beam_width
         self.sess = sess
         self.register_symbols()
         self.build_graph()
@@ -65,6 +62,7 @@ class RNN_VAE:
     # end method
     
     
+    """
     def add_decoder_layer(self):
         self.decoder_seq_len = self.X_seq_len + 1 # because of go and eos symbol in decoder stage
 
@@ -105,6 +103,44 @@ class RNN_VAE:
                 impute_finished = False,
                 maximum_iterations = 2 * tf.reduce_max(self.decoder_seq_len))
             self.predicting_ids = predicting_decoder_output.predicted_ids[:, :, 0]
+    # end method
+    """
+
+
+    def add_decoder_layer(self):
+        self.decoder_seq_len = self.X_seq_len + 1 # because of go and eos symbol in decoder stage
+
+        with tf.variable_scope('decode'):
+            training_helper = tf.contrib.seq2seq.TrainingHelper(
+                inputs = tf.nn.embedding_lookup(self.encoder_embedding, self.processed_decoder_input()),
+                sequence_length = self.decoder_seq_len,
+                time_major = False)
+            training_decoder = tf.contrib.seq2seq.BasicDecoder(
+                cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(2*self.n_layers)]),
+                helper = training_helper,
+                initial_state = self.decoder_init_state,
+                output_layer = core_layers.Dense(len(self.X_word2idx)))
+            training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+                decoder = training_decoder,
+                impute_finished = True,
+                maximum_iterations = tf.reduce_max(self.decoder_seq_len))
+            self.training_logits = training_decoder_output.rnn_output
+        
+        with tf.variable_scope('decode', reuse=True):
+            predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
+                embedding = self.encoder_embedding,
+                start_tokens = tf.tile(tf.constant([self._x_go], dtype=tf.int32), tf.shape(self.X_seq_len)),
+                end_token = self._x_eos)
+            predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
+                cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse=True) for _ in range(2*self.n_layers)]),
+                helper = predicting_helper,
+                initial_state = self.decoder_init_state,
+                output_layer = core_layers.Dense(len(self.X_word2idx), _reuse=True))
+            predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+                decoder = predicting_decoder,
+                impute_finished = True,
+                maximum_iterations = tf.reduce_max(self.decoder_seq_len) * 2)
+            self.predicting_ids = predicting_decoder_output.sample_id
     # end method
 
 
@@ -176,7 +212,7 @@ class RNN_VAE:
     # end method
 
 
-    def fit(self, X_train, X_test, n_epoch=30, display_step=50, batch_size=128):
+    def fit(self, X_train, X_test, n_epoch=60, display_step=50, batch_size=128):
         X_test_in_batch, X_test_out_batch, X_test_batch_lens = next(self.next_batch(X_test, batch_size))
         self.sess.run(tf.global_variables_initializer())
         
@@ -199,6 +235,14 @@ class RNN_VAE:
             self.X_in: np.atleast_2d(input_indices), self.X_seq_len: np.atleast_1d(len(input_indices))})[0]
         print('\nI: {}'.format(' '.join([X_idx2word[i] for i in input_indices])))
         print('O: {}'.format(' '.join([X_idx2word[i] for i in out_indices])))
+    # end method
+
+
+    def generate(self, X_idx2word):
+        out_indices = self.sess.run(self.predicting_ids,
+                                   {self.latent_vector: np.random.randn(1, self.rnn_size),
+                                    self.X_seq_len: [10]})[0]
+        print('G: {}'.format(' '.join([X_idx2word[i] for i in out_indices])))
     # end method
 
 

@@ -1,6 +1,5 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-I will keep adding more models in the near future
 ## Installation
 The following command clones all the files (>200MB)
 ```

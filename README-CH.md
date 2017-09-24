@@ -1,6 +1,5 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 
-持续更新中
 ## 安装
 下面的命令可以下载所有文件（超过200MB）
 ```

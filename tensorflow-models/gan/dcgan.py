@@ -82,10 +82,10 @@ class DCGAN:
         # for example: (28, 28, 1) -> (14, 14, 64) -> (7, 7, 128) -> 1
         nn = X
         for i, s in enumerate(list(reversed(self.shape_trace))):
-            nn = tf.layers.conv2d(nn, s[2], self.kernel_size, strides=self.strides, padding='SAME',
-                                  name='conv%d'%i, reuse=reuse)
-            nn = tf.layers.batch_normalization(nn, training=self.train_flag, name='bn%d'%i, reuse=reuse,
-                                               momentum=0.9)
+            nn = tf.layers.conv2d(
+                nn, s[2], self.kernel_size, strides=self.strides, padding='SAME', name='conv%d'%i, reuse=reuse)
+            nn = tf.layers.batch_normalization(
+                nn, training=self.train_flag, name='bn%d'%i, reuse=reuse, momentum=0.9)
             nn = self.lrelu(nn)
         flat = tf.reshape(nn, [-1, np.prod(self.shape_trace[0])])
         output = tf.layers.dense(flat, 1, name='out', reuse=reuse)

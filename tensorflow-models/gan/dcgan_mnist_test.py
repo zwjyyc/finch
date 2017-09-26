@@ -5,25 +5,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-N_EPOCH = 10
-BATCH_SIZE = 32
-G_SIZE = 100
-
-
 def gen_batch(arr, batch_size):
     for i in range(0, len(arr), batch_size):
-        yield arr[i : i + batch_size]
+        yield arr[i : i+batch_size]
 
 
 def scaled(images):
-    return ( images.astype(np.float32) - (255./2) ) / (255./2)
+    return (images.astype(np.float32) - (255./2)) / (255./2)
 
 
 def select(images, labels, num):
     return np.expand_dims(images, 3)[labels == num]
 
 
-if __name__ == '__main__':
+def main(N_EPOCH=10, BATCH_SIZE=32, G_SIZE=100):    
     (X_train, y_train), (_, _) = tf.contrib.keras.datasets.mnist.load_data()
     X = select(scaled(X_train), y_train, 8)
     
@@ -53,4 +48,7 @@ if __name__ == '__main__':
             plt.imshow(np.squeeze(img))
     plt.tight_layout()
     plt.show()
-    
+
+
+if __name__ == '__main__':
+    main()

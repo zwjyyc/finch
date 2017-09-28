@@ -16,7 +16,7 @@ python xxxx_test.py
 * [scikit-learn](http://scikit-learn.org/)
 * [openai-gym](https://github.com/openai/gym)
 ## 编码风格
-我把每一个模型写成一个配有 ```fit()``` 和 ```predict()``` 方法的类（scikit-learn API 风格），然后对于不同的数据集编写不同的测试脚本。下面所有代码都遵从这种风格。
+我把绝大多数模型用scikit-learn接口风格来写（```fit()``` 和 ```predict()```），然后对于不同的数据集编写不同的测试脚本。
 
 ## 目录
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)

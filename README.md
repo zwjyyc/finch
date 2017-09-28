@@ -19,7 +19,7 @@ The main dependence is:
 ## Other Language Support
 [Chinese (中文)](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
 ## Style of My Code
-I write most models in scikit-learn interfaces (with ```fit()``` and ```predict()``` methods), and then write separate test files for different incoming data. All the code below follow this style.
+I write most models in scikit-learn interfaces (```fit()``` and ```predict()```), and then write separate test files for different incoming data.
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

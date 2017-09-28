@@ -44,9 +44,9 @@ class RNNTextClassifier:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, None])
         self.Y = tf.placeholder(tf.int64, [None, None])
-        self.batch_size = tf.placeholder(tf.int32, [])
         self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
+        self.batch_size = tf.shape(self.X)[0]
         self._pointer = self.X
     # end method add_input_layer
 
@@ -113,13 +113,11 @@ class RNNTextClassifier:
                 if (self.stateful) and (len(X_batch) == batch_size):
                     _, next_state, loss, acc = self.sess.run([self.train_op, self.final_state, self.loss, self.acc],
                                                              {self.X:X_batch, self.Y:Y_batch, self.lr:lr,
-                                                              self.batch_size:batch_size,
                                                               self.rnn_keep_prob:rnn_keep_prob,
                                                               self.init_state:next_state})
                 else:             
                     _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
                                                  {self.X:X_batch, self.Y:Y_batch, self.lr:lr,
-                                                  self.batch_size:len(X_batch),
                                                   self.rnn_keep_prob:rnn_keep_prob})
                 global_step += 1
                 if local_step % 50 == 0:
@@ -134,13 +132,11 @@ class RNNTextClassifier:
                     if (self.stateful) and (len(X_test_batch) == batch_size):
                         v_loss, v_acc, next_state = self.sess.run([self.loss, self.acc, self.final_state],
                                                                   {self.X:X_test_batch, self.Y:Y_test_batch,
-                                                                   self.batch_size:batch_size,
                                                                    self.rnn_keep_prob:1.0,
                                                                    self.init_state:next_state})
                     else:
                         v_loss, v_acc = self.sess.run([self.loss, self.acc],
                                                       {self.X:X_test_batch, self.Y:Y_test_batch,
-                                                       self.batch_size:len(X_test_batch),
                                                        self.rnn_keep_prob:1.0})
                     val_loss_list.append(v_loss)
                     val_acc_list.append(v_acc)
@@ -173,13 +169,11 @@ class RNNTextClassifier:
             if (self.stateful) and (len(X_test_batch) == batch_size):
                 batch_pred, next_state = self.sess.run([self.logits, self.final_state], 
                                                        {self.X:X_test_batch,
-                                                        self.batch_size:batch_size,
                                                         self.rnn_keep_prob:1.0,
                                                         self.init_state:next_state})
             else:
                 batch_pred = self.sess.run(self.logits,
                                           {self.X:X_test_batch,
-                                           self.batch_size:len(X_test_batch),
                                            self.rnn_keep_prob:1.0})
             batch_pred_list.append(batch_pred)
         return np.argmax(np.vstack(batch_pred_list), 1)
@@ -188,7 +182,6 @@ class RNNTextClassifier:
 
     def infer(self, xs):
         logits = self.sess.run(self.logits, {self.X: np.atleast_2d(xs),
-                                             self.batch_size: 1,
                                              self.rnn_keep_prob: 1.0})
         return np.argmax(logits, 1)
     # end method infer

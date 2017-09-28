@@ -152,7 +152,7 @@ class RNNTextGen:
     # end method fit
 
 
-    def infer(self, start_word, n_gen, beam_width=2):
+    def infer(self, start_word, n_gen, beam_width=5):
         # warming up
         next_state = self.sess.run(self.init_state, {self.batch_size: 1})
         char_list = list(start_word)

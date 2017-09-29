@@ -10,7 +10,7 @@ Any test file can be run directly, the huge contents below is used to index the 
 ```
 python xxxx_test.py
 ```
-The main dependence is:
+I have used these libraries in different sections:
 * [tensorflow >= 1.2.2](https://www.tensorflow.org/)
 * [pytorch >= 0.20](http://pytorch.org/)
 * [mxnet >= 0.11](https://mxnet.incubator.apache.org/)

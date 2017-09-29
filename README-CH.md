@@ -15,6 +15,8 @@ python xxxx_test.py
 * [mxnet >= 0.11](https://mxnet.incubator.apache.org/)
 * [scikit-learn](http://scikit-learn.org/)
 * [openai-gym](https://github.com/openai/gym)
+* [nltk](http://www.nltk.org/)
+* [opencv 3](http://opencv.org/)
 ## 编码风格
 绝大多数模型用scikit-learn接口风格来写（```fit()``` 和 ```predict()```），然后对于不同的数据集编写不同的测试脚本。
 

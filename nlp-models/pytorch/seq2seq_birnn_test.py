@@ -42,7 +42,7 @@ def main():
 
     model = Seq2Seq(
         rnn_size = 50,
-        n_layers = 2,
+        n_layers = 1,
         encoder_embedding_dim = 15,
         decoder_embedding_dim = 15,
         X_word2idx = X_char2idx,

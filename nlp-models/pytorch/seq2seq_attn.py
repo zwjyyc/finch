@@ -53,7 +53,6 @@ class Decoder(torch.nn.Module):
 
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.output_size, self.decoder_embedding_dim)
-        self.proj = torch.nn.Linear(self.hidden_size, 1)
         self.attn_out = torch.nn.Linear(self.hidden_size*2, self.hidden_size)
         self.lstm = torch.nn.LSTM(self.decoder_embedding_dim, self.hidden_size,
                                   batch_first=True, num_layers=self.n_layers)
@@ -63,7 +62,8 @@ class Decoder(torch.nn.Module):
 
     def forward(self, inputs, hidden, encoder_output):
         embedded = self.embedding(inputs)
-        attn_w = torch.nn.functional.softmax(self.proj(encoder_output).view(-1, encoder_output.size(1)))
+        attn_w = torch.bmm(encoder_output, hidden[0][-1].unsqueeze(2))
+        attn_w = torch.nn.functional.softmax(attn_w.squeeze(2))
 
         # (batch, 1, in_seq_len) * (batch, in_seq_len, hidden) -> (batch, 1, hidden)
         weighted_sum = torch.bmm(attn_w.unsqueeze(1), encoder_output)

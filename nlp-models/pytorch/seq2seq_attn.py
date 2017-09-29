@@ -53,6 +53,7 @@ class Decoder(torch.nn.Module):
 
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.output_size, self.decoder_embedding_dim)
+        self.proj = torch.nn.Linear(self.hidden_size, 1)
         self.attn_out = torch.nn.Linear(self.hidden_size*2, self.hidden_size)
         self.lstm = torch.nn.LSTM(self.decoder_embedding_dim, self.hidden_size,
                                   batch_first=True, num_layers=self.n_layers)
@@ -62,22 +63,13 @@ class Decoder(torch.nn.Module):
 
     def forward(self, inputs, hidden, encoder_output):
         embedded = self.embedding(inputs)
-        batch_size = embedded.size(0)
-        hidden_size = embedded.size(2)
-        input_size = encoder_output.size(1)
+        attn_w = torch.nn.functional.softmax(self.proj(encoder_output).view(-1, encoder_output.size(1)))
 
-        # (batch, out_seq_len, hidden) * (batch, in_seq_len, hidden) -> (batch, out_seq_len, in_seq_len)
-        attn = torch.bmm(embedded, encoder_output.transpose(1, 2))
-        attn = torch.nn.functional.softmax(attn.view(-1, input_size)).view(batch_size, -1, input_size)
-        # (batch, out_seq_len, in_seq_len) * (batch, in_seq_len, hidden) -> (batch, out_seq_len, hidden)
-        mix = torch.bmm(attn, encoder_output)
-        # concat -> (batch, out_seq_len, 2*hidden)
-        combined = torch.cat((mix, embedded), dim=2)
-        # output -> (batch, out_seq_len, hidden)
-        output = torch.nn.functional.tanh(self.attn_out(combined.view(-1, 2*hidden_size))).view(batch_size, -1, hidden_size)
-
-        output, hidden = self.lstm(embedded, hidden)
-        output = self.decoder_out(output.contiguous().view(-1, hidden_size))
+        # (batch, 1, in_seq_len) * (batch, in_seq_len, hidden) -> (batch, 1, hidden)
+        weighted_sum = torch.bmm(attn_w.unsqueeze(1), encoder_output)
+        inputs = self.attn_out(torch.cat((weighted_sum, embedded), 2).view(-1, 2*self.hidden_size))
+        output, hidden = self.lstm(inputs.unsqueeze(1), hidden)
+        output = self.decoder_out(output.contiguous().view(-1, self.hidden_size))
         return output, hidden
     # end method
 # end class
@@ -116,9 +108,15 @@ class Seq2Seq:
         decoder_hidden = encoder_hidden
 
         decoder_input = self.process_decoder_input(target)
-        decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden, encoder_output)
+        decoder_output = []
+        for i in range(decoder_input.size(1)):
+            decoder_o, decoder_hidden = self.decoder(
+                decoder_input[:, i].unsqueeze(1), decoder_hidden, encoder_output)
+            decoder_output.append(decoder_o.unsqueeze(1))
+        decoder_output = torch.cat(decoder_output, 1)
 
-        losses = nll(torch.nn.functional.log_softmax(decoder_output), target.view(-1, 1))
+        losses = nll(torch.nn.functional.log_softmax(
+            decoder_output.view(-1, len(self.Y_word2idx))), target.view(-1, 1))
 	Y_masks = torch.autograd.Variable(torch.FloatTensor(Y_masks)).view(-1)
 	loss = torch.mul(losses, Y_masks).sum() / source.size(0)
         loss.backward()

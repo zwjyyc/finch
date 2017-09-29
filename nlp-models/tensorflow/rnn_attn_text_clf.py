@@ -73,13 +73,11 @@ class RNNTextClassifier:
 
     def add_attention(self):
         """
-        Attention allows the decoder network to focus on a different part of the encoder’s outputs for
-        every step of the decoder’s own outputs. First we calculate a set of attention weights.
-        These will be multiplied by the encoder output vectors to create a weighted combination. 
+        The final state (context vector) gains access to the hidden states of all time steps
         """
         encoder_state = tf.expand_dims(self.final_state.h, 2)
         # (batch, seq_len, cell_size) * (batch, cell_size, 1) = (batch, seq_len, 1)
-        weights = tf.tanh(tf.matmul(self._pointer, encoder_state))
+        weights = tf.matmul(self._pointer, encoder_state)
         weights = self.softmax(tf.squeeze(weights, 2))
         # (batch, cell_size, seq_len) * (batch, seq_len, 1) = (batch, cell_size, 1)
         self._pointer = tf.squeeze(tf.matmul(tf.transpose(self._pointer, [0, 2, 1]), tf.expand_dims(weights, 2)), 2)

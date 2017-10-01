@@ -8,7 +8,7 @@ if __name__ == '__main__':
     X_train = (X_train / 255.0)[:, :, :, np.newaxis]
     X_test = (X_test / 255.0)[:, :, :, np.newaxis]
 
-    clf = Conv2DClassifier((28,28), 1, 10)
+    clf = Conv2DClassifier((28, 28), img_ch=1, n_out=10)
     log = clf.fit(X_train, y_train, val_data=(X_test, y_test))
     pred = clf.predict(X_test)
 

@@ -11,7 +11,7 @@ if __name__ == '__main__':
     X_train = X_train / 255.0
     X_test = X_test / 255.0
 
-    model = Conv2DClassifier((32,32), 3, 10)
+    model = Conv2DClassifier((32, 32), n_out=10)
 
     datagen = tf.contrib.keras.preprocessing.image.ImageDataGenerator()
     datagen.fit(X_train)

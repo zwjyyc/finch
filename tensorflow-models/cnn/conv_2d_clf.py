@@ -5,15 +5,11 @@ import sklearn
 
 
 class Conv2DClassifier:
-    def __init__(self, img_size, img_ch, n_out, kernel_size=(5,5), pool_size=(2,2), padding='valid',
+    def __init__(self, img_size, n_out, img_ch=3, kernel_size=(5,5), pool_size=(2,2), padding='valid',
                  sess=tf.Session()):
         """
         Parameters:
         -----------
-        img_size: tuple
-            (height, width) of the image size
-        img_ch: int
-            Number of image channel
         kernel_size: tuple
             (height, width) of the 2D convolution window
         pool_size: int
@@ -77,7 +73,7 @@ class Conv2DClassifier:
 
 
     def add_fully_connected(self, out_dim):
-        flat = tf.reshape(self._pointer, [-1, np.prod(self._pointer.get_shape().as_list()[1:])])
+        flat = tf.contrib.layers.flatten(self._pointer)
         fc = tf.layers.dense(flat, out_dim, tf.nn.relu)
         fc = tf.layers.batch_normalization(fc, training=self.train_flag)
         self._pointer = tf.nn.dropout(fc, self.keep_prob)
@@ -91,10 +87,9 @@ class Conv2DClassifier:
 
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
-        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
-                                                                                  labels=self.Y))
+        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
+            logits=self.logits, labels=self.Y))
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1), self.Y), tf.float32))
-        
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
             self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path

@@ -196,6 +196,8 @@ python xxxx_test.py
 
 * PyTorch &nbsp; | &nbsp; Seq2Seq + 双向编码 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq_birnn.py) &nbsp; &nbsp; [排序测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq_birnn_test.py) &nbsp; | &nbsp;
 #### 图像语义分析
+* TensorFlow &nbsp; | &nbsp; 卷积编码 + 循环编码 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq.py) &nbsp; &nbsp; [COCO 测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_test.py) &nbsp; | &nbsp;
+
 * TensorFlow &nbsp; | &nbsp; 卷积编码 + 循环解码 + 注意力 + 集束搜索 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam.py) &nbsp; &nbsp; [COCO 测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam_test.py) &nbsp; | &nbsp;
 
 ## 信息检索

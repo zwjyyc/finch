@@ -201,6 +201,8 @@ I write most models in scikit-learn interfaces (```fit()``` and ```predict()```)
 
 * TensorFlow &nbsp; | &nbsp; CNN + RNN + Attention + Beam-Search &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam.py) &nbsp; &nbsp; [COCO Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam_test.py) &nbsp; | &nbsp;
 
+* TensorFlow &nbsp; | &nbsp; Fine-tuning CNN + RNN + Attention + Beam-Search &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_keras.py) &nbsp; &nbsp; [COCO Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_keras_test.py) &nbsp; | &nbsp;
+
 ## Information Retrieval
 #### Recommendation System
 * Python &nbsp; | &nbsp; Collborative Filtering &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [User-based Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;

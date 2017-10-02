@@ -39,6 +39,7 @@ python xxxx_test.py
     * [文本生成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本生成)
     * [序列标注](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列标注)
     * [序列到序列](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列到序列)
+    * [图像语义分析](https://github.com/zhedongzheng/finch/blob/master/README.md#图像语义分析)
 * [信息检索](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#信息检索)
     * [推荐系统](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#推荐系统)
 * [计算机视觉](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#计算机视觉)
@@ -194,6 +195,8 @@ python xxxx_test.py
 * PyTorch &nbsp; | &nbsp; Seq2Seq + 注意力机制 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq_attn.py) &nbsp; &nbsp; [排序测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq_attn_test.py) &nbsp; | &nbsp;
 
 * PyTorch &nbsp; | &nbsp; Seq2Seq + 双向编码 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq_birnn.py) &nbsp; &nbsp; [排序测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq_birnn_test.py) &nbsp; | &nbsp;
+#### 图像语义分析
+* TensorFlow &nbsp; | &nbsp; 卷积编码 + 循环解码 + 注意力 + 集束搜索 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam.py) &nbsp; &nbsp; [COCO 测试](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam_test.py) &nbsp; | &nbsp;
 
 ## 信息检索
 #### 推荐系统

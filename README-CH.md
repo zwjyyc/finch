@@ -39,7 +39,7 @@ python xxxx_test.py
     * [文本生成](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#文本生成)
     * [序列标注](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列标注)
     * [序列到序列](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#序列到序列)
-    * [图像语义分析](https://github.com/zhedongzheng/finch/blob/master/README.md#图像语义分析)
+    * [图像语义分析](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#图像语义分析)
 * [信息检索](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#信息检索)
     * [推荐系统](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#推荐系统)
 * [计算机视觉](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#计算机视觉)

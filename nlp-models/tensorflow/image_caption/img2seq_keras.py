@@ -52,8 +52,12 @@ class Image2Seq:
             weights = 'imagenet',
             include_top = False,
             input_shape = (self.img_size[0], self.img_size[1], self.img_ch))
-        for layer in cnn.layers:
+        for i, layer in enumerate(cnn.layers[:11]):
+            print("%s: not trainable"%layer.name)
             layer.trainable = False
+        for i, layer in enumerate(cnn.layers[11:]):
+            print("%s: trainable"%layer.name)
+            layer.trainable = True
         feature = cnn(self._pointer)
         feature_shape = cnn.layers[-1].output_shape
         self.encoder_out = tf.reshape(feature, [self.batch_size, np.prod(feature_shape[1:3]), feature_shape[-1]])

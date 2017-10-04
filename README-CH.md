@@ -5,7 +5,7 @@
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-任何测试脚本可以被直接运行，下面提供的[目录](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#目录)是为了定位模型和测试脚本
+任何测试脚本都可以被直接运行，下面提供的[目录](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#目录)是为了定位模型和测试脚本
 ```
 python xxxx_test.py
 ```

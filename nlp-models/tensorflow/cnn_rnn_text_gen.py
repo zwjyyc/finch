@@ -1,8 +1,10 @@
 import tensorflow as tf
 import numpy as np
+import string
 import math
 import sys
 import os
+import re
 
 
 class ConvRNNTextGen:
@@ -61,8 +63,8 @@ class ConvRNNTextGen:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, None, self.max_word_len])
         self.Y = tf.placeholder(tf.int32, [None, None])
-        self.batch_size = tf.placeholder(tf.int32, [])
-        self.lr = tf.placeholder(tf.float32) 
+        self.lr = tf.placeholder(tf.float32)
+        self.batch_size = tf.shape(self.X)[0]
         self._pointer = self.X
     # end method add_input_layer
 
@@ -166,7 +168,17 @@ class ConvRNNTextGen:
         self.vocab_char = len(self.idx2char)
         print("Vocabulary of Char:", self.vocab_char)
 
-        words = set(text.split())
+        puncts = list(string.punctuation)
+        puncts.remove("'")
+        puncts.append('"')
+        puncts.append('-')
+        puncts.append('\n')
+        table = str.maketrans({punct: ' '+punct+' ' for punct in puncts})
+        text = text.translate(table)
+        text = text.replace('  ', ' ').lower()
+        tokens = text.split(' ')
+
+        words = set(tokens)
         self.max_word_len = max([len(w) for w in words])
         self.word2idx = {w: i for i, w in enumerate(words)}
         self.idx2word = {i: w for i, w in enumerate(words)}
@@ -174,7 +186,7 @@ class ConvRNNTextGen:
         print("Vocabulary of Word:", self.vocab_word)
 
         indexed = []
-        for word in text.split():
+        for word in tokens:
             temp = []
             for char in list(word):
                 temp.append(self.char2idx[char])
@@ -184,7 +196,7 @@ class ConvRNNTextGen:
         self.char_indexed = np.array(indexed) # (None, self.max_word_len)
         print("Char indexed: ", self.char_indexed.shape)
 
-        self.word_indexed = np.array([self.word2idx[word] for word in text.split()])
+        self.word_indexed = np.array([self.word2idx[word] for word in tokens])
         print("Word indexed: ", self.word_indexed.shape)
     # end method text_preprocessing
 
@@ -215,8 +227,7 @@ class ConvRNNTextGen:
                                                           {self.X: X_batch,
                                                            self.Y: Y_batch,
                                                            self.init_state: next_state,
-                                                           self.lr: lr,
-                                                           self.batch_size: len(X_batch)})
+                                                           self.lr: lr})
                 
                 print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f'
                         % (epoch+1, n_epoch, local_step, n_batch, train_loss))
@@ -241,7 +252,6 @@ class ConvRNNTextGen:
             x = np.reshape(char_indices, [1, 1, self.max_word_len])
             softmax_out, next_state = self.sess.run([self.softmax_out, self.final_state],
                                                     {self.X: x,
-                                                     self.batch_size: 1,
                                                      self.init_state: next_state})
             probas = softmax_out[0].astype(np.float64)
             probas = probas / np.sum(probas)

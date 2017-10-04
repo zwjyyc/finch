@@ -50,8 +50,8 @@ class RNNTextGen:
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, None])
         self.Y = tf.placeholder(tf.int32, [None, None])
-        self.batch_size = tf.placeholder(tf.int32, [])
-        self.lr = tf.placeholder(tf.float32) 
+        self.lr = tf.placeholder(tf.float32)
+        self.batch_size = tf.shape(self.X)[0]
         self._pointer = self.X
     # end method add_input_layer
 
@@ -141,8 +141,7 @@ class RNNTextGen:
                                                           {self.X: X_batch,
                                                            self.Y: Y_batch,
                                                            self.init_state: next_state,
-                                                           self.lr: lr,
-                                                           self.batch_size: len(X_batch)})
+                                                           self.lr: lr})
                 if local_step % 10 == 0:
                     print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f | lr: %.4f'
                             % (epoch+1, n_epoch, local_step, n_batch, train_loss, lr))

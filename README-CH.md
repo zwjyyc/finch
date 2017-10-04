@@ -5,7 +5,7 @@
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-任何测试脚本可以被直接运行，下面提供的巨大的目录是为了找到测试脚本
+任何测试脚本可以被直接运行，下面提供的[目录](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#目录)是为了找到测试脚本
 ```
 python xxxx_test.py
 ```
@@ -18,7 +18,7 @@ python xxxx_test.py
 * [nltk](http://www.nltk.org/)
 * [opencv 3](http://opencv.org/)
 ## 编码风格
-绝大多数模型用scikit-learn接口风格来写（```fit()``` 和 ```predict()```），然后对于不同的数据集编写不同的测试脚本。
+绝大多数模型用scikit-learn接口风格来写，```fit()``` 和 ```predict()```，然后对于不同的数据集编写不同的测试脚本。
 
 ## 目录
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)

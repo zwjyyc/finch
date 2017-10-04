@@ -6,7 +6,7 @@ The following command clones all the files (>200MB)
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-Any test file can be run directly, the contents below are used to index the model and test file
+Any test file can be run directly, the [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and test file
 ```
 python xxxx_test.py
 ```
@@ -21,7 +21,7 @@ I have used these libraries in different sections:
 ## Other Language Support
 [Chinese (中文)](https://github.com/zhedongzheng/finch/blob/master/README-CH.md)
 ## Style of My Code
-I write most models in scikit-learn interfaces with ```fit()``` and ```predict()```, and then write separate test files for different incoming data.
+I write most models in scikit-learn interface style, ```fit()``` and ```predict()```, and then write separate test files for different incoming data.
 ## Contents
 * [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)

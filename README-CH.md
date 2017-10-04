@@ -18,7 +18,7 @@ python xxxx_test.py
 * [nltk](http://www.nltk.org/)
 * [opencv 3](http://opencv.org/)
 ## 编码风格
-绝大多数模型用scikit-learn接口风格来写，```fit()``` 和 ```predict()```，然后对于不同的数据集编写不同的测试脚本。
+绝大多数模型用scikit-learn接口风格来写，```fit()``` 和 ```predict()```方法，然后对于不同的数据集编写不同的测试脚本。
 
 ## 目录
 * [机器学习](https://github.com/zhedongzheng/finch/blob/master/README-CH.md#机器学习)

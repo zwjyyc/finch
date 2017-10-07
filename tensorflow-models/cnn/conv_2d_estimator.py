@@ -46,7 +46,6 @@ class Estimator:
             loss=loss_op,
             train_op=train_op,
             eval_metric_ops={'accuracy': acc_op})
-
         return estim_specs
     # end method
 

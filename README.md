@@ -11,7 +11,7 @@ Any test file can be run directly, the [contents](https://github.com/zhedongzhen
 python xxxx_test.py
 ```
 I have used these python-based libraries in different sections:
-* [tensorflow >= 1.2.2](https://www.tensorflow.org/)
+* [tensorflow >= 1.3](https://www.tensorflow.org/)
 * [pytorch >= 0.20](http://pytorch.org/)
 * [mxnet >= 0.11](https://mxnet.incubator.apache.org/)
 * [scikit-learn](http://scikit-learn.org/)

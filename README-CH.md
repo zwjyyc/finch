@@ -77,7 +77,7 @@ python xxxx_test.py
 #### 卷积网络
 * TensorFlow &nbsp; | &nbsp; 二维卷积 分类器 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_2d_clf.py) &nbsp; &nbsp; [MNIST数据集测试](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_2d_clf_mnist_test.py) &nbsp; &nbsp; [CIFAR10数据集测试](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_2d_clf_cifar10_keras_idg_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; Conv2D Classifier &nbsp; &nbsp; [模型(tf.estimator)](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_2d_estimator.py) &nbsp; &nbsp; [MNIST测试](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_2d_estimator_test.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Conv2D Classifier &nbsp; &nbsp; [模型 (tf.estimator)](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_2d_estimator.py) &nbsp; &nbsp; [MNIST测试](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/cnn/conv_2d_estimator_test.py) &nbsp; | &nbsp;
 
 * PyTorch &nbsp; | &nbsp; 二维卷积 分类器 &nbsp; &nbsp; [模型](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/cnn/cnn_clf.py) &nbsp; &nbsp; [MNIST数据集测试](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/cnn/cnn_clf_mnist_test.py) &nbsp; &nbsp; [CIFAR10数据集测试](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/cnn/cnn_clf_cifar10_test.py) &nbsp; | &nbsp;
 

@@ -119,7 +119,8 @@ class Estimator:
         in_lengths = np.atleast_1d(len(input_indices)).astype(np.int32)
 
         input_fn = tf.estimator.inputs.numpy_input_fn(
-            x={'inputs': inputs, 'in_lengths': in_lengths, 'outputs': np.zeros_like(inputs),
+            x={'inputs': inputs, 'in_lengths': in_lengths,
+               'outputs': np.zeros_like(inputs),
                'out_lengths': np.zeros_like(in_lengths)}, shuffle=False)
         out_indices = list(self.model.predict(input_fn))[0]
 

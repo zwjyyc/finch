@@ -77,9 +77,10 @@ class Estimator:
     # end method
 
 
-    def model_fn(self, features, labels, mode):
+    def model_fn(self, features, labels, mode):        
         logits = self.seq2seq(features, reuse=False)
         predictions = self.seq2seq(features, reuse=True)
+        
         if mode == tf.estimator.ModeKeys.PREDICT:
             return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 
@@ -115,13 +116,13 @@ class Estimator:
 
     def infer(self, input_word, X_idx2word, Y_idx2word):
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
-        inputs = np.atleast_2d(input_indices).astype(np.int32)
-        in_lengths = np.atleast_1d(len(input_indices)).astype(np.int32)
 
         input_fn = tf.estimator.inputs.numpy_input_fn(
-            x={'inputs': inputs, 'in_lengths': in_lengths,
-               'outputs': np.zeros_like(inputs),
-               'out_lengths': np.zeros_like(in_lengths)}, shuffle=False)
+            x={'inputs': np.atleast_2d(input_indices).astype(np.int32),
+               'in_lengths': np.atleast_1d(len(input_indices)).astype(np.int32),
+               'outputs': np.atleast_2d(0).astype(np.int32),
+               'out_lengths': np.atleast_1d(0).astype(np.int32)},
+            shuffle=False)
         out_indices = list(self.model.predict(input_fn))[0]
 
         print('IN: {}'.format(' '.join([X_idx2word[i] for i in input_indices])))

@@ -44,7 +44,7 @@ def pad(sequences, pad_int):
     for seq in sequences:
         padded_seqs.append(seq + [pad_int] * (maxlen - len(seq)))
         seq_lens.append(len(seq))
-    return np.array(padded_seqs).astype(np.int32), np.array(seq_lens).astype(np.int32)
+    return np.array(padded_seqs, dtype=np.int32), np.array(seq_lens, dtype=np.int32)
 # end function pad
 
 

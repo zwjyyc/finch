@@ -75,8 +75,8 @@ class RNNClassifier:
 
     def add_backward_path(self):
         self.lr = tf.placeholder(tf.float32)
-        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
-                                                                                  labels=self.Y))
+        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
+            logits=self.logits, labels=self.Y))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, axis=1),
                                                    self.Y), tf.float32))

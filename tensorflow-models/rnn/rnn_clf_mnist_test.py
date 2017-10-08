@@ -5,10 +5,8 @@ import tensorflow as tf
 
 if __name__ == '__main__':
     (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.mnist.load_data()
-    X_train = X_train / 255.0
-    X_test = X_test / 255.0
-    Y_train = tf.contrib.keras.utils.to_categorical(y_train)
-    Y_test = tf.contrib.keras.utils.to_categorical(y_test)
+    X_train = X_train / 255.
+    X_test = X_test / 255.
 
     clf = RNNClassifier(n_in=28, n_out=10, stateful=True)
     log = clf.fit(X_train, y_train, keep_prob_tuple=(0.8,1.0), val_data=(X_test, y_test))

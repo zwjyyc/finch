@@ -41,18 +41,21 @@ class Encoder(torch.nn.Module):
 
 
 class Decoder(torch.nn.Module):
-    def __init__(self, output_size, hidden_size, decoder_embedding_dim, n_layers):
+    def __init__(self, output_size, hidden_size, decoder_embedding_dim, n_layers, attn_size=50):
         super(Decoder, self).__init__()
         self.output_size = output_size
         self.hidden_size = hidden_size
         self.decoder_embedding_dim = decoder_embedding_dim
         self.n_layers = n_layers
+        self.attn_size = attn_size
         self.build_model()
     # end constructor
 
 
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.output_size, self.decoder_embedding_dim)
+        self.attn_1 = torch.nn.Linear(self.hidden_size, self.attn_size)
+        self.attn_2 = torch.nn.Linear(self.attn_size, 1)
         self.attn_out = torch.nn.Linear(self.hidden_size*2, self.hidden_size)
         self.lstm = torch.nn.LSTM(self.decoder_embedding_dim, self.hidden_size,
                                   batch_first=True, num_layers=self.n_layers)
@@ -62,8 +65,11 @@ class Decoder(torch.nn.Module):
 
     def forward(self, inputs, hidden, encoder_output):
         embedded = self.embedding(inputs)
-        attn_w = torch.bmm(encoder_output, hidden[0][-1].unsqueeze(2))
-        attn_w = torch.nn.functional.softmax(attn_w.squeeze(2))
+        weights = []
+        for i in range(encoder_output.size(1)):
+            attn_hidden = self.attn_1(encoder_output[:, i, :]) + self.attn_1(hidden[0][-1])
+            weights.append(self.attn_2(torch.nn.functional.tanh(attn_hidden)))
+        attn_w = torch.stack(weights).transpose(0, 1).squeeze(2)
 
         # (batch, 1, in_seq_len) * (batch, in_seq_len, hidden) -> (batch, 1, hidden)
         weighted_sum = torch.bmm(attn_w.unsqueeze(1), encoder_output)
@@ -117,8 +123,8 @@ class Seq2Seq:
 
         losses = nll(torch.nn.functional.log_softmax(
             decoder_output.view(-1, len(self.Y_word2idx))), target.view(-1, 1))
-	Y_masks = torch.autograd.Variable(torch.FloatTensor(Y_masks)).view(-1)
-	loss = torch.mul(losses, Y_masks).sum() / source.size(0)
+        Y_masks = torch.autograd.Variable(torch.FloatTensor(Y_masks)).view(-1)
+        loss = torch.mul(losses, Y_masks).sum() / source.size(0)
         loss.backward()
         torch.nn.utils.clip_grad_norm(self.encoder.parameters(), self.max_grad_norm)
         torch.nn.utils.clip_grad_norm(self.decoder.parameters(), self.max_grad_norm)
@@ -185,7 +191,7 @@ class Seq2Seq:
     def pad_sentence_batch(self, sentence_batch, pad_int):
         padded_seqs = []
         seq_lens = []
-	masks = []
+        masks = []
         max_sentence_len = max([len(sentence) for sentence in sentence_batch])
         for sentence in sentence_batch:
             padded_seqs.append(sentence + [pad_int] * (max_sentence_len - len(sentence)))
@@ -228,7 +234,7 @@ class Seq2Seq:
 
     def process_decoder_input(self, target):
         target = target[:, :-1]
-	go = torch.autograd.Variable((torch.zeros(target.size(0), 1) + self._y_go).long())
+        go = torch.autograd.Variable((torch.zeros(target.size(0), 1) + self._y_go).long())
         decoder_input = torch.cat((go, target), 1)
         return decoder_input
     # end method

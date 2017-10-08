@@ -55,7 +55,7 @@ class Decoder(torch.nn.Module):
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.output_size, self.decoder_embedding_dim)
         self.attn_1 = torch.nn.Linear(self.hidden_size, self.attn_size)
-        self.attn_2 = torch.nn.Linear(self.attn_size, 1)
+        self.attn_2 = torch.nn.Linear(self.attn_size*2, 1)
         self.attn_out = torch.nn.Linear(self.hidden_size*2, self.hidden_size)
         self.lstm = torch.nn.LSTM(self.decoder_embedding_dim, self.hidden_size,
                                   batch_first=True, num_layers=self.n_layers)
@@ -67,7 +67,7 @@ class Decoder(torch.nn.Module):
         embedded = self.embedding(inputs)
         weights = []
         for i in range(encoder_output.size(1)):
-            attn_hidden = self.attn_1(encoder_output[:, i, :]) + self.attn_1(hidden[0][-1])
+            attn_hidden = torch.cat([self.attn_1(encoder_output[:, i, :]), self.attn_1(hidden[0][-1])], 1)
             weights.append(self.attn_2(torch.nn.functional.tanh(attn_hidden)))
         attn_w = torch.stack(weights).transpose(0, 1).squeeze(2)
 

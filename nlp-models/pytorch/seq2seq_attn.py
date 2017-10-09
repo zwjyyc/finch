@@ -41,7 +41,7 @@ class Encoder(torch.nn.Module):
 
 
 class Decoder(torch.nn.Module):
-    def __init__(self, output_size, hidden_size, decoder_embedding_dim, n_layers, attn_size=50):
+    def __init__(self, output_size, hidden_size, decoder_embedding_dim, n_layers, attn_size=10):
         super(Decoder, self).__init__()
         self.output_size = output_size
         self.hidden_size = hidden_size

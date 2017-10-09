@@ -54,9 +54,10 @@ class Decoder(torch.nn.Module):
 
     def build_model(self):
         self.embedding = torch.nn.Embedding(self.output_size, self.decoder_embedding_dim)
-        self.attn_1 = torch.nn.Linear(self.hidden_size, self.attn_size)
-        self.attn_2 = torch.nn.Linear(self.attn_size*2, 1)
-        self.attn_out = torch.nn.Linear(self.hidden_size*2, self.hidden_size)
+        self.proj_h = torch.nn.Linear(self.hidden_size, self.attn_size)
+        self.proj_y = torch.nn.Linear(self.hidden_size, self.attn_size)
+        self.proj_m = torch.nn.Linear(self.attn_size, 1)
+        self.proj_in = torch.nn.Linear(self.hidden_size*2, self.hidden_size)
         self.lstm = torch.nn.LSTM(self.decoder_embedding_dim, self.hidden_size,
                                   batch_first=True, num_layers=self.n_layers)
         self.decoder_out = torch.nn.Linear(self.hidden_size, self.output_size)
@@ -67,13 +68,13 @@ class Decoder(torch.nn.Module):
         embedded = self.embedding(inputs)
         weights = []
         for i in range(encoder_output.size(1)):
-            attn_hidden = torch.cat([self.attn_1(encoder_output[:, i, :]), self.attn_1(hidden[0][-1])], 1)
-            weights.append(self.attn_2(torch.nn.functional.tanh(attn_hidden)))
+            m = self.proj_y(encoder_output[:, i, :]) + self.proj_h(hidden[0][-1])
+            weights.append(self.proj_m(torch.nn.functional.tanh(m)))
         attn_w = torch.stack(weights).transpose(0, 1).squeeze(2)
 
         # (batch, 1, in_seq_len) * (batch, in_seq_len, hidden) -> (batch, 1, hidden)
         weighted_sum = torch.bmm(attn_w.unsqueeze(1), encoder_output)
-        inputs = self.attn_out(torch.cat((weighted_sum, embedded), 2).view(-1, 2*self.hidden_size))
+        inputs = self.proj_in(torch.cat((weighted_sum, embedded), 2).view(-1, 2*self.hidden_size))
         output, hidden = self.lstm(inputs.unsqueeze(1), hidden)
         output = self.decoder_out(output.contiguous().view(-1, self.hidden_size))
         return output, hidden

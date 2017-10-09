@@ -24,14 +24,13 @@ class Estimator:
             embedding = tf.get_variable(
                 'encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                 tf.random_uniform_initializer(-1.0, 1.0))
-            embedded = tf.nn.embedding_lookup(embedding, x)
-            embedded = tf.nn.dropout(embedded, 1-dropout_rate)
+            embedded = tf.nn.dropout(tf.nn.embedding_lookup(embedding, x), 1-dropout_rate)
 
             cell = tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer())
             rnn_out, final_state = tf.nn.dynamic_rnn(cell, embedded, sequence_length=seq_len, dtype=tf.float32)
 
             weights = tf.layers.dense(tf.layers.dense(rnn_out, self.attn_size, tf.tanh), 1)
-            weights = tf.nn.softmax(tf.squeeze(weights, 2))
+            weights = self.softmax(tf.squeeze(weights, 2))
             # (batch, cell_size, seq_len) * (batch, seq_len, 1) = (batch, cell_size, 1)
             weighted_sum = tf.squeeze(tf.matmul(tf.transpose(rnn_out, [0, 2, 1]),
                                                 tf.expand_dims(weights, 2)), 2)
@@ -83,3 +82,9 @@ class Estimator:
             batch_size=batch_size, shuffle=False)
         self.model.evaluate(input_fn)
     # end method
+
+    def softmax(self, tensor):
+        exps = tf.exp(tensor)
+        return exps / tf.reduce_sum(exps, 1, keep_dims=True)
+    # end method softmax
+# end class

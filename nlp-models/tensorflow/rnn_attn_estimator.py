@@ -3,7 +3,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 
 class Estimator:
-    def __init__(self, vocab_size, n_out, embedding_dims=128, rnn_size=128, dropout_rate=0.5, grad_clip=5.0,
+    def __init__(self, vocab_size, n_out, embedding_dims=128, rnn_size=128, dropout_rate=0.2, grad_clip=5.0,
                  attn_size=50):
         self.vocab_size = vocab_size
         self.n_out = n_out
@@ -36,7 +36,7 @@ class Estimator:
             weighted_sum = tf.squeeze(tf.matmul(tf.transpose(rnn_out, [0, 2, 1]),
                                                 tf.expand_dims(weights, 2)), 2)
 
-            logits = tf.layers.dense(weighted_sum, self.n_out)
+            logits = tf.layers.dense(tf.concat([weighted_sum, final_state.h], 1), self.n_out)
         return logits
     # end method
 

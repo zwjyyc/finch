@@ -1,17 +1,12 @@
 import tensorflow as tf
 import numpy as np
-import string
 import math
 import sys
-import os
-import re
 
 
 class ConvRNNTextGen:
-    def __init__(self, text, seq_len=50, embedding_dims=15,
-                 cell_size=128, n_layer=2,
-                 n_filters=[16, 32, 64], kernel_sizes=[2, 3, 5],
-                 sess=tf.Session()):
+    def __init__(self, text, seq_len=50, embedding_dims=15, cell_size=128, n_layer=2, grad_clip=5.0,
+                 n_filters=[8, 16, 32, 64, 128], kernel_sizes=[1, 2, 3, 4, 5], sess=tf.Session()):
         """
         Parameters:
         -----------
@@ -36,6 +31,7 @@ class ConvRNNTextGen:
         self.embedding_dims = embedding_dims
         self.cell_size = cell_size
         self.n_layer = n_layer
+        self.grad_clip = grad_clip
         self.n_filters = n_filters
         self.kernel_sizes = kernel_sizes
 
@@ -134,19 +130,17 @@ class ConvRNNTextGen:
 
 
     def add_backward_path(self):
-        losses = tf.contrib.seq2seq.sequence_loss(
+        self.loss = tf.contrib.seq2seq.sequence_loss(
             logits = tf.reshape(self.logits, [self.batch_size, self.seq_len, self.vocab_word]),
             targets = self.Y,
             weights = tf.ones([self.batch_size, self.seq_len]),
             average_across_timesteps = True,
-            average_across_batch = True,
-        )
-        self.loss = tf.reduce_sum(losses)
+            average_across_batch = True)
         # gradient clipping
-        optimizer = tf.train.AdamOptimizer(self.lr)
-        gradients = optimizer.compute_gradients(self.loss)
-        clipped_gradients = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gradients if grad is not None]
-        self.train_op = optimizer.apply_gradients(clipped_gradients)
+        params = tf.trainable_variables()
+        gradients = tf.gradients(self.loss, params)
+        clipped_gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)
+        self.train_op = tf.train.AdamOptimizer(self.lr).apply_gradients(zip(clipped_gradients, params))
     # end method add_backward_path
 
 
@@ -168,15 +162,11 @@ class ConvRNNTextGen:
         self.vocab_char = len(self.idx2char)
         print("Vocabulary of Char:", self.vocab_char)
 
-        puncts = list(string.punctuation)
-        puncts.remove("'")
-        puncts.append('"')
-        puncts.append('-')
-        puncts.append('\n')
-        table = str.maketrans({punct: ' '+punct+' ' for punct in puncts})
-        text = text.translate(table)
-        text = text.replace('  ', ' ').lower()
+        text = text.replace('\n', ' \n ')
+        text = text.replace('  ', ' ')
+        text = text.lower()
         tokens = text.split(' ')
+        # print(tokens)
 
         words = set(tokens)
         self.max_word_len = max([len(w) for w in words])
@@ -209,7 +199,7 @@ class ConvRNNTextGen:
     # end method next_batch
 
 
-    def fit(self, start_word, text_iter_step=1, n_gen=80, n_epoch=1, batch_size=128, en_exp_decay=False):
+    def fit(self, start_word, text_iter_step=25, n_gen=50, n_epoch=1, batch_size=128, en_exp_decay=False):
         global_step = 0
         n_batch = (len(self.word_indexed) - self.seq_len*batch_size - 1) // text_iter_step
         total_steps = n_epoch * n_batch
@@ -232,7 +222,7 @@ class ConvRNNTextGen:
                 print ('Epoch %d/%d | Batch %d/%d | train loss: %.4f'
                         % (epoch+1, n_epoch, local_step, n_batch, train_loss))
                 if local_step % 10 == 0:
-                    print(self.infer(start_word, n_gen)+'\n')
+                    print('\n'+self.infer(start_word, n_gen)+'\n')
                     """
                     save_path = self.saver.save(self.sess, self.model_path)
                     print("Model saved in file: %s" % save_path)
@@ -247,7 +237,7 @@ class ConvRNNTextGen:
         next_state = self.sess.run(self.init_state, {self.batch_size:1})
         chars = list(start_word)
         char_indices = [self.char2idx[c] for c in chars] + [0] * (self.max_word_len - len(chars))
-        out_sentence = 'IN: ' + start_word + '\nOUT: ' + start_word
+        out_sentence = start_word + ' '
         for _ in range(n_gen):
             x = np.reshape(char_indices, [1, 1, self.max_word_len])
             softmax_out, next_state = self.sess.run([self.softmax_out, self.final_state],
@@ -257,7 +247,7 @@ class ConvRNNTextGen:
             probas = probas / np.sum(probas)
             actions = np.random.multinomial(1, probas, 1)
             word = self.idx2word[np.argmax(actions)]
-            out_sentence = out_sentence + ' ' + word
+            out_sentence = out_sentence + word if word == '\n' else out_sentence + word + ' '
             chars = list(word) 
             char_indices = [self.char2idx[c] for c in chars] + [0] * (self.max_word_len - len(chars))
         return out_sentence

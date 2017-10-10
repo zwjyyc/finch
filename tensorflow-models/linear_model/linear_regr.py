@@ -34,8 +34,8 @@ class LinearRegression:
 
 
     def add_output_layer(self):
-        self.W = self.call_W('W', [self.n_in, 1])
-        self.b = self.call_b('b', [1])
+        self.W = tf.get_variable('W', [self.n_in, 1], tf.float32, tf.variance_scaling_initializer())
+        self.b = tf.get_variable('b', [1], tf.float32, tf.constant_initializer(0.01))
         self.pred = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
     # end method add_output_layer
 
@@ -86,14 +86,4 @@ class LinearRegression:
     def list_avg(self, l):
         return sum(l) / len(l)
     # end method list_avg
-
-
-    def call_W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
-    # end method _W
-
-
-    def call_b(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.constant_initializer(0.01))
-    # end method _b
 # end class

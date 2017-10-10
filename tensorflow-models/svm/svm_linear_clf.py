@@ -36,7 +36,7 @@ class LinearSVMClassifier:
 
 
     def add_forward_path(self):
-        self.W = tf.get_variable('W', [self.n_in, 1], tf.float32, tf.contrib.layers.variance_scaling_initializer())
+        self.W = tf.get_variable('W', [self.n_in, 1], tf.float32, tf.variance_scaling_initializer())
         self.b = tf.get_variable('b', [1], tf.float32, tf.constant_initializer(0.01))
         self.logits = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
     # end method add_forward_path

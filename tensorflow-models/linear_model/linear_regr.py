@@ -34,7 +34,7 @@ class LinearRegression:
 
 
     def add_output_layer(self):
-        self.W = tf.get_variable('W', [self.n_in, 1], tf.float32, tf.variance_scaling_initializer())
+        self.W = tf.get_variable('W', [self.n_in, 1], tf.float32, tf.glorot_uniform_initializer())
         self.b = tf.get_variable('b', [1], tf.float32, tf.constant_initializer(0.01))
         self.pred = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
     # end method add_output_layer

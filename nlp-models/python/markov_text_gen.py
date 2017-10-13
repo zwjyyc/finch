@@ -1,4 +1,4 @@
-from __future__ import division
+from __future__ import division, print_function
 import sys
 import string
 from io import open
@@ -6,10 +6,12 @@ from io import open
 
 def remove_punct(s):
     if int(sys.version[0]) == 2:
-        return s.translate(None, string.punctuation)
+        for p in string.punctuation:
+            s = s.replace(p, '')
     else:
         table = str.maketrans({p: '' for p in string.punctuation})
-        return s.translate(table)
+        s = s.translate(table)
+    return s
 # end function remove_punct
 
 

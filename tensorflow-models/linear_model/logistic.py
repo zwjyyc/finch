@@ -32,24 +32,24 @@ class Logistic:
 
     def add_input_layer(self):
         self.X = tf.placeholder(shape=[None, self.n_in], dtype=tf.float32)
-        self.Y = tf.placeholder(shape=[None], dtype=tf.int64)
+        self.y = tf.placeholder(shape=[None], dtype=tf.int64)
+        self.labels = tf.one_hot(self.y, self.n_out)
     # end method add_input_layer
 
 
     def add_output_layer(self):
-        self.W = tf.get_variable('W', [self.n_in, self.n_out], tf.float32, tf.glorot_uniform_initializer())
-        self.b = tf.get_variable('b', [self.n_out], tf.float32, tf.constant_initializer(0.01))
-        self.logits = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
+        with tf.variable_scope('linear'):
+            self.logits = tf.layers.dense(self.X, self.n_out, tf.nn.softmax)
     # end method add_output_layer
 
 
     def add_backward_path(self):
-        loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
-                                                                             labels=self.Y))
-        l1_loss = tf.reduce_mean(tf.abs(self.W))
-        l2_loss = tf.reduce_mean(tf.square(self.W))
-        self.loss = loss + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
-        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1), self.Y), tf.float32))
+        xentropy = tf.reduce_mean(-tf.reduce_sum(self.labels * tf.log(self.logits), axis=1))
+        with tf.variable_scope('linear', reuse=True):
+            l1_loss = tf.reduce_mean(tf.abs(tf.get_variable('dense/kernel')))
+            l2_loss = tf.reduce_mean(tf.square(tf.get_variable('dense/kernel')))
+        self.loss = xentropy + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
+        self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1), self.y), tf.float32))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 
@@ -61,13 +61,13 @@ class Logistic:
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), # batch training
                                         self.gen_batch(Y, batch_size)):
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                             {self.X:X_batch, self.Y:Y_batch})
+                                             {self.X:X_batch, self.y:Y_batch})
 
             val_loss_list, val_acc_list = [], []
             for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                   self.gen_batch(val_data[1], batch_size)):
                 v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                              {self.X:X_test_batch, self.Y:Y_test_batch})
+                                              {self.X:X_test_batch, self.y:Y_test_batch})
                 val_loss_list.append(v_loss)
                 val_acc_list.append(v_acc)
             val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)

@@ -29,16 +29,15 @@ class LinearSVMClassifier:
 
 
     def add_input_layer(self):
-        self.batch_size = tf.placeholder(tf.int32)
         self.X = tf.placeholder(shape=(None, self.n_in), dtype=tf.float32)
         self.Y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+        self._batch_size = tf.shape(self.X)[0]
     # end method add_input_layer
 
 
     def add_forward_path(self):
-        self.W = tf.get_variable('W', [self.n_in, 1], tf.float32, tf.glorot_uniform_initializer())
-        self.b = tf.get_variable('b', [1], tf.float32, tf.constant_initializer(0.01))
-        self.logits = tf.nn.bias_add(tf.matmul(self.X, self.W), self.b)
+        with tf.variable_scope('svm'):
+            self.logits = tf.layers.dense(self.X, 1)
     # end method add_forward_path
 
 
@@ -48,8 +47,9 @@ class LinearSVMClassifier:
 
 
     def add_backward_path(self):
-        regu_loss = 0.5 * tf.reduce_sum(tf.square(self.W))
-        hinge_loss = tf.reduce_sum(tf.maximum(tf.zeros([self.batch_size,1]), 1-self.Y*self.logits))
+        with tf.variable_scope('svm', reuse=True):
+            regu_loss = 0.5 * tf.reduce_sum(tf.square(tf.get_variable('dense/kernel')))
+        hinge_loss = tf.reduce_sum(tf.maximum(tf.zeros([self._batch_size,1]), 1-self.Y*self.logits))
         self.loss = regu_loss + self.C * hinge_loss
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
         self.acc = tf.reduce_mean(tf.cast(tf.equal(self.pred, self.Y), tf.float32))
@@ -65,14 +65,12 @@ class LinearSVMClassifier:
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), # batch training
                                         self.gen_batch(Y, batch_size)):
                 _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                             {self.X:X_batch, self.Y:Y_batch,
-                                              self.batch_size:len(X_batch)})
+                                             {self.X:X_batch, self.Y:Y_batch})
             val_loss_list, val_acc_list = [], [] # compute validation loss and acc
             for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
                                                   self.gen_batch(val_data[1], batch_size)):
                 v_loss, v_acc = self.sess.run([self.loss, self.acc],
-                                              {self.X:X_test_batch, self.Y:Y_test_batch,
-                                               self.batch_size:len(X_test_batch)})
+                                              {self.X:X_test_batch, self.Y:Y_test_batch})
                 val_loss_list.append(v_loss)
                 val_acc_list.append(v_acc)
             val_loss, val_acc = self.list_avg(val_loss_list), self.list_avg(val_acc_list)
@@ -96,7 +94,7 @@ class LinearSVMClassifier:
             batch_size = len(X_test)
         batch_pred_list = []
         for X_test_batch in self.gen_batch(X_test, batch_size):
-            batch_pred = self.sess.run(self.pred, {self.X:X_test_batch, self.batch_size:len(X_test_batch)})
+            batch_pred = self.sess.run(self.pred, {self.X:X_test_batch})
             batch_pred_list.append(batch_pred)
         return np.vstack(batch_pred_list)
     # end method predict

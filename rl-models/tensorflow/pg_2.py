@@ -45,7 +45,7 @@ class PolicyGradient:
     # end method
 
 
-    def learn(self, n_games_per_update=10, n_max_steps=1000, n_iterations=250, discount_rate=0.95):
+    def learn(self, n_games_per_update=10, n_max_steps=1000, n_iterations=500, discount_rate=0.95):
         self.sess.run(tf.global_variables_initializer())
 
         for iteration in range(n_iterations):
@@ -71,7 +71,7 @@ class PolicyGradient:
             _, loss = self.sess.run([self.train_op, self.loss], {self.X: np.vstack(ep_obs),
                                                                  self.rewards: flat_rewards,
                                                                  self.actions: np.array(ep_actions)})
-            print("Iteration: %d, Loss: %.3f" % (iteration, loss))
+            print("Iteration: [%d / %d], Loss: %.3f" % (iteration, n_iterations, loss))
     # end method
 
 

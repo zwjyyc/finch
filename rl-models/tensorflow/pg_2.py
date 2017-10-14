@@ -40,7 +40,7 @@ class PolicyGradient:
     def add_backward_path(self):
         # maximize (log_p * R) = minimize -(log_p * R)
         xentropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.actions, logits=self.logits)
-        self.loss = tf.reduce_mean(xentropy * self.rewards) # reward guided loss
+        self.loss = tf.reduce_sum(xentropy * self.rewards) # reward guided loss
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method
 

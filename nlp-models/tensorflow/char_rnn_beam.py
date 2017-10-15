@@ -5,7 +5,7 @@ from tensorflow.python.layers import core as core_layers
 
 class RNNTextGen:
     def __init__(self, text, seq_len=50, embedding_dims=30, rnn_size=256, n_layers=2, grad_clip=5.,
-                 use_beam_search=True, beam_width=5, sess=tf.Session()):
+                 beam_width=5, sess=tf.Session()):
         self.sess = sess
         self.text = text
         self.seq_len = seq_len
@@ -13,7 +13,6 @@ class RNNTextGen:
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
-        self.use_beam_search = use_beam_search
         self.beam_width = beam_width
         self.preprocessing()
         self.build_graph()
@@ -36,7 +35,7 @@ class RNNTextGen:
 
 
     def add_decoder(self):
-        with tf.variable_scope('decode'): # decode (training)
+        with tf.variable_scope('decode'):
             decoder_embedding = tf.get_variable('decoder_embedding', [self.vocab_size, self.embedding_dims],
                                                  tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
             decoder_cell = tf.nn.rnn_cell.MultiRNNCell([self._rnn_cell() for _ in range(self.n_layers)])
@@ -56,42 +55,24 @@ class RNNTextGen:
                 maximum_iterations = tf.reduce_max(self.sequence_length+1))
             self.logits = decoder_output.rnn_output
         
-        with tf.variable_scope('decode', reuse=True): # decode (predicting)
-            if not self.use_beam_search:
-                helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
-                    embedding = tf.get_variable('decoder_embedding'),
-                    start_tokens = tf.tile(tf.constant(
-                        [self.char2idx['<start>']], dtype=tf.int32), [self._batch_size]),
-                    end_token = self.char2idx['<end>'])
-                decoder = tf.contrib.seq2seq.BasicDecoder(
-                    cell = tf.nn.rnn_cell.MultiRNNCell(
-                        [self._rnn_cell(reuse=True) for _ in range(self.n_layers)]),
-                    helper = helper,
-                    initial_state = decoder_cell.zero_state(self._batch_size, tf.float32),
-                    output_layer = core_layers.Dense(self.vocab_size, _reuse=True))
-                decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                    decoder = decoder,
-                    impute_finished = True,
-                    maximum_iterations = self.gen_seq_length)
-                self.predicted_ids = decoder_output.sample_id
-            if self.use_beam_search:
-                decoder = tf.contrib.seq2seq.BeamSearchDecoder(
-                    cell = tf.nn.rnn_cell.MultiRNNCell(
-                        [self._rnn_cell(reuse=True) for _ in range(self.n_layers)]),
-                    embedding = tf.get_variable('decoder_embedding'),
-                    start_tokens = tf.tile(tf.constant(
-                        [self.char2idx['<start>']], dtype=tf.int32), [self._batch_size]),
-                    end_token = self.char2idx['<end>'],
-                    initial_state = tf.contrib.seq2seq.tile_batch(
-                        decoder_cell.zero_state(self._batch_size,tf.float32), self.beam_width),
-                    beam_width = self.beam_width,
-                    output_layer = core_layers.Dense(self.vocab_size, _reuse=True),
-                    length_penalty_weight = 0.0)
-                decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                    decoder = decoder,
-                    impute_finished = False,
-                    maximum_iterations = self.gen_seq_length)
-                self.predicted_ids = decoder_output.predicted_ids[:, :, 0]
+        with tf.variable_scope('decode', reuse=True):
+            decoder = tf.contrib.seq2seq.BeamSearchDecoder(
+                cell = tf.nn.rnn_cell.MultiRNNCell(
+                    [self._rnn_cell(reuse=True) for _ in range(self.n_layers)]),
+                embedding = tf.get_variable('decoder_embedding'),
+                start_tokens = tf.tile(tf.constant(
+                    [self.char2idx['<start>']], dtype=tf.int32), [self._batch_size]),
+                end_token = self.char2idx['<end>'],
+                initial_state = tf.contrib.seq2seq.tile_batch(
+                    decoder_cell.zero_state(self._batch_size,tf.float32), self.beam_width),
+                beam_width = self.beam_width,
+                output_layer = core_layers.Dense(self.vocab_size, _reuse=True),
+                length_penalty_weight = 0.0)
+            decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+                decoder = decoder,
+                impute_finished = False,
+                maximum_iterations = self.gen_seq_length)
+            self.predicted_ids = decoder_output.predicted_ids[:, :, 0]
     # end method
 
 
@@ -101,7 +82,7 @@ class RNNTextGen:
             logits = self.logits,
             targets = targets,
             weights = tf.cast(tf.ones_like(targets), tf.float32),
-            average_across_timesteps = False,
+            average_across_timesteps = True,
             average_across_batch = True))
         # gradient clipping
         params = tf.trainable_variables()
@@ -133,7 +114,6 @@ class RNNTextGen:
 
 
     def fit(self, text_iter_step=25, n_epoch=1, batch_size=128):
-        global_step = 0
         n_batch = (len(self.indexed) - self.seq_len*batch_size - 1) // text_iter_step
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         
@@ -147,7 +127,6 @@ class RNNTextGen:
                           (epoch+1, n_epoch, local_step, n_batch, train_loss))
                 if local_step % 100 == 0:
                     self.decode()
-                global_step += 1
     # end method
 
 

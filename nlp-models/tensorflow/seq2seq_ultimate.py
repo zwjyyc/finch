@@ -41,8 +41,9 @@ class Seq2Seq:
     # end method
 
 
-    def lstm_cell(self, reuse=False):
-        return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+    def lstm_cell(self, rnn_size=None, reuse=False):
+        rnn_size = self.rnn_size if rnn_size is None else rnn_size
+        return tf.nn.rnn_cell.LSTMCell(rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
     # end method
 
 
@@ -52,15 +53,18 @@ class Seq2Seq:
         self.encoder_out = tf.nn.embedding_lookup(encoder_embedding, self.X)
         for n in range(self.n_layers):
             (out_fw, out_bw), (state_fw, state_bw) = tf.nn.bidirectional_dynamic_rnn(
-                cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
+                cell_fw = self.lstm_cell(self.rnn_size // 2),
+                cell_bw = self.lstm_cell(self.rnn_size // 2),
                 inputs = self.encoder_out,
                 sequence_length = self.X_seq_len,
                 dtype = tf.float32,
                 scope = 'bidirectional_rnn_'+str(n))
             self.encoder_out = tf.concat((out_fw, out_bw), 2)
-        self.encoder_state = ()
-        for n in range(self.n_layers): # replicate top-most state
-            self.encoder_state += (state_fw, state_bw)
+        
+        bi_state_c = tf.concat((state_fw.c, state_bw.c), -1)
+        bi_state_h = tf.concat((state_fw.h, state_bw.h), -1)
+        bi_lstm_state = tf.nn.rnn_cell.LSTMStateTuple(c=bi_state_c, h=bi_state_h)
+        self.encoder_state = tuple([bi_lstm_state] * self.n_layers)
     # end method
     
 
@@ -77,7 +81,7 @@ class Seq2Seq:
             memory = self.encoder_out,
             memory_sequence_length = self.X_seq_len)
         self.decoder_cell = tf.contrib.seq2seq.AttentionWrapper(
-            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(2 * self.n_layers)]),
+            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]),
             attention_mechanism = attention_mechanism,
             attention_layer_size = self.rnn_size)
     # end method
@@ -117,7 +121,7 @@ class Seq2Seq:
             memory = self.encoder_out_tiled,
             memory_sequence_length = self.X_seq_len_tiled)
         self.decoder_cell = tf.contrib.seq2seq.AttentionWrapper(
-            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse=True) for _ in range(2 * self.n_layers)]),
+            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse=True) for _ in range(self.n_layers)]),
             attention_mechanism = attention_mechanism,
             attention_layer_size = self.rnn_size)
     # end method
@@ -204,7 +208,8 @@ class Seq2Seq:
     # end method
 
 
-    def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):     
+    def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):
+        Y_idx2word[-1] = '-1'     
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
         out_indices = self.sess.run(self.predicting_ids, {
             self.X: [input_indices], self.X_seq_len: [len(input_indices)]})[0]

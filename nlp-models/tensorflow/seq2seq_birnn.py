@@ -36,9 +36,10 @@ class Seq2Seq:
     # end method add_input_layer
 
 
-    def lstm_cell(self, reuse=False):
-        return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
-    # end method lstm_cell
+    def lstm_cell(self, rnn_size=None, reuse=False):
+        rnn_size = self.rnn_size if rnn_size is None else rnn_size
+        return tf.nn.rnn_cell.LSTMCell(rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+    # end method
 
 
     def add_encoder_layer(self):
@@ -47,15 +48,18 @@ class Seq2Seq:
         birnn_out = tf.nn.embedding_lookup(encoder_embedding, self.X)
         for n in range(self.n_layers):
             (out_fw, out_bw), (state_fw, state_bw) = tf.nn.bidirectional_dynamic_rnn(
-                cell_fw = self.lstm_cell(), cell_bw = self.lstm_cell(),
+                cell_fw = self.lstm_cell(self.rnn_size // 2),
+                cell_bw = self.lstm_cell(self.rnn_size // 2),
                 inputs = birnn_out,
                 sequence_length = self.X_seq_len,
                 dtype = tf.float32,
                 scope = 'bidirectional_rnn_'+str(n))
             birnn_out = tf.concat((out_fw, out_bw), 2)
-        self.encoder_state = ()
-        for n in range(self.n_layers): # replicate top-most state
-            self.encoder_state += (state_fw, state_bw)
+        
+        bi_state_c = tf.concat((state_fw.c, state_bw.c), -1)
+        bi_state_h = tf.concat((state_fw.h, state_bw.h), -1)
+        bi_lstm_state = tf.nn.rnn_cell.LSTMStateTuple(c=bi_state_c, h=bi_state_h)
+        self.encoder_state = tuple([bi_lstm_state] * self.n_layers)
     # end method add_encoder_layer
     
 
@@ -75,7 +79,7 @@ class Seq2Seq:
                 sequence_length = self.Y_seq_len,
                 time_major = False)
             training_decoder = tf.contrib.seq2seq.BasicDecoder(
-                cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(2 * self.n_layers)]),
+                cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]),
                 helper = training_helper,
                 initial_state = self.encoder_state,
                 output_layer = core_layers.Dense(len(self.Y_word2idx)))
@@ -91,7 +95,7 @@ class Seq2Seq:
                 start_tokens = tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
                 end_token = self._y_eos)
             predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
-                cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse=True) for _ in range(2 * self.n_layers)]),
+                cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse=True) for _ in range(self.n_layers)]),
                 helper = predicting_helper,
                 initial_state = self.encoder_state,
                 output_layer = core_layers.Dense(len(self.Y_word2idx), _reuse=True))

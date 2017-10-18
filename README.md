@@ -238,9 +238,12 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 
 * Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
 ## Cloud Computing
-#### Apache Spark
-* Basics
-    * Counting &nbsp; | &nbsp; [Scala](https://github.com/zhedongzheng/finch/blob/master/apache_spark/1_rating_counter.scala) &nbsp; | &nbsp; [Python](https://github.com/zhedongzheng/finch/blob/master/apache_spark/1_rating_counter.py)
-    * Averaging &nbsp; | &nbsp;
-    * Minimum &nbsp; | &nbsp;
-    * Word Count &nbsp; | &nbsp;
+### Apache Spark
+#### Basics
+* Counting &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/1_rating_counter.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/1_rating_counter.py) &nbsp; | &nbsp;
+    
+* Averaging &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/2_friends_by_age.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/2_friends_by_age.py) &nbsp; | &nbsp;
+    
+* Minimum &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/3_min_temperatures.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/3_min_temperatures.py) &nbsp; | &nbsp;
+    
+* Word Count &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/6_word_count_sorted.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/6_word_count_sorted.py) &nbsp; | &nbsp;

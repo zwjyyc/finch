@@ -237,3 +237,10 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 * Detection &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
 
 * Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
+## Cloud Computing
+#### Apache Spark
+* Basics
+    * Counting &nbsp; | &nbsp; [Scala](https://github.com/zhedongzheng/finch/blob/master/apache_spark/1_rating_counter.scala) &nbsp; | &nbsp; [Python](https://github.com/zhedongzheng/finch/blob/master/apache_spark/1_rating_counter.py)
+    * Averaging &nbsp; | &nbsp;
+    * Minimum &nbsp; | &nbsp;
+    * Word Count &nbsp; | &nbsp;

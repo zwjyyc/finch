@@ -5,11 +5,11 @@ import scala.math.min
 
 
 def parseLine(line:String)= {
-val fields = line.split(",")
-val stationID = fields(0)
-val entryType = fields(2)
-val temperature = fields(3).toFloat * 0.1f * (9.0f / 5.0f) + 32.0f
-(stationID, entryType, temperature)
+    val fields = line.split(",")
+    val stationID = fields(0)
+    val entryType = fields(2)
+    val temperature = fields(3).toFloat * 0.1f * (9.0f / 5.0f) + 32.0f
+    (stationID, entryType, temperature)
 }
 
 
@@ -30,8 +30,8 @@ val minTempsByStation = stationTemps.reduceByKey( (x,y) => min(x,y))
 val results = minTempsByStation.collect()
 
 for (result <- results.sorted) {
-  val station = result._1
-  val temp = result._2
-  val formattedTemp = f"$temp%.2f F"
-  println(s"$station minimum temperature: $formattedTemp") 
+    val station = result._1
+    val temp = result._2
+    val formattedTemp = f"$temp%.2f F"
+    println(s"$station minimum temperature: $formattedTemp") 
 }

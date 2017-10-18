@@ -44,7 +44,7 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
   * [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
-
+* [Cloud Computing](https://github.com/zhedongzheng/finch/blob/master/README.md#cloud-computing)
 ## Machine Learning
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr_test.py) &nbsp; | &nbsp;

@@ -1,14 +1,17 @@
 from pyspark import SparkConf, SparkContext
 
+
 conf = SparkConf().setMaster("local").setAppName("FriendsByAge")
 sc = SparkContext(conf = conf)
 sc.setLogLevel('FATAL')
+
 
 def parseLine(line):
     fields = line.split(',')
     age = int(fields[2])
     numFriends = int(fields[3])
     return (age, numFriends)
+
 
 lines = sc.textFile("/Users/zhedongzheng/tutorials/apache_spark/temp/fakefriends.csv")
 rdd = lines.map(parseLine)

@@ -248,3 +248,6 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 * Minimum &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/3_min_temperatures.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/3_min_temperatures.py) &nbsp; | &nbsp;
     
 * Word Count &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/6_word_count_sorted.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/6_word_count_sorted.py) &nbsp; | &nbsp;
+## Database
+#### SQL
+* [Basics](https://github.com/zhedongzheng/finch/blob/master/db/sql/basics.md)

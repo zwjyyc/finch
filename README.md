@@ -46,6 +46,8 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 * [Cloud Computing](https://github.com/zhedongzheng/finch/blob/master/README.md#cloud-computing)
   * [Apache Spark](https://github.com/zhedongzheng/finch/blob/master/README.md#apache-spark)
+* [Database](https://github.com/zhedongzheng/finch/blob/master/README.md#database)
+  * [SQL](https://github.com/zhedongzheng/finch/blob/master/README.md#sql)
 ## Machine Learning
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr_test.py) &nbsp; | &nbsp;

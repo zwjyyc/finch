@@ -1,4 +1,4 @@
-from vrae import VRAE
+from vrae_char import VRAE
 
 
 if __name__ == '__main__':

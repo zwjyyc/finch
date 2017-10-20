@@ -242,7 +242,7 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 
 * Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
 #### Bayesian Inference
-* Pixel Classification &nbsp; | &nbsp; [Gaussian](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/ucl_compgi14/practicalMixGaussA.ipynb)
+* Pixel Classification &nbsp; | &nbsp; [Normal Distribution](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/ucl_compgi14/practicalMixGaussA.ipynb)
 ## Cloud Computing
 ### Apache Spark
 #### Basics

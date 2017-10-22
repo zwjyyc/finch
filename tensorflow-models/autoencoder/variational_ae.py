@@ -34,7 +34,7 @@ class Autoencoder:
         self.mean = tf.layers.dense(new_layer, self.encoder_units[-1])
         self.gamma = tf.layers.dense(new_layer, self.encoder_units[-1])
         noise = tf.random_normal(tf.shape(self.gamma))
-        self.encoder_op = self.mean + tf.exp(0.5 * self.gamma) * noise
+        self.encoder_op = self.mean + tf.exp(0.5 * self.gamma) * noise # 0.5 for convert var to std
     # end method add_encoders
 
 

@@ -9,6 +9,7 @@ class VRAE:
         self._word2idx = word2idx
         self._idx2word = {i: w for w, i in word2idx.items()}
         self._idx2word[-1] = '-1'
+        self._idx2word[4] = '4'
         self._build_graph()
 
     
@@ -31,7 +32,7 @@ class VRAE:
             inputs = tf.contrib.layers.embed_sequence(self.seq, args.vocab_size, args.encoder_embedding_dim),
             sequence_length = self.seq_length,
             dtype = tf.float32)
-        return encoded[-1]
+        return encoded[-1].h
 
 
     def _latent(self, rnn_encoded):
@@ -40,8 +41,9 @@ class VRAE:
         _gaussian = tf.truncated_normal(tf.shape(self._gamma))
 
         self.latent_vec = self._mean + tf.exp(0.5 * self._gamma) * _gaussian
-        latent_encoded = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
-        return tuple([latent_encoded] * args.decoder_layers)
+        c = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
+        h = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
+        return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
 
 
     def _decoder(self, init_state):
@@ -110,13 +112,11 @@ class VRAE:
 
 
     def _rnn_cell(self, reuse=False):
-        return tf.nn.rnn_cell.GRUCell(
-            args.rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
+        return tf.nn.rnn_cell.LSTMCell(args.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
 
 
     def _residual_rnn_cell(self, reuse=False):
-        return tf.nn.rnn_cell.ResidualWrapper(tf.nn.rnn_cell.GRUCell(
-            args.rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse))
+        return tf.nn.rnn_cell.ResidualWrapper(self._rnn_cell(reuse=reuse))
 
 
     def _decoder_input(self):
@@ -176,7 +176,7 @@ class VRAE:
         predicted_ids = sess.run(self.predicted_ids,
             {self.seq: np.atleast_2d(sentence),
              self.seq_length: np.atleast_1d(len(sentence)),
-             self.gen_seq_length: len(sentence) * 2})[0]
+             self.gen_seq_length: len(sentence)})[0]
         print('O: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')
 
 
@@ -184,5 +184,5 @@ class VRAE:
         predicted_ids = sess.run(self.predicted_ids,
                                 {self._batch_size: 1,
                                  self.latent_vec: np.random.randn(1, args.latent_size),
-                                 self.gen_seq_length: args.max_len * 2})[0]
+                                 self.gen_seq_length: args.max_len})[0]
         print('G: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')

@@ -1,5 +1,5 @@
 ```
-python train.py -rnn_size 512
+python train.py --rnn_size 512
 ```
 * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface
 * Following features are in:

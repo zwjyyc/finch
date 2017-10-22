@@ -11,7 +11,8 @@ class IMDB:
         word2idx = self._load_word2idx()
         X = self._pad_data(X_tuple, word2idx)
         X_dropped = self._word_dropout(X, args.word_dropout_rate, word2idx)
-        self._accessible(X, X_dropped, word2idx)
+        X_len = [args.max_len] * len(X)
+        self._accessible(X, X_dropped, X_len, word2idx)
 
 
     def _load_data(self):
@@ -50,9 +51,10 @@ class IMDB:
     # end method
 
 
-    def _accessible(self, X, X_dropped, word2idx):
+    def _accessible(self, X, X_dropped, X_len, word2idx):
         self._X = X
         self._X_dropped = X_dropped
+        self._X_len = X_len
         self.word2idx = word2idx
 
 
@@ -60,11 +62,15 @@ class IMDB:
         for i in range(0, len(self._X), args.batch_size):
             yield (self._X[i : i + args.batch_size],
                    self._X_dropped[i : i + args.batch_size],
-                   [args.max_len] * args.batch_size)
+                   self._X_len[i : i + args.batch_size])
 
     
     def shuffle(self):
         self._X, self._X_dropped = shuffle(self._X, self._X_dropped)
+
+
+    def update_word_dropout(self):
+        self._X_dropped = self._word_dropout(self._X, args.word_dropout_rate, self.word2idx)
 
 
 def shape_test(d):
@@ -94,13 +100,22 @@ def shuffle_test(d):
     print(' '.join(idx2word[idx] for idx in d._X_dropped[20]))
 
 
+def update_word_dropout_test(d):
+    d.update_word_dropout()
+    print()
+    idx2word = {i:w for w,i in d.word2idx.items()}
+    print(' '.join(idx2word[idx] for idx in d._X[20]))
+    print(' '.join(idx2word[idx] for idx in d._X_dropped[20]))
+
+
 def main():
     dataloader = IMDB()
-    shape_test(dataloader)
-    idx2word_test(dataloader)
+    #shape_test(dataloader)
+    #idx2word_test(dataloader)
     word_dropout_test(dataloader)
-    next_batch_test(dataloader)
+    #next_batch_test(dataloader)
     #shuffle_test(dataloader)
+    update_word_dropout_test(dataloader)
 
 
 if __name__ == '__main__':

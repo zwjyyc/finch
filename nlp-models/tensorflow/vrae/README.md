@@ -1,5 +1,5 @@
 ```
-python train.py --num_epoch 25
+python train.py --rnn_cell gru --num_epoch 25
 ```
 * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface (TF 1.3)
 

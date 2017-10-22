@@ -8,8 +8,7 @@ class VRAE:
     def __init__(self, word2idx):
         self._word2idx = word2idx
         self._idx2word = {i: w for w, i in word2idx.items()}
-        self._idx2word[-1] = '-1'
-        self._idx2word[4] = '4'
+        self._exception_handling()
         self._build_graph()
 
     
@@ -197,3 +196,8 @@ class VRAE:
                                  self.latent_vec: np.random.randn(1, args.latent_size),
                                  self.gen_seq_length: args.max_len})[0]
         print('G: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')
+
+
+    def _exception_handling(self):
+        self._idx2word[-1] = '-1'
+        self._idx2word[4] = '4'

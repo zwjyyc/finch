@@ -3,7 +3,7 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--vocab_size', type=int, default=10000)
-parser.add_argument('--max_len', type=int, default=30)
+parser.add_argument('--max_len', type=int, default=50)
 parser.add_argument('--word_dropout_rate', type=float, default=0.2)
 parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--encoder_embedding_dim', type=int, default=256)

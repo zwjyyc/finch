@@ -32,7 +32,10 @@ class VRAE:
             inputs = tf.contrib.layers.embed_sequence(self.seq, args.vocab_size, args.encoder_embedding_dim),
             sequence_length = self.seq_length,
             dtype = tf.float32)
-        return encoded[-1].h
+        if args.rnn_cell == 'lstm':
+            return encoded[-1].h
+        if args.rnn_cell == 'gru':
+            return encoded[-1]
 
 
     def _latent(self, rnn_encoded):
@@ -41,9 +44,13 @@ class VRAE:
         _gaussian = tf.truncated_normal(tf.shape(self._gamma))
 
         self.latent_vec = self._mean + tf.exp(0.5 * self._gamma) * _gaussian
-        c = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
-        h = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
-        return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
+        if args.rnn_cell == 'lstm':
+            c = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
+            h = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
+            return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
+        if args.rnn_cell == 'gru':
+            state = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
+            return tuple([state] * args.decoder_layers)
 
 
     def _decoder(self, init_state):
@@ -112,7 +119,12 @@ class VRAE:
 
 
     def _rnn_cell(self, reuse=False):
-        return tf.nn.rnn_cell.LSTMCell(args.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+        if args.rnn_cell == 'lstm':
+            return tf.nn.rnn_cell.LSTMCell(
+                args.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+        if args.rnn_cell == 'gru':
+            return tf.nn.rnn_cell.GRUCell(
+                args.rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
 
 
     def _residual_rnn_cell(self, reuse=False):
@@ -164,11 +176,10 @@ class VRAE:
         _, nll_loss, kl_w, kl_loss, mutinfo_loss = sess.run(
             [self.train_op, self.nll_loss, self.kl_w, self.kl_loss, self.mutinfo_loss],
                 {self.seq: seq, self.seq_dropped: seq_dropped, self.seq_length: seq_len})
-        return {
-            'nll_loss': nll_loss,
-            'kl_w': kl_w,
-            'kl_loss': kl_loss,
-            'mutinfo_loss': mutinfo_loss}
+        return {'nll_loss': nll_loss,
+                'kl_w': kl_w,
+                'kl_loss': kl_loss,
+                'mutinfo_loss': mutinfo_loss}
 
 
     def reconstruct(self, sess, sentence):

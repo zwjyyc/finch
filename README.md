@@ -21,7 +21,7 @@ I have used these python-based libraries in different sections:
 * [nltk](http://www.nltk.org/)
 * [opencv 3](http://opencv.org/)
 ## Style of My Code
-I write most models in scikit-learn interface style, with ```fit()``` and ```predict()``` methods, and then write separate test files for different incoming data;
+Most models are written in scikit-learn interfaces, with ```fit()``` and ```predict()``` methods;
 ## Contents
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Text Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-representation)

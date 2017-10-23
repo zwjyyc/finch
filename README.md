@@ -46,6 +46,8 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
   * [Image Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-generation)
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
   * [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
+* [Data Science]
+  * [Time Series](https://github.com/zhedongzheng/finch/blob/master/README.md#time-series)
 * [Cloud Computing](https://github.com/zhedongzheng/finch/blob/master/README.md#cloud-computing)
   * [Apache Spark](https://github.com/zhedongzheng/finch/blob/master/README.md#apache-spark)
 * [Database](https://github.com/zhedongzheng/finch/blob/master/README.md#database)
@@ -82,15 +84,6 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 #### Recurrent Network
 
 
-* TensorFlow &nbsp; | &nbsp; LSTM Regressor &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_regr_plot.py) &nbsp; &nbsp; [Preview](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif) &nbsp; | &nbsp;
-
-
-
-* PyTorch &nbsp; | &nbsp; GRU Regressor &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_regr_plot.py) &nbsp; | &nbsp;
-
-
-
-* MXNet &nbsp; | &nbsp; LSTM Regressor &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/rnn/rnn_regr_plot.py) &nbsp; | &nbsp;
 
 #### Generative Adversarial Network
 
@@ -254,6 +247,13 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 * Python &nbsp; | &nbsp; Apriori &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori_movielens_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Matrix Factorization &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf_movielens_test.py) &nbsp; | &nbsp;
+## Data Science
+#### Time Series
+* TensorFlow &nbsp; | &nbsp; RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_regr_plot.py) &nbsp; &nbsp; [Preview](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif) &nbsp; | &nbsp;
+
+* PyTorch &nbsp; | &nbsp; RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_regr_plot.py) &nbsp; | &nbsp;
+
+* MXNet &nbsp; | &nbsp; RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/rnn/rnn_regr_plot.py) &nbsp; | &nbsp;
 
 ## Cloud Computing
 ### Apache Spark

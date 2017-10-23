@@ -1,5 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
-These are the models coded and used by me, organized by where it is applied.
+These are the models coded and used by me, organized by where it is applied;
+
 Keep updating ... ...
 
 ## Installation

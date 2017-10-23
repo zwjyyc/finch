@@ -44,7 +44,8 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
   * [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
-  * [Bayesian Inference](https://github.com/zhedongzheng/finch/blob/master/README.md#bayesian-inference)
+  * [Image Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#image-classification)
+  * [Image Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-generation)
 * [Cloud Computing](https://github.com/zhedongzheng/finch/blob/master/README.md#cloud-computing)
   * [Apache Spark](https://github.com/zhedongzheng/finch/blob/master/README.md#apache-spark)
 * [Database](https://github.com/zhedongzheng/finch/blob/master/README.md#database)
@@ -241,8 +242,8 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 * Detection &nbsp; | &nbsp; [Face & Eye Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/face-eye-detection.ipynb)
 
 * Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
-#### Bayesian Inference
-* Pixel Classification &nbsp; | &nbsp; [Normal Distribution](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/ucl_compgi14/practicalMixGaussA.ipynb)
+#### Image Classification
+* Bayesian Inference &nbsp; | &nbsp; [Pixel Classification](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/ucl_compgi14/practicalMixGaussA.ipynb)
 ## Cloud Computing
 ### Apache Spark
 #### Basics

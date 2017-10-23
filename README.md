@@ -12,7 +12,7 @@ Test scripts can be run, the [contents](https://github.com/zhedongzheng/finch/bl
 ```
 python xxxx_test.py
 ```
-I have used these python-based libraries in different sections:
+I have used these well-known libraries across different sections:
 * [tensorflow >= 1.3](https://www.tensorflow.org/)
 * [pytorch >= 0.20](http://pytorch.org/)
 * [mxnet >= 0.11](https://mxnet.incubator.apache.org/)

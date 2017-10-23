@@ -21,7 +21,7 @@ I have used these python-based libraries in different sections:
 ## Style of My Code
 I write most models in scikit-learn interface style, with ```fit()``` and ```predict()``` methods, and then write separate test files for different incoming data;
 ## Contents
-* [Machine Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#machine-learning)
+* [Shallow Structure Models](https://github.com/zhedongzheng/finch/blob/master/README.md#shallow-structure-models)
   * [Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#linear-model)
   * [Non-Linear Model](https://github.com/zhedongzheng/finch/blob/master/README.md#non-linear-model)
   * [Ensemble](https://github.com/zhedongzheng/finch/blob/master/README.md#ensemble)
@@ -45,7 +45,7 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
   * [Apache Spark](https://github.com/zhedongzheng/finch/blob/master/README.md#apache-spark)
 * [Database](https://github.com/zhedongzheng/finch/blob/master/README.md#database)
   * [SQL](https://github.com/zhedongzheng/finch/blob/master/README.md#sql)
-## Machine Learning
+## Shallow-Structure-Models
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr_test.py) &nbsp; | &nbsp;
 
@@ -68,24 +68,6 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 * Python &nbsp; | &nbsp; Adaboost &nbsp; &nbsp; [Pseudocode](https://github.com/zhedongzheng/finch/blob/master/classic-models/adaboost_clf.md) &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/classic-models/adaboost_clf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/classic-models/adaboost_clf_test.py) &nbsp; | &nbsp;
 
 * Python &nbsp; | &nbsp; Random Forest &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/classic-models/random_forest_clf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/classic-models/random_forest_clf_test.py) &nbsp; | &nbsp;
-
-## Deep Learning
-#### Multilayer Perceptron
-
-#### Convolutional Network
-
-#### Recurrent Network
-
-
-
-#### Generative Adversarial Network
-
-## Reinforcement Learning
-* Python &nbsp; | &nbsp; Q-Learning &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/python/q.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/python/q_cartpole_test.py) &nbsp; | &nbsp;
-
-* TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg_cartpole_test.py) &nbsp; | &nbsp;
-
-* PyTorch &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg_cartpole_test.py) &nbsp; | &nbsp;
 
 ## Natural Language Processing
 #### Text Representation
@@ -233,6 +215,14 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
     * PyTorch &nbsp; | &nbsp; DCGAN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/gan/dcgan.py) &nbsp; &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/gan/dcgan_mnist_test.py) &nbsp; | &nbsp;
 
     * MXNet &nbsp; | &nbsp; DCGAN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/gan/dcgan.py) &nbsp; &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/gan/dcgan_mnist_test.py) &nbsp; | &nbsp;
+
+## Reinforcement Learning
+* Python &nbsp; | &nbsp; Q-Learning &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/python/q.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/python/q_cartpole_test.py) &nbsp; | &nbsp;
+
+* TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg_cartpole_test.py) &nbsp; | &nbsp;
+
+* PyTorch &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg_cartpole_test.py) &nbsp; | &nbsp;
+
 ## Information Retrieval
 #### Recommendation System
 * Python &nbsp; | &nbsp; Collborative Filtering &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [User-based Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;
@@ -240,6 +230,7 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 * Python &nbsp; | &nbsp; Apriori &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori_movielens_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Matrix Factorization &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf_movielens_test.py) &nbsp; | &nbsp;
+
 ## Data Science
 #### Time Series
 * TensorFlow &nbsp; | &nbsp; RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_regr_plot.py) &nbsp; &nbsp; [Preview](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif) &nbsp; | &nbsp;

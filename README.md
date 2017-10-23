@@ -45,7 +45,7 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
   * [Apache Spark](https://github.com/zhedongzheng/finch/blob/master/README.md#apache-spark)
 * [Database](https://github.com/zhedongzheng/finch/blob/master/README.md#database)
   * [SQL](https://github.com/zhedongzheng/finch/blob/master/README.md#sql)
-## Shallow-Structure-Models
+## Shallow Structure Models
 #### Linear Model
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr_test.py) &nbsp; | &nbsp;
 

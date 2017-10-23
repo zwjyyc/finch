@@ -44,6 +44,8 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
   * [Image Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#image-classification)
   * [Image Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-generation)
+    * [Autoencoder](https://github.com/zhedongzheng/finch/blob/master/README.md#autoencoder)
+    * [Generative Adversarial Network](https://github.com/zhedongzheng/finch/blob/master/README.md#generative-adversarial-network)
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
   * [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
 * [Cloud Computing](https://github.com/zhedongzheng/finch/blob/master/README.md#cloud-computing)
@@ -246,6 +248,9 @@ I write most models in scikit-learn interface style, with ```fit()``` and ```pre
 * MXNet &nbsp; | &nbsp; CNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/cnn/cnn_clf.py) &nbsp; &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/cnn/cnn_clf_mnist_test.py) &nbsp; &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/cnn/cnn_clf_cifar10_test.py) &nbsp; | &nbsp;
 
 * MXNet &nbsp; | &nbsp; RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/rnn/rnn_clf.py) &nbsp; &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/rnn/rnn_clf_mnist_test.py) &nbsp; &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/rnn/rnn_clf_cifar10_test.py) &nbsp; | &nbsp;
+#### Image Generation
+##### Autoencoder
+##### Generative Adversarial Network
 ## Information Retrieval
 #### Recommendation System
 * Python &nbsp; | &nbsp; Collborative Filtering &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [User-based Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;

@@ -26,15 +26,17 @@ class VRAE:
 
     
     def _encoder(self):
-        _, encoded = tf.nn.dynamic_rnn(
-            cell = tf.nn.rnn_cell.MultiRNNCell([self._residual_rnn_cell() for _ in range(args.encoder_layers)]), 
-            inputs = tf.contrib.layers.embed_sequence(self.seq, args.vocab_size, args.encoder_embedding_dim),
-            sequence_length = self.seq_length,
-            dtype = tf.float32)
-        if args.rnn_cell == 'lstm':
-            return encoded[-1].h
-        if args.rnn_cell == 'gru':
-            return encoded[-1]
+        with tf.variable_scope('encoder'):
+            _, encoded = tf.nn.dynamic_rnn(
+                cell = tf.nn.rnn_cell.MultiRNNCell(
+                    [self._residual_rnn_cell() for _ in range(args.encoder_layers)]), 
+                inputs = tf.contrib.layers.embed_sequence(self.seq, args.vocab_size, args.embedding_dim),
+                sequence_length = self.seq_length,
+                dtype = tf.float32)
+            if args.rnn_cell == 'lstm':
+                return encoded[-1].h
+            if args.rnn_cell == 'gru':
+                return encoded[-1]
 
 
     def _latent(self, rnn_encoded):
@@ -62,7 +64,7 @@ class VRAE:
     def _decoder_training(self, init_state):
         helper = tf.contrib.seq2seq.TrainingHelper(
             inputs = tf.contrib.layers.embed_sequence(
-                self._decoder_input(), args.vocab_size, args.decoder_embedding_dim),
+                self._decoder_input(), args.vocab_size, args.embedding_dim),
             sequence_length = self.seq_length + 1)
         decoder = tf.contrib.seq2seq.BasicDecoder(
             cell = tf.nn.rnn_cell.MultiRNNCell(
@@ -127,7 +129,9 @@ class VRAE:
 
 
     def _residual_rnn_cell(self, reuse=False):
-        return tf.nn.rnn_cell.ResidualWrapper(self._rnn_cell(reuse=reuse))
+        return tf.nn.rnn_cell.ResidualWrapper(
+            tf.contrib.rnn.OutputProjectionWrapper(
+                self._rnn_cell(reuse=reuse), args.embedding_dim))
 
 
     def _decoder_input(self):

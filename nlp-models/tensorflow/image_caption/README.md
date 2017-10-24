@@ -1,4 +1,4 @@
-* The data downloading, processing, and loading is based on [yunjie's awesome work](https://github.com/yunjey/pytorch-tutorial/tree/master/tutorials/03-advanced/image_captioning);
+* The data pipeline is based on [yunjie's awesome work](https://github.com/yunjey/pytorch-tutorial/tree/master/tutorials/03-advanced/image_captioning);
 
 * We implement the model in TensorFlow instead of PyTorch;
 

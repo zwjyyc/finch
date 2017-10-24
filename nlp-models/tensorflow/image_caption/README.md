@@ -4,6 +4,8 @@
 
 * In PyTorch, popular networks (e.g. ResNet) can be easily obtained via ```torchvision.models```; In TensorFlow, we use ```tf.contrib.keras.applications``` to load pre-trained networks, though there are less models to choose;
 
+* We have downgraded the image size to 64, for running on CPU. If you have the GPU, you can remove this argument and use default size (256)
+
 #### 1. Install COCO API
 ```bash
 $ git clone https://github.com/pdollar/coco.git

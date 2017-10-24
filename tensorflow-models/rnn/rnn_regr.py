@@ -3,20 +3,6 @@ import tensorflow as tf
 
 class RNNRegressor:
     def __init__(self, n_in, n_out, cell_size, sess=tf.Session()):
-        """
-        Parameters:
-        -----------
-        n_step: int
-            Number of time steps
-        n_in: int
-            Input dimensions
-        n_out: int
-            Output dimensions
-        cell_size: int
-            Number of units in the rnn cell
-        sess: object
-            tf.Session() object
-        """
         self.n_in = n_in
         self.n_out = n_out
         self.cell_size = cell_size
@@ -50,9 +36,8 @@ class RNNRegressor:
 
     def add_dynamic_rnn(self):
         self.init_state = self.cell.zero_state(self.batch_size, dtype=tf.float32)
-        self._pointer, self.final_state = tf.nn.dynamic_rnn(self.cell, self._pointer,
-                                                           initial_state=self.init_state,
-                                                           time_major=False)
+        self._pointer, self.final_state = tf.nn.dynamic_rnn(
+            self.cell, self._pointer, initial_state=self.init_state, time_major=False)
     # end method add_dynamic_rnn
 
 
@@ -64,9 +49,10 @@ class RNNRegressor:
 
 
     def add_backward_path(self):
-        def flatten(tensor):
-            return tf.reshape(tensor, [-1])
-        self.loss = tf.reduce_mean(tf.squared_difference(flatten(self.logits), flatten(self.Y)))
+        flatten = lambda tensor: tf.reshape(tensor, [-1])
+        self.loss = tf.reduce_sum(tf.squared_difference(flatten(self.logits), flatten(self.Y))) \
+            / tf.cast(tf.shape(self.X)[0], tf.float32) \
+            / tf.cast(tf.shape(self.X)[1], tf.float32)
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
 # end class RNNRegressor

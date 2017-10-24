@@ -1,7 +1,9 @@
 from rnn_regr import RNNRegressor
 import tensorflow as tf
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib
+matplotlib.use('TKAgg')
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 
@@ -56,7 +58,7 @@ if __name__ == '__main__':
         plt.plot(ts.ravel(), Y_pred.ravel(), color='indianred', label='predicted')
         plt.ylim((-1.2, 1.2))
         plt.xlim((ts.ravel()[0], ts.ravel()[-1]))
-        plt.legend(fontsize=15)
+        plt.legend(fontsize=15, loc=1)
         plt.draw()
         plt.pause(0.01)
         print('train loss: %.4f | test loss: %.4f' % (train_loss, test_loss))

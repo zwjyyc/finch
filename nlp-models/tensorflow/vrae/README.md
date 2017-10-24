@@ -5,9 +5,9 @@ python train.py --rnn_cell gru
 
 * Following features are enabled:
 
-  * KL cost annealing (Bengio, 2016)
+  * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
   
-  * Word dropout and historyless decoding (Bengio, 2016)
+  * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
   
   * Residual RNN connection
   

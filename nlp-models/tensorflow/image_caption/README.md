@@ -2,7 +2,7 @@
 
 * We implement the model in TensorFlow instead of PyTorch
 
-* In PyTorch, popular networks (e.g. ResNet) can be easily obtained via ```torchvision.models```; In TensorFlow, we use ```tf.contrib.keras.applications``` to load pre-trained networks, though it has less models to offer;
+* In PyTorch, popular networks (e.g. ResNet) can be easily obtained via ```torchvision.models```; In TensorFlow, we use ```tf.contrib.keras.applications``` to load pre-trained networks, though there are less models to choose;
 
 #### 1. Install COCO API
 ```bash

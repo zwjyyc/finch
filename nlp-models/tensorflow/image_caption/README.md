@@ -1,5 +1,7 @@
 * The data downloading, processing, and loading is based on [yunjie's awesome work](https://github.com/yunjey/pytorch-tutorial/tree/master/tutorials/03-advanced/image_captioning)
+
 * We replace the Pytorch Model with TensorFlow Model
+
 * In PyTorch, popular networks (e.g. ResNet) can be easily obtained via ```torchvision.models```; In TensorFlow, we use ```tf.contrib.keras.applications``` to load pre-trained networks, though it has less models to offer;
 
 #### 1. Install COCO API

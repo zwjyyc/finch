@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import gym
 import math
-from q import QLearn
+from sarsa import Sarsa
 
 
 def main(
@@ -12,7 +12,7 @@ def main(
     n_bins = 50):
 
     env = gym.make('CartPole-v0')
-    model = QLearn(actions=range(2), alpha=0.5, gamma=0.95, epsilon=0.5)
+    model = Sarsa(actions=range(2), alpha=0.1, gamma=0.95, epsilon=0.5)
 
     cart_p_bins = pd.cut([-2.4, 2.4], bins=n_bins, retbins=True)[1][1:-1]
     cart_v_bins = pd.cut([-2.0, 2.0], bins=n_bins, retbins=True)[1][1:-1]
@@ -26,12 +26,14 @@ def main(
         for game in range(n_games_per_update):
             obs = env.reset()
             state = build_state(obs, bins)
+            action = model.choose_action(state)
             for step in range(n_max_steps):
-                action = model.choose_action(state)
                 obs, reward, done, info = env.step(action)
                 next_state = build_state(obs, bins)
-                model.update_q(state, action, reward, next_state)
+                next_action = model.choose_action(next_state)
+                model.update_q(state, action, reward, next_state, next_action)
                 state = next_state
+                action = next_action
                 if done:
                     finished_steps.append(step)
                     break

@@ -25,5 +25,5 @@ $ ./download.sh
 
 ```bash
 $ python build_vocab.py   
-$ python resize.py
+$ python resize.py --image_size 64
 ```

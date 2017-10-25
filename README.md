@@ -144,7 +144,7 @@ Most models are written in scikit-learn interfaces, with ```fit()``` and ```pred
 
 * Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
 #### Image Classification
-* Bayesian Inference &nbsp; | &nbsp; [Pixel Classification](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/ucl_compgi14/practicalMixGaussA.ipynb)
+* Python &nbsp; | &nbsp; Bayesian Inference &nbsp; &nbsp; [Pixel Classification](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/ucl_compgi14/practicalMixGaussA.ipynb)
 
 * TensorFlow &nbsp; | &nbsp; MLP &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp/mlp_clf.py) &nbsp; &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp/mlp_clf_mnist_test.py) &nbsp; &nbsp; [CIFAR10 Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/mlp/mlp_clf_cifar10_test.py) &nbsp; | &nbsp;
 

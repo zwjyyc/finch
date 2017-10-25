@@ -110,12 +110,14 @@ def update_word_dropout_test(d):
 
 def main():
     dataloader = IMDB()
-    #shape_test(dataloader)
+    """
+    shape_test(dataloader)
     idx2word_test(dataloader)
-    #word_dropout_test(dataloader)
-    #next_batch_test(dataloader)
-    #shuffle_test(dataloader)
-    #update_word_dropout_test(dataloader)
+    word_dropout_test(dataloader)
+    next_batch_test(dataloader)
+    shuffle_test(dataloader)
+    update_word_dropout_test(dataloader)
+    """
 
 
 if __name__ == '__main__':

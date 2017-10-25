@@ -24,6 +24,27 @@ class VRAE:
         self._batch_size = tf.shape(self.seq)[0]
         self.gen_seq_length = tf.placeholder(tf.int32, [])
 
+
+    def _build_forward_graph(self):
+        self._build_inputs()
+        self._decoder(self._latent(self._encoder()))
+
+
+    def _build_backward_graph(self):
+        global_step = tf.Variable(0, trainable=False)
+
+        self.nll_loss = self._nll_loss_fn()
+        self.kl_w = self._kl_w_fn(args.anneal_max, args.anneal_bias, global_step)
+        self.kl_loss = self._kl_loss_fn(self._mean, self._gamma)
+        self.mutinfo_loss = self._mutinfo_loss_fn(self.latent_vec, self._mean, self._gamma)
+        loss_op = self.nll_loss + self.kl_w * (self.kl_loss + args.mutinfo_weight * self.mutinfo_loss)
+
+        params = tf.trainable_variables()
+        gradients = tf.gradients(loss_op, params)
+        clipped_gradients, _ = tf.clip_by_global_norm(gradients, args.clip_norm)
+        self.train_op = tf.train.AdamOptimizer().apply_gradients(
+            zip(clipped_gradients, params), global_step=global_step)
+
     
     def _encoder(self):
         with tf.variable_scope('encoder'):
@@ -96,27 +117,6 @@ class VRAE:
             impute_finished = False,
             maximum_iterations = self.gen_seq_length)
         return decoder_output.predicted_ids[:, :, 0]
-
-
-    def _build_forward_graph(self):
-        self._build_inputs()
-        self._decoder(self._latent(self._encoder()))
-
-
-    def _build_backward_graph(self):
-        global_step = tf.Variable(0, trainable=False)
-
-        self.nll_loss = self._nll_loss_fn()
-        self.kl_w = self._kl_w_fn(args.anneal_max, args.anneal_bias, global_step)
-        self.kl_loss = self._kl_loss_fn(self._mean, self._gamma)
-        self.mutinfo_loss = self._mutinfo_loss_fn(self.latent_vec, self._mean, self._gamma)
-        loss_op = self.nll_loss + self.kl_w * (self.kl_loss + args.mutinfo_weight * self.mutinfo_loss)
-
-        params = tf.trainable_variables()
-        gradients = tf.gradients(loss_op, params)
-        clipped_gradients, _ = tf.clip_by_global_norm(gradients, args.clip_norm)
-        self.train_op = tf.train.AdamOptimizer().apply_gradients(
-            zip(clipped_gradients, params), global_step=global_step)
 
 
     def _rnn_cell(self, reuse=False):

@@ -12,7 +12,7 @@ class IMDB:
         X = self._pad_data(X_tuple, word2idx)
         X_dropped = self._word_dropout(X, args.word_dropout_rate, word2idx)
         X_len = [args.max_len] * len(X)
-        self._accessible(X, X_dropped, X_len, word2idx)
+        self._make_accessible(X, X_dropped, X_len, word2idx)
 
 
     def _load_data(self):
@@ -42,16 +42,11 @@ class IMDB:
 
     def _word_dropout(self, x, dropout_rate, word2idx):
         is_dropped = np.random.binomial(1, dropout_rate, x.shape)
-        x_dropped = x.copy()
-        for i in range(x.shape[0]):
-            for j in range(x.shape[1]):
-                if is_dropped[i, j]:
-                    x_dropped[i, j] = word2idx['<unk>']
-        return x_dropped
-    # end method
+        fn = np.vectorize(lambda x, k: word2idx['<unk>'] if k else x)
+        return fn(x, is_dropped)
 
 
-    def _accessible(self, X, X_dropped, X_len, word2idx):
+    def _make_accessible(self, X, X_dropped, X_len, word2idx):
         self._X = X
         self._X_dropped = X_dropped
         self._X_len = X_len

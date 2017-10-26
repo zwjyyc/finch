@@ -48,16 +48,16 @@ class VRAE:
     
     def _encoder(self):
         with tf.variable_scope('encoder'):
-            _, encoded = tf.nn.dynamic_rnn(
+            encoded_output, encoded_state = tf.nn.dynamic_rnn(
                 cell = tf.nn.rnn_cell.MultiRNNCell(
                     [self._residual_rnn_cell() for _ in range(args.encoder_layers)]), 
                 inputs = tf.contrib.layers.embed_sequence(self.seq, args.vocab_size, args.embedding_dim),
                 sequence_length = self.seq_length,
                 dtype = tf.float32)
             if args.rnn_cell == 'lstm':
-                return encoded[-1].h
+                return encoded_state[-1].h
             if args.rnn_cell == 'gru':
-                return encoded[-1]
+                return encoded_state[-1]
 
 
     def _latent(self, rnn_encoded):
@@ -77,7 +77,7 @@ class VRAE:
 
     def _decoder(self, init_state):
         with tf.variable_scope('training'):
-            self.training_logits = self._decoder_training(init_state)
+            self.training_rnn_out, self.training_logits = self._decoder_training(init_state)
         with tf.variable_scope('training', reuse=True):
             self.predicted_ids = self._decoder_inference(init_state)
 
@@ -92,12 +92,15 @@ class VRAE:
                 [self._residual_rnn_cell() for _ in range(args.decoder_layers)]),
             helper = helper,
             initial_state = init_state,
-            output_layer = core_layers.Dense(args.vocab_size))
+            output_layer = None)
         decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
             decoder = decoder,
             impute_finished = True,
             maximum_iterations = tf.reduce_max(self.seq_length + 1))
-        return decoder_output.rnn_output
+        projection = core_layers.Dense(args.vocab_size, _scope='decoder/dense')
+        rnn_output = decoder_output.rnn_output
+        rnn_logits = projection.apply(rnn_output)
+        return rnn_output, rnn_logits
 
 
     def _decoder_inference(self, init_state):
@@ -129,9 +132,12 @@ class VRAE:
 
 
     def _residual_rnn_cell(self, reuse=False):
-        return tf.nn.rnn_cell.ResidualWrapper(
-            tf.contrib.rnn.OutputProjectionWrapper(
-                self._rnn_cell(reuse=reuse), args.embedding_dim))
+        if args.embedding_dim != args.rnn_size:
+            return tf.nn.rnn_cell.ResidualWrapper(
+                tf.contrib.rnn.OutputProjectionWrapper(
+                    self._rnn_cell(reuse=reuse), args.embedding_dim))
+        if args.embedding_dim == args.rnn_size:
+            return tf.nn.rnn_cell.ResidualWrapper(self._rnn_cell(reuse=reuse))
 
 
     def _decoder_input(self):
@@ -145,13 +151,24 @@ class VRAE:
 
 
     def _nll_loss_fn(self):
-        seq_length = self.seq_length + 1
-        return tf.reduce_sum(tf.contrib.seq2seq.sequence_loss(
-            logits = self.training_logits,
-            targets = self._decoder_output(),
-            weights = tf.sequence_mask(seq_length, tf.reduce_max(seq_length), dtype=tf.float32),
-            average_across_timesteps = False,
-            average_across_batch = True))
+        if args.num_sampled >= args.vocab_size:
+            seq_length = self.seq_length + 1
+            return tf.reduce_sum(tf.contrib.seq2seq.sequence_loss(
+                logits = self.training_logits,
+                targets = self._decoder_output(),
+                weights = tf.sequence_mask(seq_length, tf.reduce_max(seq_length), dtype=tf.float32),
+                average_across_timesteps = False,
+                average_across_batch = True))
+        if args.num_sampled < args.vocab_size:
+            with tf.variable_scope('training/decoder/dense', reuse=True):
+                return tf.reduce_sum(tf.nn.sampled_softmax_loss(
+                    weights = tf.transpose(tf.get_variable('kernel')),
+                    biases = tf.get_variable('bias'),
+                    labels = tf.reshape(self._decoder_output(), [-1, 1]),
+                    inputs = tf.reshape(self.training_rnn_out, [-1, args.rnn_size]),
+                    num_sampled = args.num_sampled,
+                    num_classes = args.vocab_size,
+                )) / tf.cast(self._batch_size, tf.float32)
 
 
     def _kl_w_fn(self, anneal_max, anneal_bias, global_step):
@@ -171,8 +188,8 @@ class VRAE:
         z_sq = tf.square(z)
         z_epsilon = tf.square(z - z_mean)
         return tf.reduce_sum(
-            0.5 * tf.reduce_sum(z_logvar + (z_epsilon / z_var) - z_sq, 1)) / tf.cast(
-                self._batch_size, tf.float32)
+            0.5 * tf.reduce_sum(z_logvar + (z_epsilon / z_var) - z_sq, 1)) \
+                / tf.cast(self._batch_size, tf.float32)
 
 
     def train_session(self, sess, seq, seq_dropped, seq_len):
@@ -205,3 +222,21 @@ class VRAE:
     def _exception_handling(self):
         self._idx2word[-1] = '-1'
         self._idx2word[4] = '4'
+
+
+    def _softmax(self, tensor):
+        exps = tf.exp(tensor)
+        return exps / tf.reduce_sum(exps, 1, keep_dims=True)
+
+
+    def _encoder_attention(self, encoded_output, encoded_state):
+        if args.rnn_cell == 'lstm':
+            encoded_state = encoded_state[-1].h
+        if args.rnn_cell == 'gru':
+            encoded_state = encoded_state[-1]
+        
+        weights = self._softmax(tf.squeeze(tf.matmul(
+            encoded_output, tf.expand_dims(encoded_state,2)), 2))
+        weighted_sum = tf.squeeze(tf.matmul(
+            tf.transpose(encoded_output,[0,2,1]), tf.expand_dims(weights,2)), 2)
+        return weighted_sum

@@ -100,9 +100,7 @@ class VRAE:
             impute_finished = True,
             maximum_iterations = tf.reduce_max(self.seq_length + 1))
         
-        rnn_output = decoder_output.rnn_output
-        rnn_logits = lin_proj.apply(rnn_output)
-        return rnn_output, rnn_logits
+        return decoder_output.rnn_output, lin_proj.apply(decoder_output.rnn_output)
 
 
     def _decoder_inference(self, init_state):

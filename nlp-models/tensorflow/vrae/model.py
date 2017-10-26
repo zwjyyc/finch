@@ -83,6 +83,8 @@ class VRAE:
 
 
     def _decoder_training(self, init_state):
+        lin_proj = core_layers.Dense(args.vocab_size, _scope='decoder/dense')
+
         helper = tf.contrib.seq2seq.TrainingHelper(
             inputs = tf.contrib.layers.embed_sequence(
                 self._decoder_input(), args.vocab_size, args.embedding_dim),
@@ -97,9 +99,9 @@ class VRAE:
             decoder = decoder,
             impute_finished = True,
             maximum_iterations = tf.reduce_max(self.seq_length + 1))
-        projection = core_layers.Dense(args.vocab_size, _scope='decoder/dense')
+        
         rnn_output = decoder_output.rnn_output
-        rnn_logits = projection.apply(rnn_output)
+        rnn_logits = lin_proj.apply(rnn_output)
         return rnn_output, rnn_logits
 
 

@@ -20,4 +20,9 @@ python train.py --rnn_cell gru
 
 > G: if you are looking for a better movie than this movie this is one of the best movies of all time it is one of the best movies i have ever seen in my opinion it is the best movie i've seen in a long time i have to say that this is one of the best movies of all time <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad>
 
-where I is the encoder input, O is the decoder output, G is the text generation after replacing the latent vector by gaussian noise
+where:
+* I is the encoder input
+
+* O is the decoder output
+
+* G is the text generation after replacing the latent vector by gaussian noise

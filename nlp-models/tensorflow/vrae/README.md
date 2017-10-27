@@ -14,8 +14,8 @@ python train.py --rnn_cell gru
   * Beam Search
 
 * Sample after 10 epoches:
-> I: i really liked tom <unk> <unk> you just have to let it come over you and enjoy it while it lasts and don't expect anything it's like sitting on a <unk> <unk> with a beer in the summer sun and watching the people go by it definitely won't keep you
+> I: steve smith has finally run a fairly weak series right into the ground with this movie poor actors <unk> a horrible script pretty much sums this one up two hours of your life you'll never get back go get a root <unk> instead you'll enjoy it more <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad>
 
-> O: i am a huge fan of this movie and i have to say that this is one of the worst movies i have ever seen br br the story is about a group of young people who have to get a chance to see this movie it is one of
+> O: this is one of the worst movies i have seen in a long time i have to say that this is one of the worst movies i have ever seen in my entire life i have to say that this is one of the worst movies i have ever seen in my life i have to say that this is one of the worst movies i have ever seen br br the only thing that bothered me about this <end>
 
-> G: one of the best movies i have ever seen br br this is a very good movie it is a very good movie about a group of young people who get a chance to get a chance to get a chance to see the <unk> of the <unk> and the
+> G: if you are looking for a better movie than this movie this is one of the best movies of all time it is one of the best movies i have ever seen in my opinion it is the best movie i've seen in a long time i have to say that this is one of the best movies of all time <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad>

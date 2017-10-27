@@ -43,9 +43,9 @@ class Estimator:
     def model_fn(self, features, labels, mode):
         if mode == tf.estimator.ModeKeys.TRAIN or mode == tf.estimator.ModeKeys.PREDICT:
             logits = self.rnn_net(features, reuse=False, dropout_rate=self.dropout_rate)
-            predictions = tf.argmax(self.rnn_net(features, reuse=True, dropout_rate=0.0), axis=1)
-        
+            
         if mode == tf.estimator.ModeKeys.PREDICT:
+            predictions = tf.argmax(self.rnn_net(features, reuse=True, dropout_rate=0.0), axis=1)
             return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 
         if mode == tf.estimator.ModeKeys.TRAIN:

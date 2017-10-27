@@ -54,10 +54,7 @@ class VRAE:
                 inputs = tf.contrib.layers.embed_sequence(self.seq, args.vocab_size, args.embedding_dim),
                 sequence_length = self.seq_length,
                 dtype = tf.float32)
-            if args.rnn_cell == 'lstm':
-                return encoded_state[-1].h
-            if args.rnn_cell == 'gru':
-                return encoded_state[-1]
+            return self._weighted_sum_encoded_output(encoded_output, encoded_state)
 
 
     def _latent(self, rnn_encoded):
@@ -224,18 +221,13 @@ class VRAE:
         self._idx2word[4] = '4'
 
 
-    def _softmax(self, tensor):
-        exps = tf.exp(tensor)
-        return exps / tf.reduce_sum(exps, 1, keep_dims=True)
-
-
-    def _encoder_attention(self, encoded_output, encoded_state):
+    def _weighted_sum_encoded_output(self, encoded_output, encoded_state):
         if args.rnn_cell == 'lstm':
             encoded_state = encoded_state[-1].h
         if args.rnn_cell == 'gru':
             encoded_state = encoded_state[-1]
         
-        weights = self._softmax(tf.squeeze(tf.matmul(
+        weights = tf.nn.softmax(tf.squeeze(tf.matmul(
             encoded_output, tf.expand_dims(encoded_state,2)), 2))
         weighted_sum = tf.squeeze(tf.matmul(
             tf.transpose(encoded_output,[0,2,1]), tf.expand_dims(weights,2)), 2)

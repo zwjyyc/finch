@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 tf.logging.set_verbosity(tf.logging.INFO)
 
 
@@ -30,10 +31,9 @@ class Estimator:
             rnn_out, final_state = tf.nn.dynamic_rnn(cell, embedded, sequence_length=seq_len, dtype=tf.float32)
 
             weights = tf.layers.dense(tf.layers.dense(rnn_out, self.attn_size, tf.tanh), 1)
-            weights = self.softmax(tf.squeeze(weights, 2))
-            # (batch, cell_size, seq_len) * (batch, seq_len, 1) = (batch, cell_size, 1)
-            weighted_sum = tf.squeeze(tf.matmul(tf.transpose(rnn_out, [0, 2, 1]),
-                                                tf.expand_dims(weights, 2)), 2)
+            weights = self._softmax(tf.squeeze(weights, 2))
+            weighted_sum = tf.squeeze(tf.matmul(
+                tf.transpose(rnn_out, [0, 2, 1]), tf.expand_dims(weights, 2)), 2)
 
             logits = tf.layers.dense(tf.concat([weighted_sum, final_state.h], 1), self.n_out)
         return logits
@@ -41,30 +41,30 @@ class Estimator:
 
 
     def model_fn(self, features, labels, mode):
-        logits = self.rnn_net(features, reuse=False, dropout_rate=self.dropout_rate)
-        predictions = tf.argmax(self.rnn_net(features, reuse=True, dropout_rate=0.0), axis=1)
-
+        if mode == tf.estimator.ModeKeys.TRAIN or mode == tf.estimator.ModeKeys.PREDICT:
+            logits = self.rnn_net(features, reuse=False, dropout_rate=self.dropout_rate)
+            predictions = tf.argmax(self.rnn_net(features, reuse=True, dropout_rate=0.0), axis=1)
+        
         if mode == tf.estimator.ModeKeys.PREDICT:
             return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 
-        loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
-            logits=logits, labels=labels))
+        if mode == tf.estimator.ModeKeys.TRAIN:
+            loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
+                logits=logits, labels=labels))
+            acc_op = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits,1), labels), tf.float32))
+            acc_hook = tf.train.LoggingTensorHook({'acc':acc_op}, every_n_iter=100)
 
-        params = tf.trainable_variables()
-        gradients = tf.gradients(loss_op, params)
-        clipped_gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)
-        
-        train_op = tf.train.AdamOptimizer().apply_gradients(zip(clipped_gradients, params),
-                                                            global_step=tf.train.get_global_step())
-        acc_op = tf.metrics.accuracy(labels=labels, predictions=predictions)
+            params = tf.trainable_variables()
+            gradients = tf.gradients(loss_op, params)
+            clipped_gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)
+            train_op = tf.train.AdamOptimizer().apply_gradients(
+                zip(clipped_gradients, params), global_step=tf.train.get_global_step())
 
-        estim_specs = tf.estimator.EstimatorSpec(
-            mode=mode,
-            predictions=predictions,
-            loss=loss_op,
-            train_op=train_op,
-            eval_metric_ops={'accuracy': acc_op})
-        return estim_specs
+            return tf.estimator.EstimatorSpec(
+                mode=mode,
+                loss=loss_op,
+                train_op=train_op,
+                training_hooks = [acc_hook])
     # end method
 
 
@@ -76,14 +76,15 @@ class Estimator:
     # end method
 
 
-    def score(self, x_test, x_seq_len, y_test, batch_size=128):
+    def predict(self, x_test, x_seq_len, batch_size=128):
         input_fn = tf.estimator.inputs.numpy_input_fn(
-            x={'sequences': x_test, 'sequence_lengths':x_seq_len}, y=y_test,
+            x={'sequences': x_test, 'sequence_lengths':x_seq_len},
             batch_size=batch_size, shuffle=False)
-        self.model.evaluate(input_fn)
+        return np.array(list(self.model.predict(input_fn)))
     # end method
 
-    def softmax(self, tensor):
+
+    def _softmax(self, tensor):
         exps = tf.exp(tensor)
         return exps / tf.reduce_sum(exps, 1, keep_dims=True)
     # end method softmax

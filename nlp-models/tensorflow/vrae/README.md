@@ -25,4 +25,4 @@ where:
 
 * O is the decoder output
 
-* G is the text generation after replacing the latent vector by gaussian noise
+* G is the text generation after replacing the latent vector by gaussian noise (encoder disabled)

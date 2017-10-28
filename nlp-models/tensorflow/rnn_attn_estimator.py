@@ -4,15 +4,13 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 
 class Estimator:
-    def __init__(self, vocab_size, n_out, embedding_dims=128, rnn_size=128, dropout_rate=0.2, grad_clip=5.0,
-                 attn_size=50):
+    def __init__(self, vocab_size, n_out, embedding_dims, rnn_size, dropout_rate, grad_clip):
         self.vocab_size = vocab_size
         self.n_out = n_out
         self.embedding_dims = embedding_dims
         self.rnn_size = rnn_size
         self.dropout_rate = dropout_rate
         self.grad_clip = grad_clip
-        self.attn_size = attn_size
         self.model = tf.estimator.Estimator(self.model_fn)
     # end constructor
 
@@ -30,13 +28,12 @@ class Estimator:
                     cell, embedded, sequence_length=seq_len, dtype=tf.float32)
 
             with tf.variable_scope('attention', reuse=reuse):
-                weights = tf.nn.softmax(tf.squeeze(tf.matmul(
-                    rnn_out, tf.expand_dims(final_state.h,2)), 2))
+                weights = self._softmax(tf.squeeze(tf.layers.dense(rnn_out,1), 2))
                 weighted_sum = tf.squeeze(tf.matmul(
-                    tf.transpose(rnn_out,[0,2,1]), tf.expand_dims(weights,2)), 2)
+                    tf.transpose(rnn_out, [0,2,1]), tf.expand_dims(weights, 2)), 2)
 
             with tf.variable_scope('output_layer', reuse=reuse):
-                logits = tf.layers.dense(weighted_sum, self.n_out)
+                logits = tf.layers.dense(tf.concat((weighted_sum, final_state.h), -1), self.n_out)
         return logits
     # end method
 
@@ -56,7 +53,7 @@ class Estimator:
             return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 
         if mode == tf.estimator.ModeKeys.TRAIN:
-            with tf.name_scope('back_propagation'):
+            with tf.name_scope('backward_pass'):
                 loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
                     logits=logits, labels=labels))
                 loss_val_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(

@@ -17,37 +17,41 @@ class Estimator:
     # end constructor
 
 
-    def rnn_net(self, x, seq_len, reuse, dropout_rate):
-        with tf.variable_scope('rnn_net', reuse=reuse):
-            embedding = tf.get_variable(
-                'encoder', [self.vocab_size, self.embedding_dims], tf.float32,
-                tf.random_uniform_initializer(-1.0, 1.0))
-            embedded = tf.nn.dropout(tf.nn.embedding_lookup(embedding, x), 1-dropout_rate)
+    def forward_pass(self, x, seq_len, reuse, dropout_rate):
+        with tf.variable_scope('forward_pass', reuse=reuse):
+            embedded = tf.nn.dropout(
+                tf.contrib.layers.embed_sequence(
+                    x, self.vocab_size, self.embedding_dims, scope='word_embedding', reuse=reuse),
+                        (1-dropout_rate))
 
-            cell = tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer())
-            rnn_out, final_state = tf.nn.dynamic_rnn(cell, embedded, sequence_length=seq_len, dtype=tf.float32)
+            with tf.variable_scope('rnn', reuse=reuse):
+                cell = tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer())
+                rnn_out, final_state = tf.nn.dynamic_rnn(
+                    cell, embedded, sequence_length=seq_len, dtype=tf.float32)
 
-            weights = tf.layers.dense(tf.layers.dense(rnn_out, self.attn_size, tf.tanh), 1)
-            weights = self._softmax(tf.squeeze(weights, 2))
-            weighted_sum = tf.squeeze(tf.matmul(
-                tf.transpose(rnn_out, [0, 2, 1]), tf.expand_dims(weights, 2)), 2)
+            with tf.variable_scope('attention', reuse=reuse):
+                weights = tf.nn.softmax(tf.squeeze(tf.matmul(
+                    rnn_out, tf.expand_dims(final_state.h,2)), 2))
+                weighted_sum = tf.squeeze(tf.matmul(
+                    tf.transpose(rnn_out,[0,2,1]), tf.expand_dims(weights,2)), 2)
 
-            logits = tf.layers.dense(tf.concat([weighted_sum, final_state.h], 1), self.n_out)
+            with tf.variable_scope('output_layer', reuse=reuse):
+                logits = tf.layers.dense(weighted_sum, self.n_out)
         return logits
     # end method
 
 
     def model_fn(self, features, labels, mode):
         if mode == tf.estimator.ModeKeys.TRAIN or mode == tf.estimator.ModeKeys.PREDICT:
-            logits = self.rnn_net(
+            logits = self.forward_pass(
                 features['data'], features['data_len'], reuse=False, dropout_rate=self.dropout_rate)
         
         if mode == tf.estimator.ModeKeys.TRAIN:
-            logits_val = self.rnn_net(
+            logits_val = self.forward_pass(
                 features['data_val'], features['data_val_len'], reuse=True, dropout_rate=0.0)
             
         if mode == tf.estimator.ModeKeys.PREDICT:
-            predictions = tf.argmax(self.rnn_net(
+            predictions = tf.argmax(self.forward_pass(
                 features['data'], features['data_len'], reuse=True, dropout_rate=0.0), axis=1)
             return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 

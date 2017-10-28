@@ -28,7 +28,8 @@ def main():
     print("Data Processed")
 
     model = Estimator(VOCAB_SIZE, 2)
-    model.fit(X_train, X_train_lens, y_train, batch_size=BATCH_SIZE, n_epoch=N_EPOCH)
+    model.fit(X_train, X_train_lens, y_train, X_test, X_test_lens, y_test,
+              batch_size=BATCH_SIZE, n_epoch=N_EPOCH)
     y_pred = model.predict(X_test, X_test_lens, batch_size=BATCH_SIZE)
     final_acc = (y_pred == y_test).mean()
     print("final testing accuracy: %.4f" % final_acc)

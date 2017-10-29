@@ -16,7 +16,7 @@ Test scripts should be run, the [contents](https://github.com/zhedongzheng/finch
 ```
 python xxxx_test.py
 ```
-I have used these well-known libraries across different sections:
+I have used these well-known libraries across different sections, thanks for their authors:
 * [tensorflow >= 1.3](https://www.tensorflow.org/)
 * [pytorch >= 0.20](http://pytorch.org/)
 * [mxnet >= 0.11](https://mxnet.incubator.apache.org/)

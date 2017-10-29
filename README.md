@@ -30,7 +30,7 @@ I have used these powerful libraries across different sections, thanks for their
     * ```Estimator``` is written under the framework of [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator);
 * In PyTorch part:
     * We only implement the model on CPU, the GPU support needs to be manually modified (sorry about this);
-* In MXNet part (though there are few):
+* In MXNet part (though there are only a few):
     * We are using Gluon API for all the models;
 ## Contents
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)

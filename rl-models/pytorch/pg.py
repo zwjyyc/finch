@@ -53,29 +53,29 @@ class PolicyGradient(torch.nn.Module):
     def learn(self, n_games_per_update=10, n_max_steps=1000, n_iterations=250, discount_rate=0.95):
         for iteration in range(n_iterations):
             print("Iteration: {}".format(iteration))
-            all_rewards = []
-            all_gradients = []
+            ep_rewards = []            # rewards in one eposide
+            ep_gradients = []          # gradients in one eposide
             for game in range(n_games_per_update):
-                current_rewards = []
-                current_gradients = []
+                game_rewards = []      # rewards in one round of game
+                game_gradients = []    # gradients in one round of game
                 obs = self.env.reset()
                 for step in range(n_max_steps):
                     obs = torch.autograd.Variable(torch.from_numpy(np.atleast_2d(obs).astype(np.float32)))
                     action_val, gradients_val = self.get_gradients(obs)
                     obs, reward, done, info = self.env.step(action_val.data.numpy()[0][0])
-                    current_rewards.append(reward)
-                    current_gradients.append(gradients_val)
+                    game_rewards.append(reward)
+                    game_gradients.append(gradients_val)
                     if done:
                         break
-                all_rewards.append(current_rewards)
-                all_gradients.append(current_gradients)
+                ep_rewards.append(game_rewards)
+                ep_gradients.append(game_gradients)
 
             self.optimizer.zero_grad()
-            all_rewards = self.discount_and_normalize_rewards(all_rewards, discount_rate=discount_rate)
-            for var_index, param in enumerate(self.parameters()):
-                mean_gradients = np.mean([reward * all_gradients[game_index][step][var_index]
-                                          for game_index, rewards in enumerate(all_rewards)
-                                          for step, reward in enumerate(rewards)], axis=0)
+            ep_rewards = self.discount_and_normalize_rewards(ep_rewards, discount_rate)
+            for var_idx, param in enumerate(self.parameters()):
+                mean_gradients = np.mean([reward * ep_gradients[game_idx][step_idx][var_idx]
+                                          for game_idx, game_rewards in enumerate(ep_rewards)
+                                          for step_idx, reward in enumerate(game_rewards)], axis=0)
                 param.grad = torch.autograd.Variable(torch.from_numpy(mean_gradients.astype(np.float32)))
             self.optimizer.step()
     # end method
@@ -93,23 +93,23 @@ class PolicyGradient(torch.nn.Module):
             count += 1
         print(count)
     # end method
-
-
-    def discount_rewards(self, rewards, discount_rate):
-        discounted_rewards = np.zeros(len(rewards))
+    
+    
+    def discount_rewards(self, game_rewards, discount_rate):
+        discounted_rewards = np.zeros(len(game_rewards))
         cumulative_rewards = 0
-        for step in reversed(range(len(rewards))):
-            cumulative_rewards = rewards[step] + cumulative_rewards * discount_rate
+        for step in reversed(range(len(game_rewards))):
+            cumulative_rewards = game_rewards[step] + cumulative_rewards * discount_rate
             discounted_rewards[step] = cumulative_rewards
         return discounted_rewards
     # end method
 
 
-    def discount_and_normalize_rewards(self, all_rewards, discount_rate):
-        all_discounted_rewards = [self.discount_rewards(rewards, discount_rate) for rewards in all_rewards]
-        flat_rewards = np.concatenate(all_discounted_rewards)
+    def discount_and_normalize_rewards(self, ep_rewards, discount_rate):
+        discounted = [self.discount_rewards(game_rewards, discount_rate) for game_rewards in ep_rewards]
+        flat_rewards = np.concatenate(discounted)
         reward_mean = flat_rewards.mean()
         reward_std = flat_rewards.std()
-        return [(discounted_rewards - reward_mean) / reward_std for discounted_rewards in all_discounted_rewards]
+        return [(game_rewards - reward_mean) / reward_std for game_rewards in discounted]
     # end method
 # end class

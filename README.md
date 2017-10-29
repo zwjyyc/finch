@@ -10,7 +10,7 @@ git clone https://github.com/zhedongzheng/finch.git
 ```
 We usually define a model and its test scripts:
 ```
-xxxx.py   xxxx_A_test.py   xxxx.B_test.py
+xxxx.py   xxxx_A_test.py   xxxx_B_test.py
 ```
 Test scripts should be run, the [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and its test scripts;
 ```

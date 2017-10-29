@@ -27,7 +27,7 @@ I have used these powerful libraries across different sections, thanks for their
 ## Style
 * In TensorFlow part:
     * ```Model``` is implemented using ```feed_dict``` (the easiest but slowest data pipeline);
-    * ```Estimator``` is written under the architecture of [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator);
+    * ```Estimator``` is written under the architecture of [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator), more effective;
 * In PyTorch part:
     * We only implement the model on CPU, the GPU support needs to be manually modified (sorry about this);
 * In MXNet part (though there are only a few):

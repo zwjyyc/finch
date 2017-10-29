@@ -50,9 +50,9 @@ class Estimator:
 
     def _model_fn_train(self, features, labels, mode):
         logits = self.forward_pass(
-                features['data'], features['data_len'], reuse=False, dropout_rate=self.dropout_rate)
+            features['data'], features['data_len'], reuse=False, dropout_rate=self.dropout_rate)
         logits_val = self.forward_pass(
-                features['data_val'], features['data_val_len'], reuse=True, dropout_rate=0.0)
+            features['data_val'], features['data_val_len'], reuse=True, dropout_rate=0.0)
         
         with tf.name_scope('backward_pass'):
             loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
@@ -89,12 +89,12 @@ class Estimator:
 
     def _model_fn_eval(self, features, labels, mode):
         logits = self.forward_pass(
-                features['data'], features['data_len'], reuse=False, dropout_rate=self.dropout_rate)
+            features['data'], features['data_len'], reuse=False, dropout_rate=self.dropout_rate)
         predictions = tf.argmax(self.forward_pass(
-                features['data'], features['data_len'], reuse=True, dropout_rate=0.0), axis=1)
+            features['data'], features['data_len'], reuse=True, dropout_rate=0.0), axis=1)
         
         loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
-                logits=logits, labels=labels))
+            logits=logits, labels=labels))
         acc_op = tf.metrics.accuracy(labels=labels, predictions=predictions)
 
         return tf.estimator.EstimatorSpec(
@@ -106,9 +106,9 @@ class Estimator:
 
     def _model_fn_predict(self, features, mode):
         logits = self.forward_pass(
-                features['data'], features['data_len'], reuse=False, dropout_rate=self.dropout_rate)
+            features['data'], features['data_len'], reuse=False, dropout_rate=self.dropout_rate)
         predictions = tf.argmax(self.forward_pass(
-                features['data'], features['data_len'], reuse=True, dropout_rate=0.0), axis=1)
+            features['data'], features['data_len'], reuse=True, dropout_rate=0.0), axis=1)
         
         return tf.estimator.EstimatorSpec(mode, predictions=predictions)
     # end method

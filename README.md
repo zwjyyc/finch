@@ -8,7 +8,11 @@ The following command clones all the files (>200MB);
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
-Test scripts can be run, the [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and its test scripts;
+We usually define a model and its test scripts:
+```
+xxxx.py   xxxx_A_test.py   xxxx.B_test.py
+```
+Test scripts should be run, the [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and its test scripts;
 ```
 python xxxx_test.py
 ```

@@ -23,7 +23,7 @@ I have used these well-known libraries across different sections:
 ## Style
 In TensorFlow part:
 * ```Model``` is written from scratch;
-* ```Estimator``` is written under the architecture of [tf.estimator];(https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator)
+* ```Estimator``` is written under the architecture of [tf.estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator);
 ## Contents
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Text Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-representation)

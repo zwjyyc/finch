@@ -20,8 +20,8 @@ I have used these well-known libraries across different sections:
 * [openai-gym](https://github.com/openai/gym)
 * [nltk](http://www.nltk.org/)
 * [opencv 3](http://opencv.org/)
-## Style of My Code
-Most models are written in scikit-learn interfaces, with ```fit()``` and ```predict()``` methods;
+## Style
+```Model``` is written from scratch, ```Estimator``` is written under the architecture of [tf.estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator)
 ## Contents
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Text Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-representation)

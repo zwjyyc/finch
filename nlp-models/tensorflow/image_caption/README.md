@@ -2,7 +2,7 @@
 
 * We implement the model in TensorFlow instead of PyTorch;
 
-* In PyTorch, popular networks (e.g. ResNet) can be easily obtained via ```torchvision.models```; In TensorFlow, we use ```tf.contrib.keras.applications``` to load pre-trained networks, though there are less models to choose;
+* In PyTorch, popular networks (e.g. ResNet) can be easily obtained via ```torchvision.models```; In TensorFlow, we use ```tf.keras.applications``` to load pre-trained networks, though there are less models to choose;
 
 * We have downgraded the image size to 64, for running on CPU. If you have GPU, you can remove this argument and use default size (256);
 

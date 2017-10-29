@@ -48,7 +48,7 @@ class Image2Seq:
 
 
     def add_encoder(self):
-        cnn = tf.contrib.keras.applications.vgg16.VGG16(
+        cnn = tf.keras.applications.vgg16.VGG16(
             weights = 'imagenet',
             include_top = False,
             input_shape = (self.img_size[0], self.img_size[1], self.img_ch))

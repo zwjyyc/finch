@@ -27,7 +27,7 @@ I have used these powerful libraries across different sections, thanks for their
 ## Style
 * In TensorFlow part:
     * ```Model``` is written from scratch;
-    * ```Estimator``` is written under the framework of [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator);
+    * ```Estimator``` is written under the architecture of [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator);
 * In PyTorch part:
     * We only implement the model on CPU, the GPU support needs to be manually modified (sorry about this);
 * In MXNet part (though there are only a few):

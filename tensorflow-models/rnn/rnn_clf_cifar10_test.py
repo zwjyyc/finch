@@ -4,7 +4,7 @@ import tensorflow as tf
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.cifar10.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.keras.datasets.cifar10.load_data()
 
     X_train = (X_train / 255.0).mean(axis=3)
     X_test = (X_test / 255.0).mean(axis=3)

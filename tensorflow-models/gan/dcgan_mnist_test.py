@@ -2,6 +2,8 @@ from dcgan import DCGAN
 from sklearn.utils import shuffle
 import tensorflow as tf
 import numpy as np
+import matplotlib
+matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 
 
@@ -19,7 +21,7 @@ def select(images, labels, num):
 
 
 def main(N_EPOCH=10, BATCH_SIZE=32, G_SIZE=100):    
-    (X_train, y_train), (_, _) = tf.contrib.keras.datasets.mnist.load_data()
+    (X_train, y_train), (_, _) = tf.keras.datasets.mnist.load_data()
     X = select(scaled(X_train), y_train, 8)
     
     gan = DCGAN(G_SIZE, (28, 28), 1, shape_trace=[(7, 7, 128), (14, 14, 64)])

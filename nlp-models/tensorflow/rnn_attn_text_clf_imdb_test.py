@@ -9,7 +9,7 @@ batch_size = 32
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.imdb.load_data(num_words=vocab_size)
+    (X_train, y_train), (X_test, y_test) = tf.keras.datasets.imdb.load_data(num_words=vocab_size)
     
     clf = RNNTextClassifier(vocab_size, 2)
     log = clf.fit(X_train, y_train, n_epoch=2, batch_size=batch_size, keep_prob=0.8, en_exp_decay=True,

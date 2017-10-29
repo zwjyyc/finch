@@ -9,10 +9,10 @@ n_out = 2
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.imdb.load_data(num_words=vocab_size)
+    (X_train, y_train), (X_test, y_test) = tf.keras.datasets.imdb.load_data(num_words=vocab_size)
 
-    X_train = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=seq_len)
-    X_test = tf.contrib.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=seq_len)
+    X_train = tf.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=seq_len)
+    X_test = tf.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=seq_len)
     print('X_train shape:', X_train.shape, 'X_test shape:', X_test.shape)
 
     clf = Conv1DClassifier(seq_len, vocab_size, n_out)

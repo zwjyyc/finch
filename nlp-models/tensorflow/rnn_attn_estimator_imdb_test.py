@@ -20,7 +20,7 @@ def zero_pad(X, max_seq_len=250):
 
 def main(args):
     (X_train, y_train), (X_test, y_test) = \
-        tf.contrib.keras.datasets.imdb.load_data(num_words=args.vocab_size)
+        tf.keras.datasets.imdb.load_data(num_words=args.vocab_size)
     X_train, X_train_lens = zero_pad(X_train)
     X_test, X_test_lens = zero_pad(X_test)
     print("Data Processed")

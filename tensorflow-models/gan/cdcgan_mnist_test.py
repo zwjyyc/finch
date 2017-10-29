@@ -2,6 +2,8 @@ from cdcgan import CDCGAN
 import sklearn
 import tensorflow as tf
 import numpy as np
+import matplotlib
+matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 
 
@@ -15,9 +17,9 @@ def scaled(images):
 
 
 def main(args):
-    (X, y), (_, _) = tf.contrib.keras.datasets.mnist.load_data()
+    (X, y), (_, _) = tf.keras.datasets.mnist.load_data()
     X = scaled(X)[:, :, :, np.newaxis]
-    Y = tf.contrib.keras.utils.to_categorical(y)
+    Y = tf.keras.utils.to_categorical(y)
     print("Data Loaded")
     gan = CDCGAN(args['g_size'], (28, 28), 1, shape_trace=[(7, 7, 64), (14, 14, 32)], n_out=10)
     sess = tf.Session()
@@ -53,7 +55,7 @@ def main(args):
 
 if __name__ == '__main__':
     args = {
-       'n_epoch': 4,
+       'n_epoch': 8,
        'batch_size': 64,
        'g_size': 100, 
     }

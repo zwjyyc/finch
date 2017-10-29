@@ -7,13 +7,13 @@ N_EPOCH = 10
 
 
 if __name__ == '__main__':
-    (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.cifar10.load_data()
+    (X_train, y_train), (X_test, y_test) = tf.keras.datasets.cifar10.load_data()
     X_train = X_train / 255.0
     X_test = X_test / 255.0
 
     model = Conv2DClassifier((32, 32), n_out=10)
 
-    datagen = tf.contrib.keras.preprocessing.image.ImageDataGenerator()
+    datagen = tf.keras.preprocessing.image.ImageDataGenerator()
     datagen.fit(X_train)
 
     global_step = 0

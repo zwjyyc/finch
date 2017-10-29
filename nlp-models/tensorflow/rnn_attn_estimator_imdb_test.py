@@ -29,6 +29,7 @@ def main(args):
         args.dropout_rate, args.clip_norm)
     model.fit(X_train, X_train_lens, y_train, X_test, X_test_lens, y_test,
         batch_size=args.batch_size, n_epoch=args.num_epoch)
+    model.evaluate(X_test, X_test_lens, y_test, batch_size=args.batch_size)
     y_pred = model.predict(X_test, X_test_lens, batch_size=args.batch_size)
     print("final testing accuracy: %.4f" % (y_pred == y_test).mean())
 

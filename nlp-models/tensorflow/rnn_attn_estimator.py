@@ -2,12 +2,11 @@ from rnn_attn_estimator_imdb_config import args
 import tensorflow as tf
 
 
-def forward_pass(x, seq_len, reuse, dropout_rate):
+def forward_pass(x, seq_len, reuse):
     with tf.variable_scope('forward_pass', reuse=reuse):
-        embedded = tf.nn.dropout(
-            tf.contrib.layers.embed_sequence(
-                x, args.vocab_size, args.embedding_dims, scope='word_embedding', reuse=reuse),
-                    (1-dropout_rate))
+        embedded = tf.contrib.layers.embed_sequence(
+            x, args.vocab_size, args.embedding_dims, scope='word_embedding', reuse=reuse)
+        embedded = tf.layers.dropout(embedded, args.dropout_rate, training=(not reuse))
 
         with tf.variable_scope('rnn', reuse=reuse):
             cell = tf.nn.rnn_cell.LSTMCell(args.rnn_size, initializer=tf.orthogonal_initializer())
@@ -37,7 +36,7 @@ def model_fn(features, labels, mode):
 
 def _model_fn_train(features, labels, mode):
     logits = forward_pass(
-        features['data'], features['data_len'], reuse=False, dropout_rate=args.dropout_rate)
+        features['data'], features['data_len'], reuse=False)
     
     with tf.name_scope('backward_pass'):
         loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
@@ -67,9 +66,9 @@ def _model_fn_train(features, labels, mode):
 
 def _model_fn_eval(features, labels, mode):
     logits = forward_pass(
-        features['data'], features['data_len'], reuse=False, dropout_rate=args.dropout_rate)
+        features['data'], features['data_len'], reuse=False)
     predictions = tf.argmax(forward_pass(
-        features['data'], features['data_len'], reuse=True, dropout_rate=0.0), axis=1)
+        features['data'], features['data_len'], reuse=True), axis=1)
     
     loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
         logits=logits, labels=labels))
@@ -84,9 +83,9 @@ def _model_fn_eval(features, labels, mode):
 
 def _model_fn_predict(features, mode):
     logits = forward_pass(
-        features['data'], features['data_len'], reuse=False, dropout_rate=args.dropout_rate)
+        features['data'], features['data_len'], reuse=False)
     predictions = tf.argmax(forward_pass(
-        features['data'], features['data_len'], reuse=True, dropout_rate=0.0), axis=1)
+        features['data'], features['data_len'], reuse=True), axis=1)
     
     return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 # end function

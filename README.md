@@ -1,7 +1,7 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
-These are the models coded and used by me, organized by where it is applied;
-
-Keep updating ... ...
+* These are the models coded and used by me, organized by where it is applied;
+* I am keep updating;
+* Thanks for all the stars, you have given me more than I deserved;
 
 ## Installation
 The following command clones all the files (>200MB);

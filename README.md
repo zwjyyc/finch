@@ -28,7 +28,7 @@ I have used these powerful libraries across different sections:
 * [opencv 3](http://opencv.org/)
 ## Style
 * In TensorFlow part:
-    * ```Model``` is implemented using ```feed_dict``` (the easiest but slowest data pipeline);
+    * ```Model``` is implemented using ```feed_dict``` (most common but slowest data pipeline);
     * ```Estimator``` is written under the architecture of [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator), more efficient;
 * In PyTorch part:
     * We only implement the model on CPU, the GPU support needs to be manually modified (sorry about this);

@@ -1,12 +1,5 @@
 from rnn_attn_estimator_imdb_config import args
 import tensorflow as tf
-import numpy as np
-tf.logging.set_verbosity(tf.logging.INFO)
-
-
-def build_tf_estimator(model_dir=None):
-    return tf.estimator.Estimator(model_fn, model_dir=model_dir)
-# end function
 
 
 def forward_pass(x, seq_len, reuse, dropout_rate):

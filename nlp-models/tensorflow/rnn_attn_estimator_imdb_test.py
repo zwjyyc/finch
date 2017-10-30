@@ -33,16 +33,12 @@ def main():
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x={'data':X_train, 'data_len':X_train_lens}, y=y_train, batch_size=args.batch_size,
             num_epochs=1, shuffle=True))
-        
         res = tf_estimator.evaluate(tf.estimator.inputs.numpy_input_fn(
             x={'data': X_test, 'data_len':X_test_lens}, y=y_test, batch_size=args.batch_size, shuffle=False))
         val_accs.append(res['test_acc'])
-        
-        tf_estimator = tf.estimator.Estimator(model_fn, model_dir=tf_estimator.model_dir)
     
     for epoch, val_acc in zip(range(args.num_epochs), val_accs):
         print("Epoch %d | Validation Accuracy: %.3f" % (epoch+1, val_acc))
-# end function main()
 
 
 if __name__ == '__main__':

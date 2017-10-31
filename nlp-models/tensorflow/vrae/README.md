@@ -9,6 +9,8 @@ python train.py --rnn_cell gru
   
   * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
   
+  * Mutual information loss (which we found is the key of maintaing non-zero KL loss)
+  
   * Residual RNN connection
   
   * Beam Search

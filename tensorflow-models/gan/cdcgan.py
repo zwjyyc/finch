@@ -39,11 +39,8 @@ class CDCGAN:
 
 
     def add_Discriminator(self):
-        # broadcasting
-        label = tf.expand_dims(self.label, 1)
-        label = tf.expand_dims(label, 2)
-        placeholder = tf.zeros((tf.shape(self.G_in)[0], self.img_size[0], self.img_size[1], 1))
-        label = label + placeholder
+        label = tf.expand_dims(tf.expand_dims(self.label, -2), -2)
+        label = tf.tile(label, (1, self.img_size[0], self.img_size[1], 1))
 
         self.G_logits = self.discriminate(tf.concat((self.G_out, label), -1))
         self.X_logits = self.discriminate(tf.concat((self.X_in, label), -1), reuse=True)

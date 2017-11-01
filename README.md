@@ -31,7 +31,7 @@ I have used these powerful libraries across different sections:
     * ```Model``` is implemented very early, using ```feed_dict``` (most common but slowest data pipeline);
     * ```Estimator``` is implemented later, using the architecture of [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator), more efficient;
 * In PyTorch part:
-    * We only implement the model on CPU, the GPU support needs to be manually modified (sorry about this);
+    * We implement the model on CPU, the GPU support needs to be manually modified (sorry about this);
 * In MXNet part (though there are only a few):
     * We are using Gluon API for all the models;
 ## Contents

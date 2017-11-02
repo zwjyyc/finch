@@ -1,4 +1,5 @@
 from config import args
+from tensorflow.python.layers.core import Dense
 
 import numpy as np
 import tensorflow as tf
@@ -16,19 +17,26 @@ def layer_norm(inputs, epsilon=1e-8):
     return outputs
 
 
-def embed_seq(inputs, vocab_size, embed_dim, zero_pad=False, scale=False):
-    lookup_table = tf.get_variable('lookup_table', dtype=tf.float32, shape=[vocab_size, embed_dim],
-        initializer=tf.glorot_uniform_initializer())
+def embed_seq(inputs, vocab_size=None, embed_dim=None, zero_pad=False, scale=False, TIE_SIGNAL=False):
+    if not TIE_SIGNAL:
+        lookup_table = tf.get_variable('lookup_table', dtype=tf.float32, shape=[vocab_size, embed_dim],
+            initializer=tf.glorot_uniform_initializer())
+    if TIE_SIGNAL:
+        lookup_table = tf.get_variable('lookup_table', shape=[vocab_size, embed_dim])
+
     if zero_pad:
         lookup_table = tf.concat((tf.zeros([1, embed_dim]), lookup_table[1:, :]), axis=0)
+    
     outputs = tf.nn.embedding_lookup(lookup_table, inputs)
+
     if scale:
-        outputs = outputs * (embed_dim ** 0.5) 
+        outputs = outputs * (embed_dim ** 0.5)
+     
     return outputs
 
 
 def multihead_attn(queries, keys, num_units=None, num_heads=8,
-        dropout_rate=args.dropout_rate, causality=False, reuse=False):
+        dropout_rate=args.dropout_rate, causality=False, reuse=False, activation=None):
     """
     Args:
       queries: A 3d tensor with shape of [N, T_q, C_q]
@@ -36,12 +44,12 @@ def multihead_attn(queries, keys, num_units=None, num_heads=8,
     """
     if num_units is None:
         num_units = queries.get_shape().as_list[-1]
-    T_q = queries.get_shape().as_list()[1]
-    T_k = keys.get_shape().as_list()[1]
+    T_q = queries.get_shape().as_list()[1]                                         # max time length of query
+    T_k = keys.get_shape().as_list()[1]                                            # max time length of key
 
-    Q = tf.layers.dense(queries, num_units, tf.nn.relu)                            # (N, T_q, C)
-    K = tf.layers.dense(keys, num_units, tf.nn.relu)                               # (N, T_k, C)
-    V = tf.layers.dense(keys, num_units, tf.nn.relu)                               # (N, T_k, C)
+    Q = tf.layers.dense(queries, num_units, activation, reuse=reuse, name='Q')     # (N, T_q, C)
+    K = tf.layers.dense(keys, num_units, activation, reuse=reuse, name='K')        # (N, T_k, C)
+    V = tf.layers.dense(keys, num_units, activation, reuse=reuse, name='V')        # (N, T_k, C)
 
     Q_ = tf.concat(tf.split(Q, num_heads, axis=2), axis=0)                         # (h*N, T_q, C/h) 
     K_ = tf.concat(tf.split(K, num_heads, axis=2), axis=0)                         # (h*N, T_k, C/h) 
@@ -84,11 +92,11 @@ def multihead_attn(queries, keys, num_units=None, num_heads=8,
     return outputs
 
 
-def feed_forward(inputs, num_units=[2048, 512]):
+def pointwise_feedforward(inputs, num_units=[2048, 512], activation=None):
     # Inner layer
-    outputs = tf.layers.conv1d(inputs, num_units[0], kernel_size=1, activation=tf.nn.relu)
+    outputs = tf.layers.conv1d(inputs, num_units[0], kernel_size=1, activation=activation)
     # Readout layer
-    outputs = tf.layers.conv1d(inputs, num_units[1], kernel_size=1, activation=tf.nn.relu)
+    outputs = tf.layers.conv1d(inputs, num_units[1], kernel_size=1, activation=activation)
     # Residual connection
     outputs += inputs
     # Normalize
@@ -101,8 +109,29 @@ def label_smoothing(inputs, epsilon=0.1):
     return ((1 - epsilon) * inputs) + (epsilon / C)
 
 
-def positional(inputs):
+def learned_positional_encoding(inputs, embed_dim, zero_pad=False, scale=False):
     outputs = tf.range(tf.shape(inputs)[1])                # (T_q)
     outputs = tf.expand_dims(outputs, 0)                   # (1, T_q)
     outputs = tf.tile(outputs, [tf.shape(inputs)[0], 1])   # (N, T_q)
+    return embed_seq(outputs, args.max_len, embed_dim, zero_pad=zero_pad, scale=scale)
+
+
+def sinusoidal_positional_encoding(inputs, num_units, zero_pad=True, scale=True):
+    T = inputs.get_shape().as_list()[-1]
+    position_idx = tf.tile(tf.expand_dims(tf.range(T), 0), [tf.shape(inputs)[0], 1])
+
+    position_enc = np.array(
+        [[pos / np.power(10000, 2.*i/num_units) for i in range(num_units)] for pos in range(T)])
+    position_enc[:, 0::2] = np.sin(position_enc[:, 0::2])  # dim 2i
+    position_enc[:, 1::2] = np.cos(position_enc[:, 1::2])  # dim 2i+1
+    lookup_table = tf.convert_to_tensor(position_enc, tf.float32)
+
+    if zero_pad:
+        lookup_table = tf.concat([tf.zeros([1, num_units]), lookup_table[1:, :]], axis=0)
+
+    outputs = tf.nn.embedding_lookup(lookup_table, position_idx)
+
+    if scale:
+        outputs = outputs * num_units ** 0.5
+
     return outputs

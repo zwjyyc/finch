@@ -6,57 +6,82 @@ import tensorflow as tf
 
 def _forward_pass(sources, targets, params, reuse=False):
     with tf.variable_scope('forward_pass', reuse=reuse):
+        if args.positional_encoding == 'sinusoidal':
+            pos_fn = sinusoidal_positional_encoding
+        elif args.positional_encoding == 'learned':
+            pos_fn = learned_positional_encoding
+        else:
+            raise ValueError("positional encoding has to be either 'sinusoidal' or 'learned'")
 
-        with tf.variable_scope('encoder', reuse=reuse):
-
-            with tf.variable_scope('encoder_embedding'):
-                encoded = embed_seq(
-                    sources, params['source_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
-            
-            with tf.variable_scope('positional_encoding'):
-                encoded += embed_seq(
-                    positional(sources), args.max_len, args.hidden_units, zero_pad=False, scale=False)
-            
-            with tf.variable_scope('encoder_dropout'):
-                encoded = tf.layers.dropout(encoded, args.dropout_rate, training=(not reuse))
-
-            for i in range(args.num_blocks):
-                with tf.variable_scope('encoder_attn_%d'%i):
-                    encoded = multihead_attn(queries=encoded, keys=encoded, num_units=args.hidden_units,
-                        num_heads=args.num_heads, dropout_rate=args.dropout_rate, causality=False, reuse=reuse)
-                
-                with tf.variable_scope('encoder_feedforward_%d'%i):
-                    encoded = feed_forward(encoded, num_units=[4*args.hidden_units, args.hidden_units])
+        # Encoder
+        with tf.variable_scope('encoder_embedding'):
+            encoded = embed_seq(
+                sources, params['source_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
         
-        with tf.variable_scope('decoder', reuse=reuse):
+        with tf.variable_scope('encoder_positional_encoding'):
+            encoded += pos_fn(sources, args.hidden_units, zero_pad=False, scale=False)
+        
+        with tf.variable_scope('encoder_dropout'):
+            encoded = tf.layers.dropout(encoded, args.dropout_rate, training=(not reuse))
 
-            decoder_inputs = _decoder_input_pip(targets, params['start_symbol'])
+        for i in range(args.num_blocks):
+            with tf.variable_scope('encoder_attn_%d'%i):
+                encoded = multihead_attn(queries=encoded, keys=encoded, num_units=args.hidden_units,
+                    num_heads=args.num_heads, dropout_rate=args.dropout_rate, causality=False, reuse=reuse,
+                    activation=params['activation'])
+            
+            with tf.variable_scope('encoder_feedforward_%d'%i):
+                encoded = pointwise_feedforward(encoded, num_units=[4*args.hidden_units, args.hidden_units],
+                    activation=params['activation'])
+
+        # Decoder
+        decoder_inputs = _decoder_input_pip(targets, params['start_symbol'])
+
+        if not args.tied_embedding:
             with tf.variable_scope('decoder_embedding'):
+                decoded = embed_seq(
+                    decoder_inputs, params['target_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
+        if args.tied_embedding:
+            with tf.variable_scope('encoder_embedding', reuse=True):
                 decoded = embed_seq(decoder_inputs, params['target_vocab_size'], args.hidden_units,
-                    zero_pad=True, scale=True)
-            
-            with tf.variable_scope('positional_encoding'):
-                decoded += embed_seq(positional(decoder_inputs), args.max_len, args.hidden_units,
-                    zero_pad=False, scale=False)
-            
-            with tf.variable_scope('decoder_dropout'):
-                decoded = tf.layers.dropout(decoded, args.dropout_rate, training=(not reuse))
-
-            for i in range(args.num_blocks):
-                with tf.variable_scope('decoder_self_attn_%d'%i):
-                    decoded = multihead_attn(queries=decoded, keys=decoded, num_units=args.hidden_units,
-                        num_heads=args.num_heads, dropout_rate=args.dropout_rate, causality=True, reuse=reuse)
-                
-                with tf.variable_scope('decoder_attn_%d'%i):
-                    decoded = multihead_attn(queries=decoded, keys=encoded, num_units=args.hidden_units,
-                        num_heads=args.num_heads, dropout_rate=args.dropout_rate, causality=False, reuse=reuse)
-                
-                with tf.variable_scope('decoder_feedforward_%d'%i):
-                    decoded = feed_forward(decoded, num_units=[4*args.hidden_units, args.hidden_units])
+                    zero_pad=True, scale=True, TIE_SIGNAL=True)
         
-        with tf.variable_scope('output_layer', reuse=reuse):
-             logits = tf.layers.dense(decoded, params['target_vocab_size'])
-             ids = tf.argmax(logits, -1)
+        with tf.variable_scope('decoder_positional_encoding'):
+            decoded += pos_fn(decoder_inputs, args.hidden_units, zero_pad=False, scale=False)
+                
+        with tf.variable_scope('decoder_dropout'):
+            decoded = tf.layers.dropout(decoded, args.dropout_rate, training=(not reuse))
+
+        for i in range(args.num_blocks):
+            with tf.variable_scope('decoder_self_attn_%d'%i):
+                decoded = multihead_attn(queries=decoded, keys=decoded, num_units=args.hidden_units,
+                    num_heads=args.num_heads, dropout_rate=args.dropout_rate, causality=True, reuse=reuse,
+                    activation=params['activation'])
+            
+            with tf.variable_scope('decoder_attn_%d'%i):
+                decoded = multihead_attn(queries=decoded, keys=encoded, num_units=args.hidden_units,
+                    num_heads=args.num_heads, dropout_rate=args.dropout_rate, causality=False, reuse=reuse,
+                    activation=params['activation'])
+            
+            with tf.variable_scope('decoder_feedforward_%d'%i):
+                decoded = pointwise_feedforward(decoded, num_units=[4*args.hidden_units, args.hidden_units],
+                    activation=params['activation'])
+        
+        # Output Layer
+        if not args.tied_proj_weight:
+            with tf.variable_scope('output_layer', reuse=reuse):
+                logits = tf.layers.dense(decoded, params['target_vocab_size'], reuse=reuse)
+        if args.tied_proj_weight:
+            if args.tied_embedding:
+                with tf.variable_scope('encoder_embedding', reuse=True):
+                    shared_w = tf.get_variable('lookup_table')
+            if not args.tied_embedding:
+                with tf.variable_scope('decoder_embedding', reuse=True):
+                    shared_w = tf.get_variable('lookup_table')
+            decoded = tf.reshape(decoded, [-1, args.hidden_units])
+            logits = tf.matmul(decoded, tf.transpose(shared_w))
+            logits = tf.reshape(logits, [tf.shape(sources)[0], -1, params['target_vocab_size']])
+        ids = tf.argmax(logits, -1)
         return logits, ids
 
 

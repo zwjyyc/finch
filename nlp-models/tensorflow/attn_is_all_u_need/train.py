@@ -7,17 +7,28 @@ import tensorflow as tf
 
 
 def main():
+    print(args)
+    
     dl = DataLoader(
         source_path='temp/letters_source.txt',
         target_path='temp/letters_target.txt')
     sources, targets = dl.load()
 
+    if args.activation == 'relu':
+        activation = tf.nn.relu
+    elif args.activation == 'elu':
+        activation = tf.nn.elu
+    elif args.activation == 'lrelu':
+        activation = tf.nn.leaky_relu
+    else:
+        raise ValueError("acitivation fn has to be 'relu' or 'elu' or 'lrelu'")
     params = {
         'source_vocab_size': len(dl.source_word2idx),
         'target_vocab_size': len(dl.target_word2idx),
-        'start_symbol': dl.symbols.index('<start>')}
-    tf_estimator = tf.estimator.Estimator(tf_estimator_model_fn, params=params)
+        'start_symbol': dl.symbols.index('<start>'),
+        'activation': activation}
 
+    tf_estimator = tf.estimator.Estimator(tf_estimator_model_fn, params=params)
     tf.logging.set_verbosity(tf.logging.INFO)
     tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
         x={'source':sources, 'target':targets}, batch_size=args.batch_size, num_epochs=args.num_epochs,

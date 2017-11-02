@@ -23,8 +23,8 @@ def main():
         x={'source':sources, 'target':targets}, batch_size=args.batch_size, num_epochs=args.num_epochs,
         shuffle=True))
     
-    ans1 = stupid_decode_test('apple', tf_estimator, dl)
-    ans2 = stupid_decode_test('common', tf_estimator, dl)
+    stupid_decode_test('apple', tf_estimator, dl)
+    stupid_decode_test('common', tf_estimator, dl)
 
 
 def stupid_decode_test(test_word, tf_estimator, dl, test_maxlen=7):
@@ -41,8 +41,7 @@ def stupid_decode_test(test_word, tf_estimator, dl, test_maxlen=7):
     
     target_idx2word = {i: w for w, i in dl.target_word2idx.items()}
     ans = ''.join([target_idx2word[id] for id in pred_ids[0]])
-    print(ans)
-    return ans
+    print(test_word, '->', ans)
 
 
 if __name__ == '__main__':

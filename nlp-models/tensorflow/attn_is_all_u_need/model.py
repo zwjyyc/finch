@@ -67,12 +67,15 @@ def _model_fn_train(features, mode, params):
     targets = features['target']
     masks = tf.to_float(tf.not_equal(targets, 0))
 
+    lr = tf.train.exponential_decay(3e-3, tf.train.get_global_step(), 5000, (1/30))
+    log_hook = tf.train.LoggingTensorHook({'lr':lr}, every_n_iter=100)
+
     loss_op = tf.contrib.seq2seq.sequence_loss(
         logits=logits, targets=targets, weights=masks)
-    train_op = tf.train.AdamOptimizer().minimize(loss_op,
+    train_op = tf.train.AdamOptimizer(lr).minimize(loss_op,
         global_step=tf.train.get_global_step())
     
-    return tf.estimator.EstimatorSpec(mode=mode, loss=loss_op, train_op=train_op)
+    return tf.estimator.EstimatorSpec(mode=mode, loss=loss_op, train_op=train_op, training_hooks=[log_hook])
 
 
 def _model_fn_predict(features, mode, params):

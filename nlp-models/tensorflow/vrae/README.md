@@ -27,4 +27,4 @@ where:
 
 * O is the decoder output
 
-* G is the text generation, after replacing the latent vector by a gaussian noise (encoder disabled)
+* G is the text generation, after replacing the latent vector by a gaussian noise (no need for encoder)

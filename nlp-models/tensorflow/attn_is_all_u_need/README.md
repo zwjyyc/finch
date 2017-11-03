@@ -2,8 +2,8 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
 
 Based on that, we have:
 * implemented the model under the architecture of ```tf.estimator.Estimator``` API
-* added an option to tie the weights between encoder embedding weight and decoder embedding weight
-* added an option to tie the weights between decoder embedding weight and output projection weight
+* added an option to share the weights between encoder embedding and decoder embedding
+* added an option to share the weights between decoder embedding and output projection
 
 Example running:
 >  python train.py --hidden_units=128 --num_blocks=3 --num_epochs=30 --tied_proj_weight --tied_embedding

@@ -8,7 +8,7 @@ Based on that, we have:
 Example running:
 >  python train.py --hidden_units=128 --num_blocks=3 --tied_proj_weight --tied_embedding --label_smoothing
 
-Example sampling: (machine tries to learn how to sort characters)
+Example sampling: (the task is to learn sorting chars)
 ```
 INFO:tensorflow:Restoring parameters from /var/folders/sx/fv0r97j96fz8njp14dt5g7940000gn/T/tmpcv7axhso/model.ckpt-6250
 apple -> aeelp<end><end>

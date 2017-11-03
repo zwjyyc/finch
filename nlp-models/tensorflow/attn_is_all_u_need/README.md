@@ -1,9 +1,10 @@
 This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) excellent work, thanks for his attempt!
+
 Based on that, we have:
-* implement the model under the architecture of ```tf.estimator.Estimator``` API
-* add an option to tie the weights between encoder embedding weight and decoder embedding weight
-* add an option to tie the weights between decoder embedding weight and output projection weight
-* more activation function choices
+* implemented the model under the architecture of ```tf.estimator.Estimator``` API
+* added an option to tie the weights between encoder embedding weight and decoder embedding weight
+* added an option to tie the weights between decoder embedding weight and output projection weight
+* added more activation function options
 
 Example running:
 >python train.py --hidden_units=128 --num_epochs=30 --num_heads=4 --positional_encoding=learned --tied_proj_weight --tied_embedding --activation=lrelu

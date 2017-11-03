@@ -1,8 +1,8 @@
 This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) excellent work, thanks for his attempt!
 Based on that, we have:
 * implement the model under the architecture of ```tf.estimator.Estimator``` API
-* add an option to tie the weights between encoder embedding weight and decoder embedding weight, as paper suggests
-* add an option to tie the weights between decoder embedding weight and output projection weight, as paper suggests
+* add an option to tie the weights between encoder embedding weight and decoder embedding weight
+* add an option to tie the weights between decoder embedding weight and output projection weight
 * more activation function choices
 
 Example running:

@@ -6,7 +6,7 @@ Based on that, we have:
 * added an option to tie the weights between decoder embedding weight and output projection weight
 
 Example running:
-> python train.py --hidden_units=128 --num_epochs=30 --num_heads=4 --positional_encoding=learned --tied_proj_weight --tied_embedding --activation=lrelu
+>  python train.py --hidden_units=128 --num_blocks=3 --num_epochs=30 --tied_proj_weight --tied_embedding
 
 I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):
 ![alt text](https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif)

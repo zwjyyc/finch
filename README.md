@@ -123,7 +123,7 @@ I have used these powerful libraries across different sections:
 
 * TensorFlow &nbsp; | &nbsp; Seq2Seq + BiLSTM Encoder + Attention + Beam-Search &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; Google Transformer &nbsp; &nbsp; [Estimator & Test](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/attn_is_all_u_need) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Transformer - Attention Is All You Need &nbsp; &nbsp; [Estimator & Test](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/attn_is_all_u_need) &nbsp; | &nbsp;
 
 * PyTorch &nbsp; | &nbsp; Seq2Seq &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/pytorch/seq2seq_test.py) &nbsp; | &nbsp;
 

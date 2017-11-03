@@ -92,14 +92,18 @@ def _model_fn_train(features, mode, params):
     targets = features['target']
     masks = tf.to_float(tf.not_equal(targets, 0))
 
+    if args.label_smoothing:
+        loss_op = label_smoothing_sequence_loss(
+            logits=logits, targets=targets, weights=masks, label_depth=params['target_vocab_size'])
+    if not args.label_smoothing:
+        loss_op = tf.contrib.seq2seq.sequence_loss(
+            logits=logits, targets=targets, weights=masks)
     lr = tf.train.exponential_decay(3e-3, tf.train.get_global_step(), 5000, (1/30))
-    log_hook = tf.train.LoggingTensorHook({'lr':lr}, every_n_iter=100)
-
-    loss_op = tf.contrib.seq2seq.sequence_loss(
-        logits=logits, targets=targets, weights=masks)
+    
     train_op = tf.train.AdamOptimizer(lr).minimize(loss_op,
         global_step=tf.train.get_global_step())
-    
+    log_hook = tf.train.LoggingTensorHook({'lr':lr}, every_n_iter=100)
+
     return tf.estimator.EstimatorSpec(mode=mode, loss=loss_op, train_op=train_op, training_hooks=[log_hook])
 
 

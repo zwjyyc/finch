@@ -103,11 +103,6 @@ def pointwise_feedforward(inputs, num_units=[2048, 512], activation=None):
     return outputs
 
 
-def label_smoothing(inputs, epsilon=0.1):
-    C = inputs.get_shape().as_list()[-1] # number of channels
-    return ((1 - epsilon) * inputs) + (epsilon / C)
-
-
 def learned_positional_encoding(inputs, embed_dim, zero_pad=False, scale=False):
     outputs = tf.range(tf.shape(inputs)[1])                # (T_q)
     outputs = tf.expand_dims(outputs, 0)                   # (1, T_q)
@@ -134,3 +129,50 @@ def sinusoidal_positional_encoding(inputs, num_units, zero_pad=True, scale=True)
         outputs = outputs * num_units ** 0.5
 
     return outputs
+
+
+def label_smoothing(inputs, epsilon=0.1):
+    C = inputs.get_shape().as_list()[-1] # number of channels
+    return ((1 - epsilon) * inputs) + (epsilon / C)
+
+
+def label_smoothing_sequence_loss(logits,
+                                  targets,
+                                  weights,
+                                  label_depth,
+                                  average_across_timesteps=True,
+                                  average_across_batch=True,
+                                  name=None):
+    if len(logits.get_shape()) != 3:
+        raise ValueError("Logits must be a "
+                        "[batch_size x sequence_length x logits] tensor")
+    if len(targets.get_shape()) != 2:
+        raise ValueError("Targets must be a [batch_size x sequence_length] "
+                        "tensor")
+    if len(weights.get_shape()) != 2:
+        raise ValueError("Weights must be a [batch_size x sequence_length] "
+                        "tensor")
+    with tf.name_scope(name, "sequence_loss", [logits, targets, weights]):
+        targets = label_smoothing(tf.one_hot(targets, depth=label_depth))
+        crossent = tf.nn.softmax_cross_entropy_with_logits(labels=targets, logits=logits)
+        crossent = tf.reshape(crossent, [-1]) *  tf.reshape(weights, [-1])
+        if average_across_timesteps and average_across_batch:
+            crossent = tf.reduce_sum(crossent)
+            total_size = tf.reduce_sum(weights)
+            total_size += 1e-12  # to avoid division by 0 for all-0 weights
+            crossent /= total_size
+        else:
+            batch_size = tf.shape(logits)[0]
+            sequence_length = tf.shape(logits)[1]
+            crossent = tf.reshape(crossent, [batch_size, sequence_length])
+        if average_across_timesteps and not average_across_batch:
+            crossent = tf.reduce_sum(crossent, axis=[1])
+            total_size = tf.reduce_sum(weights, axis=[1])
+            total_size += 1e-12  # to avoid division by 0 for all-0 weights
+            crossent /= total_size
+        if not average_across_timesteps and average_across_batch:
+            crossent = tf.reduce_sum(crossent, axis=[0])
+            total_size = tf.reduce_sum(weights, axis=[0])
+            total_size += 1e-12  # to avoid division by 0 for all-0 weights
+            crossent /= total_size
+        return crossent

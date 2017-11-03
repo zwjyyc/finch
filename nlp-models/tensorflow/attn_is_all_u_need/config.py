@@ -13,5 +13,6 @@ parser.add_argument('--positional_encoding', type=str, default='learned')
 parser.add_argument('--activation', type=str, default='relu')
 parser.add_argument('--tied_proj_weight', action='store_true')
 parser.add_argument('--tied_embedding', action='store_true')
+parser.add_argument('--label_smoothing', action='store_true')
 
 args = parser.parse_args()

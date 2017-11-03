@@ -1,4 +1,3 @@
-from tensorflow.python.layers import core as core_layers
 import tensorflow as tf
 import numpy as np
 
@@ -102,7 +101,7 @@ class Seq2Seq:
             cell = self.decoder_cell,
             helper = training_helper,
             initial_state = self.decoder_cell.zero_state(self.batch_size, tf.float32).clone(cell_state=self.encoder_state),
-            output_layer = core_layers.Dense(len(self.Y_word2idx)))
+            output_layer = tf.layers.Dense(len(self.Y_word2idx)))
         training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
             decoder = training_decoder,
             impute_finished = True,
@@ -138,7 +137,7 @@ class Seq2Seq:
             initial_state = self.decoder_cell.zero_state(self.batch_size * self.beam_width, tf.float32).clone(
                             cell_state = self.encoder_state_tiled),
             beam_width = self.beam_width,
-            output_layer = core_layers.Dense(len(self.Y_word2idx), _reuse=True),
+            output_layer = tf.layers.Dense(len(self.Y_word2idx), _reuse=True),
             length_penalty_weight = 0.0)
         predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
             decoder = predicting_decoder,

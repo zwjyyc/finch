@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.python.layers import core as core_layers
 import numpy as np
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -50,7 +49,7 @@ class Estimator:
                     cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]),
                     helper = helper,
                     initial_state = encoder_state,
-                    output_layer = core_layers.Dense(len(self.Y_word2idx)))
+                    output_layer = tf.layers.Dense(len(self.Y_word2idx)))
                 decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
                     decoder = decoder,
                     impute_finished = True,
@@ -68,7 +67,7 @@ class Estimator:
                         [self.lstm_cell(reuse=True) for _ in range(self.n_layers)]),
                     helper = helper,
                     initial_state = encoder_state,
-                    output_layer = core_layers.Dense(len(self.Y_word2idx), _reuse=reuse))
+                    output_layer = tf.layers.Dense(len(self.Y_word2idx), _reuse=reuse))
                 decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
                     decoder = decoder,
                     impute_finished = True,

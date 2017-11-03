@@ -1,5 +1,4 @@
 from config import args
-from tensorflow.python.layers.core import Dense
 
 import numpy as np
 import tensorflow as tf

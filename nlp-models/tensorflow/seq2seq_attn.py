@@ -86,7 +86,7 @@ class Seq2Seq:
                 cell = decoder_cell,
                 helper = training_helper,
                 initial_state = decoder_cell.zero_state(self.batch_size, tf.float32).clone(cell_state=self.encoder_state),
-                output_layer = core_layers.Dense(len(self.Y_word2idx)))
+                output_layer = tf.layers.Dense(len(self.Y_word2idx)))
             training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
                 decoder = training_decoder,
                 impute_finished = True,
@@ -103,7 +103,7 @@ class Seq2Seq:
                 cell = decoder_cell,
                 helper = predicting_helper,
                 initial_state = decoder_cell.zero_state(self.batch_size, tf.float32).clone(cell_state=self.encoder_state),
-                output_layer = core_layers.Dense(len(self.Y_word2idx), _reuse=True))
+                output_layer = tf.layers.Dense(len(self.Y_word2idx), _reuse=True))
             predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
                 decoder = predicting_decoder,
                 impute_finished = True,

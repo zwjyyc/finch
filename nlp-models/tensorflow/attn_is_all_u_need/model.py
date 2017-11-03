@@ -28,7 +28,7 @@ def _forward_pass(sources, targets, params, reuse=False):
             with tf.variable_scope('encoder_attn_%d'%i):
                 encoded = multihead_attn(queries=encoded, keys=encoded, num_units=args.hidden_units,
                     num_heads=args.num_heads, dropout_rate=args.dropout_rate, causality=False, reuse=reuse,
-                    activation=params['activation'])
+                    activation=None)
             
             with tf.variable_scope('encoder_feedforward_%d'%i):
                 encoded = pointwise_feedforward(encoded, num_units=[4*args.hidden_units, args.hidden_units],
@@ -56,12 +56,12 @@ def _forward_pass(sources, targets, params, reuse=False):
             with tf.variable_scope('decoder_self_attn_%d'%i):
                 decoded = multihead_attn(queries=decoded, keys=decoded, num_units=args.hidden_units,
                     num_heads=args.num_heads, dropout_rate=args.dropout_rate, causality=True, reuse=reuse,
-                    activation=params['activation'])
+                    activation=None)
             
             with tf.variable_scope('decoder_attn_%d'%i):
                 decoded = multihead_attn(queries=decoded, keys=encoded, num_units=args.hidden_units,
                     num_heads=args.num_heads, dropout_rate=args.dropout_rate, causality=False, reuse=reuse,
-                    activation=params['activation'])
+                    activation=None)
             
             with tf.variable_scope('decoder_feedforward_%d'%i):
                 decoded = pointwise_feedforward(decoded, num_units=[4*args.hidden_units, args.hidden_units],
@@ -72,6 +72,8 @@ def _forward_pass(sources, targets, params, reuse=False):
             with tf.variable_scope('output_layer', reuse=reuse):
                 logits = tf.layers.dense(decoded, params['target_vocab_size'], reuse=reuse)
         if args.tied_proj_weight:
+            b = tf.get_variable(
+                'bias', [params['target_vocab_size']], tf.float32, tf.constant_initializer(0.01))
             if args.tied_embedding:
                 with tf.variable_scope('encoder_embedding', reuse=True):
                     shared_w = tf.get_variable('lookup_table')
@@ -79,7 +81,7 @@ def _forward_pass(sources, targets, params, reuse=False):
                 with tf.variable_scope('decoder_embedding', reuse=True):
                     shared_w = tf.get_variable('lookup_table')
             decoded = tf.reshape(decoded, [-1, args.hidden_units])
-            logits = tf.matmul(decoded, tf.transpose(shared_w))
+            logits = tf.nn.bias_add(tf.matmul(decoded, tf.transpose(shared_w)), b)
             logits = tf.reshape(logits, [tf.shape(sources)[0], -1, params['target_vocab_size']])
         ids = tf.argmax(logits, -1)
         return logits, ids
@@ -98,13 +100,19 @@ def _model_fn_train(features, mode, params):
     if not args.label_smoothing:
         loss_op = tf.contrib.seq2seq.sequence_loss(
             logits=logits, targets=targets, weights=masks)
-    lr = tf.train.exponential_decay(3e-3, tf.train.get_global_step(), 5000, (1/30))
+
+    lr = tf.train.exponential_decay(1e-3, tf.train.get_global_step(), 5E4, (1/10))
+    log_hook = tf.train.LoggingTensorHook({'lr':lr}, every_n_iter=100)
     
     train_op = tf.train.AdamOptimizer(lr).minimize(loss_op,
         global_step=tf.train.get_global_step())
-    log_hook = tf.train.LoggingTensorHook({'lr':lr}, every_n_iter=100)
+    
+    tf.summary.scalar('loss', loss_op)
+    summary_hook = tf.train.SummarySaverHook(
+        save_steps=100, output_dir='./tensorboard/', summary_op=tf.summary.merge_all())
 
-    return tf.estimator.EstimatorSpec(mode=mode, loss=loss_op, train_op=train_op, training_hooks=[log_hook])
+    return tf.estimator.EstimatorSpec(
+        mode=mode, loss=loss_op, train_op=train_op, training_hooks=[log_hook, summary_hook])
 
 
 def _model_fn_predict(features, mode, params):

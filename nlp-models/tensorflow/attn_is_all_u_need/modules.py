@@ -91,11 +91,11 @@ def multihead_attn(queries, keys, num_units=None, num_heads=8,
     return outputs
 
 
-def pointwise_feedforward(inputs, num_units=[2048, 512], activation=None):
+def pointwise_feedforward(inputs, num_units=[None, None], activation=None):
     # Inner layer
     outputs = tf.layers.conv1d(inputs, num_units[0], kernel_size=1, activation=activation)
     # Readout layer
-    outputs = tf.layers.conv1d(inputs, num_units[1], kernel_size=1, activation=activation)
+    outputs = tf.layers.conv1d(outputs, num_units[1], kernel_size=1, activation=None)
     # Residual connection
     outputs += inputs
     # Normalize
@@ -152,10 +152,12 @@ def label_smoothing_sequence_loss(logits,
     if len(weights.get_shape()) != 2:
         raise ValueError("Weights must be a [batch_size x sequence_length] "
                         "tensor")
+    
     with tf.name_scope(name, "sequence_loss", [logits, targets, weights]):
         targets = label_smoothing(tf.one_hot(targets, depth=label_depth))
         crossent = tf.nn.softmax_cross_entropy_with_logits(labels=targets, logits=logits)
         crossent = tf.reshape(crossent, [-1]) *  tf.reshape(weights, [-1])
+        
         if average_across_timesteps and average_across_batch:
             crossent = tf.reduce_sum(crossent)
             total_size = tf.reduce_sum(weights)

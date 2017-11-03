@@ -9,5 +9,5 @@ Based on that, we have:
 Example running:
 >python train.py --hidden_units=128 --num_epochs=30 --num_heads=4 --positional_encoding=learned --tied_proj_weight --tied_embedding --activation=lrelu
 
-I found an image on internet (a kind of) illustrating how an army of attentions work:
+I found an image on internet (a kind of) illustrating how an army of attentions work: ([Reference[(https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/))
 ![alt text](https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif)

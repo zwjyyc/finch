@@ -1,4 +1,4 @@
-This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) excellent work, thanks for his attempt!
+This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) excellent work, thanks for his first attempt!
 
 Based on that, we have:
 * implemented the model under the architecture of ```tf.estimator.Estimator``` API

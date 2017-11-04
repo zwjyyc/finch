@@ -45,18 +45,13 @@ I have used these powerful libraries across different sections:
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
   * [Image Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#image-classification)
   * [Image Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-generation)
-* [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
   * [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
-* [Before Deep Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#before-deep-learning)
+* [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
+* [Others](https://github.com/zhedongzheng/finch/blob/master/README.md#before-deep-learning)
   * [Shallow Structure Models](https://github.com/zhedongzheng/finch/blob/master/README.md#shallow-structure-models)
   * [Ensemble](https://github.com/zhedongzheng/finch/blob/master/README.md#ensemble)
-* [Data Science](https://github.com/zhedongzheng/finch/blob/master/README.md#data-science)
   * [Time Series](https://github.com/zhedongzheng/finch/blob/master/README.md#time-series)
-* [Cloud Computing](https://github.com/zhedongzheng/finch/blob/master/README.md#cloud-computing)
-  * [Apache Spark](https://github.com/zhedongzheng/finch/blob/master/README.md#apache-spark)
-* [Database](https://github.com/zhedongzheng/finch/blob/master/README.md#database)
-  * [SQL](https://github.com/zhedongzheng/finch/blob/master/README.md#sql)
 
 ## NLP
 #### Text Representation
@@ -203,6 +198,14 @@ I have used these powerful libraries across different sections:
 
     * MXNet &nbsp; | &nbsp; DCGAN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/gan/dcgan.py) &nbsp; &nbsp; [MNIST Test](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/gan/dcgan_mnist_test.py) &nbsp; | &nbsp;
 
+## Information Retrieval
+#### Recommendation System
+* Python &nbsp; | &nbsp; Apriori &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori_movielens_test.py) &nbsp; | &nbsp;
+
+* Python &nbsp; | &nbsp; Collborative Filtering &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [User-based Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;
+
+* TensorFlow &nbsp; | &nbsp; Matrix Factorization &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf_movielens_test.py) &nbsp; | &nbsp;
+
 ## Reinforcement Learning
 * Python &nbsp; | &nbsp; Q-Learning &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/python/q.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/python/q_cartpole_test.py) &nbsp; | &nbsp;
 
@@ -212,15 +215,7 @@ I have used these powerful libraries across different sections:
 
 * PyTorch &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg_cartpole_test.py) &nbsp; | &nbsp;
 
-## Information Retrieval
-#### Recommendation System
-* Python &nbsp; | &nbsp; Apriori &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori_movielens_test.py) &nbsp; | &nbsp;
-
-* Python &nbsp; | &nbsp; Collborative Filtering &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [User-based Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;
-
-* TensorFlow &nbsp; | &nbsp; Matrix Factorization &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/tensorflow/nmf_movielens_test.py) &nbsp; | &nbsp;
-
-## Before Deep Learning
+## Others
 #### Shallow Structure Models
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp;
 
@@ -245,25 +240,9 @@ I have used these powerful libraries across different sections:
 * TensorFlow &nbsp; | &nbsp; Random Forest &nbsp; &nbsp; [Estimator & MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/forest_mnist.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Gradient Boosting Trees &nbsp; &nbsp; [Estimator & MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/gbt_mnist.py) &nbsp; | &nbsp;
-
-## Data Science
 #### Time Series
 * TensorFlow &nbsp; | &nbsp; RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/rnn/rnn_regr_plot.py) &nbsp; &nbsp; [Preview](https://github.com/zhedongzheng/finch/blob/master/assets/rnn_regr_plot.gif) &nbsp; | &nbsp;
 
 * PyTorch &nbsp; | &nbsp; RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/pytorch-models/rnn/rnn_regr_plot.py) &nbsp; | &nbsp;
 
 * MXNet &nbsp; | &nbsp; RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/rnn/rnn_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/mxnet-models/rnn/rnn_regr_plot.py) &nbsp; | &nbsp;
-
-## Cloud Computing
-### Apache Spark
-#### Basics
-* Counting &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/1_rating_counter.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/1_rating_counter.py) &nbsp; | &nbsp;
-    
-* Averaging &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/2_friends_by_age.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/2_friends_by_age.py) &nbsp; | &nbsp;
-    
-* Minimum &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/3_min_temperatures.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/3_min_temperatures.py) &nbsp; | &nbsp;
-    
-* Word Count &nbsp; | &nbsp; [Scala API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/6_word_count_sorted.scala) &nbsp; &nbsp; [Python API](https://github.com/zhedongzheng/finch/blob/master/apache_spark/6_word_count_sorted.py) &nbsp; | &nbsp;
-## Database
-#### SQL
-* [Basics](https://github.com/zhedongzheng/finch/blob/master/db/sql/basics.md)

@@ -38,7 +38,7 @@ def main():
             batch_size = args.batch_size,
             num_epochs = args.sample_every_n_epoch,
             shuffle = True))
-        stupid_decode(['apple', 'common', 'zhedong'], tf_estimator, dl, test_maxlen=7)
+        stupid_decode(['apple', 'common', 'zhedong'], tf_estimator, dl, test_maxlen=10)
 
 
 def stupid_decode(test_words, tf_estimator, dl, test_maxlen):

@@ -91,25 +91,26 @@ def _model_fn_train(features, mode, params):
     logits, _ = _forward_pass(features['source'], features['target'], params)
     _, _ = _forward_pass(features['source'], features['target'], params, reuse=True)
 
-    targets = features['target']
-    masks = tf.to_float(tf.not_equal(targets, 0))
+    with tf.name_scope('backward'):
+        targets = features['target']
+        masks = tf.to_float(tf.not_equal(targets, 0))
 
-    if args.label_smoothing:
-        loss_op = label_smoothing_sequence_loss(
-            logits=logits, targets=targets, weights=masks, label_depth=params['target_vocab_size'])
-    if not args.label_smoothing:
-        loss_op = tf.contrib.seq2seq.sequence_loss(
-            logits=logits, targets=targets, weights=masks)
+        if args.label_smoothing:
+            loss_op = label_smoothing_sequence_loss(
+                logits=logits, targets=targets, weights=masks, label_depth=params['target_vocab_size'])
+        if not args.label_smoothing:
+            loss_op = tf.contrib.seq2seq.sequence_loss(
+                logits=logits, targets=targets, weights=masks)
 
-    lr = tf.train.exponential_decay(1e-3, tf.train.get_global_step(), 5E4, (1/10))
-    log_hook = tf.train.LoggingTensorHook({'lr':lr}, every_n_iter=100)
-    
-    train_op = tf.train.AdamOptimizer(lr).minimize(loss_op,
-        global_step=tf.train.get_global_step())
-    
-    tf.summary.scalar('loss', loss_op)
-    summary_hook = tf.train.SummarySaverHook(
-        save_steps=100, output_dir='./tensorboard/', summary_op=tf.summary.merge_all())
+        lr = tf.train.exponential_decay(1e-3, tf.train.get_global_step(), 5E4, (1/10))
+        log_hook = tf.train.LoggingTensorHook({'lr':lr}, every_n_iter=100)
+        
+        train_op = tf.train.AdamOptimizer(lr, beta2=0.98, epsilon=1e-9).minimize(loss_op,
+            global_step=tf.train.get_global_step())
+        
+        tf.summary.scalar('loss', loss_op)
+        summary_hook = tf.train.SummarySaverHook(
+            save_steps=100, output_dir='./tensorboard/', summary_op=tf.summary.merge_all())
 
     return tf.estimator.EstimatorSpec(
         mode=mode, loss=loss_op, train_op=train_op, training_hooks=[log_hook, summary_hook])

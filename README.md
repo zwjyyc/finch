@@ -34,7 +34,7 @@ I have used these powerful libraries across different sections:
 * In MXNet part (though there are only a few):
     * We are using Gluon API for all the models;
 ## Contents
-* [NLP](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
+* [NLP](https://github.com/zhedongzheng/finch/blob/master/README.md#nlp)
   * [Text Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-representation)
   * [Text Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#text-classification)
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)

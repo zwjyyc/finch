@@ -1,7 +1,7 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 * These are the models coded and used by me, organized by where it is applied;
 * If you find one thing out of here helpful, I will be very happy;
-* I am keep updating this project;
+* I am maintaining and updating this project;
 * Thanks for all the stars, you have given me much more than I deserved;
 * If you have anything unclear (e.g. how to run / how to use), feel free to drop me an email
 ## Installation

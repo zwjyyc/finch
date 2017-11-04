@@ -20,7 +20,7 @@ class KMeans:
             num_clusters=self.k,
             distance_metric='cosine',
             use_mini_batch=True)
-        (_, cluster_idx, scores, _, self.init_op, self.train_op) = params.training_graph()
+        (_, cluster_idx, scores, _, _, self.init_op, self.train_op) = params.training_graph()
         self.cluster_idx = cluster_idx[0]
         self.avg_distance = tf.reduce_mean(scores)
         self.cluster_label = None # to be filled after calling fit()

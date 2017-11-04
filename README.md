@@ -48,7 +48,7 @@ I have used these powerful libraries across different sections:
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
   * [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
-* [Others](https://github.com/zhedongzheng/finch/blob/master/README.md#before-deep-learning)
+* [Others](https://github.com/zhedongzheng/finch/blob/master/README.md#others)
   * [Shallow Structure Models](https://github.com/zhedongzheng/finch/blob/master/README.md#shallow-structure-models)
   * [Ensemble](https://github.com/zhedongzheng/finch/blob/master/README.md#ensemble)
   * [Time Series](https://github.com/zhedongzheng/finch/blob/master/README.md#time-series)

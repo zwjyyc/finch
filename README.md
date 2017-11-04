@@ -34,7 +34,7 @@ I have used these powerful libraries across different sections:
 * In MXNet part (though there are only a few):
     * We are using Gluon API for all the models;
 ## Contents
-* [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
+* [NLP](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Text Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-representation)
   * [Text Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#text-classification)
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
@@ -58,7 +58,7 @@ I have used these powerful libraries across different sections:
 * [Database](https://github.com/zhedongzheng/finch/blob/master/README.md#database)
   * [SQL](https://github.com/zhedongzheng/finch/blob/master/README.md#sql)
 
-## Natural Language Processing
+## NLP
 #### Text Representation
 * Python &nbsp; | &nbsp; LSA &nbsp; | &nbsp; [Model for Visualization](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.py) &nbsp; &nbsp; [Result](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_test.md) &nbsp; | &nbsp; [Model for Concepts](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_concept.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_concept_test.py) &nbsp; &nbsp; [Result](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/lsa_concept_test.md) &nbsp; | &nbsp;
 

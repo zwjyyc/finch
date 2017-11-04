@@ -1,5 +1,5 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
-* These are the models coded and used by me (if you find one thing out of here helpful, I will be very happy);
+* These are the models coded and used by me;
 * I am currently maintaining and updating this project;
 * Thanks for all the stars, you have given me much more than I deserved;
 ## Installation

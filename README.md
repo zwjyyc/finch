@@ -76,9 +76,9 @@ I have used these powerful libraries across different sections:
 
 * Java &nbsp; | &nbsp; Support Vector Machine &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVM.java) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LinearSVMTest.java) &nbsp; | &nbsp;
 #### Ensemble
-* TensorFlow &nbsp; | &nbsp; Random Forest &nbsp; &nbsp; [Estimator & Mnist Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/forest_mnist.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Random Forest &nbsp; &nbsp; [Estimator & MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/forest_mnist.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; Gradient Boosting Trees &nbsp; &nbsp; [Estimator & Mnist Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/gbt_mnist.py) &nbsp; | &nbsp;
+* TensorFlow &nbsp; | &nbsp; Gradient Boosting Trees &nbsp; &nbsp; [Estimator & MNIST Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/shallow/gbt_mnist.py) &nbsp; | &nbsp;
 
 * Python &nbsp; | &nbsp; Bagging &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/classic-models/bagging_clf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/classic-models/bagging_clf_test.py) &nbsp; | &nbsp;
 

@@ -36,7 +36,8 @@ I have used these powerful libraries across different sections:
 * In MXNet part (though there are only a few):
     * We are using Gluon API for all the models;
 ## Contents
-* [Shallow Structure Models](https://github.com/zhedongzheng/finch/blob/master/README.md#shallow-structure-models)
+* [Before Deep Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#before-deep-learning)
+  * [Shallow Structure Models](https://github.com/zhedongzheng/finch/blob/master/README.md#shallow-structure-models)
   * [Ensemble](https://github.com/zhedongzheng/finch/blob/master/README.md#ensemble)
 * [Natural Language Processing](https://github.com/zhedongzheng/finch/blob/master/README.md#natural-language-processing)
   * [Text Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-representation)
@@ -59,8 +60,8 @@ I have used these powerful libraries across different sections:
 * [Database](https://github.com/zhedongzheng/finch/blob/master/README.md#database)
   * [SQL](https://github.com/zhedongzheng/finch/blob/master/README.md#sql)
 
-
-## Shallow Structure Models
+## Before Deep Learning
+#### Shallow Structure Models
 * TensorFlow &nbsp; | &nbsp; Linear Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/linear_regr_test.py) &nbsp; | &nbsp;
 
 * TensorFlow &nbsp; | &nbsp; Logistic Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/logistic.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/tensorflow-models/linear_model/logistic_test.py) &nbsp; | &nbsp;

@@ -1,5 +1,5 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
-* These are the models coded and used by me;
+These are the models coded and used by me, if one model out of here is helpful or useful to you, I would be very glad;
 
 ## Installation
 The following command clones all the files (>200MB);

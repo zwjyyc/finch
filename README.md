@@ -46,7 +46,7 @@ I have used these powerful libraries across different sections:
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
   * [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
-* [Others](https://github.com/zhedongzheng/finch/blob/master/README.md#others)
+* [Appendix](https://github.com/zhedongzheng/finch/blob/master/README.md#appendix)
   * [Shallow Structure Models](https://github.com/zhedongzheng/finch/blob/master/README.md#shallow-structure-models)
   * [Ensemble](https://github.com/zhedongzheng/finch/blob/master/README.md#ensemble)
   * [Time Series](https://github.com/zhedongzheng/finch/blob/master/README.md#time-series)
@@ -213,7 +213,7 @@ I have used these powerful libraries across different sections:
 
 * PyTorch &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/pytorch/pg_cartpole_test.py) &nbsp; | &nbsp;
 
-## Others
+## Appendix
 #### Shallow Structure Models
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp;
 

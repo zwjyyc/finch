@@ -14,5 +14,11 @@ Based on that, we have:
     common -> cmmmoo<end>
     zhedong -> deghnoo
     ```
+* Example running (the task is to learn chinese chatting):
+  >  python train_letter.py --hidden_units=128 --num_blocks=3 --tied_proj_weight --label_smoothing
+  * Example sampling after 20 epochs:
+    ```
+    
+    ```
 I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):
 ![alt text](https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif)

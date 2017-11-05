@@ -1,9 +1,9 @@
 This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) excellent work, thanks for his first attempt!
 
-Based on that, we have:
-* implemented the model under the architecture of ```tf.estimator.Estimator``` API
-* added an option to share the weights between encoder embedding and decoder embedding
-* added an option to share the weights between decoder embedding and output projection
+* Based on that, we have:
+  * implemented the model under the architecture of ```tf.estimator.Estimator``` API
+  * added an option to share the weights between encoder embedding and decoder embedding
+  * added an option to share the weights between decoder embedding and output projection
 
 * Example running (the task is to learn sorting chars):
   >  python train_letter.py --hidden_units=128 --num_blocks=3 --tied_proj_weight --tied_embedding --label_smoothing

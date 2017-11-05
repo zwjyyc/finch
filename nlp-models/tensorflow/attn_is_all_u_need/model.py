@@ -74,14 +74,11 @@ def _forward_pass(sources, targets, params, reuse=False):
         if args.tied_proj_weight:
             b = tf.get_variable(
                 'bias', [params['target_vocab_size']], tf.float32, tf.constant_initializer(0.01))
-            if args.tied_embedding:
-                with tf.variable_scope('encoder_embedding', reuse=True):
-                    shared_w = tf.get_variable('lookup_table')
-            if not args.tied_embedding:
-                with tf.variable_scope('decoder_embedding', reuse=True):
-                    shared_w = tf.get_variable('lookup_table')
+            _scope = 'encoder_embedding' if args.tied_embedding else 'decoder_embedding'
+            with tf.variable_scope(_scope, reuse=True):
+                shared_w = tf.get_variable('lookup_table')
             decoded = tf.reshape(decoded, [-1, args.hidden_units])
-            logits = tf.nn.bias_add(tf.matmul(decoded, tf.transpose(shared_w)), b)
+            logits = tf.nn.xw_plus_b(decoded, tf.transpose(shared_w), b)
             logits = tf.reshape(logits, [tf.shape(sources)[0], -1, params['target_vocab_size']])
         ids = tf.argmax(logits, -1)
         return logits, ids
@@ -105,15 +102,10 @@ def _model_fn_train(features, mode, params):
         lr = tf.train.exponential_decay(1e-3, tf.train.get_global_step(), 5E4, (1/10))
         log_hook = tf.train.LoggingTensorHook({'lr':lr}, every_n_iter=100)
         
-        train_op = tf.train.AdamOptimizer(lr, beta2=0.98, epsilon=1e-9).minimize(loss_op,
+        train_op = tf.train.AdamOptimizer(lr).minimize(loss_op,
             global_step=tf.train.get_global_step())
-        
-        tf.summary.scalar('loss', loss_op)
-        summary_hook = tf.train.SummarySaverHook(
-            save_steps=100, output_dir='./tensorboard/', summary_op=tf.summary.merge_all())
-
     return tf.estimator.EstimatorSpec(
-        mode=mode, loss=loss_op, train_op=train_op, training_hooks=[log_hook, summary_hook])
+        mode=mode, loss=loss_op, train_op=train_op, training_hooks=[log_hook])
 
 
 def _model_fn_predict(features, mode, params):

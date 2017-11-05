@@ -1,6 +1,5 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
 * These are the models coded and used by me;
-* I am currently maintaining and updating this project;
 
 ## Installation
 The following command clones all the files (>200MB);
@@ -16,8 +15,6 @@ Test scripts should be run, the [contents](https://github.com/zhedongzheng/finch
 python xxxx_test.py
 ```
 I have used these powerful libraries across different sections:
-
-(deep thanks for these libraries to enable me to do something about ML)
 * [tensorflow >= 1.4](https://www.tensorflow.org/)
 * [pytorch >= 0.20](http://pytorch.org/)
 * [mxnet >= 0.11](https://mxnet.incubator.apache.org/)

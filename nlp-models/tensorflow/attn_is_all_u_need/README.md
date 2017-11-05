@@ -15,7 +15,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
     zhedong -> deghnoo
     ```
 * Example running (the task is to learn chinese chatting):
-  >  python train_letter.py --hidden_units=128 --num_blocks=3 --tied_proj_weight --label_smoothing
+  >  python train_dialog.py --hidden_units=128 --num_blocks=3 --tied_proj_weight --label_smoothing
   * Example sampling after 20 epochs:
     ```
     

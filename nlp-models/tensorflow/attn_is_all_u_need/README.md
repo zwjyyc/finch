@@ -5,10 +5,9 @@ Based on that, we have:
 * added an option to share the weights between encoder embedding and decoder embedding
 * added an option to share the weights between decoder embedding and output projection
 
-Example running:
->  python train.py --hidden_units=128 --num_blocks=3 --tied_proj_weight --tied_embedding --label_smoothing
-
-Example sampling after 20 epochs: (the task is to learn sorting chars)
+Example running (the task is to learn sorting chars):
+>  python train_letter.py --hidden_units=128 --num_blocks=3 --tied_proj_weight --tied_embedding --label_smoothing
+* Example sampling after 20 epochs:
 ```
 INFO:tensorflow:Restoring parameters from /var/folders/sx/fv0r97j96fz8njp14dt5g7940000gn/T/tmpcv7axhso/model.ckpt-6250
 apple -> aeelp<end><end>

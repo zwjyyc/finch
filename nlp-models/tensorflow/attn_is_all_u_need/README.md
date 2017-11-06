@@ -6,8 +6,8 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added an option to share the weights between decoder embedding and output projection
 
 * Example running (the task is to learn sorting letters):
-  >  python train_letters.py --hidden_units=128 --num_blocks=3 --tied_proj_weight --tied_embedding --label_smoothing
-  * Example sampling after 20 epochs:
+  >  python train_letters.py --tied_proj_weight --tied_embedding --label_smoothing
+  * Example sampling after  steps:
     ```
     INFO:tensorflow:Restoring parameters from /var/folders/sx/fv0r97j96fz8njp14dt5g7940000gn/T/tmpcv7axhso/model.ckpt-6250
     apple -> aeelp<end><end>
@@ -15,8 +15,8 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
     zhedong -> deghnoo
     ```
 * Example running (the task is to learn chinese chatting):
-  >  python train_dialog.py --hidden_units=128 --num_blocks=3 --tied_proj_weight --label_smoothing
-  * Example sampling after 000 steps:
+  >  python train_dialog.py --tied_proj_weight --label_smoothing
+  * Example sampling after  steps:
     ```
     
     ```

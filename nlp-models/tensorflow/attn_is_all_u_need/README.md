@@ -5,7 +5,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added an option to share the weights between encoder embedding and decoder embedding
   * added an option to share the weights between decoder embedding and output projection
   * added the learning rate variation according to the paper
-  * added more activation choices (leaky relu / elu) for for easy gradient propagation
+  * added more activation choices (leaky relu / elu) for for easier gradient propagation
 
 * Example running (the task is to learn sorting letters):
   >  python train_letters.py --tied_embedding=1

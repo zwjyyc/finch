@@ -5,13 +5,15 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added an option to share the weights between encoder embedding and decoder embedding
   * added an option to share the weights between decoder embedding and output projection
   * added the learning rate variation according to the paper
-  * added more choices (lrelu / elu) for activation in point-wise feed-forward networks
+  * added more activation choices (leaky relu / elu) for for easy gradient propagation
 
 * Example running (the task is to learn sorting letters):
   >  python train_letters.py --tied_embedding=1
-  * Example sampling after  steps:
+  * Example sampling after 3126 steps:
     ```
-    
+    apple -> aelppt<end><end><end><end>
+    common -> cmmnooq<end>y<end>
+    zhedong -> deghnoz<end>z<end>
     ```
 * Example running (the task is to learn chinese chatting):
   >  python train_dialog.py

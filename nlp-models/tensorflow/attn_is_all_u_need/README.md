@@ -4,9 +4,11 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * implemented the model under the architecture of ```tf.estimator.Estimator``` API
   * added an option to share the weights between encoder embedding and decoder embedding
   * added an option to share the weights between decoder embedding and output projection
+  * added the learning rate variation according to the paper
+  * added more choices (lrelu / elu) for activation in point-wise feed-forward networks
 
 * Example running (the task is to learn sorting letters):
-  >  python train_letters.py --tied_proj_weight --tied_embedding --label_smoothing
+  >  python train_letters.py --num_epochs=60 --tied_embedding=1
   * Example sampling after 6000 steps:
     ```
     apple -> aelpp<end><end><end>pp
@@ -14,7 +16,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
     zhedong -> deghhoz<end><end><end>
     ```
 * Example running (the task is to learn chinese chatting):
-  >  python train_dialog.py --tied_proj_weight --label_smoothing
+  >  python train_dialog.py --max_len=10
   * Example sampling after  steps:
     ```
     

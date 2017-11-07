@@ -8,12 +8,10 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added more choices (lrelu / elu) for activation in point-wise feed-forward networks
 
 * Example running (the task is to learn sorting letters):
-  >  python train_letters.py --num_epochs=60 --tied_embedding=1
-  * Example sampling after 6000 steps:
+  >  python train_letters.py --tied_embedding=1
+  * Example sampling after  steps:
     ```
-    apple -> aelpp<end><end><end>pp
-    common -> cmnmoo<end><end><end>m
-    zhedong -> deghhoz<end><end><end>
+    
     ```
 * Example running (the task is to learn chinese chatting):
   >  python train_dialog.py --max_len=10

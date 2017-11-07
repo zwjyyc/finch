@@ -14,7 +14,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
     
     ```
 * Example running (the task is to learn chinese chatting):
-  >  python train_dialog.py --max_len=10
+  >  python train_dialog.py
   * Example sampling after  steps:
     ```
     

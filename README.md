@@ -1,5 +1,6 @@
 ![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
-* These are the models coded and used by me, I am currently maintaining and updating this project;
+* These are the models coded and used by me before;
+* I use lightweight datasets, so even if you don't have GPU, you can still run these scripts;
 * If you would like to support, please Star, many thanks!
 
 ## Installation

@@ -127,9 +127,9 @@ I have used these powerful libraries across different sections:
 (To run this section, you need to [download COCO dataset](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/README.md) first)
 * TensorFlow &nbsp; | &nbsp; CNN + RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq.py) &nbsp; &nbsp; [COCO Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; CNN + RNN + Attention + Beam-Search &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam.py) &nbsp; &nbsp; [COCO Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam_test.py) &nbsp; | &nbsp;
+   * TensorFlow &nbsp; | &nbsp; CNN + RNN + Attention + Beam-Search &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam.py) &nbsp; &nbsp; [COCO Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_attn_beam_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; Fine-tuning CNN + RNN + Attention + Beam-Search &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_keras.py) &nbsp; &nbsp; [COCO Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_keras_test.py) &nbsp; | &nbsp;
+   * TensorFlow &nbsp; | &nbsp; Fine-tuning CNN + RNN + Attention + Beam-Search &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_keras.py) &nbsp; &nbsp; [COCO Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/image_caption/img2seq_keras_test.py) &nbsp; | &nbsp;
 
 ## Computer Vision
 #### OpenCV

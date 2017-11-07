@@ -9,11 +9,9 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
 
 * Example running (the task is to learn sorting letters):
   >  python train_letters.py --tied_embedding=1
-  * Example sampling after 3126 steps:
+  * Example sampling after  steps:
     ```
-    apple -> aelppt<end><end><end><end>
-    common -> cmmnooq<end>y<end>
-    zhedong -> deghnoz<end>z<end>
+    
     ```
 * Example running (the task is to learn chinese chatting):
   >  python train_dialog.py

@@ -12,11 +12,11 @@ We usually define a model and its test scripts:
 ```
 xxxx.py   xxxx_A_test.py   xxxx_B_test.py
 ```
-The [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and its test scripts;
+The [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and test (test scripts should be run);
 ![address](https://github.com/zhedongzheng/finch/blob/master/assets/addr.png)
 ```
 cd finch/nlp-models/tensorflow
-python rnn_estimator_imdb_test.py
+python rnn_attn_estimator_imdb_test.py
 ```
 I have used these powerful libraries across different sections:
 * [tensorflow >= 1.4](https://www.tensorflow.org/)

@@ -67,6 +67,6 @@ class NMF:
 
 
     def call_W(self, name, shape):
-        return tf.get_variable(name, shape, tf.float32, tf.contrib.layers.variance_scaling_initializer())
+        return tf.get_variable(name, shape, tf.float32, tf.variance_scaling_initializer())
     # end method _W
 # end class

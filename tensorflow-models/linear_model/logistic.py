@@ -46,9 +46,9 @@ class Logistic:
     def add_backward_path(self):
         xentropy = tf.reduce_mean(-tf.reduce_sum(self.labels * tf.log(self.logits), axis=1))
         with tf.variable_scope('linear', reuse=True):
-            l1_loss = tf.reduce_mean(tf.abs(tf.get_variable('dense/kernel')))
-            l2_loss = tf.reduce_mean(tf.square(tf.get_variable('dense/kernel')))
-        self.loss = xentropy + self.l1_ratio * l1_loss + (1-self.l1_ratio) * l2_loss
+            self.l1_loss = tf.reduce_sum(tf.abs(tf.get_variable('dense/kernel')))
+            self.l2_loss = tf.nn.l2_loss(tf.get_variable('dense/kernel'))
+        self.loss = xentropy + self.l1_ratio * self.l1_loss + (1-self.l1_ratio) * self.l2_loss
         self.acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(self.logits, 1), self.y), tf.float32))
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
     # end method add_backward_path
@@ -60,8 +60,9 @@ class Logistic:
         for epoch in range(n_epoch):
             for X_batch, Y_batch in zip(self.gen_batch(X, batch_size), # batch training
                                         self.gen_batch(Y, batch_size)):
-                _, loss, acc = self.sess.run([self.train_op, self.loss, self.acc],
-                                             {self.X:X_batch, self.y:Y_batch})
+                _, loss, l1_loss, l2_loss, acc = self.sess.run(
+                    [self.train_op, self.loss, self.l1_loss, self.l2_loss, self.acc],
+                        {self.X:X_batch, self.y:Y_batch})
 
             val_loss_list, val_acc_list = [], []
             for X_test_batch, Y_test_batch in zip(self.gen_batch(val_data[0], batch_size),
@@ -74,8 +75,8 @@ class Logistic:
 
             # verbose
             if epoch % 5 == 0:
-                print ("%d / %d: train_loss: %.4f train_acc: %.4f | test_loss: %.4f test_acc: %.4f"
-                    % (epoch+1, n_epoch, loss, acc, val_loss, val_acc))
+                print ("%d / %d: train_loss: %.4f | l1_loss: %.4f | l2_loss: %.4f | train_acc: %.4f \n test_loss: %.4f | test_acc: %.4f"
+                    % (epoch+1, n_epoch, loss, l1_loss, l2_loss, acc, val_loss, val_acc))
     # end method fit
 
 

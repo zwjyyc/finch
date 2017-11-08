@@ -20,7 +20,7 @@ def _multiclass_metrics(predictions, labels, weights):
     return metrics
 
 
-def main():
+def main(args):
     learner_config = learner_pb2.LearnerConfig()
     learner_config.learning_rate_tuner.fixed.learning_rate = args.learning_rate
     learner_config.num_classes = args.num_classes
@@ -44,8 +44,8 @@ def main():
         center_bias=False)
 
     (X_train, y_train), (X_test, y_test) = tf.keras.datasets.mnist.load_data()
-    X_train = (X_train / 255.).reshape(-1, 28*28).astype(np.float32)
-    X_test = (X_test / 255.).reshape(-1, 28*28).astype(np.float32)
+    X_train = (X_train/255.).reshape(-1, 28*28).astype(np.float32)
+    X_test = (X_test/255.).reshape(-1, 28*28).astype(np.float32)
     y_train = y_train.astype(np.int32)
     y_test = y_test.astype(np.int32)
 

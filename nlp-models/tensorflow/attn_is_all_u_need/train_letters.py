@@ -32,11 +32,11 @@ def main():
     tf_estimator = tf.estimator.Estimator(tf_estimator_model_fn, params=params)
     tf.logging.set_verbosity(tf.logging.INFO)
 
-    for epoch in range(args.num_epochs//args.sample_every_n_epoch):
+    for epoch in range(args.num_epochs // 5):
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x = {'source':sources, 'target':targets},
             batch_size = args.batch_size,
-            num_epochs = args.sample_every_n_epoch,
+            num_epochs = 5,
             shuffle = True))
         stupid_decode(['apple', 'common', 'zhedong'], tf_estimator, dl, test_maxlen=10)
 

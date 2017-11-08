@@ -67,19 +67,19 @@ def _forward_pass(sources, targets, params, reuse=False):
                 decoded = pointwise_feedforward(decoded, num_units=[4*args.hidden_units, args.hidden_units],
                     activation=params['activation'])
         
-        # Output Layer
-        if not args.tied_proj_weight:
-            with tf.variable_scope('output_layer', reuse=reuse):
-                logits = tf.layers.dense(decoded, params['target_vocab_size'], reuse=reuse)
-        if args.tied_proj_weight:
+        # Output Layer    
+        if args.tied_proj_weight == 1:
             b = tf.get_variable(
                 'bias', [params['target_vocab_size']], tf.float32, tf.constant_initializer(0.01))
-            _scope = 'encoder_embedding' if args.tied_embedding else 'decoder_embedding'
+            _scope = 'encoder_embedding' if args.tied_embedding == 1 else 'decoder_embedding'
             with tf.variable_scope(_scope, reuse=True):
                 shared_w = tf.get_variable('lookup_table')
             decoded = tf.reshape(decoded, [-1, args.hidden_units])
             logits = tf.nn.xw_plus_b(decoded, tf.transpose(shared_w), b)
             logits = tf.reshape(logits, [tf.shape(sources)[0], -1, params['target_vocab_size']])
+        else:
+            with tf.variable_scope('output_layer', reuse=reuse):
+                logits = tf.layers.dense(decoded, params['target_vocab_size'], reuse=reuse)
         ids = tf.argmax(logits, -1)
         return logits, ids
 
@@ -92,18 +92,23 @@ def _model_fn_train(features, mode, params):
         targets = features['target']
         masks = tf.to_float(tf.not_equal(targets, 0))
 
-        if args.label_smoothing:
+        if args.label_smoothing == 1:
             loss_op = label_smoothing_sequence_loss(
                 logits=logits, targets=targets, weights=masks, label_depth=params['target_vocab_size'])
-        if not args.label_smoothing:
+        else:
             loss_op = tf.contrib.seq2seq.sequence_loss(
                 logits=logits, targets=targets, weights=masks)
-
-        lr = tf.train.exponential_decay(1e-3, tf.train.get_global_step(), 5E4, (1/10))
-        log_hook = tf.train.LoggingTensorHook({'lr':lr}, every_n_iter=100)
         
-        train_op = tf.train.AdamOptimizer(lr).minimize(loss_op,
-            global_step=tf.train.get_global_step())
+        if args.warmup_steps > 0:
+            step_num = tf.train.get_global_step() + 1   # prevents zero global step
+            lr = tf.rsqrt(tf.to_float(args.hidden_units)) * tf.minimum(
+                tf.rsqrt(tf.to_float(step_num)),
+                tf.to_float(step_num) * tf.convert_to_tensor(args.warmup_steps ** (-1.5)))
+        else:
+            lr = tf.constant(1e-4)
+        log_hook = tf.train.LoggingTensorHook({'lr': lr}, every_n_iter=100)
+        
+        train_op = tf.train.AdamOptimizer(lr).minimize(loss_op, global_step=tf.train.get_global_step())
     return tf.estimator.EstimatorSpec(
         mode=mode, loss=loss_op, train_op=train_op, training_hooks=[log_hook])
 

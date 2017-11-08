@@ -12,19 +12,20 @@ def main():
         source_path='temp/dialog_source.txt',
         target_path='temp/dialog_target.txt')
     sources, targets = dl.load()
-    params = _prepare_params(dl)
     
     tf_estimator = tf.estimator.Estimator(
-        tf_estimator_model_fn, model_dir='./saved_model/', params=params)
-    for epoch in range(args.num_epochs//args.sample_every_n_epoch):
+        tf_estimator_model_fn, params=_prepare_params(dl))
+    for epoch in range(args.num_epochs):
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x = {'source':sources, 'target':targets},
             batch_size = args.batch_size,
-            shuffle = True), steps=1000)
-        stupid_decode(['你是谁', '你喜欢我吗'], tf_estimator, dl, test_maxlen=10)
+            shuffle = True), steps=2000)
+        stupid_decode(['你是谁', '你喜欢我吗', '给我唱一首歌', '我帅吗'], tf_estimator, dl)
 
 
-def stupid_decode(test_words, tf_estimator, dl, test_maxlen):
+def stupid_decode(test_words, tf_estimator, dl):
+    test_maxlen = max([len(st) for st in test_words])
+
     test_indices = []
     for test_word in test_words:
         test_idx = [dl.source_word2idx[c] for c in test_word] + \

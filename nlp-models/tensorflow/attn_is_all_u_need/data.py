@@ -27,19 +27,17 @@ class DataLoader:
     def pad(self, data, word2idx):
         res = []
         for line in data.split('\n'):
-            temp_line = []
-            for char in line:
-                temp_line.append(word2idx.get(char, word2idx['<unknown>']))
+            temp_line = [word2idx.get(char, word2idx['<unknown>']) for char in line]
             temp_line.append(word2idx['<end>'])
             if len(temp_line) > args.max_len:
                 temp_line = temp_line[:args.max_len]
             if len(temp_line) < args.max_len:
                 temp_line += [word2idx['<pad>']] * (args.max_len - len(temp_line))
             res.append(temp_line)
-        return res
+        return np.array(res)
 
 
     def load(self):
         source_idx = self.pad(self.source_words, self.source_word2idx)
         target_idx = self.pad(self.target_words, self.target_word2idx)
-        return np.array(source_idx), np.array(target_idx)
+        return source_idx, target_idx

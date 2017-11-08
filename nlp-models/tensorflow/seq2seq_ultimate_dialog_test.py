@@ -54,10 +54,8 @@ def main():
         decoder_embedding_dim = 128,
     )
     
-    model.fit(X_train, Y_train, val_data=(X_test, Y_test), batch_size=BATCH_SIZE, n_epoch=1)
-    model.infer('你是谁', X_idx2char, Y_idx2char)
-    model.infer('你喜欢我吗', X_idx2char, Y_idx2char)
-    model.infer('我心情不好', X_idx2char, Y_idx2char)
+    model.fit(X_train, Y_train, val_data=(X_test, Y_test), batch_size=BATCH_SIZE, n_epoch=1,
+              sentences=['你是谁', '你喜欢我吗', '我心情不好'])
 # end function main
 
 

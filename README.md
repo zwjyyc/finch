@@ -11,9 +11,11 @@ git clone https://github.com/zhedongzheng/finch.git
 
 2. Find the model and test that may interest you, click on that test
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr_0.png" width="600">
+
+3. Find the test file path
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="600">
 
-3. Find the test file path and run that on command line
+4. run on command line
 ```
 cd finch/nlp-models/tensorflow
 python rnn_attn_estimator_imdb_test.py

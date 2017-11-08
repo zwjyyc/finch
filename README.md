@@ -4,15 +4,16 @@
 * If you would like to support, please Star, many thanks!
 
 ## Installation
-The following command clones all the files (>200MB);
+1. The following command clones all the files (>200MB);
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```
 
-The [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and tests (test scripts should be run);
+2. Find the model and test that may interest you
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr_0.png" width="600">
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="600">
 
+3. Find the test file path and run that
 ```
 cd finch/nlp-models/tensorflow
 python rnn_attn_estimator_imdb_test.py

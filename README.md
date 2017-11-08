@@ -3,7 +3,7 @@
 * I used lightweight datasets, so even if you don't have GPU, you can still run these scripts;
 * If you would like to support, please Star, many thanks!
 
-## Installation
+## Guide
 1. The following command clones all the files (>200MB);
 ```
 git clone https://github.com/zhedongzheng/finch.git

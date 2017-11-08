@@ -7,16 +7,16 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added the learning rate variation according to the paper
   * added more activation choices (leaky relu / elu) for for easier gradient propagation
 
-```
+* ```
 python train_dialog.py
 ```
-sampling after 2000 steps
-```
-你是谁 -> 我是你<end>^^
-你喜欢我吗 -> =。=<end>=<end>
-给我唱一首歌 -> =。=<end>=<end>
-我帅吗 -> =。=<end>=<end>
-```
+    sampling after 2000 steps
+    ```
+    你是谁 -> 我是你<end>^^
+    你喜欢我吗 -> =。=<end>=<end>
+    给我唱一首歌 -> =。=<end>=<end>
+    我帅吗 -> =。=<end>=<end>
+    ```
 
 I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):
 ![alt text](https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif)

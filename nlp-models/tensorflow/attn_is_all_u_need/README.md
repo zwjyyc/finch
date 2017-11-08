@@ -6,16 +6,13 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added an option to share the weights between decoder embedding and output projection
   * added the learning rate variation according to the formula in paper
   * added more activation choices (leaky relu / elu) for for easier gradient propagation
-  * fixed the key and query masking (the masking needs to be created before positional encoding)
+  * fixed the key and query masking
 
-* ``` python train_dialog.py ```
+* ``` python train_letters.py --tied_embedding=1 ``` (the task is to learn sorting chars)
 
-    * sampling after 2000 steps
+    * sampling after 000 steps
     ```
-    你是谁 -> 我是你<end>^^
-    你喜欢我吗 -> =。=<end>=<end>
-    给我唱一首歌 -> =。=<end>=<end>
-    我帅吗 -> =。=<end>=<end>
+    
     ```
 
 * I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):

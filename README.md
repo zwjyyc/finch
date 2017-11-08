@@ -9,7 +9,7 @@ The following command clones all the files (>200MB);
 git clone https://github.com/zhedongzheng/finch.git
 ```
 
-The [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and test (test scripts should be run);
+The [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and tests (test scripts should be run);
 
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="600">
 

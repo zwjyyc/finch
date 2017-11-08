@@ -11,7 +11,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
 * Task: learn sorting characters
     * ``` python train_letters.py --tied_embedding=1 ```
 
-    * sampling after 000 steps
+    * greedy sampling after 000 steps
         ```
 
         ```

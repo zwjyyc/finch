@@ -94,3 +94,8 @@
 				WHERE customer_id != 1
 				OR customer_id != 2
 				ORDER BY return_date DESC;
+
+* 实战
+	* 查找最晚入职员工的所有信息
+
+			select * from employees where hire_date = (select max(hire_date) from employees)

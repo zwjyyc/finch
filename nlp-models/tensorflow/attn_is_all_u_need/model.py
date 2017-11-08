@@ -13,7 +13,7 @@ def _forward_pass(sources, targets, params, reuse=False):
         else:
             raise ValueError("positional encoding has to be either 'sinusoidal' or 'learned'")
 
-        # Encoder
+        # ENCODER
         with tf.variable_scope('encoder_embedding'):
             encoded = embed_seq(
                 sources, params['source_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
@@ -34,17 +34,17 @@ def _forward_pass(sources, targets, params, reuse=False):
                 encoded = pointwise_feedforward(encoded, num_units=[4*args.hidden_units, args.hidden_units],
                     activation=params['activation'])
 
-        # Decoder
+        # DECODER
         decoder_inputs = _decoder_input_pip(targets, params['start_symbol'])
-
-        if not args.tied_embedding:
-            with tf.variable_scope('decoder_embedding'):
-                decoded = embed_seq(
-                    decoder_inputs, params['target_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
-        if args.tied_embedding:
+            
+        if args.tied_embedding == 1:
             with tf.variable_scope('encoder_embedding', reuse=True):
                 decoded = embed_seq(decoder_inputs, params['target_vocab_size'], args.hidden_units,
                     zero_pad=True, scale=True, TIE_SIGNAL=True)
+        else:
+            with tf.variable_scope('decoder_embedding'):
+                decoded = embed_seq(
+                    decoder_inputs, params['target_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
         
         with tf.variable_scope('decoder_positional_encoding'):
             decoded += pos_fn(decoder_inputs, args.hidden_units, zero_pad=False, scale=False)
@@ -67,7 +67,7 @@ def _forward_pass(sources, targets, params, reuse=False):
                 decoded = pointwise_feedforward(decoded, num_units=[4*args.hidden_units, args.hidden_units],
                     activation=params['activation'])
         
-        # Output Layer    
+        # OUTPUT LAYER    
         if args.tied_proj_weight == 1:
             b = tf.get_variable(
                 'bias', [params['target_vocab_size']], tf.float32, tf.constant_initializer(0.01))
@@ -105,7 +105,7 @@ def _model_fn_train(features, mode, params):
                 tf.rsqrt(tf.to_float(step_num)),
                 tf.to_float(step_num) * tf.convert_to_tensor(args.warmup_steps ** (-1.5)))
         else:
-            lr = tf.constant(1e-4)
+            raise ValueError("warmup steps should be a positive integer number")
         log_hook = tf.train.LoggingTensorHook({'lr': lr}, every_n_iter=100)
         
         train_op = tf.train.AdamOptimizer(lr).minimize(loss_op, global_step=tf.train.get_global_step())

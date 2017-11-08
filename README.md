@@ -14,7 +14,7 @@ xxxx.py   xxxx_A_test.py   xxxx_B_test.py
 ```
 The [contents](https://github.com/zhedongzheng/finch/blob/master/README.md#contents) below are used to index the model and test (test scripts should be run);
 
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="480">
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="600">
 
 ```
 cd finch/nlp-models/tensorflow

@@ -11,10 +11,10 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
 * Task: learn sorting characters
     * ``` python train_letters.py --tied_embedding=1 ```
 
-    * greedy sampling after 3126 steps
+    * greedy sampling after 6252 steps
         ```
-        apple -> aelpppp
-        common -> cmmnono
+        apple -> aeelppp
+        common -> cmmmnoo
         zhedong -> deghnoz
         ```
 

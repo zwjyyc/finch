@@ -6,7 +6,8 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added an option to share the weights between decoder embedding and output projection
   * added the learning rate variation according to the formula in paper
   * added more activation choices (leaky relu / elu) for for easier gradient propagation
-  * generated the key and query masks before positional encoding (after positional encoding, it is more complex to generate masks)
+  * generated the key and query masks before positional encoding\
+    * because after positional encoding, it is more complex to generate masks
 
 * Task: learn sorting characters
     * ``` python train_letters.py --tied_embedding=1 --warmup_steps=6000 ```

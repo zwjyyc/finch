@@ -8,6 +8,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added more activation choices (leaky relu / elu) for for easier gradient propagation
 
 * ``` python train_dialog.py ```
+
     sampling after 2000 steps
     ```
     你是谁 -> 我是你<end>^^

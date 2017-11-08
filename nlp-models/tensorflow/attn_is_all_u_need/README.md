@@ -8,7 +8,8 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added more activation choices (leaky relu / elu) for for easier gradient propagation
   * fixed the key and query masking
 
-* ``` python train_letters.py --tied_embedding=1 ``` (the task is to learn sorting chars)
+* Task: learn sorting characters
+    * ``` python train_letters.py --tied_embedding=1 ```
 
     * sampling after 000 steps
         ```

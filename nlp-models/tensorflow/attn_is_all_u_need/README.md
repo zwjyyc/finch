@@ -9,7 +9,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
 
 * ``` python train_dialog.py ```
 
-    sampling after 2000 steps
+    * sampling after 2000 steps
     ```
     你是谁 -> 我是你<end>^^
     你喜欢我吗 -> =。=<end>=<end>
@@ -17,5 +17,5 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
     我帅吗 -> =。=<end>=<end>
     ```
 
-I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):
+* I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):
 ![alt text](https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif)

@@ -11,9 +11,9 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
 * ``` python train_letters.py --tied_embedding=1 ``` (the task is to learn sorting chars)
 
     * sampling after 000 steps
-    ```
-    
-    ```
+        ```
+
+        ```
 
 * I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):
 ![alt text](https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif)

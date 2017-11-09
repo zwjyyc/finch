@@ -10,6 +10,7 @@ python train.py --rnn_cell gru
   * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
   
   * Mutual information loss (we found it is the key of maintaining non-zero KL loss)
+    * So this model can also be called InfoVRAE
   
   * Residual RNN connection
   

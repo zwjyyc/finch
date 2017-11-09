@@ -7,7 +7,7 @@ python train.py --rnn_cell gru
 
   * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
   
-  * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))\
+  * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
     * if you set ```word_dropout_rate``` to 1.0, then the decoder sees nothing, entirely dependent on encoder
   
   * Mutual information loss (we found it is the key of maintaining non-zero KL loss)

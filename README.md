@@ -4,7 +4,7 @@
 * If you would like to support, please Star, many thanks!
 
 ## Guide
-1. The following command clones all the files (>200MB);
+1. The following command clones all the files (>300MB);
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```

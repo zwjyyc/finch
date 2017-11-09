@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from config import args
-from tensorflow.python.layers import core as core_layers
+from tensorflow.python.layers.core import Dense
 
 
 class VRAE:
@@ -31,9 +31,7 @@ class VRAE:
         self.mutinfo_loss = self._mutinfo_loss_fn(self.latent_vec, self._mean, self._gamma)
         loss_op = self.nll_loss + self.kl_w * (self.kl_loss + args.mutinfo_weight * self.mutinfo_loss)
 
-        params = tf.trainable_variables()
-        gradients = tf.gradients(loss_op, params)
-        clipped_gradients, _ = tf.clip_by_global_norm(gradients, args.clip_norm)
+        clipped_gradients, params = self._gradient_clipping(loss_op)
         self.train_op = tf.train.AdamOptimizer().apply_gradients(
             zip(clipped_gradients, params), global_step=global_step)
 
@@ -49,14 +47,27 @@ class VRAE:
         
     
     def _encoder(self):
+        # i have tied the embedding between encoder and decoder
+        # since the source and the target for Autoencoder are the same
+        self.tied_embedding = tf.get_variable('tied_embedding', [args.vocab_size, args.embedding_dim],
+            tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
+                
         with tf.variable_scope('encoder'):
             encoded_output, encoded_state = tf.nn.dynamic_rnn(
                 cell = tf.nn.rnn_cell.MultiRNNCell(
                     [self._residual_rnn_cell() for _ in range(args.encoder_layers)]), 
-                inputs = tf.contrib.layers.embed_sequence(self.seq, args.vocab_size, args.embedding_dim),
+                inputs = tf.nn.embedding_lookup(self.tied_embedding, self.seq),
                 sequence_length = self.seq_length,
                 dtype = tf.float32)
-            return self._weighted_sum_encoded_output(encoded_output, encoded_state)
+
+        if args.rnn_cell == 'lstm':
+                encoded_state = encoded_state[-1].h
+        elif args.rnn_cell == 'gru':
+            encoded_state = encoded_state[-1]
+        else:
+            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
+        # return self._weighted_sum_encoded_output(encoded_output, encoded_state)
+        return encoded_state
 
 
     def _latent(self, rnn_encoded):
@@ -69,9 +80,11 @@ class VRAE:
             c = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
             h = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
             return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
-        if args.rnn_cell == 'gru':
+        elif args.rnn_cell == 'gru':
             state = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
             return tuple([state] * args.decoder_layers)
+        else:
+            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
 
 
     def _decoder(self, init_state):
@@ -82,11 +95,10 @@ class VRAE:
 
 
     def _decoder_training(self, init_state):
-        lin_proj = core_layers.Dense(args.vocab_size, _scope='decoder/dense')
+        lin_proj = Dense(args.vocab_size, _scope='decoder/dense')
 
         helper = tf.contrib.seq2seq.TrainingHelper(
-            inputs = tf.contrib.layers.embed_sequence(
-                self._decoder_input(), args.vocab_size, args.embedding_dim),
+            inputs = tf.nn.embedding_lookup(self.tied_embedding, self._decoder_input()),
             sequence_length = self.seq_length + 1)
         decoder = tf.contrib.seq2seq.BasicDecoder(
             cell = tf.nn.rnn_cell.MultiRNNCell(
@@ -106,13 +118,13 @@ class VRAE:
         decoder = tf.contrib.seq2seq.BeamSearchDecoder(
             cell = tf.nn.rnn_cell.MultiRNNCell(
                 [self._residual_rnn_cell(reuse=True) for _ in range(args.decoder_layers)]),
-            embedding = tf.get_variable('EmbedSequence/embeddings'),
+            embedding = self.tied_embedding,
             start_tokens = tf.tile(tf.constant(
                 [self._word2idx['<start>']], dtype=tf.int32), [self._batch_size]),
             end_token = self._word2idx['<end>'],
             initial_state = tf.contrib.seq2seq.tile_batch(init_state, args.beam_width),
             beam_width = args.beam_width,
-            output_layer = core_layers.Dense(args.vocab_size, _reuse=True),
+            output_layer = Dense(args.vocab_size, _reuse=True),
             length_penalty_weight = 0.0)
         decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
             decoder = decoder,
@@ -125,9 +137,11 @@ class VRAE:
         if args.rnn_cell == 'lstm':
             return tf.nn.rnn_cell.LSTMCell(
                 args.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
-        if args.rnn_cell == 'gru':
+        elif args.rnn_cell == 'gru':
             return tf.nn.rnn_cell.GRUCell(
                 args.rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
+        else:
+            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
 
 
     def _residual_rnn_cell(self, reuse=False):
@@ -219,18 +233,20 @@ class VRAE:
 
 
     def _exception_handling(self):
-        self._idx2word[-1] = '-1'
-        self._idx2word[4] = '4'
+        self._idx2word[-1] = '-1' # bug in beam search decoder
+        self._idx2word[4] = '4'   # bug in IMDB dataset offered by Keras
 
 
     def _weighted_sum_encoded_output(self, encoded_output, encoded_state):
-        if args.rnn_cell == 'lstm':
-            encoded_state = encoded_state[-1].h
-        if args.rnn_cell == 'gru':
-            encoded_state = encoded_state[-1]
-        
         weights = tf.nn.softmax(tf.squeeze(tf.matmul(
             encoded_output, tf.expand_dims(encoded_state,2)), 2))
         weighted_sum = tf.squeeze(tf.matmul(
             tf.transpose(encoded_output,[0,2,1]), tf.expand_dims(weights,2)), 2)
         return weighted_sum
+
+
+    def _gradient_clipping(self, loss_op):
+        params = tf.trainable_variables()
+        gradients = tf.gradients(loss_op, params)
+        clipped_gradients, _ = tf.clip_by_global_norm(gradients, args.clip_norm)
+        return clipped_gradients, params

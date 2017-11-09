@@ -1,6 +1,7 @@
 from data import IMDB
 from model import VRAE
 from config import args
+import json
 import tensorflow as tf
 
 
@@ -28,4 +29,5 @@ def main():
 
 
 if __name__ == '__main__':
+    print(json.dumps(args.__dict__, indent=4))
     main()

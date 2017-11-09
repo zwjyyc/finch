@@ -10,13 +10,11 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
     * because after positional encoding, it is more difficult to produce masks
 
 * Task: learn sorting characters
-    * ``` python train_letters.py --tied_embedding=1 ```
+    * ``` python train_letters.py --hidden_units=128 --num_block=1 --tied_embedding=1 --lr_decay=exp ```
 
-    * greedy sampling after 6252 steps
+    * greedy sampling after  steps
         ```
-        apple -> aeelppp
-        common -> cmmmnoo
-        zhedong -> deghnoz
+        
         ```
 
 * I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):

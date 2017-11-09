@@ -21,6 +21,7 @@ cd finch/nlp-models/tensorflow
 python rnn_attn_estimator_imdb_test.py
 ```
 I have used these powerful libraries across different sections:
+
 (Python 3 is perferred, but Python 2 should also works in theory)
 * [tensorflow >= 1.4](https://www.tensorflow.org/)
 * [pytorch >= 0.20](http://pytorch.org/)

@@ -9,7 +9,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * generated the key and query masks before positional encoding
     * because after positional encoding, it is more difficult to produce masks
 
-* Task: learn sorting characters
+* Small Task: learn sorting characters
     * ``` python train_letters.py --hidden_units=128 --num_block=1 --tied_embedding=1 --lr_decay=exp ```
 
     * greedy sampling after 2346 steps

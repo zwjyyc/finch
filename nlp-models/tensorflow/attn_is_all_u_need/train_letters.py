@@ -8,30 +8,14 @@ import tensorflow as tf
 
 
 def main():
-    print(json.dumps(args.__dict__, indent=4))
-    
     dl = DataLoader(
         source_path='temp/letters_source.txt',
         target_path='temp/letters_target.txt')
     sources, targets = dl.load()
-
-    if args.activation == 'relu':
-        activation = tf.nn.relu
-    elif args.activation == 'elu':
-        activation = tf.nn.elu
-    elif args.activation == 'lrelu':
-        activation = tf.nn.leaky_relu
-    else:
-        raise ValueError("acitivation fn has to be 'relu' or 'elu' or 'lrelu'")
-    params = {
-        'source_vocab_size': len(dl.source_word2idx),
-        'target_vocab_size': len(dl.target_word2idx),
-        'start_symbol': dl.symbols.index('<start>'),
-        'activation': activation}
-
-    tf_estimator = tf.estimator.Estimator(tf_estimator_model_fn, params=params)
-    tf.logging.set_verbosity(tf.logging.INFO)
-
+    
+    tf_estimator = tf.estimator.Estimator(tf_estimator_model_fn,
+        params=_prepare_params(dl))
+    
     for epoch in range(args.num_epochs // 5):
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x = {'source':sources, 'target':targets},
@@ -41,9 +25,7 @@ def main():
         stupid_decode(['apple', 'common', 'zhedong'], tf_estimator, dl)
 
 
-def stupid_decode(test_words, tf_estimator, dl):
-    test_maxlen = max([len(st) for st in test_words])
-
+def stupid_decode(test_words, tf_estimator, dl, test_maxlen=8):
     test_indices = []
     for test_word in test_words:
         test_idx = [dl.source_word2idx[c] for c in test_word] + \
@@ -64,5 +46,24 @@ def stupid_decode(test_words, tf_estimator, dl):
         print(test_word, '->', ans)
 
 
+def _prepare_params(dl):
+    if args.activation == 'relu':
+        activation = tf.nn.relu
+    elif args.activation == 'elu':
+        activation = tf.nn.elu
+    elif args.activation == 'lrelu':
+        activation = tf.nn.leaky_relu
+    else:
+        raise ValueError("acitivation fn has to be 'relu' or 'elu' or 'lrelu'")
+    params = {
+        'source_vocab_size': len(dl.source_word2idx),
+        'target_vocab_size': len(dl.target_word2idx),
+        'start_symbol': dl.target_word2idx['<start>'],
+        'activation': activation}
+    return params
+
+
 if __name__ == '__main__':
+    tf.logging.set_verbosity(tf.logging.INFO)
+    print(json.dumps(args.__dict__, indent=4))
     main()

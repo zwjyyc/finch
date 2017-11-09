@@ -101,13 +101,15 @@ def _model_fn_train(features, mode, params):
             loss_op = tf.contrib.seq2seq.sequence_loss(
                 logits=logits, targets=targets, weights=masks)
         
-        if args.warmup_steps > 0:
+        if args.lr_decay == 'paper':
             step_num = tf.train.get_global_step() + 1   # prevents zero global step
             lr = tf.rsqrt(tf.to_float(args.hidden_units)) * tf.minimum(
                 tf.rsqrt(tf.to_float(step_num)),
                 tf.to_float(step_num) * tf.convert_to_tensor(args.warmup_steps ** (-1.5)))
+        elif args.lr_decay == 'exp':
+            lr = tf.train.exponential_decay(1e-3, tf.train.get_global_step(), 100000, 0.1)
         else:
-            raise ValueError("warmup steps should be a positive integer number")
+            raise ValueError("lr decay strategy must be one of 'paper' and 'exp'")
         log_hook = tf.train.LoggingTensorHook({'lr': lr}, every_n_iter=100)
         
         train_op = tf.train.AdamOptimizer(lr).minimize(loss_op, global_step=tf.train.get_global_step())

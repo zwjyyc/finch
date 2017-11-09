@@ -14,9 +14,9 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
 
     * greedy sampling after 2346 steps
         ```
-        apple -> aelpppp
-        common -> cmmnooo
-        zhedong -> deghnoz
+        apple -> aelpp<end><end><end>
+        common -> cmmno<end><end><end>
+        zhedong -> deghnoz<end>
         ```
 
 * I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):

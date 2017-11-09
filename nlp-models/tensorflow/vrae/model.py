@@ -17,14 +17,6 @@ class VRAE:
         self._build_backward_graph()
 
 
-    def _build_inputs(self):
-        self.seq = tf.placeholder(tf.int32, [None, None])
-        self.seq_dropped = tf.placeholder(tf.int32, [None, None])
-        self.seq_length = tf.placeholder(tf.int32, [None])
-        self._batch_size = tf.shape(self.seq)[0]
-        self.gen_seq_length = tf.placeholder(tf.int32, [])
-
-
     def _build_forward_graph(self):
         self._build_inputs()
         self._decoder(self._latent(self._encoder()))
@@ -45,6 +37,16 @@ class VRAE:
         self.train_op = tf.train.AdamOptimizer().apply_gradients(
             zip(clipped_gradients, params), global_step=global_step)
 
+
+    def _build_inputs(self):
+        # placeholders
+        self.seq = tf.placeholder(tf.int32, [None, None])
+        self.seq_dropped = tf.placeholder(tf.int32, [None, None])
+        self.seq_length = tf.placeholder(tf.int32, [None])
+        self.gen_seq_length = tf.placeholder(tf.int32, [])
+        # dynmaic batch size
+        self._batch_size = tf.shape(self.seq)[0]
+        
     
     def _encoder(self):
         with tf.variable_scope('encoder'):

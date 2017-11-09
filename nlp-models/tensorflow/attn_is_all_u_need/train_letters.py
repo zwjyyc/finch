@@ -38,10 +38,12 @@ def main():
             batch_size = args.batch_size,
             num_epochs = 5,
             shuffle = True))
-        stupid_decode(['apple', 'common', 'zhedong'], tf_estimator, dl, test_maxlen=10)
+        stupid_decode(['apple', 'common', 'zhedong'], tf_estimator, dl)
 
 
-def stupid_decode(test_words, tf_estimator, dl, test_maxlen):
+def stupid_decode(test_words, tf_estimator, dl):
+    test_maxlen = max([len(st) for st in test_words])
+
     test_indices = []
     for test_word in test_words:
         test_idx = [dl.source_word2idx[c] for c in test_word] + \

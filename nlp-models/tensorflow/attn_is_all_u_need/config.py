@@ -4,8 +4,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--max_len', type=int, default=20)
 parser.add_argument('--hidden_units', type=int, default=128)
-parser.add_argument('--num_blocks', type=int, default=6)
-parser.add_argument('--num_heads', type=int, default=8)
+parser.add_argument('--num_blocks', type=int, default=3)
+parser.add_argument('--num_heads', type=int, default=4)
 parser.add_argument('--dropout_rate', type=float, default=0.1)
 parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--num_epochs', type=int, default=100)
@@ -17,6 +17,6 @@ parser.add_argument('--tied_embedding', type=int, default=0,
     help="to turn this on, you must explicitly assign 1")
 parser.add_argument('--label_smoothing', type=int, default=1,
     help="to turn this on, you must explicitly assign 1")
-parser.add_argument('--warmup_steps', type=int, default=4000)
+parser.add_argument('--warmup_steps', type=int, default=6000)
 
 args = parser.parse_args()

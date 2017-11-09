@@ -34,7 +34,7 @@ def embed_seq(inputs, vocab_size=None, embed_dim=None, zero_pad=False, scale=Fal
     return outputs
 
 
-def multihead_attn(queries, keys, num_units=None, num_heads=8,
+def multihead_attn(queries, keys, q_masks, k_masks, num_units=None, num_heads=8,
         dropout_rate=args.dropout_rate, causality=False, reuse=False, activation=None):
     """
     Args:
@@ -58,10 +58,10 @@ def multihead_attn(queries, keys, num_units=None, num_heads=8,
     outputs = outputs / (K_.get_shape().as_list()[-1] ** 0.5)                      # scale
 
     # Key Masking
-    key_masks = tf.sign(tf.abs(tf.reduce_sum(keys, axis=-1)))                      # (N, T_k)
+    paddings = tf.ones_like(outputs) * (-2**32)                                    # exp(-large) -> 0
+    key_masks = k_masks                                                            # (N, T_k)
     key_masks = tf.tile(key_masks, [num_heads, 1])                                 # (h*N, T_k)
     key_masks = tf.tile(tf.expand_dims(key_masks, 1), [1, T_q, 1])                 # (h*N, T_q, T_k)
-    paddings = tf.ones_like(outputs) * (-2**32)                                    # exp(-large) -> 0
     outputs = tf.where(tf.equal(key_masks, 0), paddings, outputs)                  # (h*N, T_q, T_k)
 
     if causality:
@@ -73,7 +73,7 @@ def multihead_attn(queries, keys, num_units=None, num_heads=8,
     outputs = tf.nn.softmax(outputs)                                               # (h*N, T_q, T_k)
 
     # Query Masking
-    query_masks = tf.sign(tf.abs(tf.reduce_sum(queries, axis=-1)))                 # (N, T_q)
+    query_masks = tf.to_float(q_masks)                                             # (N, T_q)
     query_masks = tf.tile(query_masks, [num_heads, 1])                             # (h*N, T_q)
     query_masks = tf.tile(tf.expand_dims(query_masks, -1), [1, 1, T_k])            # (h*N, T_q, T_k)
     outputs *= query_masks                                                         # (h*N, T_q, T_k)

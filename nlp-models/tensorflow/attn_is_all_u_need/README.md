@@ -12,7 +12,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
 * Small Task: learn sorting characters
     * ``` python train_letters.py --hidden_units=128 --num_block=1 --tied_embedding=1 --lr_decay=exp ```
 
-    * greedy sampling after 3128 steps
+    * greedy sampling after 3128 steps (only 1 block has done a good job, amazing)
         ```
         apple -> aelpp<end><end><end>
         common -> cmmnoo<end><end>

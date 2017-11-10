@@ -11,7 +11,7 @@ python train.py --rnn_cell gru
     * Extremely, if you set ```word_dropout_rate``` in ```config.py``` to 1.0, then the decoder sees nothing
 
   * To enable concatenating latent vector (z) into every input of decoder, we need to modify the decoder in ```tf.contrib.seq2seq```;
-    * We found it is important when the RNN sequence length is large
+    * We found it is important to concat z when the RNN sequence length is large
     * The modified decoders are placed in the folder ``` modified_tf_classes ```
   
   * Residual RNN connection

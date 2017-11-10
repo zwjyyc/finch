@@ -8,24 +8,29 @@ python train.py --rnn_cell gru
   * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
   
   * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
-    * Extremely, if you set ```word_dropout_rate``` to 1.0, then the decoder sees nothing
-  
-  * Mutual information loss (we found it is the key of maintaining non-zero KL loss)
-    * So this model can also be called InfoVRAE
+    * Extremely, if you set ```word_dropout_rate``` in ```config.py``` to 1.0, then the decoder sees nothing
+
+  * To enable concatenating latent vector (z) into every input of decoder, we need to modify the decoder in ```tf.contrib.seq2seq```;
+    * We found it is important when the RNN sequence length is large
+    * The modified decoders are placed in the folder ``` modified_tf_classes ```
   
   * Residual RNN connection
   
   * Beam Search
 
 * Sample after 20 epoches:
-> I: steve smith has finally run a fairly weak series right into the ground with this movie poor actors <unk> a horrible script pretty much sums this one up two hours of your life you'll never get back go get a root <unk> instead you'll enjoy it more <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad>
+  > I: i would not deny that i have quite enjoyed watching any japanese horror films but everyone must get quite fed up with them after you have seen the same thing
 
-> O: this is one of the worst movies i have seen in a long time i have to say that this is one of the worst movies i have ever seen in my entire life i have to say that this is one of the worst movies i have ever seen in my life i have to say that this is one of the worst movies i have ever seen br br the only thing that bothered me about this <end>
+  > D: <unk> would not deny <unk> i have quite enjoyed watching <unk> japanese horror <unk> but <unk> <unk> get <unk> fed up with them after you have seen <unk> <unk> thing
 
-> G: if you are looking for a better movie than this movie this is one of the best movies of all time it is one of the best movies i have ever seen in my opinion it is the best movie i've seen in a long time i have to say that this is one of the best movies of all time <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad> <pad>
+  > O: i have to admit that i have to say that this show was one of those films that i have seen in a long time when it came out <end>
+
+  > G: this movie is about a group of teens who are sent to the <unk> of the <unk> of the <unk> they are sent to the <unk> of the <unk> <end>
 
 where:
 * I is the encoder input
+
+* D is the decoder input (after word dropout, hence there are many unknown words)
 
 * O is the decoder output
 

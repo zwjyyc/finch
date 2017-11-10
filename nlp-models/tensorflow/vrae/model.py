@@ -2,6 +2,8 @@ import tensorflow as tf
 import numpy as np
 from config import args
 from tensorflow.python.layers.core import Dense
+# we modify the source classes to make sure we can concat Z into every decoder input stage
+from modified_tf_classes import BasicDecoder, BeamSearchDecoder
 
 
 class VRAE:
@@ -19,7 +21,9 @@ class VRAE:
 
     def _build_forward_graph(self):
         self._build_inputs()
-        self._decoder(self._latent(self._encoder()))
+        self._decoder_to_output(
+            self._latent_to_decoder(
+                self._encoder_to_latent()))
 
 
     def _build_backward_graph(self):
@@ -27,9 +31,8 @@ class VRAE:
 
         self.nll_loss = self._nll_loss_fn()
         self.kl_w = self._kl_w_fn(args.anneal_max, args.anneal_bias, global_step)
-        self.kl_loss = self._kl_loss_fn(self._mean, self._gamma)
-        self.mutinfo_loss = self._mutinfo_loss_fn(self.latent_vec, self._mean, self._gamma)
-        loss_op = self.nll_loss + self.kl_w * (self.kl_loss + args.mutinfo_weight * self.mutinfo_loss)
+        self.kl_loss = self._kl_loss_fn(self.z_mean, self.z_logvar)
+        loss_op = self.nll_loss + self.kl_w * self.kl_loss
 
         clipped_gradients, params = self._gradient_clipping(loss_op)
         self.train_op = tf.train.AdamOptimizer().apply_gradients(
@@ -46,7 +49,7 @@ class VRAE:
         self._batch_size = tf.shape(self.seq)[0]
         
     
-    def _encoder(self):
+    def _encoder_to_latent(self):
         # i have tied the embedding between encoder and decoder
         # since the source and the target for Autoencoder are the same
         self.tied_embedding = tf.get_variable('tied_embedding', [args.vocab_size, args.embedding_dim],
@@ -61,33 +64,34 @@ class VRAE:
                 dtype = tf.float32)
 
         if args.rnn_cell == 'lstm':
-                encoded_state = encoded_state[-1].h
+            encoded_state = encoded_state[-1].h
         elif args.rnn_cell == 'gru':
             encoded_state = encoded_state[-1]
         else:
             raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
-        # return self._weighted_sum_encoded_output(encoded_output, encoded_state)
+        
         return encoded_state
 
 
-    def _latent(self, rnn_encoded):
-        self._mean = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
-        self._gamma = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
-        _gaussian = tf.truncated_normal(tf.shape(self._gamma))
+    def _latent_to_decoder(self, rnn_encoded):
+        self.z_mean = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
+        self.z_logvar = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
+        gaussian_noise = tf.truncated_normal(tf.shape(self.z_logvar))
 
-        self.latent_vec = self._mean + tf.exp(0.5 * self._gamma) * _gaussian
+        self.z = self.z_mean + tf.exp(0.5 * self.z_logvar) * gaussian_noise
+
         if args.rnn_cell == 'lstm':
-            c = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
-            h = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
+            c = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
+            h = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
             return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
         elif args.rnn_cell == 'gru':
-            state = tf.layers.dense(self.latent_vec, args.rnn_size, tf.nn.elu)
+            state = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
             return tuple([state] * args.decoder_layers)
         else:
             raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
 
 
-    def _decoder(self, init_state):
+    def _decoder_to_output(self, init_state):
         with tf.variable_scope('training'):
             self.training_rnn_out, self.training_logits = self._decoder_training(init_state)
         with tf.variable_scope('training', reuse=True):
@@ -100,11 +104,12 @@ class VRAE:
         helper = tf.contrib.seq2seq.TrainingHelper(
             inputs = tf.nn.embedding_lookup(self.tied_embedding, self._decoder_input()),
             sequence_length = self.seq_length + 1)
-        decoder = tf.contrib.seq2seq.BasicDecoder(
+        decoder = BasicDecoder(
             cell = tf.nn.rnn_cell.MultiRNNCell(
-                [self._residual_rnn_cell() for _ in range(args.decoder_layers)]),
+                [self._rnn_cell() for _ in range(args.decoder_layers)]),
             helper = helper,
             initial_state = init_state,
+            z = self.z,
             output_layer = None)
         decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
             decoder = decoder,
@@ -115,9 +120,11 @@ class VRAE:
 
 
     def _decoder_inference(self, init_state):
-        decoder = tf.contrib.seq2seq.BeamSearchDecoder(
+        tiled_z = tf.tile(tf.expand_dims(self.z, 1), [1, args.beam_width, 1])
+
+        decoder = BeamSearchDecoder(
             cell = tf.nn.rnn_cell.MultiRNNCell(
-                [self._residual_rnn_cell(reuse=True) for _ in range(args.decoder_layers)]),
+                [self._rnn_cell(reuse=True) for _ in range(args.decoder_layers)]),
             embedding = self.tied_embedding,
             start_tokens = tf.tile(tf.constant(
                 [self._word2idx['<start>']], dtype=tf.int32), [self._batch_size]),
@@ -125,7 +132,8 @@ class VRAE:
             initial_state = tf.contrib.seq2seq.tile_batch(init_state, args.beam_width),
             beam_width = args.beam_width,
             output_layer = Dense(args.vocab_size, _reuse=True),
-            length_penalty_weight = 0.0)
+            length_penalty_weight = 0.0,
+            z = tiled_z)
         decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
             decoder = decoder,
             impute_finished = False,
@@ -194,29 +202,18 @@ class VRAE:
             tf.exp(gamma) + tf.square(mean) - 1 - gamma) / tf.cast(self._batch_size, tf.float32)
 
 
-    def _mutinfo_loss_fn(self, z, z_mean, z_logvar):
-        z = tf.stop_gradient(z)
-        z_var = tf.exp(z_logvar) + 1e-8 # adjust for epsilon
-        z_logvar = tf.log(z_var)
-        z_sq = tf.square(z)
-        z_epsilon = tf.square(z - z_mean)
-        return tf.reduce_sum(
-            0.5 * tf.reduce_sum(z_logvar + (z_epsilon / z_var) - z_sq, 1)) \
-                / tf.cast(self._batch_size, tf.float32)
-
-
     def train_session(self, sess, seq, seq_dropped, seq_len):
-        _, nll_loss, kl_w, kl_loss, mutinfo_loss = sess.run(
-            [self.train_op, self.nll_loss, self.kl_w, self.kl_loss, self.mutinfo_loss],
+        _, nll_loss, kl_w, kl_loss = sess.run(
+            [self.train_op, self.nll_loss, self.kl_w, self.kl_loss],
                 {self.seq: seq, self.seq_dropped: seq_dropped, self.seq_length: seq_len})
         return {'nll_loss': nll_loss,
                 'kl_w': kl_w,
-                'kl_loss': kl_loss,
-                'mutinfo_loss': mutinfo_loss}
+                'kl_loss': kl_loss}
 
 
-    def reconstruct(self, sess, sentence):
+    def reconstruct(self, sess, sentence, sentence_dropped):
         print('\nI: %s' % ' '.join([self._idx2word[idx] for idx in sentence]), end='\n\n')
+        print('D: %s' % ' '.join([self._idx2word[idx] for idx in sentence_dropped]), end='\n\n')
         predicted_ids = sess.run(self.predicted_ids,
             {self.seq: np.atleast_2d(sentence),
              self.seq_length: np.atleast_1d(len(sentence)),
@@ -227,7 +224,7 @@ class VRAE:
     def generate(self, sess):
         predicted_ids = sess.run(self.predicted_ids,
                                 {self._batch_size: 1,
-                                 self.latent_vec: np.random.randn(1, args.latent_size),
+                                 self.z: np.random.randn(1, args.latent_size),
                                  self.gen_seq_length: args.max_len})[0]
         print('G: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')
 
@@ -235,14 +232,6 @@ class VRAE:
     def _exception_handling(self):
         self._idx2word[-1] = '-1' # bug in beam search decoder
         self._idx2word[4] = '4'   # bug in IMDB dataset offered by Keras
-
-
-    def _weighted_sum_encoded_output(self, encoded_output, encoded_state):
-        weights = tf.nn.softmax(tf.squeeze(tf.matmul(
-            encoded_output, tf.expand_dims(encoded_state,2)), 2))
-        weighted_sum = tf.squeeze(tf.matmul(
-            tf.transpose(encoded_output,[0,2,1]), tf.expand_dims(weights,2)), 2)
-        return weighted_sum
 
 
     def _gradient_clipping(self, loss_op):

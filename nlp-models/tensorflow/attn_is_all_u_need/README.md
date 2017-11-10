@@ -7,7 +7,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * added the learning rate variation according to the formula in paper
   * added more activation choices (leaky relu / elu) for easier gradient propagation
   * generated the key and query masks before positional encoding
-    * because after positional encoding, it is more difficult to produce masks
+    * because after positional encoding, the paddings in key and query will move from zero to other values
 
 * Small Task: learn sorting characters
     * ``` python train_letters.py --hidden_units=128 --num_block=1 --tied_embedding=1 --lr_decay=exp ```

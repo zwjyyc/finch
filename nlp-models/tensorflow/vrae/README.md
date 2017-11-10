@@ -35,4 +35,4 @@ where:
 * O is the decoder output
 
 * G is the text generation, after replacing the latent vector by random normal noise
-    * hence no need for encoder, the text can be generated from random normal noise
+    * hence no need for encoder, the text can be generated from gaussian space

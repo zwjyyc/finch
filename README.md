@@ -51,7 +51,6 @@ I have used these powerful libraries across different sections:
   * [Image Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#image-generation)
   * [OpenCV](https://github.com/zhedongzheng/finch/blob/master/README.md#opencv)
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
-  * [Recommendation System](https://github.com/zhedongzheng/finch/blob/master/README.md#recommendation-system)
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
 * [Appendix](https://github.com/zhedongzheng/finch/blob/master/README.md#appendix)
   * [Shallow Structure Models](https://github.com/zhedongzheng/finch/blob/master/README.md#shallow-structure-models)
@@ -203,7 +202,6 @@ I have used these powerful libraries across different sections:
 * Detection &nbsp; | &nbsp; [Walker & Car Detection Using Cascade Classifier](https://nbviewer.jupyter.org/github/zhedongzheng/finch/blob/master/cv-models/car-walker-detection.ipynb)
 
 ## Information Retrieval
-#### Recommendation System
 * Python &nbsp; | &nbsp; Apriori &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori.py) &nbsp; &nbsp; [MovieLens Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/apriori_movielens_test.py) &nbsp; | &nbsp;
 
 * Python &nbsp; | &nbsp; Collborative Filtering &nbsp; | &nbsp; MovieLens &nbsp; &nbsp; [User-based Model](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/ir-models/python/ncf_movielens_test.py) &nbsp; | &nbsp;

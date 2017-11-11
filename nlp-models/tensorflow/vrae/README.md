@@ -18,10 +18,10 @@
 
 * Usage
    * ``` python train.py ```
-   * Decoding after  epoches:
-   ```
+   * decoding after  epoches:
+       ```
 
-   ```
+       ```
    where:
    * I is the encoder input
 

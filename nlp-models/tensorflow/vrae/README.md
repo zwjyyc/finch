@@ -8,7 +8,7 @@ python train.py --rnn_cell gru
   * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
   
   * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
-    * By default, we set ```word_dropout_rate``` to 1.0, which means no inputs are presented to decoder to maximise its dependency on encoder
+    * ```word_dropout_rate``` means how many percentage of decoder input words are masked with unknown tags
 
   * To enable concatenating latent vector (z) with every input of decoder, we need to modify the decoder in original ```tf.contrib.seq2seq```;
     * The modified decoders are placed in the folder ``` modified_tf_classes ```
@@ -17,15 +17,9 @@ python train.py --rnn_cell gru
   
   * Beam Search
 
-* Sample after 20 epoches:
+* Decoding after  epoches:
 ```
-I: i sat through this turkey because i hadn't seen it
 
-D: <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
-
-O: i sat seeing this movie when i i it <end>
-
-G: i <unk> a <unk> <unk> a a <unk> of <end>
 ```
 where:
 * I is the encoder input

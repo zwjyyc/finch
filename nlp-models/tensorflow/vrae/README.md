@@ -1,6 +1,3 @@
-```
-python train.py
-```
 * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface (TF 1.3)
 
 * Following features are enabled:
@@ -17,6 +14,9 @@ python train.py
   
   * Beam Search
 
+```
+python train.py
+```
 * Decoding after  epoches:
 ```
 

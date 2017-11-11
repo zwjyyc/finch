@@ -8,7 +8,7 @@ python train.py --rnn_cell gru
   * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
   
   * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
-    * By default, we set ```word_dropout_rate``` to 1.0, which means no inputs are presented to decoder to maximise dependency on encoder
+    * By default, we set ```word_dropout_rate``` to 1.0, which means no inputs are presented to decoder to maximise its dependency on encoder
 
   * To enable concatenating latent vector (z) with every input of decoder, we need to modify the decoder in original ```tf.contrib.seq2seq```;
     * The modified decoders are placed in the folder ``` modified_tf_classes ```

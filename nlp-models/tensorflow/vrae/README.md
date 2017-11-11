@@ -10,8 +10,7 @@ python train.py --rnn_cell gru
   * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
     * Extremely, if you set ```word_dropout_rate``` in ```config.py``` to 1.0, then the decoder sees nothing
 
-  * To enable concatenating latent vector (z) into every input of decoder, we need to modify the decoder in ```tf.contrib.seq2seq```;
-    * We found it is important to concat z when the RNN sequence length is large
+  * To enable concatenating latent vector (z) with every input of decoder, we need to modify the decoder in original ```tf.contrib.seq2seq```;
     * The modified decoders are placed in the folder ``` modified_tf_classes ```
   
   * Residual RNN connection
@@ -32,7 +31,7 @@ where:
 
 * D is the decoder input (after word dropout, hence there are many unknown words)
 
-* O is the decoder output
+* O is the decoder output with regards to encoder input
 
-* G is the text generation, after replacing the latent vector by random normal noise
-    * hence no need for encoder, the text can be generated from gaussian space
+* G is the text generation, after replacing the latent vector (z) by random normal noise
+    * the encoder is unused, the text is directly generated from gaussian space

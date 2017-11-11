@@ -20,7 +20,13 @@
    * ``` python train.py ```
    * decoding after  epoches:
        ```
+        I: this has got to be the worse move i've ever
 
+        D: <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
+
+        O: this has to be be the worst film i have
+
+        G: in the <unk> of <unk> <unk> are a lot of
        ```
    where:
    * I is the encoder input

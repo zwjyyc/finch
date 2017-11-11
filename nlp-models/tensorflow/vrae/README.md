@@ -18,13 +18,13 @@ python train.py --rnn_cell gru
   * Beam Search
 
 * Sample after 20 epoches:
-  > I: i would not deny that i have quite enjoyed watching any japanese horror films but everyone must get quite fed up with them after you have seen the same thing
+> I: i sat through this turkey because i hadn't seen it
 
-  > D: <unk> would not deny <unk> i have quite enjoyed watching <unk> japanese horror <unk> but <unk> <unk> get <unk> fed up with them after you have seen <unk> <unk> thing
+> D: <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
 
-  > O: i have to admit that i have to say that this show was one of those films that i have seen in a long time when it came out <end>
+> O: i sat seeing this movie when i i it <end>
 
-  > G: this movie is about a group of teens who are sent to the <unk> of the <unk> of the <unk> they are sent to the <unk> of the <unk> <end>
+> G: i <unk> a <unk> <unk> a a <unk> of <end>
 
 where:
 * I is the encoder input
@@ -34,4 +34,4 @@ where:
 * O is the decoder output with regards to encoder input
 
 * G is the text generation, after replacing the latent vector (z) by random normal noise
-    * the encoder is unused, the text is directly generated from gaussian space
+    * the text is directly generated from latent layer, disconnected from encoder

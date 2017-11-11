@@ -1,5 +1,5 @@
 ```
-python train.py --rnn_cell gru
+python train.py
 ```
 * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface (TF 1.3)
 

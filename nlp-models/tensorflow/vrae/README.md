@@ -25,7 +25,7 @@
    where:
    * I is the encoder input
 
-   * D is the decoder input (after word dropout, in default setting they are all unknown)
+   * D is the decoder input (after word dropout, most are unknown)
 
    * O is the decoder output with regards to encoder input
 

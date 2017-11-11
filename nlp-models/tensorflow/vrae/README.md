@@ -18,14 +18,15 @@ python train.py --rnn_cell gru
   * Beam Search
 
 * Sample after 20 epoches:
-> I: i sat through this turkey because i hadn't seen it
+```
+I: i sat through this turkey because i hadn't seen it
 
-> D: <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
+D: <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
 
-> O: i sat seeing this movie when i i it <end>
+O: i sat seeing this movie when i i it <end>
 
-> G: i <unk> a <unk> <unk> a a <unk> of <end>
-
+G: i <unk> a <unk> <unk> a a <unk> of <end>
+```
 where:
 * I is the encoder input
 

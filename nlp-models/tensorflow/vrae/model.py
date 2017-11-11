@@ -70,7 +70,7 @@ class VRAE:
         else:
             raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
         
-        return encoded_state
+        return self._weighted_sum_encoded_output(encoded_output, encoded_state)
 
 
     def _latent_to_decoder(self, rnn_encoded):
@@ -239,3 +239,12 @@ class VRAE:
         gradients = tf.gradients(loss_op, params)
         clipped_gradients, _ = tf.clip_by_global_norm(gradients, args.clip_norm)
         return clipped_gradients, params
+
+    def _weighted_sum_encoded_output(self, encoded_output, encoded_state):
+        # [N, T, D] * [N, D, 1] = [N, T, 1]
+        weights = tf.nn.softmax(tf.squeeze(tf.matmul(
+            encoded_output, tf.expand_dims(encoded_state,2)), 2))
+        # [N, D, T] * [N, T, 1] = [N, D, 1]
+        weighted_sum = tf.squeeze(tf.matmul(
+            tf.transpose(encoded_output,[0,2,1]), tf.expand_dims(weights,2)), 2)
+        return weighted_sum

@@ -9,7 +9,7 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
   * generated the key and query masks before positional encoding
     * because after positional encoding, the paddings in key and query will move from zeros to other values
 
-* Small Task: learn sorting characters
+* Small Task 1: learn sorting characters
     * ``` python train_letters.py```
     * greedy sampling after 3128 steps
         ```
@@ -17,8 +17,8 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
         common -> cmmnoo<end><end>
         zhedong -> deghnoz<end>
         ```
-* Small Task: learn chinese chatting
-    * ``` python train_letters.py```
+* Small Task 2: learn chinese chatting
+    * ``` python train_dialog.py```
     * greedy sampling after 2000 steps
         ```
         你是谁 -> 我是小通<end><end><end><end><end><end>

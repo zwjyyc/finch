@@ -54,8 +54,8 @@ def _prepare_params(dl):
     else:
         raise ValueError("acitivation fn has to be 'relu' or 'elu' or 'lrelu'")
     params = {
-        'source_vocab_size': args.vocab_size+4,
-        'target_vocab_size': args.vocab_size+4,
+        'source_vocab_size': len(dl.source_word2idx),
+        'target_vocab_size': len(dl.target_word2idx),
         'start_symbol': dl.target_word2idx['<start>'],
         'activation': activation}
     return params

@@ -1,4 +1,5 @@
 from config import args
+from collections import Counter
 
 import numpy as np
 
@@ -18,19 +19,21 @@ class DataLoader:
 
 
     def build_index(self, data, is_target=False):
-        chars = list(set([char for line in data.split('\n') for char in line]))
+        chars = [char for line in data.split('\n') for char in line]
+        most_common = Counter(chars).most_common(args.vocab_size)
+        chars = [char for char, freq in most_common]
         if is_target:
-            symbols = ['<pad>','<start>','<end>','<unknown>']
+            symbols = ['<pad>','<start>','<end>','<unk>']
             return {char: idx for idx, char in enumerate(symbols + chars)}
         else:
-            symbols = ['<pad>','<unknown>'] if args.tied_embedding==0 else  ['<pad>','<start>','<end>','<unknown>']
+            symbols = ['<pad>','<unk>'] if args.tied_embedding==0 else  ['<pad>','<start>','<end>','<unk>']
             return {char: idx for idx, char in enumerate(symbols + chars)}
 
 
     def pad(self, data, word2idx, is_target=False):
         res = []
         for line in data.split('\n'):
-            temp_line = [word2idx.get(char, word2idx['<unknown>']) for char in line]
+            temp_line = [word2idx.get(char, word2idx['<unk>']) for char in line]
             if is_target:
                 temp_line.append(word2idx['<end>'])
             if len(temp_line) > args.max_len:

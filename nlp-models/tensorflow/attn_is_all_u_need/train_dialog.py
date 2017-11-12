@@ -19,7 +19,7 @@ def main():
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x = {'source':sources, 'target':targets},
             batch_size = args.batch_size,
-            shuffle = True))
+            shuffle = True), steps=2000)
         stupid_decode(['你是谁', '你喜欢我吗', '给我唱一首歌', '我帅吗'], tf_estimator, dl)
 
 
@@ -54,8 +54,8 @@ def _prepare_params(dl):
     else:
         raise ValueError("acitivation fn has to be 'relu' or 'elu' or 'lrelu'")
     params = {
-        'source_vocab_size': len(dl.source_word2idx),
-        'target_vocab_size': len(dl.target_word2idx),
+        'source_vocab_size': args.vocab_size+4,
+        'target_vocab_size': args.vocab_size+4,
         'start_symbol': dl.target_word2idx['<start>'],
         'activation': activation}
     return params

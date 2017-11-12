@@ -88,7 +88,6 @@ def forward_pass(sources, targets, params, reuse=False):
 
 def _model_fn_train(features, mode, params):
     logits = forward_pass(features['source'], features['target'], params)
-    _ = forward_pass(features['source'], features['target'], params, reuse=True)
 
     with tf.name_scope('backward'):
         targets = features['target']

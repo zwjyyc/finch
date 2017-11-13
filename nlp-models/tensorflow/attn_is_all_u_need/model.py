@@ -89,6 +89,7 @@ def forward_pass(sources, targets, params, reuse=False):
 def _model_fn_train(features, mode, params):
     logits = forward_pass(features['source'], features['target'], params)
     _ = forward_pass(features['source'], features['target'], params, reuse=True)
+    log_tensors = {}
 
     with tf.name_scope('backward'):
         targets = features['target']
@@ -100,7 +101,7 @@ def _model_fn_train(features, mode, params):
         else:
             loss_op = tf.contrib.seq2seq.sequence_loss(
                 logits=logits, targets=targets, weights=masks)
-        
+
         if args.lr_decay == 'paper':
             step_num = tf.train.get_global_step() + 1   # prevents zero global step
             lr = tf.rsqrt(tf.to_float(args.hidden_units)) * tf.minimum(
@@ -110,7 +111,8 @@ def _model_fn_train(features, mode, params):
             lr = tf.train.exponential_decay(1e-3, tf.train.get_global_step(), 100000, 0.1)
         else:
             raise ValueError("lr decay strategy must be one of 'paper' and 'exp'")
-        log_hook = tf.train.LoggingTensorHook({'lr': lr}, every_n_iter=100)
+        log_tensors['lr'] = lr
+        log_hook = tf.train.LoggingTensorHook(log_tensors, every_n_iter=100)
         
         train_op = tf.train.AdamOptimizer(lr).minimize(loss_op, global_step=tf.train.get_global_step())
     return tf.estimator.EstimatorSpec(

@@ -14,12 +14,15 @@ def forward_pass(x, seq_len, reuse):
                 cell, embedded, sequence_length=seq_len, dtype=tf.float32)
 
         with tf.variable_scope('attention', reuse=reuse):
-            weights = _softmax(tf.squeeze(tf.layers.dense(rnn_out,1), 2))
+            rnn_out_proj = tf.layers.dense(rnn_out, args.attn_size)
+            hidden_proj = tf.layers.dense(final_state.h, args.attn_size)
+            weights = tf.matmul(rnn_out_proj, tf.expand_dims(hidden_proj, 2))
+            weights = _softmax(tf.squeeze(weights, 2))
             weighted_sum = tf.squeeze(tf.matmul(
                 tf.transpose(rnn_out, [0,2,1]), tf.expand_dims(weights, 2)), 2)
 
         with tf.variable_scope('output_layer', reuse=reuse):
-            logits = tf.layers.dense(tf.concat((weighted_sum, final_state.h), -1), args.num_classes)
+            logits = tf.layers.dense(tf.concat([weighted_sum, final_state.h], -1), args.num_classes)
     return logits
 # end function
 

@@ -13,18 +13,18 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
     * ``` python train_letters.py```
     * greedy sampling after 3128 steps
         ```
-        apple -> aelpp<end><end><end>
-        common -> cmmnoo<end><end>
-        zhedong -> deghnoz<end>
+        apple -> aelpp
+        common -> cmmnoo
+        zhedong -> deghnoz
         ```
 * Small Task 2: learn chinese chatting
     * ``` python train_dialog.py```
     * greedy sampling after 10000 steps
         ```
-        你是谁 -> 我是小通<end><end><end><end><end><end>
-        你喜欢我吗 -> 我喜欢你<end><end><end><end><end><end>
-        给我唱一首歌 -> 我也不知道<end><end><end><end><end>
-        我帅吗 -> 你才帅！<end><end><end><end><end><end>
+        你是谁 -> 我是小通
+        你喜欢我吗 -> 我喜欢你
+        给我唱一首歌 -> 我也不知道
+        我帅吗 -> 你才帅！
         ```
 
 * I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):

@@ -12,6 +12,8 @@ def main():
         source_path='temp/dialog_source.txt',
         target_path='temp/dialog_target.txt')
     sources, targets = dl.load()
+    print('Source Vocab Size:', len(dl.source_word2idx))
+    print('Target Vocab Size:', len(dl.target_word2idx))
     
     tf_estimator = tf.estimator.Estimator(
         tf_estimator_model_fn, params=_prepare_params(dl))
@@ -19,7 +21,7 @@ def main():
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x = {'source':sources, 'target':targets},
             batch_size = args.batch_size,
-            shuffle = True), steps=2000)
+            shuffle = True), steps=1000)
         stupid_decode(['你是谁', '你喜欢我吗', '给我唱一首歌', '我帅吗'], tf_estimator, dl)
 
 

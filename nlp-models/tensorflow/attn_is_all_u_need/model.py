@@ -102,6 +102,19 @@ def _model_fn_train(features, mode, params):
             loss_op = tf.contrib.seq2seq.sequence_loss(
                 logits=logits, targets=targets, weights=masks)
 
+        if args.repeated_penalty == 1:
+            B = args.batch_size
+            T = args.max_len
+            across_B = tf.stack([tf.nn.softmax(logits[i,:,:]) for i in range(B)], axis=0)
+            across_T = tf.stack([tf.nn.softmax(logits[:,j,:]) for j in range(T)], axis=1)
+
+            penalty_fn = lambda probas: tf.reduce_sum(tf.maximum(1.0, probas) - 1.0)
+            B_penalty = penalty_fn(tf.reduce_sum(across_B, axis=0))
+            T_penalty = penalty_fn(tf.reduce_sum(across_T, axis=1))
+            loss_op += (B_penalty + T_penalty)
+            log_tensors['B_penalty'] = B_penalty
+            log_tensors['T_penalty'] = T_penalty
+
         if args.lr_decay == 'paper':
             step_num = tf.train.get_global_step() + 1   # prevents zero global step
             lr = tf.rsqrt(tf.to_float(args.hidden_units)) * tf.minimum(

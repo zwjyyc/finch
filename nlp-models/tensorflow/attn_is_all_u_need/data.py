@@ -20,8 +20,7 @@ class DataLoader:
 
     def build_index(self, data, is_target=False):
         chars = [char for line in data.split('\n') for char in line]
-        most_common = Counter(chars).most_common(args.vocab_size)
-        chars = [char for char, freq in most_common]
+        chars = [char for char, freq in Counter(chars).items() if freq > args.min_freq]
         if is_target:
             symbols = ['<pad>','<start>','<end>','<unk>']
             return {char: idx for idx, char in enumerate(symbols + chars)}

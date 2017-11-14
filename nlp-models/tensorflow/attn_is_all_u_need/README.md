@@ -10,8 +10,8 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
     * because after positional encoding, the paddings in key and query will move from zeros to other values
 
 * Small Task 1: learn sorting characters
-    * ``` python train_letters.py```
-    * greedy sampling after 3128 steps
+    * ``` python train_letters.py --tie_embedding```
+    * greedy sampling after 4692 steps
         ```
         apple -> aelpp
         common -> cmmnoo

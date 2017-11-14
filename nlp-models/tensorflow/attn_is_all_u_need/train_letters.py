@@ -34,7 +34,7 @@ def stupid_decode(test_words, tf_estimator, dl):
     test_indices = np.atleast_2d(test_indices)
     
     pred_ids = np.zeros([len(test_words), args.target_max_len], np.int64)
-    for j in range(test_maxlen):
+    for j in range(args.target_max_len):
         _pred_ids = tf_estimator.predict(tf.estimator.inputs.numpy_input_fn(
             x={'source':test_indices, 'target':pred_ids}, batch_size=len(test_words), shuffle=False))
         _pred_ids = np.array(list(_pred_ids))

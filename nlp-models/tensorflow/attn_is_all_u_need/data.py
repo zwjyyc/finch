@@ -25,7 +25,7 @@ class DataLoader:
             symbols = ['<pad>','<start>','<end>','<unk>']
             return {char: idx for idx, char in enumerate(symbols + chars)}
         else:
-            symbols = ['<pad>','<unk>'] if args.tie_embedding is True else  ['<pad>','<start>','<end>','<unk>']
+            symbols = ['<pad>','<unk>'] if args.tie_embedding is False else  ['<pad>','<start>','<end>','<unk>']
             return {char: idx for idx, char in enumerate(symbols + chars)}
 
 

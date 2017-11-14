@@ -25,7 +25,7 @@ class DataLoader:
             symbols = ['<pad>','<start>','<end>','<unk>']
             return {char: idx for idx, char in enumerate(symbols + chars)}
         else:
-            symbols = ['<pad>','<unk>'] if args.tied_embedding==0 else  ['<pad>','<start>','<end>','<unk>']
+            symbols = ['<pad>','<unk>'] if args.tie_embedding is True else  ['<pad>','<start>','<end>','<unk>']
             return {char: idx for idx, char in enumerate(symbols + chars)}
 
 
@@ -33,12 +33,16 @@ class DataLoader:
         res = []
         for line in data.split('\n'):
             temp_line = [word2idx.get(char, word2idx['<unk>']) for char in line]
-            if is_target:
-                temp_line.append(word2idx['<end>'])
-            if len(temp_line) > args.max_len:
-                temp_line = temp_line[:args.max_len]
+            if len(temp_line) >= args.max_len:
+                if is_target:
+                    temp_line = temp_line[:(args.max_len-1)] + [word2idx['<end>']]
+                else:
+                    temp_line = temp_line[:args.max_len]
             if len(temp_line) < args.max_len:
-                temp_line += [word2idx['<pad>']] * (args.max_len - len(temp_line))
+                if is_target:
+                    temp_line += ([word2idx['<end>']] + [word2idx['<pad>']]*(args.max_len-len(temp_line)-1)) 
+                else:
+                    temp_line += [word2idx['<pad>']] * (args.max_len - len(temp_line))
             res.append(temp_line)
         return np.array(res)
 

@@ -40,7 +40,7 @@ def forward_pass(sources, targets, params, reuse=False):
         decoder_inputs = _shift_right(targets, params['start_symbol'])
         de_masks = tf.sign(tf.abs(decoder_inputs))
             
-        if args.tied_embedding == 1:
+        if args.tie_embedding is True:
             with tf.variable_scope('encoder_embedding', reuse=True):
                 decoded = embed_seq(decoder_inputs, params['target_vocab_size'], args.hidden_units,
                     zero_pad=True, scale=True, TIE_SIGNAL=True)
@@ -71,10 +71,10 @@ def forward_pass(sources, targets, params, reuse=False):
                     activation=params['activation'])
         
         # OUTPUT LAYER    
-        if args.tied_proj_weight == 1:
+        if args.tie_proj_weight is True:
             b = tf.get_variable(
                 'bias', [params['target_vocab_size']], tf.float32, tf.constant_initializer(0.01))
-            _scope = 'encoder_embedding' if args.tied_embedding == 1 else 'decoder_embedding'
+            _scope = 'encoder_embedding' if args.tie_embedding is True else 'decoder_embedding'
             with tf.variable_scope(_scope, reuse=True):
                 shared_w = tf.get_variable('lookup_table')
             decoded = tf.reshape(decoded, [-1, args.hidden_units])
@@ -95,35 +95,22 @@ def _model_fn_train(features, mode, params):
         targets = features['target']
         masks = tf.to_float(tf.not_equal(targets, 0))
 
-        if args.label_smoothing == 1:
+        if args.label_smoothing is True:
             loss_op = label_smoothing_sequence_loss(
                 logits=logits, targets=targets, weights=masks, label_depth=params['target_vocab_size'])
         else:
             loss_op = tf.contrib.seq2seq.sequence_loss(
                 logits=logits, targets=targets, weights=masks)
 
-        if args.repeated_penalty == 1:
-            B = args.batch_size
-            T = args.max_len
-            across_B = tf.stack([tf.nn.softmax(logits[i,:,:]) for i in range(B)], axis=0)
-            across_T = tf.stack([tf.nn.softmax(logits[:,j,:]) for j in range(T)], axis=1)
-
-            penalty_fn = lambda probas: tf.reduce_sum(tf.maximum(1.0, probas) - 1.0)
-            B_penalty = penalty_fn(tf.reduce_sum(across_B, axis=0))
-            T_penalty = penalty_fn(tf.reduce_sum(across_T, axis=1))
-            loss_op += (B_penalty + T_penalty)
-            log_tensors['B_penalty'] = B_penalty
-            log_tensors['T_penalty'] = T_penalty
-
-        if args.lr_decay == 'paper':
+        if args.lr_decay_strategy == 'noam':
             step_num = tf.train.get_global_step() + 1   # prevents zero global step
             lr = tf.rsqrt(tf.to_float(args.hidden_units)) * tf.minimum(
                 tf.rsqrt(tf.to_float(step_num)),
                 tf.to_float(step_num) * tf.convert_to_tensor(args.warmup_steps ** (-1.5)))
-        elif args.lr_decay == 'exp':
+        elif args.lr_decay_strategy == 'exp':
             lr = tf.train.exponential_decay(1e-3, tf.train.get_global_step(), 100000, 0.1)
         else:
-            raise ValueError("lr decay strategy must be one of 'paper' and 'exp'")
+            raise ValueError("lr decay strategy must be one of 'noam' and 'exp'")
         log_tensors['lr'] = lr
         log_hook = tf.train.LoggingTensorHook(log_tensors, every_n_iter=100)
         

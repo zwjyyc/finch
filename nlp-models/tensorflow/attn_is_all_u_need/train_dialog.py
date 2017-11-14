@@ -21,20 +21,20 @@ def main():
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x = {'source':sources, 'target':targets},
             batch_size = args.batch_size,
-            shuffle = True), steps=1000)
+            shuffle = True), steps=2000)
         stupid_decode(['你是谁', '你喜欢我吗', '给我唱一首歌', '我帅吗'], tf_estimator, dl)
 
 
-def stupid_decode(test_words, tf_estimator, dl, test_maxlen=10):
+def stupid_decode(test_words, tf_estimator, dl):
     test_indices = []
     for test_word in test_words:
         test_idx = [dl.source_word2idx[c] for c in test_word] + \
-                   [dl.source_word2idx['<pad>']] * (test_maxlen - len(test_word))
+                   [dl.source_word2idx['<pad>']] * (args.source_max_len - len(test_word))
         test_indices.append(test_idx)
     test_indices = np.atleast_2d(test_indices)
     
-    pred_ids = np.zeros([len(test_words), test_maxlen], np.int64)
-    for j in range(test_maxlen):
+    pred_ids = np.zeros([len(test_words), args.target_max_len], np.int64)
+    for j in range(args.target_max_len):
         _pred_ids = tf_estimator.predict(tf.estimator.inputs.numpy_input_fn(
             x={'source':test_indices, 'target':pred_ids}, batch_size=len(test_words), shuffle=False))
         _pred_ids = np.array(list(_pred_ids))
@@ -47,6 +47,15 @@ def stupid_decode(test_words, tf_estimator, dl, test_maxlen=10):
 
 
 def _prepare_params(dl):
+    params = {
+        'source_vocab_size': len(dl.source_word2idx),
+        'target_vocab_size': len(dl.target_word2idx),
+        'start_symbol': dl.target_word2idx['<start>'],
+        'activation': _get_activation()}
+    return params
+
+
+def _get_activation():
     if args.activation == 'relu':
         activation = tf.nn.relu
     elif args.activation == 'elu':
@@ -55,12 +64,7 @@ def _prepare_params(dl):
         activation = tf.nn.leaky_relu
     else:
         raise ValueError("acitivation fn has to be 'relu' or 'elu' or 'lrelu'")
-    params = {
-        'source_vocab_size': len(dl.source_word2idx),
-        'target_vocab_size': len(dl.target_word2idx),
-        'start_symbol': dl.target_word2idx['<start>'],
-        'activation': activation}
-    return params
+    return activation
 
 
 if __name__ == '__main__':

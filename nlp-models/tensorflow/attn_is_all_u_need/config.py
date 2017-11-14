@@ -2,7 +2,8 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--max_len', type=int, default=20)
+parser.add_argument('--source_max_len', type=int, default=10)
+parser.add_argument('--target_max_len', type=int, default=20)
 parser.add_argument('--min_freq', type=int, default=50)
 parser.add_argument('--hidden_units', type=int, default=128)
 parser.add_argument('--num_blocks', type=int, default=1)

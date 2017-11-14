@@ -6,12 +6,7 @@ import tensorflow as tf
 
 def forward_pass(sources, targets, params, reuse=False):
     with tf.variable_scope('forward_pass', reuse=reuse):
-        if args.positional_encoding == 'sinusoidal':
-            pos_fn = sinusoidal_positional_encoding
-        elif args.positional_encoding == 'learned':
-            pos_fn = learned_positional_encoding
-        else:
-            raise ValueError("positional encoding has to be either 'sinusoidal' or 'learned'")
+        pos_enc = _get_positional_encoder()
 
         # ENCODER
         en_masks = tf.sign(tf.abs(sources))     
@@ -21,7 +16,7 @@ def forward_pass(sources, targets, params, reuse=False):
                 sources, params['source_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
         
         with tf.variable_scope('encoder_positional_encoding', reuse=reuse):
-            encoded += pos_fn(sources, args.hidden_units, zero_pad=False, scale=False)
+            encoded += pos_enc(sources, args.hidden_units, zero_pad=False, scale=False)
         
         with tf.variable_scope('encoder_dropout', reuse=reuse):
             encoded = tf.layers.dropout(encoded, args.dropout_rate, training=(not reuse))
@@ -50,7 +45,7 @@ def forward_pass(sources, targets, params, reuse=False):
                     decoder_inputs, params['target_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
         
         with tf.variable_scope('decoder_positional_encoding', reuse=reuse):
-            decoded += pos_fn(decoder_inputs, args.hidden_units, zero_pad=False, scale=False)
+            decoded += pos_enc(decoder_inputs, args.hidden_units, zero_pad=False, scale=False)
                 
         with tf.variable_scope('decoder_dropout', reuse=reuse):
             decoded = tf.layers.dropout(decoded, args.dropout_rate, training=(not reuse))
@@ -104,9 +99,7 @@ def _model_fn_train(features, mode, params):
 
         if args.lr_decay_strategy == 'noam':
             step_num = tf.train.get_global_step() + 1   # prevents zero global step
-            lr = tf.rsqrt(tf.to_float(args.hidden_units)) * tf.minimum(
-                tf.rsqrt(tf.to_float(step_num)),
-                tf.to_float(step_num) * tf.convert_to_tensor(args.warmup_steps ** (-1.5)))
+            lr = _get_noam_lr(step_num)
         elif args.lr_decay_strategy == 'exp':
             lr = tf.train.exponential_decay(1e-3, tf.train.get_global_step(), 100000, 0.1)
         else:
@@ -136,3 +129,19 @@ def tf_estimator_model_fn(features, labels, mode, params):
 def _shift_right(targets, start_symbol):
     start_symbols = tf.cast(tf.fill([tf.shape(targets)[0], 1], start_symbol), tf.int64)
     return tf.concat([start_symbols, targets[:, :-1]], axis=-1)
+
+
+def _get_positional_encoder():
+    if args.positional_encoding == 'sinusoidal':
+        pos_enc = sinusoidal_positional_encoding
+    elif args.positional_encoding == 'learned':
+        pos_enc = learned_positional_encoding
+    else:
+        raise ValueError("positional encoding has to be either 'sinusoidal' or 'learned'")
+    return pos_enc
+
+
+def _get_noam_lr(step_num):
+    return tf.rsqrt(tf.to_float(args.hidden_units)) * tf.minimum(
+        tf.rsqrt(tf.to_float(step_num)),
+        tf.to_float(step_num) * tf.convert_to_tensor(args.warmup_steps ** (-1.5)))

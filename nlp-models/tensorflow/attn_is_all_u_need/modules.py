@@ -104,10 +104,11 @@ def pointwise_feedforward(inputs, num_units=[None, None], activation=None):
 
 
 def learned_positional_encoding(inputs, embed_dim, zero_pad=False, scale=False):
+    T = inputs.get_shape().as_list()[-1]
     outputs = tf.range(tf.shape(inputs)[1])                # (T_q)
     outputs = tf.expand_dims(outputs, 0)                   # (1, T_q)
     outputs = tf.tile(outputs, [tf.shape(inputs)[0], 1])   # (N, T_q)
-    return embed_seq(outputs, args.max_len, embed_dim, zero_pad=zero_pad, scale=scale)
+    return embed_seq(outputs, T, embed_dim, zero_pad=zero_pad, scale=scale)
 
 
 def sinusoidal_positional_encoding(inputs, num_units, zero_pad=True, scale=True):

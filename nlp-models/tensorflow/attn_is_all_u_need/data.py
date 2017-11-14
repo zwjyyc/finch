@@ -29,25 +29,25 @@ class DataLoader:
             return {char: idx for idx, char in enumerate(symbols + chars)}
 
 
-    def pad(self, data, word2idx, is_target=False):
+    def pad(self, data, word2idx, max_len, is_target=False):
         res = []
         for line in data.split('\n'):
             temp_line = [word2idx.get(char, word2idx['<unk>']) for char in line]
-            if len(temp_line) >= args.max_len:
+            if len(temp_line) >= max_len:
                 if is_target:
-                    temp_line = temp_line[:(args.max_len-1)] + [word2idx['<end>']]
+                    temp_line = temp_line[:(max_len-1)] + [word2idx['<end>']]
                 else:
-                    temp_line = temp_line[:args.max_len]
-            if len(temp_line) < args.max_len:
+                    temp_line = temp_line[:max_len]
+            if len(temp_line) < max_len:
                 if is_target:
-                    temp_line += ([word2idx['<end>']] + [word2idx['<pad>']]*(args.max_len-len(temp_line)-1)) 
+                    temp_line += ([word2idx['<end>']] + [word2idx['<pad>']]*(max_len-len(temp_line)-1)) 
                 else:
-                    temp_line += [word2idx['<pad>']] * (args.max_len - len(temp_line))
+                    temp_line += [word2idx['<pad>']] * (max_len - len(temp_line))
             res.append(temp_line)
         return np.array(res)
 
 
     def load(self):
-        source_idx = self.pad(self.source_words, self.source_word2idx)
-        target_idx = self.pad(self.target_words, self.target_word2idx, is_target=True)
+        source_idx = self.pad(self.source_words, self.source_word2idx, args.source_max_len)
+        target_idx = self.pad(self.target_words, self.target_word2idx, args.target_max_len, is_target=True)
         return source_idx, target_idx

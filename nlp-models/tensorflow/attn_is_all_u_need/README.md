@@ -23,8 +23,8 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
         ```
         你是谁 -> 我是小通
         你喜欢我吗 -> 我喜欢你
-        给我唱一首歌 -> 我也不知道
-        我帅吗 -> 你才帅！
+        给我唱一首歌 -> =。=
+        我帅吗 -> 我是帅哥
         ```
 
 * I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):

@@ -9,8 +9,8 @@ def layer_norm(inputs, epsilon=1e-8):
     normalized = (inputs - mean) / (tf.sqrt(variance + epsilon))
 
     params_shape = inputs.get_shape()[-1:]
-    gamma = tf.Variable(tf.ones(params_shape))
-    beta = tf.Variable(tf.zeros(params_shape))
+    gamma = tf.get_variable('gamma', params_shape, tf.float32, tf.ones_initializer())
+    beta = tf.get_variable('beta', params_shape, tf.float32, tf.zeros_initializer())
     
     outputs = gamma * normalized + beta
     return outputs

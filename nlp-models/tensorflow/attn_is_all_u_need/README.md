@@ -19,12 +19,12 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
         ```
 * Small Task 2: learn chinese chatting
     * ``` python train_dialog.py```
-    * greedy sampling after 5000 steps
+    * greedy sampling after 10000 steps
         ```
         你是谁 -> 我是小通<end><end><end><end><end><end>
         你喜欢我吗 -> 我喜欢你<end><end><end><end><end><end>
-        给我唱一首歌 -> 我不是我的<end><end><end><end><end>
-        我帅吗 -> 你猜<end><end><end><end><end><end><end><end>
+        给我唱一首歌 -> 我也不知道<end><end><end><end><end>
+        我帅吗 -> 你才帅！<end><end><end><end><end><end>
         ```
 
 * I found an image on internet (a kind of) illustrating how an army of attentions work ([Reference](https://techcrunch.com/2017/08/31/googles-transformer-solves-a-tricky-problem-in-machine-translation/)):

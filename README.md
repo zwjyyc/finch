@@ -21,7 +21,7 @@ cd finch/nlp-models/tensorflow
 python rnn_attn_estimator_imdb_test.py
 ```
 ## Library
-Py3 is perferred, but Py2 should also work in theory; If it doesn't, please raise an issue :)
+Py3 is perferred, but Py2 should also work in theory (if it doesn't please raise an issue)
 * [tensorflow >= 1.4](https://www.tensorflow.org/)
 * [scikit-learn](http://scikit-learn.org/)
 * [openai-gym](https://github.com/openai/gym)

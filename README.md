@@ -20,12 +20,10 @@ git clone https://github.com/zhedongzheng/finch.git
 cd finch/nlp-models/tensorflow
 python rnn_attn_estimator_imdb_test.py
 ```
-I have used these powerful libraries across different sections:
+I have used these libraries across different sections:
 
 (Python 3 is perferred, but Python 2 should also work in theory; If it doesn't please raise an issue)
 * [tensorflow >= 1.4](https://www.tensorflow.org/)
-* [pytorch >= 0.20](http://pytorch.org/)
-* [mxnet >= 0.11](https://mxnet.incubator.apache.org/)
 * [scikit-learn](http://scikit-learn.org/)
 * [openai-gym](https://github.com/openai/gym)
 * [nltk](http://www.nltk.org/)

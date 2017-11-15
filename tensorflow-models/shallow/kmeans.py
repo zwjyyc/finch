@@ -36,7 +36,9 @@ class KMeans:
         counts = np.zeros(shape=(self.k, self.n_classes))
         for i, k in enumerate(idx):
             counts[k] += Y[i]
-        labels_map = [np.argmax(c) for c in counts] # assign the most frequent label to the centroid
+        # cluster index -> label
+        labels_map = [np.argmax(c) for c in counts]
+        # self.cluster_idx: (60000, ) cluster index for each sample
         self.cluster_label = tf.nn.embedding_lookup(tf.convert_to_tensor(labels_map), self.cluster_idx)
     # end method
 

@@ -4,8 +4,8 @@ from kmeans import KMeans
 
 def main():
     (X_train, y_train), (X_test, y_test) = tf.contrib.keras.datasets.mnist.load_data()
-    X_train = (X_train / 255.).reshape(-1, 28*28)
-    X_test = (X_test / 255.).reshape(-1, 28*28)
+    X_train = (X_train).reshape(-1, 28*28)
+    X_test = (X_test).reshape(-1, 28*28)
     Y_train = tf.contrib.keras.utils.to_categorical(y_train)
     print("Data Loaded")
 

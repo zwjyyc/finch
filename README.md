@@ -42,9 +42,6 @@ Py3 is perferred, but Py2 should also work in theory (if it doesn't please raise
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
 * [Appendix](https://github.com/zhedongzheng/finch/blob/master/README.md#appendix)
-  * [Shallow Structure Models](https://github.com/zhedongzheng/finch/blob/master/README.md#shallow-structure-models)
-  * [Ensemble](https://github.com/zhedongzheng/finch/blob/master/README.md#ensemble)
-  * [Time Series](https://github.com/zhedongzheng/finch/blob/master/README.md#time-series)
 
 ## NLP
 #### Text Representation

@@ -32,12 +32,6 @@ Py3 is perferred, but Py2 should also work in theory (if it doesn't please raise
 * I am moving towards ```Estimator```, which is based on [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator), more efficient;
 ## Contents
 * [NLP](https://github.com/zhedongzheng/finch/blob/master/README.md#nlp)
-  * [Word Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#word-representation)
-  * [Topic Modelling](https://github.com/zhedongzheng/finch/blob/master/README.md#topic-modelling)
-  * [Text Classification](https://github.com/zhedongzheng/finch/blob/master/README.md#text-classification)
-  * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
-  * [Text Labelling](https://github.com/zhedongzheng/finch/blob/master/README.md#text-labelling)
-  * [Sequence to Sequence](https://github.com/zhedongzheng/finch/blob/master/README.md#sequence-to-sequence)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)

@@ -57,6 +57,5 @@ if __name__ == '__main__':
     args = {
        'n_epoch': 10,
        'batch_size': 128,
-       'g_size': 100, 
-    }
+       'g_size': 100}
     main(args)

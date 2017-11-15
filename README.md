@@ -37,7 +37,6 @@ Py3 is perferred, but Py2 should also work in theory (if it doesn't please raise
   * [Text Generation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-generation)
   * [Text Labelling](https://github.com/zhedongzheng/finch/blob/master/README.md#text-labelling)
   * [Text to Text](https://github.com/zhedongzheng/finch/blob/master/README.md#text-to-text)
-  * [Image to Text](https://github.com/zhedongzheng/finch/blob/master/README.md#image-to-text)
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)

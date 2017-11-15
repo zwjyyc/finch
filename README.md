@@ -20,7 +20,7 @@ git clone https://github.com/zhedongzheng/finch.git
 cd finch/nlp-models/tensorflow
 python rnn_attn_estimator_imdb_test.py
 ```
-I have used these libraries across different sections:
+Libraries used:
 
 (Python 3 is perferred, but Python 2 should also work in theory; If it doesn't please raise an issue)
 * [tensorflow >= 1.4](https://www.tensorflow.org/)
@@ -29,13 +29,8 @@ I have used these libraries across different sections:
 * [nltk](http://www.nltk.org/)
 * [opencv 3](http://opencv.org/)
 ## Style
-* In TensorFlow part:
-    * ```Model``` is implemented very early, using ```feed_dict``` (most common but slowest data pipeline);
-    * I am moving towards ```Estimator```, which is based on [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator), more efficient;
-* In PyTorch part:
-    * We implement the model on CPU, the GPU support needs to manually add ```.cuda()``` (sorry about this);
-* In MXNet part (though there are only a few):
-    * We are using Gluon API for all the models;
+* ```Model``` is implemented very early, using ```feed_dict``` (most common but slowest data pipeline);
+* I am moving towards ```Estimator```, which is based on [tf.estimator.Estimator](https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator), more efficient;
 ## Contents
 * [NLP](https://github.com/zhedongzheng/finch/blob/master/README.md#nlp)
   * [Text Representation](https://github.com/zhedongzheng/finch/blob/master/README.md#text-representation)

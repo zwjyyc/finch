@@ -20,8 +20,7 @@ git clone https://github.com/zhedongzheng/finch.git
 cd finch/nlp-models/tensorflow
 python rnn_attn_estimator_imdb_test.py
 ```
-Libraries used:
-
+## Library
 (Python 3 is perferred, but Python 2 should also work in theory; If it doesn't please raise an issue)
 * [tensorflow >= 1.4](https://www.tensorflow.org/)
 * [scikit-learn](http://scikit-learn.org/)

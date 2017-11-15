@@ -41,7 +41,7 @@ Py3 is perferred, but Py2 should also work in theory (if it doesn't please raise
 * [Computer Vision](https://github.com/zhedongzheng/finch/blob/master/README.md#computer-vision)
 * [Information Retrieval](https://github.com/zhedongzheng/finch/blob/master/README.md#information-retrieval)
 * [Reinforcement Learning](https://github.com/zhedongzheng/finch/blob/master/README.md#reinforcement-learning)
-* [Basics](https://github.com/zhedongzheng/finch/blob/master/README.md#basics)
+* [Appendix](https://github.com/zhedongzheng/finch/blob/master/README.md#appendix)
 
 ## NLP
 #### Word Representation
@@ -149,7 +149,7 @@ Py3 is perferred, but Py2 should also work in theory (if it doesn't please raise
 
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/rl-models/tensorflow/pg_cartpole_test.py) &nbsp; | &nbsp;
 
-## Basics
+## Appendix
 #### Linear Model
 * Java &nbsp; | &nbsp; Logistic Regression &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegression.java) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/java-models/LogisticRegressionTest.java) &nbsp; | &nbsp;
 

@@ -20,8 +20,8 @@ def main():
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x = {'source':sources, 'target':targets},
             batch_size = args.batch_size,
-            num_epochs = 1,
-            shuffle = True))
+            num_epochs = None,
+            shuffle = True), steps=1000)
         stupid_decode(['apple', 'common', 'zhedong'], tf_estimator, dl)
 
 

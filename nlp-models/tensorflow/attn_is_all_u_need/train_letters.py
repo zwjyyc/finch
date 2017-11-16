@@ -13,14 +13,14 @@ def main():
         target_path='temp/letters_target.txt')
     sources, targets = dl.load()
     
-    tf_estimator = tf.estimator.Estimator(tf_estimator_model_fn,
-        params=_prepare_params(dl))
+    tf_estimator = tf.estimator.Estimator(
+        tf_estimator_model_fn, params=_prepare_params(dl), model_dir=args.model_dir)
     
-    for epoch in range(args.num_epochs // 5):
+    for epoch in range(args.num_epochs):
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x = {'source':sources, 'target':targets},
             batch_size = args.batch_size,
-            num_epochs = 5,
+            num_epochs = 1,
             shuffle = True))
         stupid_decode(['apple', 'common', 'zhedong'], tf_estimator, dl)
 

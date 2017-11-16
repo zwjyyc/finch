@@ -19,6 +19,7 @@ parser.add_argument('--label_smoothing', action='store_true')
 parser.add_argument('--lr_decay_strategy', type=str, default='exp')
 parser.add_argument('--warmup_steps', type=int, default=4000,
     help="this will be used when '--lr_decay_strategy=noam'")
+parser.add_argument('--model_dir', type=str, default='./saved')
 
 parser.set_defaults(tie_proj_weight=True)
 parser.set_defaults(label_smoothing=True)

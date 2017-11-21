@@ -85,7 +85,7 @@ Py3 is perferred, but Py2 should also work in theory (if it doesn't please raise
 
    * TensorFlow &nbsp; | &nbsp; Seq2Seq + BiLSTM Encoder + Attention + Beam-Search &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_ultimate_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; [Attention Is All You Need - Transformer](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/attn_is_all_u_need) &nbsp; | &nbsp; 
+* TensorFlow &nbsp; | &nbsp; [Transformer](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/attn_is_all_u_need) &nbsp; | &nbsp; 
 
 ## Computer Vision
 #### Image Classification

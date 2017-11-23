@@ -14,7 +14,10 @@
 
      * Residual RNN connection
 
-     * Beam Search
+     * Beam search
+     
+     * Mutual information loss
+       * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function
 
 * Usage
    * ``` python train.py ```

@@ -21,22 +21,27 @@ class VRAE:
 
     def _build_forward_graph(self):
         self._build_inputs()
+
         self._decoder_to_output(
             self._latent_to_decoder(
                 self._encoder_to_latent()))
 
+        self._output_to_latent()
+
 
     def _build_backward_graph(self):
-        global_step = tf.Variable(0, trainable=False)
-
         self.nll_loss = self._nll_loss_fn()
-        self.kl_w = self._kl_w_fn(args.anneal_max, args.anneal_bias, global_step)
+        if args.kl_anneal:
+            self.kl_w = self._kl_w_fn(args.anneal_max, args.anneal_bias, self.global_step)
         self.kl_loss = self._kl_loss_fn(self.z_mean, self.z_logvar)
-        loss_op = self.nll_loss + self.kl_w * self.kl_loss
+        self.mutinfo_loss = self._mutinfo_loss_fn(self.z_mean_new, self.z_logvar_new)
+        kl_loss = self.kl_w * self.kl_loss if args.kl_anneal else self.kl_loss
+
+        loss_op = self.nll_loss + kl_loss + self.mutinfo_loss
 
         clipped_gradients, params = self._gradient_clipping(loss_op)
         self.train_op = tf.train.AdamOptimizer().apply_gradients(
-            zip(clipped_gradients, params), global_step=global_step)
+            zip(clipped_gradients, params), global_step=self.global_step)
 
 
     def _build_inputs(self):
@@ -62,39 +67,32 @@ class VRAE:
                 inputs = tf.nn.embedding_lookup(self.tied_embedding, self.seq),
                 sequence_length = self.seq_length,
                 dtype = tf.float32)
-
-        if args.rnn_cell == 'lstm':
-            encoded_state = encoded_state[-1].h
-        elif args.rnn_cell == 'gru':
-            encoded_state = encoded_state[-1]
-        else:
-            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
-        
-        return encoded_state
+        return self._parse_encoded_state(encoded_state)
 
 
     def _latent_to_decoder(self, rnn_encoded):
-        self.z_mean = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
-        self.z_logvar = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
-        gaussian_noise = tf.truncated_normal(tf.shape(self.z_logvar))
+        with tf.variable_scope('latent'):
+            self.z_mean = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
+            self.z_logvar = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
+            self.gaussian_noise = tf.truncated_normal(tf.shape(self.z_logvar))
 
-        self.z = self.z_mean + tf.exp(0.5 * self.z_logvar) * gaussian_noise
+            self.z = self.z_mean + tf.exp(0.5 * self.z_logvar) * self.gaussian_noise
 
-        if args.rnn_cell == 'lstm':
-            c = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
-            h = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
-            return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
-        elif args.rnn_cell == 'gru':
-            state = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
-            return tuple([state] * args.decoder_layers)
-        else:
-            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
+            if args.rnn_cell == 'lstm':
+                c = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
+                h = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
+                return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
+            elif args.rnn_cell == 'gru':
+                state = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
+                return tuple([state] * args.decoder_layers)
+            else:
+                raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
 
 
     def _decoder_to_output(self, init_state):
-        with tf.variable_scope('training'):
+        with tf.variable_scope('decoding'):
             self.training_rnn_out, self.training_logits = self._decoder_training(init_state)
-        with tf.variable_scope('training', reuse=True):
+        with tf.variable_scope('decoding', reuse=True):
             self.predicted_ids = self._decoder_inference(init_state)
 
 
@@ -172,24 +170,25 @@ class VRAE:
 
 
     def _nll_loss_fn(self):
-        if args.num_sampled >= args.vocab_size:
-            seq_length = self.seq_length + 1
+        seq_length = self.seq_length + 1
+        self.mask = tf.sequence_mask(seq_length, tf.reduce_max(seq_length), dtype=tf.float32)
+        if (args.num_sampled == 0) or (args.num_sampled >= args.vocab_size):
             return tf.reduce_sum(tf.contrib.seq2seq.sequence_loss(
                 logits = self.training_logits,
                 targets = self._decoder_output(),
-                weights = tf.sequence_mask(seq_length, tf.reduce_max(seq_length), dtype=tf.float32),
+                weights = self.mask,
                 average_across_timesteps = False,
                 average_across_batch = True))
-        if args.num_sampled < args.vocab_size:
-            with tf.variable_scope('training/decoder/dense', reuse=True):
-                return tf.reduce_sum(tf.nn.sampled_softmax_loss(
+        else:
+            with tf.variable_scope('decoding/decoder/dense', reuse=True):
+                return tf.reduce_sum(tf.reshape(self.mask,[-1]) * tf.nn.sampled_softmax_loss(
                     weights = tf.transpose(tf.get_variable('kernel')),
                     biases = tf.get_variable('bias'),
                     labels = tf.reshape(self._decoder_output(), [-1, 1]),
                     inputs = tf.reshape(self.training_rnn_out, [-1, args.rnn_size]),
                     num_sampled = args.num_sampled,
                     num_classes = args.vocab_size,
-                )) / tf.cast(self._batch_size, tf.float32)
+                )) / tf.to_float(self._batch_size)
 
 
     def _kl_w_fn(self, anneal_max, anneal_bias, global_step):
@@ -199,16 +198,30 @@ class VRAE:
 
     def _kl_loss_fn(self, mean, gamma):
         return 0.5 * tf.reduce_sum(
-            tf.exp(gamma) + tf.square(mean) - 1 - gamma) / tf.cast(self._batch_size, tf.float32)
+            tf.exp(gamma) + tf.square(mean) - 1 - gamma) / tf.to_float(self._batch_size)
 
 
     def train_session(self, sess, seq, seq_dropped, seq_len):
-        _, nll_loss, kl_w, kl_loss = sess.run(
-            [self.train_op, self.nll_loss, self.kl_w, self.kl_loss],
-                {self.seq: seq, self.seq_dropped: seq_dropped, self.seq_length: seq_len})
-        return {'nll_loss': nll_loss,
-                'kl_w': kl_w,
-                'kl_loss': kl_loss}
+        if args.kl_anneal:
+            _, nll_loss, kl_w, kl_loss, temperature, step, mutinfo_loss = sess.run(
+                [self.train_op, self.nll_loss, self.kl_w, self.kl_loss, self.temperature, self.global_step,
+                self.mutinfo_loss],
+                    {self.seq: seq, self.seq_dropped: seq_dropped, self.seq_length: seq_len})
+            return {'nll_loss': nll_loss,
+                    'kl_w': kl_w,
+                    'kl_loss': kl_loss,
+                    'temperature': temperature,
+                    'step': step,
+                    'mutinfo_loss': mutinfo_loss}
+        else:
+            _, nll_loss, kl_loss, temperature, step, mutinfo_loss = sess.run(
+                [self.train_op, self.nll_loss, self.kl_loss, self.temperature, self.global_step, self.mutinfo_loss],
+                    {self.seq: seq, self.seq_dropped: seq_dropped, self.seq_length: seq_len})
+            return {'nll_loss': nll_loss,
+                    'kl_loss': kl_loss,
+                    'temperature': temperature,
+                    'step': step,
+                    'mutinfo_loss': mutinfo_loss}
 
 
     def reconstruct(self, sess, sentence, sentence_dropped):
@@ -239,3 +252,53 @@ class VRAE:
         gradients = tf.gradients(loss_op, params)
         clipped_gradients, _ = tf.clip_by_global_norm(gradients, args.clip_norm)
         return clipped_gradients, params
+
+
+    def _parse_encoded_state(self, encoded_state):
+        if args.rnn_cell == 'lstm':
+            encoded_state = encoded_state[-1].h
+        elif args.rnn_cell == 'gru':
+            encoded_state = encoded_state[-1]
+        else:
+            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
+        return encoded_state
+
+
+    def _inverse_sigmoid(self, x):
+        return 1 / (1 + tf.exp(x))
+
+
+    def _temperature_fn(self, anneal_max, anneal_bias, global_step):
+        return anneal_max * self._inverse_sigmoid((10 / anneal_bias) * (
+            tf.cast(global_step, tf.float32) - tf.constant(anneal_bias / 2)))
+
+
+    def _output_to_latent(self):
+        self.global_step = tf.Variable(0, trainable=False)
+        self.temperature = self._temperature_fn(args.anneal_max, args.anneal_bias, self.global_step)
+
+        logits_2d = tf.reshape(self.training_logits, [-1, args.vocab_size])    # (N*T, V)
+        softmax_2d = tf.nn.softmax(logits_2d) / self.temperature          # (N*T, V)
+        embeded_2d = tf.matmul(softmax_2d, self.tied_embedding)                # (N*T, D)
+        embeded = tf.reshape(embeded_2d, [self._batch_size, args.max_len+1, args.embedding_dim])
+
+        with tf.variable_scope('encoder', reuse=True):
+            encoded_output, encoded_state = tf.nn.dynamic_rnn(
+                cell = tf.nn.rnn_cell.MultiRNNCell(
+                    [self._residual_rnn_cell(reuse=True) for _ in range(args.encoder_layers)]), 
+                inputs = embeded,
+                sequence_length = self.seq_length,
+                dtype = tf.float32)
+        encoded_state = self._parse_encoded_state(encoded_state)
+
+        with tf.variable_scope('latent', reuse=True):
+            self.z_mean_new = tf.layers.dense(encoded_state, args.latent_size, tf.nn.elu, reuse=True)
+            self.z_logvar_new = tf.layers.dense(encoded_state, args.latent_size, tf.nn.elu, reuse=True)
+
+
+    def _mutinfo_loss_fn(self, z_mean_new, z_logvar_new):
+        epsilon = tf.constant(1e-10)
+        distribution = tf.contrib.distributions.MultivariateNormalDiag(
+            self.z_mean_new, tf.exp(self.z_logvar_new), validate_args=True)
+        mutinfo_loss = -tf.log(tf.add(epsilon, distribution.prob(self.gaussian_noise)))
+        return tf.reduce_sum(mutinfo_loss) / tf.to_float(self._batch_size)

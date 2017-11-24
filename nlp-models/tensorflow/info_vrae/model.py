@@ -21,21 +21,23 @@ class VRAE:
 
     def _build_forward_graph(self):
         self._build_inputs()
-
         self._decoder_to_output(
             self._latent_to_decoder(
                 self._encoder_to_latent()))
-
-        self._output_to_latent()
+        self._output_to_latent() # for mutual information loss
 
 
     def _build_backward_graph(self):
         self.nll_loss = self._nll_loss_fn()
-        if args.kl_anneal:
+
+        if not args.no_kl_anneal:
             self.kl_w = self._kl_w_fn(args.anneal_max, args.anneal_bias, self.global_step)
         self.kl_loss = self._kl_loss_fn(self.z_mean, self.z_logvar)
-        self.mutinfo_loss = self._mutinfo_loss_fn(self.z_mean_new, self.z_logvar_new)
-        kl_loss = self.kl_w * self.kl_loss if args.kl_anneal else self.kl_loss
+        kl_loss = self.kl_w * self.kl_loss if not args.no_kl_anneal else self.kl_loss
+
+        thres = tf.constant(args.mutinfo_sleep_steps, tf.int32)
+        self.mutinfo_loss = tf.where(tf.equal(tf.maximum(thres, self.global_step), thres),
+            tf.constant(0, tf.float32), self._mutinfo_loss_fn(self.z_mean_new, self.z_logvar_new))
 
         loss_op = self.nll_loss + kl_loss + self.mutinfo_loss
 
@@ -59,34 +61,34 @@ class VRAE:
         # since the source and the target for Autoencoder are the same
         self.tied_embedding = tf.get_variable('tied_embedding', [args.vocab_size, args.embedding_dim],
             tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
-                
-        with tf.variable_scope('encoder'):
-            encoded_output, encoded_state = tf.nn.dynamic_rnn(
-                cell = tf.nn.rnn_cell.MultiRNNCell(
-                    [self._residual_rnn_cell() for _ in range(args.encoder_layers)]), 
-                inputs = tf.nn.embedding_lookup(self.tied_embedding, self.seq),
-                sequence_length = self.seq_length,
-                dtype = tf.float32)
-        return self._parse_encoded_state(encoded_state)
+        
+        if args.encoder_net == 'rnn':
+            with tf.variable_scope('encoder'):
+                encoded_output, encoded_state = tf.nn.dynamic_rnn(
+                    cell = tf.nn.rnn_cell.MultiRNNCell(
+                        [self._residual_rnn_cell() for _ in range(args.encoder_layers)]), 
+                    inputs = tf.nn.embedding_lookup(self.tied_embedding, self.seq),
+                    sequence_length = self.seq_length,
+                    dtype = tf.float32)
+            return self._parse_encoded_state(encoded_state)
+        elif args.encoder_net == 'cnn':
+            with tf.variable_scope('encoder'):
+                inputs = tf.nn.embedding_lookup(self.tied_embedding, self.seq)
+                encoded = tf.layers.conv1d(inputs, args.cnn_filters, args.cnn_kernel_size)
+                _seq_len = args.max_len - args.cnn_kernel_size + 1
+                encoded = tf.layers.average_pooling1d(encoded, _seq_len, 1)
+                return tf.reshape(encoded, [self._batch_size, args.cnn_filters])
+        else:
+            pass
 
 
     def _latent_to_decoder(self, rnn_encoded):
         with tf.variable_scope('latent'):
-            self.z_mean = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
-            self.z_logvar = tf.layers.dense(rnn_encoded, args.latent_size, tf.nn.elu)
+            self.z_mean = tf.layers.dense(rnn_encoded, args.latent_size)
+            self.z_logvar = tf.layers.dense(rnn_encoded, args.latent_size)
             self.gaussian_noise = tf.truncated_normal(tf.shape(self.z_logvar))
-
             self.z = self.z_mean + tf.exp(0.5 * self.z_logvar) * self.gaussian_noise
-
-            if args.rnn_cell == 'lstm':
-                c = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
-                h = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
-                return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
-            elif args.rnn_cell == 'gru':
-                state = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
-                return tuple([state] * args.decoder_layers)
-            else:
-                raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
+            return self._parse_decoder_state(self.z)
 
 
     def _decoder_to_output(self, init_state):
@@ -202,7 +204,7 @@ class VRAE:
 
 
     def train_session(self, sess, seq, seq_dropped, seq_len):
-        if args.kl_anneal:
+        if not args.no_kl_anneal:
             _, nll_loss, kl_w, kl_loss, temperature, step, mutinfo_loss = sess.run(
                 [self.train_op, self.nll_loss, self.kl_w, self.kl_loss, self.temperature, self.global_step,
                 self.mutinfo_loss],
@@ -264,13 +266,26 @@ class VRAE:
         return encoded_state
 
 
+    def _parse_decoder_state(self, z):
+        if args.rnn_cell == 'lstm':
+            c = tf.layers.dense(z, args.rnn_size, tf.nn.elu)
+            h = tf.layers.dense(z, args.rnn_size, tf.nn.elu)
+            return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
+        elif args.rnn_cell == 'gru':
+            state = tf.layers.dense(z, args.rnn_size, tf.nn.elu)
+            return tuple([state] * args.decoder_layers)
+        else:
+            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
+
+
     def _inverse_sigmoid(self, x):
         return 1 / (1 + tf.exp(x))
 
 
     def _temperature_fn(self, anneal_max, anneal_bias, global_step):
-        return anneal_max * self._inverse_sigmoid((10 / anneal_bias) * (
+        temperature = anneal_max * self._inverse_sigmoid((10 / anneal_bias) * (
             tf.cast(global_step, tf.float32) - tf.constant(anneal_bias / 2)))
+        return tf.maximum(tf.constant(0.1), temperature)
 
 
     def _output_to_latent(self):
@@ -278,18 +293,26 @@ class VRAE:
         self.temperature = self._temperature_fn(args.anneal_max, args.anneal_bias, self.global_step)
 
         logits_2d = tf.reshape(self.training_logits, [-1, args.vocab_size])    # (N*T, V)
-        softmax_2d = tf.nn.softmax(logits_2d) / self.temperature          # (N*T, V)
+        softmax_2d = tf.nn.softmax(logits_2d) / self.temperature               # (N*T, V)
         embeded_2d = tf.matmul(softmax_2d, self.tied_embedding)                # (N*T, D)
         embeded = tf.reshape(embeded_2d, [self._batch_size, args.max_len+1, args.embedding_dim])
 
         with tf.variable_scope('encoder', reuse=True):
-            encoded_output, encoded_state = tf.nn.dynamic_rnn(
-                cell = tf.nn.rnn_cell.MultiRNNCell(
-                    [self._residual_rnn_cell(reuse=True) for _ in range(args.encoder_layers)]), 
-                inputs = embeded,
-                sequence_length = self.seq_length,
-                dtype = tf.float32)
-        encoded_state = self._parse_encoded_state(encoded_state)
+            if args.encoder_net == 'rnn':
+                encoded_output, encoded_state = tf.nn.dynamic_rnn(
+                    cell = tf.nn.rnn_cell.MultiRNNCell(
+                        [self._residual_rnn_cell(reuse=True) for _ in range(args.encoder_layers)]), 
+                    inputs = embeded,
+                    sequence_length = self.seq_length,
+                    dtype = tf.float32)
+                encoded_state = self._parse_encoded_state(encoded_state)
+            elif args.encoder_net == 'cnn':
+                encoded = tf.layers.conv1d(embeded, args.cnn_filters, args.cnn_kernel_size, reuse=True)
+                _seq_len = args.max_len + 1 - args.cnn_kernel_size + 1
+                encoded = tf.layers.average_pooling1d(encoded, _seq_len, 1)
+                encoded_state = tf.reshape(encoded, [self._batch_size, args.cnn_filters])
+            else:
+                pass
 
         with tf.variable_scope('latent', reuse=True):
             self.z_mean_new = tf.layers.dense(encoded_state, args.latent_size, tf.nn.elu, reuse=True)

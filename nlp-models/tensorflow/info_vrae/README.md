@@ -18,6 +18,8 @@
      
      * Mutual information loss
        * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function
+     
+     * Convolution Encoder
 
 * Usage
    * ``` python train.py ```

@@ -6,6 +6,8 @@ import json
 import numpy as np
 import tensorflow as tf
 
+tf.logging.set_verbosity(tf.logging.INFO)
+
 
 def main():
     dl = DataLoader(
@@ -70,6 +72,5 @@ def _get_activation():
 
 
 if __name__ == '__main__':
-    tf.logging.set_verbosity(tf.logging.INFO)
     print(json.dumps(args.__dict__, indent=4))
     main()

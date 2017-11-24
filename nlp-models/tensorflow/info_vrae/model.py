@@ -66,7 +66,8 @@ class VRAE:
             with tf.variable_scope('encoder'):
                 encoded_output, encoded_state = tf.nn.dynamic_rnn(
                     cell = tf.nn.rnn_cell.MultiRNNCell(
-                        [self._residual_rnn_cell() for _ in range(args.encoder_layers)]), 
+                        [self._residual_rnn_cell(
+                            rnn_size=args.rnn_size-args.latent_size) for _ in range(args.encoder_layers)]), 
                     inputs = tf.nn.embedding_lookup(self.tied_embedding, self.seq),
                     sequence_length = self.seq_length,
                     dtype = tf.float32)
@@ -74,21 +75,25 @@ class VRAE:
         elif args.encoder_net == 'cnn':
             with tf.variable_scope('encoder'):
                 inputs = tf.nn.embedding_lookup(self.tied_embedding, self.seq)
-                encoded = tf.layers.conv1d(inputs, args.cnn_filters, args.cnn_kernel_size)
+                _cnn_filters = args.rnn_size - args.latent_size
+
+                encoded = tf.layers.conv1d(inputs, _cnn_filters, args.cnn_kernel_size)
                 _seq_len = args.max_len - args.cnn_kernel_size + 1
-                encoded = tf.layers.average_pooling1d(encoded, _seq_len, 1)
-                return tf.reshape(encoded, [self._batch_size, args.cnn_filters])
+                encoded = tf.layers.max_pooling1d(encoded, _seq_len, 1)
+                return tf.reshape(encoded, [self._batch_size, _cnn_filters])
         else:
             pass
 
 
-    def _latent_to_decoder(self, rnn_encoded):
+    def _latent_to_decoder(self, encoded):
         with tf.variable_scope('latent'):
-            self.z_mean = tf.layers.dense(rnn_encoded, args.latent_size)
-            self.z_logvar = tf.layers.dense(rnn_encoded, args.latent_size)
+            self.z_mean = tf.layers.dense(encoded, args.latent_size)
+            self.z_logvar = tf.layers.dense(encoded, args.latent_size)
             self.gaussian_noise = tf.truncated_normal(tf.shape(self.z_logvar))
-            self.z = self.z_mean + tf.exp(0.5 * self.z_logvar) * self.gaussian_noise
-            return self._parse_decoder_state(self.z)
+            _z = self.z_mean + tf.exp(0.5 * self.z_logvar) * self.gaussian_noise
+            self.z = tf.concat([_z, encoded], -1)
+            return tuple([self.z] * args.decoder_layers)
+            #return self._parse_decoder_state(self.z)
 
 
     def _decoder_to_output(self, init_state):
@@ -106,7 +111,7 @@ class VRAE:
             sequence_length = self.seq_length + 1)
         decoder = BasicDecoder(
             cell = tf.nn.rnn_cell.MultiRNNCell(
-                [self._rnn_cell() for _ in range(args.decoder_layers)]),
+                [self._rnn_cell(args.rnn_size) for _ in range(args.decoder_layers)]),
             helper = helper,
             initial_state = init_state,
             z = self.z,
@@ -124,7 +129,7 @@ class VRAE:
 
         decoder = BeamSearchDecoder(
             cell = tf.nn.rnn_cell.MultiRNNCell(
-                [self._rnn_cell(reuse=True) for _ in range(args.decoder_layers)]),
+                [self._rnn_cell(args.rnn_size, reuse=True) for _ in range(args.decoder_layers)]),
             embedding = self.tied_embedding,
             start_tokens = tf.tile(tf.constant(
                 [self._word2idx['<start>']], dtype=tf.int32), [self._batch_size]),
@@ -141,24 +146,27 @@ class VRAE:
         return decoder_output.predicted_ids[:, :, 0]
 
 
-    def _rnn_cell(self, reuse=False):
+    def _rnn_cell(self, rnn_size, reuse=False):
         if args.rnn_cell == 'lstm':
             return tf.nn.rnn_cell.LSTMCell(
-                args.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+                rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
         elif args.rnn_cell == 'gru':
             return tf.nn.rnn_cell.GRUCell(
-                args.rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
+                rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
         else:
             raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
 
 
-    def _residual_rnn_cell(self, reuse=False):
+    def _residual_rnn_cell(self, reuse=False, rnn_size=args.rnn_size):
+        """
         if args.embedding_dim != args.rnn_size:
             return tf.nn.rnn_cell.ResidualWrapper(
                 tf.contrib.rnn.OutputProjectionWrapper(
-                    self._rnn_cell(reuse=reuse), args.embedding_dim))
+                    self._rnn_cell(rnn_size, reuse=reuse), args.embedding_dim))
         if args.embedding_dim == args.rnn_size:
-            return tf.nn.rnn_cell.ResidualWrapper(self._rnn_cell(reuse=reuse))
+            return tf.nn.rnn_cell.ResidualWrapper(self._rnn_cell(rnn_size, reuse=reuse))
+        """
+        return self._rnn_cell(rnn_size, reuse=reuse)
 
 
     def _decoder_input(self):
@@ -239,7 +247,7 @@ class VRAE:
     def generate(self, sess):
         predicted_ids = sess.run(self.predicted_ids,
                                 {self._batch_size: 1,
-                                 self.z: np.random.randn(1, args.latent_size),
+                                 self.z: np.random.randn(1, args.rnn_size),
                                  self.gen_seq_length: args.max_len})[0]
         print('G: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')
 
@@ -301,16 +309,19 @@ class VRAE:
             if args.encoder_net == 'rnn':
                 encoded_output, encoded_state = tf.nn.dynamic_rnn(
                     cell = tf.nn.rnn_cell.MultiRNNCell(
-                        [self._residual_rnn_cell(reuse=True) for _ in range(args.encoder_layers)]), 
+                        [self._residual_rnn_cell(
+                            rnn_size=args.rnn_size-args.latent_size, reuse=True) for _ in range(args.encoder_layers)]), 
                     inputs = embeded,
                     sequence_length = self.seq_length,
                     dtype = tf.float32)
                 encoded_state = self._parse_encoded_state(encoded_state)
             elif args.encoder_net == 'cnn':
-                encoded = tf.layers.conv1d(embeded, args.cnn_filters, args.cnn_kernel_size, reuse=True)
+                _cnn_filters = args.rnn_size - args.latent_size
+                encoded = tf.layers.conv1d(embeded, _cnn_filters, args.cnn_kernel_size, reuse=True)
+
                 _seq_len = args.max_len + 1 - args.cnn_kernel_size + 1
-                encoded = tf.layers.average_pooling1d(encoded, _seq_len, 1)
-                encoded_state = tf.reshape(encoded, [self._batch_size, args.cnn_filters])
+                encoded = tf.layers.max_pooling1d(encoded, _seq_len, 1)
+                encoded_state = tf.reshape(encoded, [self._batch_size, _cnn_filters])
             else:
                 pass
 

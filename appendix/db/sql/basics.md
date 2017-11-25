@@ -101,7 +101,9 @@
 				SELECT first_name,last_name
 				FROM customer
 				WHERE first_name LIKE 'Jen%';
-
+		* Percent (%) for matching any sequence of characters
+		* Underscore (_) for matching any single character
+		
 * 实战
 	* 查找最晚入职员工的所有信息
 

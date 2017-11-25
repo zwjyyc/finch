@@ -6,11 +6,11 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 SEQ_LEN = 10
 BATCH_SIZE = 128
-NUM_EPOCH = 3
+NUM_EPOCH = 1
 
 
 def forward_pass(sources, params, reuse=False,
-                 dropout_rate=0.2, hidden_units=128, num_heads=8, num_blocks=1):
+                 dropout_rate=0.2, hidden_units=128, num_heads=4, num_blocks=1):
     with tf.variable_scope('forward_pass', reuse=reuse):
         en_masks = tf.sign(tf.abs(sources))     
         with tf.variable_scope('encoder_embedding', reuse=reuse):
@@ -26,7 +26,7 @@ def forward_pass(sources, params, reuse=False,
                     num_units=hidden_units, num_heads=num_heads, dropout_rate=dropout_rate,
                     causality=False, reuse=reuse, activation=None)
             with tf.variable_scope('encoder_feedforward_%d'%i, reuse=reuse):
-                encoded = pointwise_feedforward(encoded, num_units=[4*hidden_units, hidden_units],
+                encoded = pointwise_feedforward(encoded, num_units=[hidden_units, hidden_units],
                     activation=tf.nn.elu)
         return tf.layers.dense(encoded, params['n_class'])
 
@@ -42,11 +42,10 @@ def _model_fn_train(features, labels, mode, params):
     logits = forward_pass(features['inputs'], params)
     _ = forward_pass(features['inputs'], params, reuse=True)
 
-    loss_op = label_smoothing_sequence_loss(
+    loss_op = tf.contrib.seq2seq.sequence_loss(
         logits = logits,
         targets = labels,
-        weights = tf.ones_like(labels, tf.float32),
-        label_depth = params['n_class'])
+        weights = tf.ones_like(labels, tf.float32))
 
     acc_op = tf.reduce_mean(tf.cast(tf.equal(
             tf.argmax(logits,-1), labels), tf.float32))

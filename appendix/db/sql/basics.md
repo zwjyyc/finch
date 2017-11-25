@@ -95,6 +95,13 @@
 				OR customer_id != 2
 				ORDER BY return_date DESC;
 
+	* Like
+		* Example: find the customer in the customer table by looking at the first name column to see if there is any value that begins with Jen.
+		
+				SELECT first_name,last_name
+				FROM customer
+				WHERE first_name LIKE 'Jen%';
+
 * 实战
 	* 查找最晚入职员工的所有信息
 

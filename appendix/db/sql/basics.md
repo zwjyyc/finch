@@ -101,11 +101,16 @@
 				SELECT first_name,last_name
 				FROM customer
 				WHERE first_name LIKE 'Jen%';
-		* any word ends with y
+		* any word ends with 'y'
 		
 				SELECT first_name,last_name
 				FROM customer
 				WHERE first_name LIKE '%y';
+		* contains 'er' in middle
+		
+				SELECT first_name,last_name
+				FROM customer
+				WHERE first_name LIKE '%er%';
 		* Percent (%) for matching any sequence of characters
 		* Underscore (_) for matching any single character
 		

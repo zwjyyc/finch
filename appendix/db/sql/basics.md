@@ -113,6 +113,7 @@
 				WHERE first_name LIKE '%er%';
 		* Percent (%) for matching any sequence of characters
 		* Underscore (_) for matching any single character
+		* LIKE -> ILIKE: case insensitive
 		
 * 实战
 	* 查找最晚入职员工的所有信息

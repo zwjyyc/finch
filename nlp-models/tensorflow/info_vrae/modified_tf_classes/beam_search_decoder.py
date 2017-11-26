@@ -171,7 +171,7 @@ class BeamSearchDecoder(decoder.Decoder):
                end_token,
                initial_state,
                beam_width,
-               z,
+               concat_z,
                output_layer=None,
                length_penalty_weight=0.0):
     """Initialize the BeamSearchDecoder.
@@ -230,7 +230,7 @@ class BeamSearchDecoder(decoder.Decoder):
     self._start_inputs = self._embedding_fn(self._start_tokens)
     self._finished = array_ops.zeros(
         [self._batch_size, self._beam_width], dtype=dtypes.bool)
-    self.z = z
+    self.z = concat_z
 
   @property
   def batch_size(self):

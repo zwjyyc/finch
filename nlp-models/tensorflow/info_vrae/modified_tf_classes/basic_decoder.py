@@ -45,7 +45,7 @@ class BasicDecoderOutput(
 class BasicDecoder(decoder.Decoder):
   """Basic sampling decoder."""
 
-  def __init__(self, cell, helper, initial_state, z, output_layer=None):
+  def __init__(self, cell, helper, initial_state, concat_z, output_layer=None):
     """Initialize BasicDecoder.
 
     Args:
@@ -72,7 +72,7 @@ class BasicDecoder(decoder.Decoder):
     self._helper = helper
     self._initial_state = initial_state
     self._output_layer = output_layer
-    self.z = z
+    self.z = concat_z
 
   @property
   def batch_size(self):

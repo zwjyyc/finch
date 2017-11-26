@@ -16,22 +16,16 @@
 
      * Beam search
      
-     * Mutual information loss
-       * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function
+     * Highway network between the encoder and decoder (gated Z)
      
-     * Convolutional Encoder
+     * (Optional) Mutual information loss
+       * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function
 
 * Usage
    * ``` python train.py ```
    * decoding after  epoches:
        ```
-        I: this has got to be the worse move i've ever
-
-        D: <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
-
-        O: this has to be be the worst film i have
-
-        G: in the <unk> of <unk> <unk> are a lot of
+        
        ```
    where:
    * I is the encoder input
@@ -40,5 +34,5 @@
 
    * O is the decoder output with regards to encoder input
 
-   * G is the text generation, after replacing the latent vector (z) by random normal noise
-       * the text is directly generated from latent layer, disconnected from encoder
+   * G is the text generation, after replacing the latent vector (z) by gaussian distribution
+       * the latent vector is directly sampled from gaussian, disconnected from encoder

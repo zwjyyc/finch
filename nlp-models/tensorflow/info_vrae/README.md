@@ -25,7 +25,7 @@
 * Usage
    * ``` python train.py ```
     
-       sampling after 54 epoches:
+       sampling after 54 epochs:
        ```
        Step 21074 | [54/100] | [350/390] | nll_loss:132.1 | kl_w:1.000 | kl_loss:6.31
        

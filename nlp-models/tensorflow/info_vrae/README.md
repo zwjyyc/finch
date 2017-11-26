@@ -26,14 +26,15 @@
     
        sampling after 54 epoches:
        ```
-       Step 21074 | [54/100] | [350/390] | nll_loss:132.1 | kl_w:1.000 | kl_loss:6.31 
-        I: don't get me wrong i love most of paul <unk> movies so it was with sheer excitement i was able to attend at the rolling <unk> screening at the <unk>
+       Step 21074 | [54/100] | [350/390] | nll_loss:132.1 | kl_w:1.000 | kl_loss:6.31
+       
+       I: don't get me wrong i love most of paul <unk> movies so it was with sheer excitement i was able to attend at the rolling <unk> screening at the <unk>
 
-        D: <unk> <unk> <unk> <unk> i <unk> most of <unk> <unk> <unk> so <unk> <unk> <unk> <unk> <unk> i <unk> <unk> <unk> <unk> <unk> <unk> rolling <unk> <unk> at <unk> <unk>
+       D: <unk> <unk> <unk> <unk> i <unk> most of <unk> <unk> <unk> so <unk> <unk> <unk> <unk> <unk> i <unk> <unk> <unk> <unk> <unk> <unk> rolling <unk> <unk> at <unk> <unk>
 
-        O: let me start by saying that i am a huge fan of this movie and i have to say that this movie was a <unk> of the <unk> <unk> <end>
+       O: let me start by saying that i am a huge fan of this movie and i have to say that this movie was a <unk> of the <unk> <unk> <end>
 
-        G: this movie was the worst movie i have ever seen in my life when i saw it at the end of the <unk> of the <unk> of the <unk> <unk>
+       G: this movie was the worst movie i have ever seen in my life when i saw it at the end of the <unk> of the <unk> of the <unk> <unk>
        ```
    where:
    * I is the encoder input

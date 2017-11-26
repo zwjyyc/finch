@@ -23,7 +23,8 @@
 
 * Usage
    * ``` python train.py ```
-   * decoding after  epoches:
+    
+       decoding after  epoches:
        ```
         
        ```

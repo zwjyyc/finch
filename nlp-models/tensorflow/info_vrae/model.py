@@ -273,9 +273,9 @@ class VRAE:
         self.global_step = tf.Variable(0, trainable=False)
         self.temperature = self._temperature_fn(args.anneal_max, args.anneal_bias, self.global_step)
 
-        logits_2d = tf.reshape(self.training_logits, [-1, args.vocab_size])    # (N*T, V)
-        softmax_2d = tf.nn.softmax(logits_2d) / self.temperature          # (N*T, V)
-        embeded_2d = tf.matmul(softmax_2d, self.tied_embedding)                # (N*T, D)
+        gumble = tf.contrib.distributions.RelaxedOneHotCategorical(
+            self.temperature, logits=self.training_logits)
+        embeded_2d = tf.matmul(tf.reshape(gumble.sample(), [-1,args.vocab_size]), self.tied_embedding)
         embeded = tf.reshape(embeded_2d, [self._batch_size, args.max_len+1, args.embedding_dim])
 
         with tf.variable_scope('encoder', reuse=True):

@@ -3,7 +3,7 @@
 
    * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface (TF 1.3)
 
-   * Following features are enabled:
+   * Following tricks are enabled:
 
      * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
 
@@ -40,7 +40,7 @@
    where:
    * I is the encoder input
 
-   * D is the decoder input (after word dropout, most are unknown)
+   * D is the decoder input (if high word dropout is set, then most are unknown)
 
    * O is the decoder output with regards to encoder input
 

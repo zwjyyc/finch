@@ -38,7 +38,7 @@
    where:
    * I is the encoder input
 
-   * D is the decoder input (if high word dropout is set, then most are unknown)
+   * D is the decoder input (if 90% word dropout is set, then about 9 out of 10 words are unknown)
 
    * O is the decoder output with regards to encoder input
 

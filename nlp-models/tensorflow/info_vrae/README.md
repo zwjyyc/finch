@@ -23,15 +23,17 @@
 * Usage
    * ``` python train.py ```
     
-       sampling after 50 epochs:
+       After 50 epochs:
        ```
-       I: i am a big fan of stephen king i loved the running man so obviously
+       Step 19510 | [50/100] | [350/390] | nll_loss:59.4 | kl_w:1.000 | kl_loss:11.43 
 
-       D: <unk> <unk> a <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
+       I: <unk> <unk> has never done a film so far as i know and this includes
 
-       O: i am a huge fan of <unk> and i am a fan of this movie
+       D: <unk> <unk> <unk> never <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
 
-       G: when i <unk> a <unk> to <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
+       O: <unk> <unk> has been a great movie as a <unk> but it was <unk> to
+
+       G: as many years ago i have been <unk> to see this movie for this one
        ```
    where:
    * I is the encoder input

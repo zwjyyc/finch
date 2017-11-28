@@ -1,4 +1,4 @@
-* Please be warned that the VAE in NLP is much more difficult to make it work than that in Computer Vision
+* Please be warned that the VAE in NLP is much more difficult to make it work than in Computer Vision
 * Features
 
    * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface (TF 1.3)
@@ -17,25 +17,21 @@
 
      * Beam search
      
-     * Highway network between the encoder and decoder (gated Z)
-     
      * (Optional) Mutual information loss
        * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function
 
 * Usage
    * ``` python train.py ```
     
-       sampling after 54 epochs:
+       sampling after 50 epochs:
        ```
-       Step 21074 | [54/100] | [350/390] | nll_loss:132.1 | kl_w:1.000 | kl_loss:6.31
-       
-       I: don't get me wrong i love most of paul <unk> movies so it was with sheer excitement i was able to attend at the rolling <unk> screening at the <unk>
+       I: i am a big fan of stephen king i loved the running man so obviously
 
-       D: <unk> <unk> <unk> <unk> i <unk> most of <unk> <unk> <unk> so <unk> <unk> <unk> <unk> <unk> i <unk> <unk> <unk> <unk> <unk> <unk> rolling <unk> <unk> at <unk> <unk>
+       D: <unk> <unk> a <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
 
-       O: let me start by saying that i am a huge fan of this movie and i have to say that this movie was a <unk> of the <unk> <unk> <end>
+       O: i am a huge fan of <unk> and i am a fan of this movie
 
-       G: this movie was the worst movie i have ever seen in my life when i saw it at the end of the <unk> of the <unk> of the <unk> <unk>
+       G: when i <unk> a <unk> to <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
        ```
    where:
    * I is the encoder input

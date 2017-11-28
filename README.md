@@ -66,7 +66,7 @@ Py3 is perferred, but Py2 should also work in theory (if it doesn't please raise
 
 * TensorFlow &nbsp; | &nbsp; Char-RNN &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen.py) &nbsp; | &nbsp; [English Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_test.py) &nbsp; &nbsp; [Chinese Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/rnn_text_gen_addr_test.py) &nbsp; | &nbsp; [Model (Beam-Search)](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/char_rnn_beam.py) &nbsp; &nbsp; [English Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/char_rnn_beam_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; [Variational Recurrent Autoencoder](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/info_vrae/README.md) &nbsp; | &nbsp; 
+* TensorFlow &nbsp; | &nbsp; [Variational Recurrent Autoencoder](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/vrae/README.md) &nbsp; | &nbsp; 
 
 #### Text Labelling
 * TensorFlow &nbsp; | &nbsp; BiLSTM &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/birnn_seq2seq_clf.py) &nbsp; | &nbsp; [POS Tagging Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/pos_birnn_test.py) &nbsp; | &nbsp; [Chinese Segmentation Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/chseg_birnn_test.py) &nbsp; | &nbsp;

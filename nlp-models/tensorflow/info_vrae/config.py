@@ -3,9 +3,9 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--vocab_size', type=int, default=5000)
-parser.add_argument('--num_sampled', type=int, default=500)
-parser.add_argument('--max_len', type=int, default=30)
-parser.add_argument('--word_dropout_rate', type=float, default=1.0)
+parser.add_argument('--num_sampled', type=int, default=1000)
+parser.add_argument('--max_len', type=int, default=15)
+parser.add_argument('--word_dropout_rate', type=float, default=.9)
 parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--embedding_dim', type=int, default=128)
 parser.add_argument('--rnn_cell', type=str, default='gru')

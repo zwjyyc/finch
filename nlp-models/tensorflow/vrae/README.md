@@ -37,4 +37,4 @@
 
   * O is the decoder output with regards to encoder input
 
-  * G is the random text generation, replacing the latent vector (z) by unit gaussian
+  * G is random text generation, replacing the latent vector (z) by unit gaussian

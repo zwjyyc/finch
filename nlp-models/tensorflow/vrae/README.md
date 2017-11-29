@@ -19,27 +19,26 @@
   * (Optional) Mutual information loss
        * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function
 
-* Usage
-   * ``` python train.py ```
-    
-       After 50 epochs:
-       ```
-       Step 19510 | [50/100] | [350/390] | nll_loss:59.4 | kl_w:1.000 | kl_loss:11.43 
+  * ``` python train.py ```
 
-       I: <unk> <unk> has never done a film so far as i know and this includes
+      After 50 epochs:
+      ```
+      Step 19510 | [50/100] | [350/390] | nll_loss:59.4 | kl_w:1.000 | kl_loss:11.43 
 
-       D: <unk> <unk> <unk> never <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
+      I: <unk> <unk> has never done a film so far as i know and this includes
 
-       O: <unk> <unk> has been a great movie as a <unk> but it was <unk> to
+      D: <unk> <unk> <unk> never <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk>
 
-       G: as many years ago i have been <unk> to see this movie for this one
-       ```
-   where:
-   * I is the encoder input
+      O: <unk> <unk> has been a great movie as a <unk> but it was <unk> to
 
-   * D is the decoder input (if 90% word dropout is set, then about 9 out of 10 words are unknown)
+      G: as many years ago i have been <unk> to see this movie for this one
+      ```
+  where:
+       * I is the encoder input
 
-   * O is the decoder output with regards to encoder input
+       * D is the decoder input (if 90% word dropout is set, then about 9 out of 10 words are unknown)
 
-   * G is the text generation, after replacing the latent vector (z) by gaussian distribution
-       * the latent vector is directly sampled from gaussian, disconnected from encoder
+       * O is the decoder output with regards to encoder input
+
+       * G is the text generation, after replacing the latent vector (z) by gaussian distribution
+           * the latent vector is directly sampled from gaussian, disconnected from encoder

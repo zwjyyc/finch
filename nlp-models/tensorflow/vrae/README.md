@@ -1,5 +1,5 @@
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae.png" height="300">
-
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae_struct.png">
 * The VAE in NLP is much more difficult to make it work than in Computer Vision
 
 * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface

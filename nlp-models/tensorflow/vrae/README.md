@@ -11,10 +11,6 @@
 
   * To enable concatenating latent vector (z) with every input of decoder, we need to modify the decoder in original ```tf.contrib.seq2seq```;
        * The modified decoders are placed in the folder ``` modified_tf_classes ```
-
-  * Residual RNN connection
-
-  * Beam search
      
   * (Optional) Mutual information loss
        * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function

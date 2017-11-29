@@ -40,5 +40,5 @@
 
   * O is the decoder output with regards to encoder input
 
-       * G is the text generation, after replacing the latent vector (z) by gaussian distribution
-           * the latent vector is directly sampled from gaussian, disconnected from encoder
+  * G is the text generation, after replacing the latent vector (z) by gaussian distribution
+      * the latent vector is directly sampled from unit gaussian, disconnected from encoder

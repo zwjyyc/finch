@@ -8,7 +8,7 @@
      * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
 
      * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
-       * ```word_dropout_rate``` means how many percentage of decoder input words are masked with unknown tags, to encourage decoder relying on encoded information
+       * ```word_dropout_rate``` means how many percentage of decoder input words are masked with unknown tags, to weaken the decoder, force it relying on encoded information
 
      * To enable concatenating latent vector (z) with every input of decoder, we need to modify the decoder in original ```tf.contrib.seq2seq```;
        * The modified decoders are placed in the folder ``` modified_tf_classes ```

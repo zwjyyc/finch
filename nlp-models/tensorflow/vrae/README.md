@@ -1,4 +1,4 @@
-* Please be warned that the VAE in NLP is much more difficult to make it work than in Computer Vision
+* The VAE in NLP is much more difficult to make it work than in Computer Vision
 
 * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface
 

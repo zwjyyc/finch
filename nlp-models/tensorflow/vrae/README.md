@@ -21,7 +21,7 @@
 
 * ``` python train.py ```
 
-      After 50 epochs:
+  After 50 epochs:
       ```
       Step 19510 | [50/100] | [350/390] | nll_loss:59.4 | kl_w:1.000 | kl_loss:11.43 
 

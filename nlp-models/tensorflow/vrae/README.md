@@ -19,7 +19,7 @@
   * (Optional) Mutual information loss
        * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function
 
-  * ``` python train.py ```
+* ``` python train.py ```
 
       After 50 epochs:
       ```
@@ -34,11 +34,11 @@
       G: as many years ago i have been <unk> to see this movie for this one
       ```
   where:
-       * I is the encoder input
+  * I is the encoder input
 
-       * D is the decoder input (if 90% word dropout is set, then about 9 out of 10 words are unknown)
+  * D is the decoder input (if 90% word dropout is set, then about 9 out of 10 words are unknown)
 
-       * O is the decoder output with regards to encoder input
+  * O is the decoder output with regards to encoder input
 
        * G is the text generation, after replacing the latent vector (z) by gaussian distribution
            * the latent vector is directly sampled from gaussian, disconnected from encoder

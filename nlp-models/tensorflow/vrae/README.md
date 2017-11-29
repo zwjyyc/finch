@@ -1,23 +1,22 @@
 * Please be warned that the VAE in NLP is much more difficult to make it work than in Computer Vision
-* Features
 
-   * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface (TF 1.3)
+* The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface
 
-   * Following tricks are enabled:
+* Following tricks are enabled:
 
-     * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
+  * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
 
-     * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
+  * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
        * ```word_dropout_rate``` means the percentage of decoder input words are masked with unknown tags, in order to weaken the decoder and force it relying on encoded information
 
-     * To enable concatenating latent vector (z) with every input of decoder, we need to modify the decoder in original ```tf.contrib.seq2seq```;
+  * To enable concatenating latent vector (z) with every input of decoder, we need to modify the decoder in original ```tf.contrib.seq2seq```;
        * The modified decoders are placed in the folder ``` modified_tf_classes ```
 
-     * Residual RNN connection
+  * Residual RNN connection
 
-     * Beam search
+  * Beam search
      
-     * (Optional) Mutual information loss
+  * (Optional) Mutual information loss
        * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function
 
 * Usage

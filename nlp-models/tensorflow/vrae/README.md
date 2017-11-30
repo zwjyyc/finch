@@ -16,7 +16,7 @@
 
 * ``` python train.py ```
 
-    After 50 epochs: (it can be observed that O is trying to keep the sentence structure of I)
+    it can be observed that O is trying to keep the sentence structure of I
   
     ```
     Step 19510 | [50/100] | [350/390] | nll_loss:59.4 | kl_w:1.000 | kl_loss:11.43 

@@ -1,8 +1,6 @@
 import tensorflow as tf
 import numpy as np
 from config import args
-from tensorflow.python.layers.core import Dense
-# we modify the source classes to make sure we can concat Z into every decoder input stage
 from modified_tf_classes import BasicDecoder, BeamSearchDecoder
 
 
@@ -24,23 +22,25 @@ class VRAE:
         self._decoder_to_output(
             self._latent_to_decoder(
                 self._encoder_to_latent()))
+        """
         if args.mutinfo_loss:
             self._output_to_latent()
+        """
 
 
     def _build_backward_graph(self):
-        if not args.mutinfo_loss:
-            self.global_step = tf.Variable(0, trainable=False)
+        self.global_step = tf.Variable(0, trainable=False)
 
         self.nll_loss = self._nll_loss_fn()
         self.kl_w = self._kl_w_fn(args.anneal_max, args.anneal_bias, self.global_step)
         self.kl_loss = self._kl_loss_fn(self.z_mean, self.z_logvar)
         
         loss_op = self.nll_loss + self.kl_w * self.kl_loss
-
+        """
         if args.mutinfo_loss:
             self.mutinfo_loss = self._mutinfo_loss_fn(self.z_mean_new, self.z_logvar_new)
             loss_op += self.mutinfo_loss
+        """
         
         clipped_gradients, params = self._gradient_clipping(loss_op)
         self.train_op = tf.train.AdamOptimizer().apply_gradients(
@@ -91,7 +91,7 @@ class VRAE:
             tied_embedding = tf.get_variable('tied_embedding', [args.vocab_size, args.embedding_dim])
 
         with tf.variable_scope('decoding'):
-            lin_proj = Dense(args.vocab_size, _scope='decoder/dense')
+            lin_proj = tf.layers.Dense(args.vocab_size, _scope='decoder/dense')
             
             helper = tf.contrib.seq2seq.TrainingHelper(
                 inputs = tf.nn.embedding_lookup(tied_embedding, self._decoder_input()),
@@ -127,7 +127,7 @@ class VRAE:
                 end_token = self._word2idx['<end>'],
                 initial_state = tf.contrib.seq2seq.tile_batch(init_state, args.beam_width),
                 beam_width = args.beam_width,
-                output_layer = Dense(args.vocab_size, _reuse=True),
+                output_layer = tf.layers.Dense(args.vocab_size, _reuse=True),
                 length_penalty_weight = 0.0,
                 concat_z = tiled_z)
             decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
@@ -201,6 +201,7 @@ class VRAE:
 
 
     def train_session(self, sess, seq, seq_dropped, seq_len):
+        """
         if args.mutinfo_loss:
             _, nll_loss, kl_w, kl_loss, temperature, step, mutinfo_loss = sess.run(
                 [self.train_op, self.nll_loss, self.kl_w, self.kl_loss, self.temperature, self.global_step,
@@ -213,13 +214,14 @@ class VRAE:
                     'step': step,
                     'mutinfo_loss': mutinfo_loss}
         else:
-            _, nll_loss, kl_w, kl_loss, step = sess.run(
-                [self.train_op, self.nll_loss, self.kl_w, self.kl_loss, self.global_step],
-                    {self.seq: seq, self.seq_dropped: seq_dropped, self.seq_length: seq_len})
-            return {'nll_loss': nll_loss,
-                    'kl_w': kl_w,
-                    'kl_loss': kl_loss,
-                    'step': step}
+        """
+        _, nll_loss, kl_w, kl_loss, step = sess.run(
+            [self.train_op, self.nll_loss, self.kl_w, self.kl_loss, self.global_step],
+                {self.seq: seq, self.seq_dropped: seq_dropped, self.seq_length: seq_len})
+        return {'nll_loss': nll_loss,
+                'kl_w': kl_w,
+                'kl_loss': kl_loss,
+                'step': step}
 
 
     def reconstruct(self, sess, sentence, sentence_dropped):
@@ -265,12 +267,12 @@ class VRAE:
     def _inverse_sigmoid(self, x):
         return 1 / (1 + tf.exp(x))
 
-
+    """
     def _temperature_fn(self, anneal_max, anneal_bias, global_step):
         return anneal_max * self._inverse_sigmoid((10 / anneal_bias) * (
             tf.cast(global_step, tf.float32) - tf.constant(anneal_bias / 2)))
 
-
+    
     def _output_to_latent(self):
         with tf.variable_scope('encoder', reuse=True):
             tied_embedding = tf.get_variable('tied_embedding', [args.vocab_size, args.embedding_dim])
@@ -294,7 +296,7 @@ class VRAE:
         with tf.variable_scope('latent', reuse=True):
             self.z_mean_new = tf.layers.dense(encoded_state, args.latent_size, reuse=True)
             self.z_logvar_new = tf.layers.dense(encoded_state, args.latent_size, reuse=True)
-
+    
 
     def _mutinfo_loss_fn(self, z_mean_new, z_logvar_new):
         '''
@@ -306,7 +308,7 @@ class VRAE:
             self.z_mean_new, tf.exp(self.z_logvar_new), validate_args=True)
         mutinfo_loss = -tf.log(tf.add(epsilon, distribution.prob(self.gaussian_noise)))
         return tf.reduce_sum(mutinfo_loss) / tf.to_float(self._batch_size)
-
+    """
 
     def _highway(self, x, carry_bias=-1.0, activation=tf.nn.elu):
             size = x.get_shape().as_list()[-1]
@@ -328,15 +330,3 @@ class VRAE:
             return tuple([state] * args.decoder_layers)
         else:
             raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
-
-
-def sample_gumbel(shape, eps=1e-20): 
-    """Sample from Gumbel(0, 1)"""
-    U = tf.random_uniform(shape,minval=0,maxval=1)
-    return -tf.log(-tf.log(U + eps) + eps)
-
-
-def gumbel_softmax_sample(logits, temperature): 
-    """ Draw a sample from the Gumbel-Softmax distribution"""
-    y = logits + sample_gumbel(tf.shape(logits))
-    return tf.nn.softmax(y / temperature)

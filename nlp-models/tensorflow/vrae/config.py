@@ -17,7 +17,7 @@ parser.add_argument('--clip_norm', type=float, default=5.0)
 parser.add_argument('--latent_size', type=int, default=16)
 parser.add_argument('--anneal_max', type=float, default=1.0)
 parser.add_argument('--anneal_bias', type=int, default=6000)
-parser.add_argument('--mutinfo_loss', action='store_true')
+#parser.add_argument('--mutinfo_loss', action='store_true')
 parser.add_argument('--num_epoch', type=int, default=100)
 parser.add_argument('--display_loss_step', type=int, default=50)
 

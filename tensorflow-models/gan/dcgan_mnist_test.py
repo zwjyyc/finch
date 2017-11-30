@@ -20,7 +20,7 @@ def select(images, labels, num):
     return np.expand_dims(images, 3)[labels == num]
 
 
-def main(N_EPOCH=10, BATCH_SIZE=32, G_SIZE=100):    
+def main(N_EPOCH=10, BATCH_SIZE=128, G_SIZE=100):    
     (X_train, y_train), (_, _) = tf.keras.datasets.mnist.load_data()
     X = select(scaled(X_train), y_train, 8)
     

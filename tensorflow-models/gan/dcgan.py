@@ -54,12 +54,12 @@ class DCGAN:
         self.D_loss = D_loss_X + D_loss_G
 
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='G')):
-            self.G_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.G_loss,
-                var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='G'))
+            self.G_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(
+                self.G_loss, var_list=tf.trainable_variables('G'))
 
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='D')):
-            self.D_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(self.D_loss,
-                var_list=tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='D'))
+            self.D_train = tf.train.AdamOptimizer(2e-4, beta1=0.5).minimize(
+                self.D_loss, var_list=tf.trainable_variables('D'))
 
         self.mse = tf.reduce_mean(tf.squared_difference(self.G_out, self.X_in))
     # end method add_backward_path

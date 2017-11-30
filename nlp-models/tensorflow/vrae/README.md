@@ -2,8 +2,6 @@
 
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae.png" height="300">
 
-* The VAE in NLP is much more difficult to make it work than in Computer Vision
-
 * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface
 
 * Following tricks are enabled:
@@ -18,7 +16,7 @@
 
 * ``` python train.py ```
 
-    After 50 epochs:
+    After 50 epochs: (it can be observed that O is trying to keep the sentence structure of I)
   
     ```
     Step 19510 | [50/100] | [350/390] | nll_loss:59.4 | kl_w:1.000 | kl_loss:11.43 

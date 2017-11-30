@@ -272,12 +272,14 @@ class VRAE:
 
 
     def _output_to_latent(self):
+        with tf.variable_scope('encoder', reuse=True):
+            tied_embedding = tf.get_variable('tied_embedding', [args.vocab_size, args.embedding_dim])
+        
         self.global_step = tf.Variable(0, trainable=False)
         self.temperature = self._temperature_fn(args.anneal_max, args.anneal_bias, self.global_step)
 
-        gumble = tf.contrib.distributions.RelaxedOneHotCategorical(
-            self.temperature, logits=self.training_logits)
-        embeded_2d = tf.matmul(tf.reshape(gumble.sample(), [-1,args.vocab_size]), self.tied_embedding)
+        gumble = gumbel_softmax_sample(self.training_logits, self.temperature)
+        embeded_2d = tf.matmul(tf.reshape(gumble, [-1,args.vocab_size]), tied_embedding)
         embeded = tf.reshape(embeded_2d, [self._batch_size, args.max_len+1, args.embedding_dim])
 
         with tf.variable_scope('encoder', reuse=True):
@@ -290,8 +292,8 @@ class VRAE:
         encoded_state = self._parse_encoded_state(encoded_state)
 
         with tf.variable_scope('latent', reuse=True):
-            self.z_mean_new = tf.layers.dense(encoded_state, args.latent_size, tf.nn.elu, reuse=True)
-            self.z_logvar_new = tf.layers.dense(encoded_state, args.latent_size, tf.nn.elu, reuse=True)
+            self.z_mean_new = tf.layers.dense(encoded_state, args.latent_size, reuse=True)
+            self.z_logvar_new = tf.layers.dense(encoded_state, args.latent_size, reuse=True)
 
 
     def _mutinfo_loss_fn(self, z_mean_new, z_logvar_new):
@@ -326,3 +328,15 @@ class VRAE:
             return tuple([state] * args.decoder_layers)
         else:
             raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
+
+
+def sample_gumbel(shape, eps=1e-20): 
+    """Sample from Gumbel(0, 1)"""
+    U = tf.random_uniform(shape,minval=0,maxval=1)
+    return -tf.log(-tf.log(U + eps) + eps)
+
+
+def gumbel_softmax_sample(logits, temperature): 
+    """ Draw a sample from the Gumbel-Softmax distribution"""
+    y = logits + sample_gumbel(tf.shape(logits))
+    return tf.nn.softmax(y / temperature)

@@ -16,9 +16,6 @@
     * Concatenating latent vector (z) into decoder inputs, which requires modifying the decoder in source code ```tf.contrib.seq2seq```;
         * The modified decoders are placed in the folder ``` modified_tf_classes ```
 
-    * (Optional) Mutual information loss
-        * Explicitly enforce mutual information between the latent code and the generated data as part of its loss function
-
 * ``` python train.py ```
 
     After 50 epochs:

@@ -39,3 +39,16 @@
     * O is the decoder output with regards to encoder input
 
     * G is random text generation, replacing the latent vector (z) by unit gaussian
+* ``` python test.py ``` (input your own sentences about movie)  
+    ```
+    Loading trained model ...
+
+    I: i love this firm it is one of the best
+
+    O: i think the <unk> are not one of the best of the characters are the
+
+
+    I: i want to see this movie it seems interesting
+
+    O: you want to watch this movie is a <unk> example of the plot is not
+    ```

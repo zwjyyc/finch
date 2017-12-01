@@ -3,7 +3,7 @@
 * [TensorFlow >= 1.4](https://www.tensorflow.org/)
 * [scikit-learn](http://scikit-learn.org/)
 * [NLTK](http://www.nltk.org/)
-
+---
 1. The following command clones all the files (>300MB);
 ```
 git clone https://github.com/zhedongzheng/finch.git
@@ -20,7 +20,7 @@ git clone https://github.com/zhedongzheng/finch.git
 cd finch/nlp-models/tensorflow
 python rnn_attn_estimator_imdb_test.py
 ```
-
+---
 #### Word Representation
 * Python &nbsp; | &nbsp; TF-IDF &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf_brown_test.py) &nbsp; &nbsp; [Result](https://github.com/zhedongzheng/finch/blob/master/nlp-models/python/tfidf_brown_test.md) &nbsp; | &nbsp;
 

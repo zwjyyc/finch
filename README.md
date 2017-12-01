@@ -1,5 +1,3 @@
-![ucl-logo](http://static.ucl.ac.uk/img/ucl-logo.svg)
-
 * [TensorFlow >= 1.4](https://www.tensorflow.org/)
 * [scikit-learn](http://scikit-learn.org/)
 * [NLTK](http://www.nltk.org/)

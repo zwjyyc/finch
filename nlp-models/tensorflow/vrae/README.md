@@ -2,6 +2,8 @@
 
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae.png" height="300">
 
+* TensorFlow 1.4 is required
+
 * The encoder and decoder are implemented in the latest ```tf.contrib.seq2seq``` interface
 
 * Following tricks are enabled:

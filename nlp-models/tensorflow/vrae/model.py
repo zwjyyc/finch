@@ -1,5 +1,7 @@
+from __future__ import print_function
 import tensorflow as tf
 import numpy as np
+import sys
 from config import args
 from modified_tf_classes import BasicDecoder, BeamSearchDecoder
 
@@ -10,6 +12,8 @@ class VRAE:
         self._idx2word = {i: w for w, i in word2idx.items()}
         self._exception_handling()
         self._build_graph()
+        self.saver = tf.train.Saver()
+        self.model_path = './saved/vrae'
 
     
     def _build_graph(self):
@@ -232,6 +236,22 @@ class VRAE:
              self.seq_length: np.atleast_1d(len(sentence)),
              self.gen_seq_length: len(sentence)})[0]
         print('O: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')
+
+    
+    def customized_reconstruct(self, sess, sentence):
+        print('\nI: %s' % sentence, end='\n\n')
+        sentence = [self.get_new_w(w) for w in sentence.split()][:args.max_len]
+        sentence = sentence + [self._word2idx['<pad>']] * (args.max_len-len(sentence))
+        predicted_ids = sess.run(self.predicted_ids,
+            {self.seq: np.atleast_2d(sentence),
+             self.seq_length: np.atleast_1d(len(sentence)),
+             self.gen_seq_length: len(sentence)})[0]
+        print('O: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')
+
+
+    def get_new_w(self, w):
+        idx = self._word2idx[w]
+        return idx if idx < args.vocab_size else self._word2idx['<unk>']
 
 
     def generate(self, sess):

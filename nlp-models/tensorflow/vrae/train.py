@@ -1,3 +1,4 @@
+from __future__ import print_function
 from data import IMDB
 from model import VRAE
 from config import args
@@ -30,6 +31,9 @@ def main():
                 print(" | nll_loss:%.1f | kl_w:%.3f | kl_loss:%.2f \n" % (log['nll_loss'], log['kl_w'], log['kl_loss']))
         model.reconstruct(sess, seq[-1], seq_dropped[-1])
         model.generate(sess)
+        
+        save_path = model.saver.save(sess, model.model_path)
+        print("Model saved in file: %s" % save_path)
 
 
 if __name__ == '__main__':

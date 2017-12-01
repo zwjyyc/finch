@@ -1,7 +1,10 @@
+from __future__ import print_function
 from config import args
+from sklearn.utils import shuffle
+
+
 import numpy as np
 import tensorflow as tf
-from sklearn.utils import shuffle
 
 
 class IMDB:

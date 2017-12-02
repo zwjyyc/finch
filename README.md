@@ -55,7 +55,7 @@ python rnn_attn_estimator_imdb_test.py
 
 * TensorFlow &nbsp; | &nbsp; Character-Aware CNN-RNN Language Model &nbsp; &nbsp; [Paper](https://arxiv.org/abs/1508.06615) &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/cnn_rnn_text_gen.py) &nbsp; &nbsp; [PTB Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/cnn_rnn_text_gen_test.py) &nbsp; | &nbsp;
 
-* TensorFlow &nbsp; | &nbsp; [Variational Recurrent Autoencoder](https://github.com/zhedongzheng/vae-nlp) &nbsp; | &nbsp; 
+* TensorFlow &nbsp; | &nbsp; [VAE (Variational Autoencoder)](https://github.com/zhedongzheng/vae-nlp) &nbsp; | &nbsp; 
 
 #### Sequence to Sequence
 * TensorFlow &nbsp; | &nbsp; Seq2Seq &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_test.py) &nbsp; | &nbsp; [Estimator](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_estimator.py) &nbsp; &nbsp; [Sorting Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/seq2seq_estimator_test.py) &nbsp; | &nbsp;

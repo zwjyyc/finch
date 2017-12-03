@@ -1,4 +1,4 @@
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif" height='500'>
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif" height='400'>
 
 This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) excellent work, thanks for his first attempt!
 

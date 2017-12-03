@@ -1,6 +1,5 @@
 * [TensorFlow >= 1.4](https://www.tensorflow.org/)
 * [scikit-learn](http://scikit-learn.org/)
-* [NLTK](http://www.nltk.org/)
 ---
 1. The following command clones all the files (>300MB);
 ```

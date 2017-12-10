@@ -62,7 +62,7 @@ python rnn_attn_estimator_imdb_test.py
 
 * [Transformer (Attention Is All You Need)](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/attn_is_all_u_need) 
 
-#### Reinforcement Learning
+#### Reinforcement Learning (could help NLP)
 * Python &nbsp; | &nbsp; Q-Learning &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/python/q.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/python/q_cartpole_test.py) &nbsp; | &nbsp;
 
 * Python &nbsp; | &nbsp; Sarsa &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/python/sarsa.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/python/sarsa_cartpole_test.py) &nbsp; | &nbsp;

@@ -14,8 +14,8 @@ def forward_pass(x, seq_len, reuse):
                 cell, embedded, sequence_length=seq_len, dtype=tf.float32)
 
         with tf.variable_scope('attention', reuse=reuse):
-            rnn_out_proj = tf.layers.dense(rnn_out, args.attn_size)
-            hidden_proj = tf.layers.dense(final_state.h, args.attn_size)
+            rnn_out_proj = tf.layers.dense(rnn_out, 1)
+            hidden_proj = tf.layers.dense(final_state.h, 1)
             weights = tf.matmul(rnn_out_proj, tf.expand_dims(hidden_proj, 2))
             weights = _softmax(tf.squeeze(weights, 2))
             weighted_sum = tf.squeeze(tf.matmul(

@@ -142,7 +142,7 @@ class BasicDecoder(decoder.Decoder):
         cell_outputs = self._output_layer(cell_outputs)
       sample_ids = self._helper.sample(
           time=time, outputs=cell_outputs, state=cell_state)
-      (finished, next_inputs, next_state) = self._helper.next_inputs(
+      (finished, _, next_state) = self._helper.next_inputs(
           time=time,
           outputs=cell_outputs,
           state=cell_state,
@@ -158,7 +158,7 @@ class BasicDecoder(decoder.Decoder):
     B = tf.to_int64(tf.expand_dims(B, 1))
     index = tf.concat((B, pointers), 1)
 
-    output = tf.stop_gradient(tf.gather_nd(self._encoder_in, index))
+    next_inputs = tf.stop_gradient(tf.gather_nd(self._encoder_in, index))
     # modification here
 
     return (outputs, next_state, next_inputs, finished)

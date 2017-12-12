@@ -1,6 +1,6 @@
 ``` python seq2seq_test.py ```
 ```
-Epoch 50/50 | Batch 50/77 | train_loss: 0.004 | test_loss: 0.009
+Epoch 50/50 | Batch 50/77 | train_loss: 0.005 | test_loss: 0.014
 
 Source
 IN: c o m m o n

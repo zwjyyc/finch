@@ -169,11 +169,9 @@ class Seq2Seq:
             self.X_seq_len: [len(input_indices)] * batch_size})[0]
         
         print('\nSource')
-        print('Word: {}'.format([i for i in input_indices]))
         print('IN: {}'.format(' '.join([X_idx2word[i] for i in input_indices])))
         
         print('\nTarget')
-        print('Word: {}'.format([i for i in out_indices]))
         print('OUT: {}'.format(' '.join([Y_idx2word[i] for i in out_indices])))
     # end method infer
 

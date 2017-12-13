@@ -37,14 +37,13 @@ class CBOW:
         self.x = tf.placeholder(tf.int32, shape=[None, 2*self.window_size])
         self.y = tf.placeholder(tf.int32, shape=[None, 1])
         self.w = tf.get_variable('softmax_w', [self.vocab_size, self.embedding_dim], tf.float32,
-                                  tf.glorot_uniform_initializer())
-        self.b = tf.get_variable('softmax_b', [self.vocab_size], tf.float32, tf.constant_initializer(0.01))
+                                  tf.variance_scaling_initializer())
+        self.b = tf.get_variable('softmax_b', [self.vocab_size], tf.float32)
     # end method add_input_layer
 
 
     def add_word_embedding(self):
-        self.embedding = tf.get_variable('word_embedding', [self.vocab_size, self.embedding_dim], tf.float32,
-                                          tf.random_uniform_initializer(-1.0, 1.0))
+        self.embedding = tf.get_variable('embedding', [self.vocab_size, self.embedding_dim], tf.float32)
         embedded = tf.nn.embedding_lookup(self.embedding, self.x)
         self.embedded = tf.reduce_sum(embedded, axis=1)
     # end method add_word_embedding

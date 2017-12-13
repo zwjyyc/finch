@@ -2,27 +2,44 @@ from rnn_attn_estimator_imdb_config import args
 import tensorflow as tf
 
 
-def forward_pass(x, seq_len, reuse):
-    with tf.variable_scope('forward_pass', reuse=reuse):
+def forward_pass(x, reuse):
+    batch_size = tf.shape(x)[0]
+    seq_len = tf.count_nonzero(x, 1, dtype=tf.int32)
+
+    with tf.variable_scope('word_embedding', reuse=reuse) as scope:
         embedded = tf.contrib.layers.embed_sequence(
-            x, args.vocab_size, args.embedding_dims, scope='word_embedding', reuse=reuse)
+            x, args.vocab_size, args.embedding_dims, scope=scope, reuse=reuse)
         embedded = tf.layers.dropout(embedded, args.dropout_rate, training=(not reuse))
 
-        with tf.variable_scope('rnn', reuse=reuse):
-            cell = tf.nn.rnn_cell.LSTMCell(args.rnn_size, initializer=tf.orthogonal_initializer())
-            rnn_out, final_state = tf.nn.dynamic_rnn(
-                cell, embedded, sequence_length=seq_len, dtype=tf.float32)
+    with tf.variable_scope('attention', reuse=reuse):
+        attention_mechanism = tf.contrib.seq2seq.LuongAttention(
+            num_units = args.rnn_size, 
+            memory = embedded)
+        attention_cell = tf.contrib.seq2seq.AttentionWrapper(
+            cell = rnn_cell(reuse=reuse),
+            attention_mechanism = attention_mechanism,
+            attention_layer_size = args.rnn_size)
 
-        with tf.variable_scope('attention', reuse=reuse):
-            rnn_out_proj = tf.layers.dense(rnn_out, 1)
-            hidden_proj = tf.layers.dense(final_state.h, 1)
-            weights = tf.matmul(rnn_out_proj, tf.expand_dims(hidden_proj, 2))
-            weights = _softmax(tf.squeeze(weights, 2))
-            weighted_sum = tf.squeeze(tf.matmul(
-                tf.transpose(rnn_out, [0,2,1]), tf.expand_dims(weights, 2)), 2)
+        helper = tf.contrib.seq2seq.TrainingHelper(
+            inputs = embedded,
+            sequence_length = seq_len)
+        decoder = tf.contrib.seq2seq.BasicDecoder(
+            cell = attention_cell,
+            helper = helper,
+            initial_state = attention_cell.zero_state(batch_size, tf.float32))
+        decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
+            decoder = decoder)
+        logits = decoder_output.rnn_output
 
-        with tf.variable_scope('output_layer', reuse=reuse):
-            logits = tf.layers.dense(tf.concat([weighted_sum, final_state.h], -1), args.num_classes)
+    with tf.name_scope('index_last_valid_timestep'):
+        T = tf.expand_dims((seq_len-1), 1)
+        B = tf.range(batch_size)
+        B = tf.expand_dims(B, 1)
+        idx = tf.concat((B, T), 1)
+        logits = tf.gather_nd(logits, idx)
+
+    with tf.variable_scope('output_layer', reuse=reuse):
+        logits = tf.layers.dense(logits, args.num_classes, reuse=reuse)
     return logits
 # end function
 
@@ -38,8 +55,7 @@ def model_fn(features, labels, mode):
 
 
 def _model_fn_train(features, labels, mode):
-    logits = forward_pass(
-        features['data'], features['data_len'], reuse=False)
+    logits = forward_pass(features['data'], reuse=False)
     
     with tf.name_scope('backward_pass'):
         loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
@@ -68,10 +84,8 @@ def _model_fn_train(features, labels, mode):
 
 
 def _model_fn_eval(features, labels, mode):
-    logits = forward_pass(
-        features['data'], features['data_len'], reuse=False)
-    predictions = tf.argmax(forward_pass(
-        features['data'], features['data_len'], reuse=True), axis=1)
+    logits = forward_pass(features['data'], reuse=False)
+    predictions = tf.argmax(forward_pass(features['data'], reuse=True), axis=1)
     
     loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
         logits=logits, labels=labels))
@@ -85,16 +99,14 @@ def _model_fn_eval(features, labels, mode):
 
 
 def _model_fn_predict(features, mode):
-    logits = forward_pass(
-        features['data'], features['data_len'], reuse=False)
-    predictions = tf.argmax(forward_pass(
-        features['data'], features['data_len'], reuse=True), axis=1)
+    logits = forward_pass(features['data'], reuse=False)
+    predictions = tf.argmax(forward_pass(features['data'], reuse=True), axis=1)
     
     return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 # end function
 
 
-def _softmax(tensor):
-        exps = tf.exp(tensor)
-        return exps / tf.reduce_sum(exps, 1, keep_dims=True)
+def rnn_cell(reuse):
+    cell = tf.nn.rnn_cell.LSTMCell(args.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+    return cell
 # end function

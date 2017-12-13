@@ -101,8 +101,7 @@ class RNNTextClassifier:
     # end method add_backward_path
 
 
-    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True, 
-            keep_prob=1.0):
+    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, keep_prob=1.0):
         if val_data is None:
             print("Train %d samples" % len(X) )
         else:
@@ -112,10 +111,6 @@ class RNNTextClassifier:
 
         self.sess.run(tf.global_variables_initializer()) # initialize all variables
         for epoch in range(n_epoch): # batch training
-            if en_shuffle:
-                print("Data Shuffled")
-                X, Y = sklearn.utils.shuffle(X, Y)
-
             for local_step, ((X_batch, X_batch_lens), Y_batch) in enumerate(zip(self.next_batch(X, batch_size),
                                                                                 self.gen_batch(Y, batch_size))):
                 lr = self.decrease_lr(en_exp_decay, global_step, n_epoch, len(X), batch_size)           

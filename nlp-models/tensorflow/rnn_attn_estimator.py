@@ -11,33 +11,15 @@ def forward_pass(x, reuse):
             x, args.vocab_size, args.embedding_dims, scope=scope, reuse=reuse)
         embedded = tf.layers.dropout(embedded, args.dropout_rate, training=(not reuse))
 
-    with tf.variable_scope('attention', reuse=reuse):
-        attention_mechanism = tf.contrib.seq2seq.LuongAttention(
-            num_units = args.rnn_size, 
-            memory = embedded)
-        attention_cell = tf.contrib.seq2seq.AttentionWrapper(
-            cell = rnn_cell(reuse=reuse),
-            attention_mechanism = attention_mechanism,
-            attention_layer_size = args.rnn_size)
+    with tf.variable_scope('rnn', reuse=reuse):
+        rnn_out, final_state = tf.nn.dynamic_rnn(
+            rnn_cell(reuse=reuse), embedded, sequence_length=seq_len, dtype=tf.float32)
 
-        helper = tf.contrib.seq2seq.TrainingHelper(
-            inputs = embedded,
-            sequence_length = seq_len)
-        decoder = tf.contrib.seq2seq.BasicDecoder(
-            cell = attention_cell,
-            helper = helper,
-            initial_state = attention_cell.zero_state(batch_size, tf.float32))
-        decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-            decoder = decoder)
-        logits = decoder_output.rnn_output
-
-    with tf.name_scope('index_last_valid_timestep'):
-        T = tf.expand_dims((seq_len-1), 1)
-        B = tf.range(batch_size)
-        B = tf.expand_dims(B, 1)
-        idx = tf.concat((B, T), 1)
-        logits = tf.gather_nd(logits, idx)
-
+    query = tf.expand_dims(final_state.h, 2)
+    align = tf.matmul(rnn_out, query)
+    align = _softmax(tf.squeeze(align, 2))
+    logits = tf.squeeze(tf.matmul(tf.transpose(rnn_out, [0,2,1]), tf.expand_dims(align, 2)), 2)
+    
     with tf.variable_scope('output_layer', reuse=reuse):
         logits = tf.layers.dense(logits, args.num_classes, reuse=reuse)
     return logits
@@ -110,3 +92,9 @@ def rnn_cell(reuse):
     cell = tf.nn.rnn_cell.LSTMCell(args.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
     return cell
 # end function
+
+
+def _softmax(tensor):
+    exps = tf.exp(tensor)
+    return exps / tf.reduce_sum(exps, 1, keep_dims=True)
+# end method softmax

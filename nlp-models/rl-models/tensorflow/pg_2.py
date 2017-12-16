@@ -32,8 +32,7 @@ class PolicyGradient:
         self.X = tf.placeholder(tf.float32, shape=[None, self.n_in])
         hidden = self.hidden_net(self.X)
         self.logits = tf.layers.dense(hidden, self.n_out)
-        outputs = tf.nn.softmax(self.logits)
-        self.action = tf.multinomial(tf.log(outputs), num_samples=1)
+        self.action = tf.multinomial(self.logits, num_samples=1)
     # end method
 
 

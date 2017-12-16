@@ -59,5 +59,5 @@ python rnn_attn_estimator_imdb_test.py
 
 * [Transformer (Attention Is All You Need)](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/attn_is_all_u_need) 
 
-#### Reinforcement Learning &nbsp;(could be used to help NLP)
+#### Reinforcement Learning &nbsp;(could enhance NLP)
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model 1](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_cartpole_test.py) &nbsp; | &nbsp; [Model 2](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_2.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_2_cartpole_test.py) &nbsp; | &nbsp;

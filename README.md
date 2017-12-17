@@ -60,5 +60,5 @@ python rnn_attn_estimator_imdb_test.py
 #### Generative Modelling
 * [Variational Recurrent Autoencoder (VRAE)](https://github.com/zhedongzheng/vae-nlp) 
 
-#### Reinforcement Learning &nbsp;(could enhance NLP)
+#### Reinforcement Learning
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_cartpole_test.py)

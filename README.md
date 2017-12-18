@@ -3,7 +3,7 @@ We have used:
 * [scikit-learn](http://scikit-learn.org/)
 * [openai-gym](https://github.com/openai/gym)
 ---
-1. The following command clones all the files (>300MB);
+1. The following command clones all the files (>300MB for historical reasons);
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```

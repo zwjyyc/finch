@@ -1,4 +1,4 @@
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif" height='400'>
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/transformer.png">
 
 This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) excellent work, thanks for his first attempt!
 
@@ -28,3 +28,4 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
         给我唱一首歌 -> =。=
         我帅吗 -> 我是帅哥
         ```
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif" height='400'>

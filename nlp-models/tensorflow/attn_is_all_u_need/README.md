@@ -1,4 +1,4 @@
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/transformer.png" width="250">
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/transformer.png" width="300">
 
 This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) excellent work, thanks for his first attempt!
 

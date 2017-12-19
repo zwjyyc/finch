@@ -10,12 +10,6 @@ cd vae-nlp
 ---
 ```O``` is expected to write under the structure of ```I```, but with different words
 
-``` python test.py ``` 
-
----
-``` python train.py ```
-
----
 where:
 * I is the encoder input
 

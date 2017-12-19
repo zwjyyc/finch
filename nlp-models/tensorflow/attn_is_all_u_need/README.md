@@ -4,11 +4,17 @@ This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) e
 
 * Based on that, we have:
   * implemented the model under the architecture of ```tf.estimator.Estimator``` API
+  
   * added an option to share the weights between encoder embedding and decoder embedding
+  
   * added an option to share the weights between decoder embedding and output projection
+  
   * added the learning rate variation according to the formula in paper, and also expotential decay
+  
   * added more activation choices (leaky relu / elu) for easier gradient propagation
+  
   * generated the key and query masks before positional encoding
+  
     * because after positional encoding, the paddings in key and query will move from zeros to other values
 
 * Small Task 1: learn sorting characters

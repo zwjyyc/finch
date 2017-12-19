@@ -12,20 +12,9 @@ cd vae-nlp
 
 ``` python test.py ``` 
 
-I: i love this film it is one of the best **i want to watch it again**
-
-O: be the <unk> for the <unk> of this film a few years ago **i can't wait to see it instead** <end>
-
-
-I: this movie is a waste of time and **there is no point to see it**
-
-O: <unk> it is a <unk> <unk> and <unk> <unk> <unk> **it is not worth the time to watch it again** <end>
-
 ---
 ``` python train.py ```
-```
-Step 39069 | [50/100] | [750/781] | nll_loss:52.0 | kl_w:1.000 | kl_loss:11.60 
-```
+
 ---
 where:
 * I is the encoder input

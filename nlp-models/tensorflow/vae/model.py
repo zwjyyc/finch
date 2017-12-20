@@ -201,8 +201,8 @@ class VRAE:
 
     
     def customized_reconstruct(self, sess, sentence):
-        print('\nI: %s' % sentence, end='\n\n')
         sentence = [self.get_new_w(w) for w in sentence.split()][:args.max_len]
+        print('\nI: %s' % ' '.join([self._idx2word[idx] for idx in sentence]), end='\n\n')
         sentence = sentence + [self._word2idx['<pad>']] * (args.max_len-len(sentence))
         predicted_ids = sess.run(self.predicted_ids, {self.enc_inp: np.atleast_2d(sentence)})[0]
         print('O: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')

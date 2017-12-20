@@ -15,12 +15,12 @@ def main():
     model.saver.restore(sess, model.model_path)
 
     # lowercase, no punctuation, please 
-    model.customized_reconstruct(sess, 'i love this firm it is beyond my expectation')
-    model.customized_reconstruct(sess, 'i want to watch this movie again it is so interesting')
-    model.customized_reconstruct(sess, 'the time taken to develop the characters is long')
-    model.customized_reconstruct(sess, 'is there any point to make bad movie like this')
-    model.customized_reconstruct(sess, 'sorry but there is no point to watch this movie')
-    model.customized_reconstruct(sess, 'to be honest this movie is not worth my time')
+    model.customized_reconstruct(sess, 'i love this firm and it is beyond my expectation')
+    model.customized_reconstruct(sess, 'i want to watch this movie again because it is so interesting')
+    model.customized_reconstruct(sess, 'the time taken to develop the characters is quite long')
+    model.customized_reconstruct(sess, 'is there any point to make a bad movie like this')
+    model.customized_reconstruct(sess, 'sorry but there is no point to watch this movie again')
+    model.customized_reconstruct(sess, 'to be honest this movie is not worth my time and money')
     
 
 if __name__ == '__main__':

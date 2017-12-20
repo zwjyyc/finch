@@ -26,8 +26,8 @@ def main():
         
         model.reconstruct(sess, enc_inp[-1], dec_inp[-1])
         #model.generate(sess)
-        model.customized_reconstruct(sess, 'i love this film it is one of the best i want to watch again')
-        model.customized_reconstruct(sess, 'this movie is a waste of time and there is no point to see it')
+        model.customized_reconstruct(sess, 'i love this film and i think it is one of the best films')
+        model.customized_reconstruct(sess, 'this movie is a waste of time and there is no point to watch it')
         
         save_path = model.saver.save(sess, model.model_path)
         print("Model saved in file: %s" % save_path)

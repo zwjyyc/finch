@@ -16,9 +16,9 @@ def forward_pass(x, reuse):
             rnn_cell(reuse=reuse), embedded, sequence_length=seq_len, dtype=tf.float32)
 
     with tf.variable_scope('attention', reuse=reuse):
-        v = tf.get_variable("attention_v", [args.rnn_size], tf.float32)
-        query = tf.expand_dims(final_state.h, 1)               # (B, 1, D)
-        keys = rnn_out                                         # (B, T, D)
+        v = tf.get_variable("attention_v", [args.attn_size], tf.float32)
+        query = tf.layers.dense(tf.expand_dims(final_state.h, 1), args.attn_size) # (B, 1, D)
+        keys = tf.layers.dense(rnn_out, args.attn_size)                           # (B, T, D)
         align = tf.reduce_sum(v * tf.tanh(keys + query), [2])
         align = _softmax(align)
         logits = tf.squeeze(tf.matmul(tf.transpose(rnn_out, [0,2,1]), tf.expand_dims(align, 2)), 2)

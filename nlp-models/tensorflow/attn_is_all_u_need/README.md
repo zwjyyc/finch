@@ -1,6 +1,6 @@
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/transformer.png" width="300">
 
-This project is based on [Kyubyong's](https://github.com/Kyubyong/transformer) work, thanks for him!
+This project is built upon [Kyubyong's](https://github.com/Kyubyong/transformer) work, thanks for him!
 
 * Based on that, we have:
   * implemented the model under the architecture of ```tf.estimator.Estimator``` API

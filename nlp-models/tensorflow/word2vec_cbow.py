@@ -45,7 +45,7 @@ class CBOW:
     def add_word_embedding(self):
         self.embedding = tf.get_variable('embedding', [self.vocab_size, self.embedding_dim], tf.float32)
         embedded = tf.nn.embedding_lookup(self.embedding, self.x)
-        self.embedded = tf.reduce_sum(embedded, axis=1)
+        self.embedded = tf.reduce_mean(embedded, axis=1)
     # end method add_word_embedding
 
 

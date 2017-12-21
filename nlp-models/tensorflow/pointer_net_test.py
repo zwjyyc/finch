@@ -74,7 +74,7 @@ def main():
     model = PointerNetwork(
         max_len = MAX_LEN,
         rnn_size = 50,
-        n_layers = 2,
+        attn_size = 15,
         X_word2idx = X_char2idx,
         embedding_dim = 50)
     

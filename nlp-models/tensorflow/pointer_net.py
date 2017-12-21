@@ -3,10 +3,11 @@ import numpy as np
 
 
 class PointerNetwork:
-    def __init__(self, max_len, rnn_size, n_layers, X_word2idx, embedding_dim, sess=tf.Session(), grad_clip=5.0):
+    def __init__(self, max_len, rnn_size, attn_size, X_word2idx, embedding_dim,
+                 sess=tf.Session(), grad_clip=5.0):
         self.max_len = max_len
         self.rnn_size = rnn_size
-        self.n_layers = n_layers
+        self.attn_size = attn_size
         self.grad_clip = grad_clip
         self.X_word2idx = X_word2idx
         self.embedding_dim = embedding_dim
@@ -33,7 +34,7 @@ class PointerNetwork:
     # end method add_input_layer
 
 
-    def lstm_cell(self, reuse=False):
+    def rnn_cell(self, reuse=False):
         return tf.nn.rnn_cell.GRUCell(self.rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
     # end method lstm_cell
 
@@ -41,39 +42,36 @@ class PointerNetwork:
     def add_encoder_layer(self):
         with tf.variable_scope('encoder'):
             embedding = tf.get_variable('embedding', [len(self.X_word2idx), self.embedding_dim], tf.float32)
-            self.encoder_inp = tf.nn.embedding_lookup(embedding, self.X)
-        self.enc_rnn_out, rnn_state = tf.nn.dynamic_rnn(
-            cell = self.lstm_cell(), 
-            inputs = self.encoder_inp,
+            self.enc_inp = tf.nn.embedding_lookup(embedding, self.X)
+        self.enc_rnn_out, self.enc_state = tf.nn.dynamic_rnn(
+            cell = self.rnn_cell(), 
+            inputs = self.enc_inp,
             sequence_length = self.X_seq_len,
             dtype = tf.float32)
-        self.encoder_state = rnn_state
     # end method add_encoder_layer
 
 
     def add_decoder_layer(self):
-        def loop_fn(state):
+        def loop_fn(state, reuse=None):
             num_units = state.get_shape().as_list()[1]
-            v = tf.get_variable("attention_v", [num_units], tf.float32)
-            processed_query = tf.expand_dims(state, 1)                       # (B, 1, D)
-            keys = self.encoder_inp                                          # (B, T, D)
-            align = tf.reduce_sum(v * tf.tanh(keys + processed_query), [2])  # (B, T)
+            with tf.variable_scope('rnn_decoder', reuse=reuse):
+                v = tf.get_variable('attention_v', [self.attn_size], tf.float32)
+                query = tf.layers.dense(tf.expand_dims(state, 1), self.attn_size, reuse=reuse) # (B, 1, D)
+                keys = tf.layers.dense(self.enc_inp, self.attn_size, reuse=reuse)              # (B, T, D)
+            align = tf.reduce_sum(v * tf.tanh(keys + query), [2])                              # (B, T)
             return align
 
-        def rnn_decoder(initial_state, cell, embedding, loop_function=None, scope=None):
-            with tf.variable_scope(scope or "rnn_decoder"):
-                state = initial_state
-                outputs = []
-                starts = tf.fill([self.batch_size], self._x_go)
-                inp = tf.nn.embedding_lookup(embedding, starts)
-                for i in range(self.max_len):
-                    if i > 0:
-                        tf.get_variable_scope().reuse_variables()
-                    _, state = cell(inp, state)
-                    output = loop_fn(state)
-                    outputs.append(output)
-                    idx = tf.argmax(output, -1)
-                    inp = point(idx)
+        def rnn_decoder(initial_state, cell, embedding):
+            state = initial_state
+            outputs = []
+            starts = tf.fill([self.batch_size], self._x_go)
+            inp = tf.nn.embedding_lookup(embedding, starts)
+            for i in range(self.max_len):
+                _, state = cell(inp, state)
+                output = loop_fn(state, reuse=True) if i > 0 else loop_fn(state)
+                outputs.append(output)
+                idx = tf.argmax(output, -1)
+                inp = point(idx)
             return outputs
 
         def point(idx):
@@ -81,12 +79,12 @@ class PointerNetwork:
             b = tf.range(self.batch_size)
             b = tf.expand_dims(b, 1)
             c = tf.concat((tf.to_int64(b), idx), 1)
-            g = tf.gather_nd(self.encoder_inp, c)
+            g = tf.gather_nd(self.enc_inp, c)
             return g
 
         with tf.variable_scope('encoder', reuse=True):
             embedding = tf.get_variable('embedding')
-        outputs = rnn_decoder(self.encoder_state, self.lstm_cell(), embedding, loop_function=loop_fn)
+        outputs = rnn_decoder(self.enc_state, self.rnn_cell(), embedding)
         outputs = tf.stack(outputs, 1)
 
         self.training_logits = outputs
@@ -110,8 +108,8 @@ class PointerNetwork:
 
     def fit(self, X_train, X_train_len, Y_train, Y_train_len, val_data, n_epoch=50, display_step=50, batch_size=128):
         X_test_batch, X_test_batch_lens, Y_test_batch, Y_test_batch_lens = val_data
-
         self.sess.run(tf.global_variables_initializer())
+
         for epoch in range(1, n_epoch+1):
             for local_step, (X_train_batch, X_train_batch_lens, Y_train_batch, Y_train_batch_lens) in enumerate(
                 zip(self.gen_batch(X_train, batch_size), self.gen_batch(X_train_len, batch_size),

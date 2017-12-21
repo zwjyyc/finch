@@ -49,14 +49,6 @@ class PointerNetwork:
             dtype = tf.float32)
         self.encoder_state = rnn_state
     # end method add_encoder_layer
-    
-
-    def processed_decoder_input(self):
-        #main = tf.strided_slice(self.Y, [0, 0], [self.batch_size, -1], [1, 1]) # remove last char
-        main = self.Y[:, :-1] # remove last char
-        decoder_input = tf.concat([tf.fill([self.batch_size, 1], self._x_go), main], 1)
-        return decoder_input
-    # end method add_decoder_layer
 
 
     def add_decoder_layer(self):
@@ -68,12 +60,13 @@ class PointerNetwork:
             align = tf.reduce_sum(v * tf.tanh(keys + processed_query), [2])  # (B, T)
             return align
 
-        def rnn_decoder(decoder_inputs, initial_state, cell, loop_function=None, scope=None):
+        def rnn_decoder(initial_state, cell, embedding, loop_function=None, scope=None):
             with tf.variable_scope(scope or "rnn_decoder"):
                 state = initial_state
                 outputs = []
-                inp = decoder_inputs[0]
-                for i, _ in enumerate(decoder_inputs):
+                starts = tf.fill([self.batch_size], self._x_go)
+                inp = tf.nn.embedding_lookup(embedding, starts)
+                for i in range(self.max_len):
                     if i > 0:
                         tf.get_variable_scope().reuse_variables()
                     _, state = cell(inp, state)
@@ -93,8 +86,7 @@ class PointerNetwork:
 
         with tf.variable_scope('encoder', reuse=True):
             embedding = tf.get_variable('embedding')
-        inputs = tf.unstack(tf.nn.embedding_lookup(embedding, self.processed_decoder_input()), axis=1)
-        outputs = rnn_decoder(inputs, self.encoder_state, self.lstm_cell(), loop_function=loop_fn)
+        outputs = rnn_decoder(self.encoder_state, self.lstm_cell(), embedding, loop_function=loop_fn)
         outputs = tf.stack(outputs, 1)
 
         self.training_logits = outputs
@@ -144,8 +136,7 @@ class PointerNetwork:
         _input = source + [self._x_pad]*(self.max_len-seq_len)
         out_indices = self.sess.run(self.predicting_ids, {
             self.X: [_input],
-            self.X_seq_len: [seq_len],
-            self.Y: np.expand_dims([self._x_go]*self.max_len, 0)})[0]
+            self.X_seq_len: [seq_len]})[0]
         
         print('\nSource')
         #print('Word: {}'.format([i for i in source]))

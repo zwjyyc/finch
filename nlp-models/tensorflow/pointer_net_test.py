@@ -41,8 +41,11 @@ def preprocess_data(max_len):
         _chars = chars + [x_eos] + [x_pad]* (max_len-1-len(chars))
         X_indices.append(_chars)
         X_seq_len.append(len(chars)+1)
-        Y_indices.append(np.argsort(_chars).tolist())
-        Y_seq_len.append(len(chars)+1)
+
+    X_indices = np.array(X_indices)
+    Y_indices = np.argsort(X_indices, axis=1)
+    X_seq_len = np.array(X_seq_len)
+    Y_seq_len = X_seq_len
 
     return X_indices, X_seq_len, Y_indices, Y_seq_len, X_char2idx, X_idx2char
 # end function

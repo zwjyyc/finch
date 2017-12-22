@@ -26,10 +26,10 @@ def main():
             batch_size = args.batch_size,
             num_epochs = None,
             shuffle = True), steps=2000)
-        stupid_decode(['你是谁', '你喜欢我吗', '给我唱一首歌', '我帅吗'], tf_estimator, dl)
+        auto_regressive_decode(['你是谁', '你喜欢我吗', '给我唱一首歌', '我帅吗'], tf_estimator, dl)
 
 
-def stupid_decode(test_words, tf_estimator, dl):
+def auto_regressive_decode(test_words, tf_estimator, dl):
     test_indices = []
     for test_word in test_words:
         test_idx = [dl.source_word2idx[c] for c in test_word] + \
@@ -37,12 +37,10 @@ def stupid_decode(test_words, tf_estimator, dl):
         test_indices.append(test_idx)
     test_indices = np.atleast_2d(test_indices)
     
-    pred_ids = np.zeros([len(test_words), args.target_max_len], np.int64)
-    for j in range(args.target_max_len):
-        _pred_ids = tf_estimator.predict(tf.estimator.inputs.numpy_input_fn(
-            x={'source':test_indices, 'target':pred_ids}, batch_size=len(test_words), shuffle=False))
-        _pred_ids = np.array(list(_pred_ids))
-        pred_ids[:, j] = _pred_ids[:, j]
+    zeros = np.zeros([len(test_words), args.target_max_len], np.int64)
+    pred_ids = tf_estimator.predict(tf.estimator.inputs.numpy_input_fn(
+        x={'source':test_indices, 'target':zeros}, batch_size=len(test_words), shuffle=False))
+    pred_ids = list(pred_ids)
     
     target_idx2word = {i: w for w, i in dl.target_word2idx.items()}
     for i, test_word in enumerate(test_words):

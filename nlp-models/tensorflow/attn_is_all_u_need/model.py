@@ -114,9 +114,23 @@ def _model_fn_train(features, mode, params):
 
 def _model_fn_predict(features, mode, params):
     _ = forward_pass(features['source'], features['target'], params)
-    logits = forward_pass(features['source'], features['target'], params, reuse=True)
-    ids = tf.argmax(logits, -1)
-    return tf.estimator.EstimatorSpec(mode=mode, predictions=ids)
+
+    id_list = []
+    for j in range(args.target_max_len):
+        if len(id_list) == 0:
+            target = features['target']
+        elif len(id_list) == 1:
+            target = tf.concat((id_list[0], features['target'][:, 1:]), axis=1)
+        else:
+            target = tf.concat(id_list, axis=1)
+            target = tf.concat((target, features['target'][:, len(id_list):]), axis=1)
+        
+        logits = forward_pass(features['source'], target, params, reuse=True)
+        ids = tf.argmax(logits, -1)[:, j]
+        ids = tf.expand_dims(ids, 1)
+        id_list.append(ids)
+    
+    return tf.estimator.EstimatorSpec(mode=mode, predictions=tf.concat(id_list, axis=1))
 
 
 def tf_estimator_model_fn(features, labels, mode, params):

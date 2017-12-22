@@ -60,7 +60,7 @@ python rnn_attn_estimator_imdb_test.py
 * [Transformer (Attention Is All You Need)](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/attn_is_all_u_need) 
 
 #### Generative Modelling
-* [Variational Autoencoder (VAE)](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/vae) 
+* [Variational Recurrent Autoencoder](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/vae) 
 
 #### Reinforcement Learning
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_cartpole_test.py)

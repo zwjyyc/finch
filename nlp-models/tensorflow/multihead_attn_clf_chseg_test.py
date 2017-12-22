@@ -41,7 +41,7 @@ if __name__ == '__main__':
     X_test, Y_test = to_test_seq(x_test, y_test)
     print('Vocab size: %d' % vocab_size)
 
-    clf = Tagger(vocab_size, N_CLASS, SEQ_LEN, num_blocks=3)
+    clf = Tagger(vocab_size, N_CLASS, SEQ_LEN, num_blocks=2)
     clf.fit(X_train, Y_train, val_data=(X_test, Y_test), n_epoch=N_EPOCH, batch_size=BATCH_SIZE)
     
     chars = list(sample) if py == 3 else list(sample.decode('utf-8'))

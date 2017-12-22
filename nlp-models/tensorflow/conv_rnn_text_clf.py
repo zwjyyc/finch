@@ -88,10 +88,10 @@ class ConvLSTMClassifier:
 
 
     def add_pooling(self, k=2):
-        Y = tf.layers.average_pooling1d(inputs = self._pointer,
-                                        pool_size = k,
-                                        strides = k,
-                                        padding = self.padding)
+        Y = tf.layers.max_pooling1d(inputs = self._pointer,
+                                    pool_size = k,
+                                    strides = k,
+                                    padding = self.padding)
     # end method add_maxpool
 
 

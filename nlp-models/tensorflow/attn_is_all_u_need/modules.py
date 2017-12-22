@@ -35,7 +35,7 @@ def embed_seq(inputs, vocab_size=None, embed_dim=None, zero_pad=False, scale=Fal
 
 
 def multihead_attn(queries, keys, q_masks, k_masks, num_units=None, num_heads=8,
-        dropout_rate=args.dropout_rate, causality=False, reuse=False, activation=None):
+        dropout_rate=args.dropout_rate, future_binding=False, reuse=False, activation=None):
     """
     Args:
       queries: A 3d tensor with shape of [N, T_q, C_q]
@@ -54,22 +54,25 @@ def multihead_attn(queries, keys, q_masks, k_masks, num_units=None, num_heads=8,
     K_ = tf.concat(tf.split(K, num_heads, axis=2), axis=0)                         # (h*N, T_k, C/h) 
     V_ = tf.concat(tf.split(V, num_heads, axis=2), axis=0)                         # (h*N, T_k, C/h)
 
+    # Scaled Dot-Product
     outputs = tf.matmul(Q_, tf.transpose(K_, [0,2,1]))                             # (h*N, T_q, T_k)
     outputs = outputs / (K_.get_shape().as_list()[-1] ** 0.5)                      # scale
 
     # Key Masking
-    paddings = tf.ones_like(outputs) * (-2**32)                                    # exp(-large) -> 0
+    paddings = tf.fill(tf.shape(outputs), float('-inf'))                           # exp(-large) -> 0
+
     key_masks = k_masks                                                            # (N, T_k)
     key_masks = tf.tile(key_masks, [num_heads, 1])                                 # (h*N, T_k)
     key_masks = tf.tile(tf.expand_dims(key_masks, 1), [1, T_q, 1])                 # (h*N, T_q, T_k)
     outputs = tf.where(tf.equal(key_masks, 0), paddings, outputs)                  # (h*N, T_q, T_k)
 
-    if causality:
+    if future_binding:
         lower_tri = tf.ones([T_q, T_k])                                            # (T_q, T_k)
         lower_tri = tf.contrib.linalg.LinearOperatorTriL(lower_tri).to_dense()     # (T_q, T_k)
         masks = tf.tile(tf.expand_dims(lower_tri,0), [tf.shape(outputs)[0], 1, 1]) # (h*N, T_q, T_k)
         outputs = tf.where(tf.equal(masks, 0), paddings, outputs)                  # (h*N, T_q, T_k)
     
+    # Softmax
     outputs = tf.nn.softmax(outputs)                                               # (h*N, T_q, T_k)
 
     # Query Masking

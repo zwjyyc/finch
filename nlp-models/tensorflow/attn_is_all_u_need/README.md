@@ -13,9 +13,7 @@ This project is built upon [Kyubyong's](https://github.com/Kyubyong/transformer)
   
   * added more activation choices (leaky relu / elu) for easier gradient propagation
   
-  * generated the key and query masks before positional encoding
-  
-    * because after positional encoding, the paddings in key and query will move from zeros to other values
+  * improve masking (mask positional encoding as well)
 
 * Small Task 1: learn sorting characters
     * ``` python train_letters.py --tie_embedding```

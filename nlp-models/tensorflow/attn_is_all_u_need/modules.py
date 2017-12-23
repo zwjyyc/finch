@@ -18,19 +18,15 @@ def layer_norm(inputs, epsilon=1e-8):
 
 def embed_seq(inputs, vocab_size=None, embed_dim=None, zero_pad=False, scale=False, TIE_SIGNAL=False):
     if not TIE_SIGNAL:
-        lookup_table = tf.get_variable('lookup_table', dtype=tf.float32, shape=[vocab_size, embed_dim],
-            initializer=tf.glorot_uniform_initializer())
+        lookup_table = tf.get_variable('lookup_table', dtype=tf.float32, shape=[vocab_size, embed_dim])
     if TIE_SIGNAL:
         lookup_table = tf.get_variable('lookup_table', shape=[vocab_size, embed_dim])
-
     if zero_pad:
         lookup_table = tf.concat((tf.zeros([1, embed_dim]), lookup_table[1:, :]), axis=0)
     
     outputs = tf.nn.embedding_lookup(lookup_table, inputs)
-
     if scale:
         outputs = outputs * (embed_dim ** 0.5)
-     
     return outputs
 
 
@@ -126,12 +122,9 @@ def sinusoidal_positional_encoding(inputs, num_units, zero_pad=True, scale=True)
 
     if zero_pad:
         lookup_table = tf.concat([tf.zeros([1, num_units]), lookup_table[1:, :]], axis=0)
-
     outputs = tf.nn.embedding_lookup(lookup_table, position_idx)
-
     if scale:
         outputs = outputs * num_units ** 0.5
-
     return outputs
 
 

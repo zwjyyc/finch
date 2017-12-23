@@ -4,23 +4,6 @@ We have used:
 * [scikit-learn](http://scikit-learn.org/)
 * [openai-gym](https://github.com/openai/gym)
 ---
-1. The following command clones all the files (>300MB for historical reasons);
-```
-git clone https://github.com/zhedongzheng/finch.git
-```
-
-2. Use [contents](https://github.com/zhedongzheng/finch#contents) to find the model and test that may interest you, click on that test
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr_0.png" width="600">
-
-3. Find the test file path
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="600">
-
-4. run on command line
-```
-cd finch/nlp-models/tensorflow
-python rnn_attn_estimator_imdb_test.py
-```
----
 #### Word Embedding
 * Skip-Gram &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/word2vec_skipgram.py) &nbsp; &nbsp; [Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/tensorflow/word2vec_skipgram_test.py)
 
@@ -65,3 +48,21 @@ python rnn_attn_estimator_imdb_test.py
 
 #### Reinforcement Learning
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_cartpole_test.py)
+---
+1. The following command clones all the files (>300MB for historical reasons);
+```
+git clone https://github.com/zhedongzheng/finch.git
+```
+
+2. Use [contents](https://github.com/zhedongzheng/finch#contents) to find the model and test that may interest you, click on that test
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr_0.png" width="600">
+
+3. Find the test file path
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="600">
+
+4. run on command line
+```
+cd finch/nlp-models/tensorflow
+python rnn_attn_estimator_imdb_test.py
+```
+---

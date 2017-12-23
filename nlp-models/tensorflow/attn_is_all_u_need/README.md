@@ -13,7 +13,7 @@ This project is built upon [Kyubyong's](https://github.com/Kyubyong/transformer)
   
   * added more activation choices (leaky relu / elu) for easier gradient propagation
   
-  * improve masking (mask positional encoding as well)
+  * enhanced masking (mask positional encoding as well)
 
 * Small Task 1: learn sorting characters
     * ``` python train_letters.py --tie_embedding```

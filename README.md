@@ -1,4 +1,4 @@
-* Python 3
+* [Python 3](https://www.python.org/downloads/)
 * [TensorFlow >= 1.4](https://www.tensorflow.org/)
 * [scikit-learn](http://scikit-learn.org/)
 * [openai-gym](https://github.com/openai/gym)

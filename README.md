@@ -1,4 +1,3 @@
-We have used:
 * Python 3
 * [TensorFlow >= 1.4](https://www.tensorflow.org/)
 * [scikit-learn](http://scikit-learn.org/)

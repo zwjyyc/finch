@@ -16,10 +16,10 @@ def layer_norm(inputs, epsilon=1e-8):
     return outputs
 
 
-def embed_seq(inputs, vocab_size=None, embed_dim=None, zero_pad=False, scale=False, TIE_SIGNAL=False):
-    if not TIE_SIGNAL:
+def embed_seq(inputs, vocab_size=None, embed_dim=None, zero_pad=False, scale=False, tie_signal=False):
+    if not tie_signal:
         lookup_table = tf.get_variable('lookup_table', dtype=tf.float32, shape=[vocab_size, embed_dim])
-    if TIE_SIGNAL:
+    if tie_signal:
         lookup_table = tf.get_variable('lookup_table', shape=[vocab_size, embed_dim])
     if zero_pad:
         lookup_table = tf.concat((tf.zeros([1, embed_dim]), lookup_table[1:, :]), axis=0)
@@ -102,15 +102,17 @@ def pointwise_feedforward(inputs, num_units=[None, None], activation=None):
     return outputs
 
 
-def learned_positional_encoding(inputs, embed_dim, zero_pad=False, scale=False):
+def learned_positional_encoding(inputs, mask, embed_dim, zero_pad=False, scale=False):
     T = inputs.get_shape().as_list()[-1]
     outputs = tf.range(tf.shape(inputs)[1])                # (T_q)
     outputs = tf.expand_dims(outputs, 0)                   # (1, T_q)
     outputs = tf.tile(outputs, [tf.shape(inputs)[0], 1])   # (N, T_q)
-    return embed_seq(outputs, T, embed_dim, zero_pad=zero_pad, scale=scale)
+    outputs = embed_seq(outputs, T, embed_dim, zero_pad=zero_pad, scale=scale)
+
+    return tf.expand_dims(tf.to_float(mask), -1) * outputs
 
 
-def sinusoidal_positional_encoding(inputs, num_units, zero_pad=True, scale=True):
+def sinusoidal_positional_encoding(inputs, mask, num_units, zero_pad=False, scale=False):
     T = inputs.get_shape().as_list()[-1]
     position_idx = tf.tile(tf.expand_dims(tf.range(T), 0), [tf.shape(inputs)[0], 1])
 
@@ -125,7 +127,8 @@ def sinusoidal_positional_encoding(inputs, num_units, zero_pad=True, scale=True)
     outputs = tf.nn.embedding_lookup(lookup_table, position_idx)
     if scale:
         outputs = outputs * num_units ** 0.5
-    return outputs
+
+    return tf.expand_dims(tf.to_float(mask), -1) * outputs
 
 
 def label_smoothing(inputs, epsilon=0.1):

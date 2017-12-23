@@ -42,7 +42,7 @@ class Tagger:
     def add_forward_path(self):
         with tf.variable_scope('encoder_embedding'):
             encoded = embed_seq(
-                self.X, self.vocab_size, self.hidden_units, zero_pad=True, scale=True)
+                self.X, self.vocab_size, self.hidden_units, zero_pad=False, scale=True)
         with tf.variable_scope('encoder_positional_encoding'):
             encoded += learned_positional_encoding(self.X, self.hidden_units, zero_pad=False, scale=False)
         with tf.variable_scope('encoder_dropout'):

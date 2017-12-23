@@ -16,7 +16,7 @@ def forward_pass(sources, targets, params, reuse=False):
                 sources, params['source_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
         
         with tf.variable_scope('encoder_positional_encoding', reuse=reuse):
-            encoded += pos_enc(sources, args.hidden_units, zero_pad=False, scale=False)
+            encoded += pos_enc(sources, en_masks, args.hidden_units, zero_pad=False, scale=False)
         
         with tf.variable_scope('encoder_dropout', reuse=reuse):
             encoded = tf.layers.dropout(encoded, args.dropout_rate, training=(not reuse))
@@ -38,14 +38,14 @@ def forward_pass(sources, targets, params, reuse=False):
         if args.tie_embedding is True:
             with tf.variable_scope('encoder_embedding', reuse=True):
                 decoded = embed_seq(decoder_inputs, params['target_vocab_size'], args.hidden_units,
-                    zero_pad=True, scale=True, TIE_SIGNAL=True)
+                    zero_pad=True, scale=True, tie_signal=True)
         else:
             with tf.variable_scope('decoder_embedding', reuse=reuse):
                 decoded = embed_seq(
                     decoder_inputs, params['target_vocab_size'], args.hidden_units, zero_pad=True, scale=True)
         
         with tf.variable_scope('decoder_positional_encoding', reuse=reuse):
-            decoded += pos_enc(decoder_inputs, args.hidden_units, zero_pad=False, scale=False)
+            decoded += pos_enc(decoder_inputs, de_masks, args.hidden_units, zero_pad=False, scale=False)
                 
         with tf.variable_scope('decoder_dropout', reuse=reuse):
             decoded = tf.layers.dropout(decoded, args.dropout_rate, training=(not reuse))

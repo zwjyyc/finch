@@ -1,5 +1,5 @@
 import pos
-from multihead_attn import *
+from utils import *
 import tensorflow as tf
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -15,7 +15,7 @@ def forward_pass(sources, params, reuse=False,
         en_masks = tf.sign(tf.abs(sources))     
         with tf.variable_scope('encoder_embedding', reuse=reuse):
             encoded = embed_seq(
-                sources, params['vocab_size'], hidden_units, zero_pad=True, scale=True)
+                sources, params['vocab_size'], hidden_units, zero_pad=False, scale=True)
         with tf.variable_scope('encoder_positional_encoding', reuse=reuse):
             encoded += learned_positional_encoding(sources, hidden_units, zero_pad=False, scale=False)
         with tf.variable_scope('encoder_dropout', reuse=reuse):

@@ -48,7 +48,7 @@
 #### Reinforcement Learning
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_cartpole_test.py)
 ---
-#### How To Use?
+#### How To Use
 1. The following command clones all the files (>300MB for historical reasons);
 ```
 git clone https://github.com/zhedongzheng/finch.git

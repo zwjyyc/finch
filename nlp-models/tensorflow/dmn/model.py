@@ -119,6 +119,7 @@ class MemoryNetwork:
         memory = tf.layers.dropout(
             memory, args.dropout_rate, training=self.placeholders['is_training'])
         answer_inputs = self.shift_right(self.placeholders['answers'])
+        init_state = tf.layers.dense(tf.concat((memory, q_vec), -1), args.hidden_size)
         
         with tf.variable_scope('answer_module'):
             helper = tf.contrib.seq2seq.TrainingHelper(
@@ -127,7 +128,7 @@ class MemoryNetwork:
             decoder = tf.contrib.seq2seq.BasicDecoder(
                 cell = self.GRU(),
                 helper = helper,
-                initial_state = memory,
+                initial_state = init_state,
                 output_layer = tf.layers.Dense(self.params['vocab_size']))
             decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
                 decoder = decoder)
@@ -142,7 +143,7 @@ class MemoryNetwork:
             decoder = tf.contrib.seq2seq.BasicDecoder(
                 cell = self.GRU(reuse=True),
                 helper = helper,
-                initial_state = memory,
+                initial_state = init_state,
                 output_layer = tf.layers.Dense(self.params['vocab_size'], _reuse=True))
             decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
                 decoder = decoder,

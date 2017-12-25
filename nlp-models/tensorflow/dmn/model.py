@@ -21,13 +21,13 @@ class MemoryNetwork:
     def build_placeholders(self):
         self.placeholders = {
             'inputs': tf.placeholder(
-                tf.int64, (None, self.params['max_input_len'], self.params['max_sent_len'])),
-            'questions': tf.placeholder(tf.int64, (None, self.params['max_quest_len'])),
-            'answers': tf.placeholder(tf.int64, (None, self.params['max_answer_len'])),
-            'inputs_len': tf.placeholder(tf.int32, (None)),
-            'inputs_sent_len': tf.placeholder(tf.int32, (None, self.params['max_input_len'])),
-            'questions_len': tf.placeholder(tf.int32, (None)),
-            'answers_len': tf.placeholder(tf.int32, (None)),
+                tf.int64, [None, self.params['max_input_len'], self.params['max_sent_len']]),
+            'questions': tf.placeholder(tf.int64, [None, self.params['max_quest_len']]),
+            'answers': tf.placeholder(tf.int64, [None, self.params['max_answer_len']]),
+            'inputs_len': tf.placeholder(tf.int32, [None]),
+            'inputs_sent_len': tf.placeholder(tf.int32, [None, self.params['max_input_len']]),
+            'questions_len': tf.placeholder(tf.int32, [None]),
+            'answers_len': tf.placeholder(tf.int32, [None]),
             'is_training': tf.placeholder(tf.bool)}
 
 
@@ -58,7 +58,7 @@ class MemoryNetwork:
 
     def input_module(self, embedding):
         with tf.variable_scope('input_module'):
-            inputs = tf.nn.embedding_lookup(embedding, self.placeholders['inputs'])        # (B, I, S, D)
+            inputs = tf.nn.embedding_lookup(embedding, self.placeholders['inputs'])       # (B, I, S, D)
             position = self.position_encoding(self.params['max_sent_len'], args.embed_dim)
             inputs = tf.reduce_sum(inputs * position, 2)                                  # (B, I, D)
             fact_vecs, _ = tf.nn.dynamic_rnn(                                             
@@ -89,10 +89,10 @@ class MemoryNetwork:
 
     def episode(self, memory, q_vec, fact_vecs, i):
         attentions = [self.attention(memory, q_vec, fact_vec, bool(i) or bool(n_fact))
-            for n_fact, fact_vec in enumerate(tf.unstack(fact_vecs, axis=1))]    # T list of (B,)
+            for n_fact, fact_vec in enumerate(tf.unstack(fact_vecs, axis=1))]    # n_fact list of (B,)
         attentions = tf.transpose(tf.stack(attentions))                          # (B, n_fact)
         attentions = tf.nn.softmax(attentions)                                   # (B, n_fact)
-        attentions = tf.expand_dims(attentions, -1)
+        attentions = tf.expand_dims(attentions, -1)                              # (B, n_fact, 1)
         reuse = i > 0
         with tf.variable_scope('attention_gru', reuse=reuse):
             _, episode = tf.nn.dynamic_rnn(
@@ -110,7 +110,7 @@ class MemoryNetwork:
                         tf.abs(fact_vec - q_vec),
                         tf.abs(fact_vec - prev_memory)]
             feature_vec = tf.concat(features, 1)
-            attention = tf.layers.dense(feature_vec, args.embed_dim, tf.nn.tanh, reuse=reuse, name='fc1')
+            attention = tf.layers.dense(feature_vec, args.embed_dim, tf.tanh, reuse=reuse, name='fc1')
             attention = tf.layers.dense(attention, 1, reuse=reuse, name='fc2')
         return tf.squeeze(attention, 1)
 
@@ -123,7 +123,7 @@ class MemoryNetwork:
         with tf.variable_scope('answer_module'):
             helper = tf.contrib.seq2seq.TrainingHelper(
                 inputs = tf.nn.embedding_lookup(embedding, answer_inputs),
-                sequence_length = tf.fill([self.batch_size], 2))
+                sequence_length = self.placeholders['answers_len'])
             decoder = tf.contrib.seq2seq.BasicDecoder(
                 cell = self.GRU(),
                 helper = helper,
@@ -158,9 +158,10 @@ class MemoryNetwork:
         return tf.concat([start, x[:, :-1]], 1)
 
 
-    def GRU(self, reuse=None):
+    def GRU(self, rnn_size=None, reuse=None):
+        rnn_size = args.hidden_size if rnn_size is None else rnn_size
         return tf.nn.rnn_cell.GRUCell(
-            args.hidden_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
+            rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
 
 
     def zero_index_pad(self, embedding):

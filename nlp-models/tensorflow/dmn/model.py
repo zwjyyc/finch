@@ -78,17 +78,17 @@ class MemoryNetwork:
 
     def memory_module(self, fact_vecs, q_vec):
         memory = q_vec
-        for i in range(args.n_episodes):
+        for i in range(args.n_hops):
             print('==> Building Episode', i)
-            episode = self.episode(memory, q_vec, fact_vecs, i)
+            episode = self.gen_episode(memory, q_vec, fact_vecs, i)
             with tf.variable_scope('memory_%d' % i):
                 memory = tf.layers.dense(
                     tf.concat([memory, episode, q_vec], 1), args.hidden_size, tf.nn.relu)
         return memory  # (B, D)
 
 
-    def episode(self, memory, q_vec, fact_vecs, i):
-        attentions = [self.attention(memory, q_vec, fact_vec, bool(i) or bool(n_fact))
+    def gen_episode(self, memory, q_vec, fact_vecs, i):
+        attentions = [self.gen_attention(memory, q_vec, fact_vec, bool(i) or bool(n_fact))
             for n_fact, fact_vec in enumerate(tf.unstack(fact_vecs, axis=1))]    # n_fact list of (B,)
         attentions = tf.transpose(tf.stack(attentions))                          # (B, n_fact)
         attentions = tf.nn.softmax(attentions)                                   # (B, n_fact)
@@ -103,7 +103,7 @@ class MemoryNetwork:
         return episode                                                           # (B, D)
 
 
-    def attention(self, prev_memory, q_vec, fact_vec, reuse):
+    def gen_attention(self, prev_memory, q_vec, fact_vec, reuse):
         with tf.variable_scope('attention', reuse=reuse):
             features = [fact_vec * q_vec,
                         fact_vec * prev_memory,

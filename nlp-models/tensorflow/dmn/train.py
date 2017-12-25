@@ -19,11 +19,11 @@ def main():
     sess.run(tf.global_variables_initializer())
 
     n_batch = train_dl.data['size'] // args.batch_size
-    for epoch in range(args.num_epoch):
+    for epoch in range(args.n_epochs):
         for i, batch in enumerate(train_dl.next_batch()):
             loss, acc = model.train_session(sess, batch)
             if i % args.display_step == 0:
-                print("[%d/%d] | [%d/%d]" % (epoch+1, args.num_epoch, i, n_batch), end='')
+                print("[%d/%d] | [%d/%d]" % (epoch+1, args.n_epochs, i, n_batch), end='')
                 print(" | loss:%.3f | acc:%.3f" % (loss, acc))
 
     predicted_ids = []

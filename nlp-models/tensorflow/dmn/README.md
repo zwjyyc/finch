@@ -4,10 +4,12 @@
     * We have added a sequence decoder in the answer module, so it can talk
     * We have added a ```reuse``` argument to ```AttentionGRUCell``` for safety
 
-```python train.py```
 ```
-[5/5] | [150/156] | loss:0.133 | acc:0.922
-final testing accuracy: 0.919
+python train.py
+```
+```
+[10/10] | [150/156] | loss:0.009 | acc:1.000
+final testing accuracy: 0.995
 
 [['Fred', 'picked', 'up', 'the', 'football', 'there', '<end>'],
  ['Fred', 'gave', 'the', 'football', 'to', 'Jeff', '<end>'],
@@ -24,5 +26,4 @@ final testing accuracy: 0.919
 
 - - - - - - - - - - - - 
 ['Jeff', '<end>']
-
 ```

@@ -93,10 +93,10 @@ class MemoryNetwork:
         attentions = tf.transpose(tf.stack(attentions))                          # (B, n_fact)
         attentions = tf.nn.softmax(attentions)                                   # (B, n_fact)
         attentions = tf.expand_dims(attentions, -1)
-        attention_cell = AttentionGRUCell(args.hidden_size)         
-        with tf.variable_scope('attention_gru', reuse=(i>0)):
+        reuse = i > 0
+        with tf.variable_scope('attention_gru', reuse=reuse):
             _, episode = tf.nn.dynamic_rnn(
-                attention_cell,
+                AttentionGRUCell(args.hidden_size, reuse=reuse),
                 tf.concat([fact_vecs, attentions], 2),                           # (B, n_fact, D+1)
                 self.placeholders['inputs_len'],
                 dtype=np.float32)
@@ -217,8 +217,12 @@ class MemoryNetwork:
         ids = sess.run(self.predicted_ids, feed_dict)[0]
 
         demo_i, demo_q, demo_a = demo
-        pprint.PrettyPrinter(indent=4).pprint(demo_i[demo_idx])
+        print()
+        pprint.PrettyPrinter().pprint(demo_i[demo_idx])
+        print()
         print(demo_q[demo_idx])
+        print()
         print(demo_a[demo_idx])
+        print()
         print('- '*12)
         print([idx2word[id] for id in ids])

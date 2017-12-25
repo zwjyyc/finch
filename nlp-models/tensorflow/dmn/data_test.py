@@ -4,15 +4,13 @@ import pprint
 
 
 def bAbI_data_load_test(idx=1):
-    pp = pprint.PrettyPrinter(indent=4)
-
     data, lens = bAbI_data_load('./temp/qa5_three-arg-relations_train.txt')
     inputs, questions, answers = data
     inputs_len, inputs_sent_len, questions_len, answers_len = lens
     
     print(len(inputs), len(questions), len(answers),
           len(inputs_len), len(inputs_sent_len), len(questions_len), len(answers_len))
-    pp.pprint(inputs[idx])
+    pprint.PrettyPrinter().pprint(inputs[idx])
     print(questions[idx], answers[idx])
     print(inputs_len[idx], inputs_sent_len[idx], questions_len[idx], answers_len[idx])
 

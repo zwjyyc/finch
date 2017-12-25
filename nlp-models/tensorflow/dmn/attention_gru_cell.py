@@ -32,9 +32,8 @@ class AttentionGRUCell(RNNCell):
        and scalar attention of shape:  (batch_size, max_time_step, 1)
        are concatenated along the final axis"""
 
-    def __init__(self, num_units, input_size=None, activation=tanh):
-        if input_size is not None:
-            logging.warn("%s: The input_size parameter is deprecated.", self)
+    def __init__(self, num_units, activation=tanh, reuse=None):
+        super(AttentionGRUCell, self).__init__(_reuse=reuse)
         self._num_units = num_units
         self._activation = activation
 

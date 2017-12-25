@@ -2,7 +2,7 @@
 * Based on that:
 
     * We have added a sequence decoder in the answer module, so it can talk
-    * We have added a ```reuse``` argument to AttentionGRUCell for safety
+    * We have added a ```reuse``` argument to ```AttentionGRUCell``` for safety
 
 ```python train.py```
 ```

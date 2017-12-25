@@ -1,6 +1,7 @@
 ```
 [5/5] | [150/156] | loss:0.133 | acc:0.922
 final testing accuracy: 0.919
+
 [['Fred', 'picked', 'up', 'the', 'football', 'there', '<end>'],
  ['Fred', 'gave', 'the', 'football', 'to', 'Jeff', '<end>'],
  ['Bill', 'went', 'back', 'to', 'the', 'bathroom', '<end>'],

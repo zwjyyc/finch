@@ -67,8 +67,7 @@ def forward_pass(sources, targets, params, reuse=False):
         
         # OUTPUT LAYER    
         if args.tie_proj_weight is True:
-            b = tf.get_variable(
-                'bias', [params['target_vocab_size']], tf.float32, tf.constant_initializer(0.01))
+            b = tf.get_variable('bias', [params['target_vocab_size']], tf.float32)
             _scope = 'encoder_embedding' if args.tie_embedding is True else 'decoder_embedding'
             with tf.variable_scope(_scope, reuse=True):
                 shared_w = tf.get_variable('lookup_table')

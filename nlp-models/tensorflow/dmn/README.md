@@ -1,3 +1,4 @@
+```
 [10/10] | [150/156] | loss:0.084 | acc:0.969
 final testing accuracy: 0.968
 [   ['Fred', 'picked', 'up', 'the', 'football', 'there', '<end>'],
@@ -6,3 +7,4 @@ final testing accuracy: 0.968
 ['football', '<end>']
 - - - - - - - - - - - - 
 ['football', '<end>']
+```

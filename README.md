@@ -42,6 +42,9 @@
 
 * [Transformer (Attention Is All You Need)](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/attn_is_all_u_need) 
 
+#### Question Answering
+* [Dynamic Memory Network](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/dmn) 
+
 #### Generative Modelling
 * [Variational Recurrent Autoencoder](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/vae) 
 

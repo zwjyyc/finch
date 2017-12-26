@@ -31,7 +31,7 @@ class IMDB(BaseDataLoader):
     
     def _load_data(self):
         (X_train, _), (X_test, _) = tf.contrib.keras.datasets.imdb.load_data(
-            num_words=args.vocab_size, index_from=self._index_from)
+            num_words=None, index_from=self._index_from)
         print("Data Loaded")
         X_tr_enc_inp, X_tr_dec_inp, X_tr_dec_out = self._pad(X_train)
         X_te_enc_inp, X_te_dec_inp, X_te_dec_out = self._pad(X_test)

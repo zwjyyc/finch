@@ -103,12 +103,12 @@ class MemoryNetwork:
         return episode                                                           # (B, D)
 
 
-    def gen_attention(self, prev_memory, q_vec, fact_vec, reuse):
+    def gen_attention(self, memory, q_vec, fact_vec, reuse):
         with tf.variable_scope('attention', reuse=reuse):
             features = [fact_vec * q_vec,
-                        fact_vec * prev_memory,
+                        fact_vec * memory,
                         tf.abs(fact_vec - q_vec),
-                        tf.abs(fact_vec - prev_memory)]
+                        tf.abs(fact_vec - memory)]
             feature_vec = tf.concat(features, 1)
             attention = tf.layers.dense(feature_vec, args.embed_dim, tf.tanh, reuse=reuse, name='fc1')
             attention = tf.layers.dense(attention, 1, reuse=reuse, name='fc2')

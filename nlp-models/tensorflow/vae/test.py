@@ -6,13 +6,17 @@ import tensorflow as tf
 
 def main():
     dataloader = IMDB()
-    model = VRAE(dataloader.word2idx, dataloader.idx2word)
+    params = {
+        'vocab_size': len(dataloader.word2idx),
+        'word2idx': dataloader.word2idx,
+        'idx2word': dataloader.idx2word,}
+    model = VRAE(params)
 
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
     print("Loading trained model ...")
-    model.saver.restore(sess, model.model_path)
+    tf.train.Saver().restore(sess, './saved/vrae.ckpt')
 
     # lowercase, no punctuation, please 
     model.customized_reconstruct(sess, 'i love this firm and it is beyond my expectation')

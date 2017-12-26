@@ -20,6 +20,7 @@ def main():
 
     n_batch = train_dl.data['size'] // args.batch_size
     for epoch in range(args.n_epochs):
+        train_dl.shuffle()
         for i, batch in enumerate(train_dl.next_batch()):
             loss, acc = model.train_session(sess, batch)
             if i % args.display_step == 0:

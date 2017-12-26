@@ -2,6 +2,7 @@ from copy import deepcopy
 from config import args
 
 import numpy as np
+import sklearn
 
 
 class BaseDataLoader(object):
@@ -42,6 +43,23 @@ class BaseDataLoader(object):
                    self.data['len']['inputs_sent_len'][i : i + args.batch_size],
                    self.data['len']['questions_len'][i : i + args.batch_size],
                    self.data['len']['answers_len'][i : i + args.batch_size],)
+
+
+    def shuffle(self):
+        (self.data['val']['inputs'],
+         self.data['val']['questions'],
+         self.data['val']['answers'],
+         self.data['len']['inputs_len'],
+         self.data['len']['inputs_sent_len'],
+         self.data['len']['questions_len'],
+         self.data['len']['answers_len'],) = sklearn.utils.shuffle(self.data['val']['inputs'],
+                                                                   self.data['val']['questions'],
+                                                                   self.data['val']['answers'],
+                                                                   self.data['len']['inputs_len'],
+                                                                   self.data['len']['inputs_sent_len'],
+                                                                   self.data['len']['questions_len'],
+                                                                   self.data['len']['answers_len'],)
+        print("Data Shuffled")
 
 
 class DataLoader(BaseDataLoader):

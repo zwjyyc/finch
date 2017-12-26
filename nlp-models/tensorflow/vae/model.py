@@ -8,14 +8,11 @@ import sys
 
 
 class VRAE:
-    def __init__(self, word2idx, idx2word):
-        self._word2idx = word2idx
-        self._idx2word = idx2word
+    def __init__(self, params):
+        self.params = params
         self._build_graph()
-        self.saver = tf.train.Saver()
-        self.model_path = './saved/vrae.ckpt'
 
-    
+
     def _build_graph(self):
         self._build_forward_graph()
         self._build_backward_graph()
@@ -55,7 +52,8 @@ class VRAE:
         # the embedding is shared between encoder and decoder
         # since the source and the target for an autoencoder are the same
         with tf.variable_scope('encoder'):
-            tied_embedding = tf.get_variable('tied_embedding', [args.vocab_size, args.embedding_dim],
+            tied_embedding = tf.get_variable('tied_embedding',
+                [self.params['vocab_size'], args.embedding_dim],
                 tf.float32)
             encoded_output, encoded_state = tf.nn.dynamic_rnn(
                 cell = tf.nn.rnn_cell.MultiRNNCell(
@@ -84,10 +82,10 @@ class VRAE:
         init_state = self._z_to_dec_state(z)
 
         with tf.variable_scope('encoder', reuse=True):
-            tied_embedding = tf.get_variable('tied_embedding', [args.vocab_size, args.embedding_dim])
+            tied_embedding = tf.get_variable('tied_embedding', [self.params['vocab_size'], args.embedding_dim])
 
         with tf.variable_scope('decoding'):
-            lin_proj = tf.layers.Dense(args.vocab_size, _scope='decoder/dense')
+            lin_proj = tf.layers.Dense(self.params['vocab_size'], _scope='decoder/dense')
             
             helper = tf.contrib.seq2seq.TrainingHelper(
                 inputs = tf.nn.embedding_lookup(tied_embedding, self.dec_inp),
@@ -109,7 +107,7 @@ class VRAE:
         tiled_z = tf.tile(tf.expand_dims(self.z, 1), [1, args.beam_width, 1])
         
         with tf.variable_scope('encoder', reuse=True):
-            tied_embedding = tf.get_variable('tied_embedding', [args.vocab_size, args.embedding_dim])
+            tied_embedding = tf.get_variable('tied_embedding', [self.params['vocab_size'], args.embedding_dim])
 
         with tf.variable_scope('decoding', reuse=True):
             decoder = BeamSearchDecoder(
@@ -117,11 +115,11 @@ class VRAE:
                     [self._rnn_cell(reuse=True) for _ in range(args.decoder_layers)]),
                 embedding = tied_embedding,
                 start_tokens = tf.tile(tf.constant(
-                    [self._word2idx['<start>']], dtype=tf.int32), [self._batch_size]),
-                end_token = self._word2idx['<end>'],
+                    [self.params['word2idx']['<start>']], dtype=tf.int32), [self._batch_size]),
+                end_token = self.params['word2idx']['<end>'],
                 initial_state = tf.contrib.seq2seq.tile_batch(init_state, args.beam_width),
                 beam_width = args.beam_width,
-                output_layer = tf.layers.Dense(args.vocab_size, _reuse=True),
+                output_layer = tf.layers.Dense(self.params['vocab_size'], _reuse=True),
                 concat_z = tiled_z)
             decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
                 decoder = decoder,
@@ -153,7 +151,7 @@ class VRAE:
     def _nll_loss_fn(self):
         mask_fn = lambda l : tf.sequence_mask(l, tf.reduce_max(l), dtype=tf.float32)
         mask = mask_fn(self.dec_seq_len)
-        if (args.num_sampled <= 0) or (args.num_sampled >= args.vocab_size):
+        if (args.num_sampled <= 0) or (args.num_sampled >= self.params['vocab_size']):
             return tf.reduce_sum(tf.contrib.seq2seq.sequence_loss(
                 logits = self.training_logits,
                 targets = self.dec_out,
@@ -169,7 +167,7 @@ class VRAE:
                     labels = tf.reshape(self.dec_out, [-1, 1]),
                     inputs = tf.reshape(self.training_rnn_out, [-1, args.rnn_size]),
                     num_sampled = args.num_sampled,
-                    num_classes = args.vocab_size,
+                    num_classes = self.params['vocab_size'],
                 )) / tf.to_float(self._batch_size)
 
 
@@ -194,23 +192,25 @@ class VRAE:
 
 
     def reconstruct(self, sess, sentence, sentence_dropped):
-        print('\nI: %s' % ' '.join([self._idx2word[idx] for idx in sentence]), end='\n\n')
-        print('D: %s' % ' '.join([self._idx2word[idx] for idx in sentence_dropped]), end='\n\n')
+        idx2word = self.params['idx2word']
+        print('\nI: %s' % ' '.join([idx2word[idx] for idx in sentence]), end='\n\n')
+        print('D: %s' % ' '.join([idx2word[idx] for idx in sentence_dropped]), end='\n\n')
         predicted_ids = sess.run(self.predicted_ids, {self.enc_inp: np.atleast_2d(sentence)})[0]
-        print('O: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')
+        print('O: %s' % ' '.join([idx2word[idx] for idx in predicted_ids]), end='\n\n')
 
     
     def customized_reconstruct(self, sess, sentence):
+        idx2word = self.params['idx2word']
         sentence = [self.get_new_w(w) for w in sentence.split()][:args.max_len]
-        print('\nI: %s' % ' '.join([self._idx2word[idx] for idx in sentence]), end='\n\n')
-        sentence = sentence + [self._word2idx['<pad>']] * (args.max_len-len(sentence))
+        print('\nI: %s' % ' '.join([idx2word[idx] for idx in sentence]), end='\n\n')
+        sentence = sentence + [self.params['word2idx']['<pad>']] * (args.max_len-len(sentence))
         predicted_ids = sess.run(self.predicted_ids, {self.enc_inp: np.atleast_2d(sentence)})[0]
-        print('O: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')
+        print('O: %s' % ' '.join([idx2word[idx] for idx in predicted_ids]), end='\n\n')
 
 
     def get_new_w(self, w):
-        idx = self._word2idx[w]
-        return idx if idx < args.vocab_size else self._word2idx['<unk>']
+        idx = self.params['word2idx'][w]
+        return idx if idx < self.params['vocab_size'] else self.params['word2idx']['<unk>']
 
 
     def generate(self, sess):
@@ -218,7 +218,7 @@ class VRAE:
                                 {self._batch_size: 1,
                                  self.z: np.random.randn(1, args.latent_size),
                                  self.enc_seq_len: [args.max_len]})[0]
-        print('G: %s' % ' '.join([self._idx2word[idx] for idx in predicted_ids]), end='\n\n')
+        print('G: %s' % ' '.join([self.params['idx2word'][idx] for idx in predicted_ids]), end='\n\n')
 
 
     def _gradient_clipping(self, loss_op):

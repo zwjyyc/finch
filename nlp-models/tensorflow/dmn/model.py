@@ -61,8 +61,10 @@ class MemoryNetwork:
             inputs = tf.nn.embedding_lookup(embedding, self.placeholders['inputs'])       # (B, I, S, D)
             position = self.position_encoding(self.params['max_sent_len'], args.embed_dim)
             inputs = tf.reduce_sum(inputs * position, 2)                                  # (B, I, D)
-            fact_vecs, _ = tf.nn.dynamic_rnn(                                             
-                self.GRU(), inputs, self.placeholders['inputs_len'], dtype=np.float32)    # (B, I, D)
+            birnn_out, _ = tf.nn.bidirectional_dynamic_rnn(                                             
+                self.GRU(args.hidden_size//2), self.GRU(args.hidden_size//2),
+                inputs, self.placeholders['inputs_len'], dtype=np.float32)                # (B, I, D)
+            fact_vecs = tf.concat(birnn_out, -1)
             fact_vecs = tf.layers.dropout(
                 fact_vecs, args.dropout_rate, training=self.placeholders['is_training'])
             return fact_vecs

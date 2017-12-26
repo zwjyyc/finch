@@ -17,8 +17,6 @@ Following tricks are enabled:
 * Concatenating latent vector (z) into decoder inputs, which requires modifying the decoder in source code ```tf.contrib.seq2seq```;
     * The modified decoders are placed in the folder ``` modified_tf_classes ```
 ---
-```O``` is expected to write under the structure of ```I```, but with different words
-
 ``` python train.py ```
 ```
 Step 23429 | [30/100] | [750/781] | nll_loss:76.2 | kl_w:1.000 | kl_loss:12.23 

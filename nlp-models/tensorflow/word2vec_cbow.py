@@ -71,14 +71,11 @@ class CBOW:
 
     def preprocess_text(self):
         text = self.text
-        if self.useless_words is not None:
-            if int(sys.version[0]) >= 3:
-                table = str.maketrans({useless: '' for useless in self.useless_words})
-                text = text.translate(table)
-            else:
-                text = re.sub(r'[{}]'.format(''.join(self.useless_words)), ' ', text)
-        text = re.sub('\s+', ' ', text.replace('\n', ' ')).strip().lower()
-        
+        for useless in self.useless_words:
+            text = text.replace(useless, ' ')
+        text = text.replace('\n', ' ')
+        text = re.sub('\s+', ' ', text).strip().lower()
+
         words = text.split()
         word2freq = Counter(words)
         words = [word for word in words if word2freq[word] > self.min_freq]

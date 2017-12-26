@@ -9,9 +9,9 @@ cd vae-nlp
 ```
 ---
 Following tricks are enabled:
-* KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
+* KL cost annealing
 
-* Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
+* Word dropout
 
   ```word_dropout_rate``` is the % of decoder input words masked with unknown tags, in order to weaken the decoder and force it relying on encoder
 

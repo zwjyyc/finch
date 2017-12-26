@@ -35,7 +35,7 @@ def forward_pass(sources, targets, params, reuse=False):
         decoder_inputs = _shift_right(targets, params['start_symbol'])
         de_masks = tf.sign(tf.abs(decoder_inputs))
             
-        if args.tie_embedding is True:
+        if args.tied_embedding:
             with tf.variable_scope('encoder_embedding', reuse=True):
                 decoded = embed_seq(decoder_inputs, params['target_vocab_size'], args.hidden_units,
                     zero_pad=True, scale=True, tie_signal=True)
@@ -66,9 +66,9 @@ def forward_pass(sources, targets, params, reuse=False):
                     activation=params['activation'])
         
         # OUTPUT LAYER    
-        if args.tie_proj_weight is True:
+        if args.tied_proj_weight:
             b = tf.get_variable('bias', [params['target_vocab_size']], tf.float32)
-            _scope = 'encoder_embedding' if args.tie_embedding is True else 'decoder_embedding'
+            _scope = 'encoder_embedding' if args.tied_embedding else 'decoder_embedding'
             with tf.variable_scope(_scope, reuse=True):
                 shared_w = tf.get_variable('lookup_table')
             decoded = tf.reshape(decoded, [-1, args.hidden_units])
@@ -89,7 +89,7 @@ def _model_fn_train(features, mode, params):
         targets = features['target']
         masks = tf.to_float(tf.not_equal(targets, 0))
 
-        if args.label_smoothing is True:
+        if args.label_smoothing:
             loss_op = label_smoothing_sequence_loss(
                 logits=logits, targets=targets, weights=masks, label_depth=params['target_vocab_size'])
         else:

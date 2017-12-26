@@ -13,15 +13,15 @@ parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--num_epochs', type=int, default=100)
 parser.add_argument('--positional_encoding', type=str, default='learned')
 parser.add_argument('--activation', type=str, default='elu')
-parser.add_argument('--tie_proj_weight', action='store_false')
-parser.add_argument('--tie_embedding', action='store_true')
+parser.add_argument('--tied_proj_weight', action='store_false')
+parser.add_argument('--tied_embedding', action='store_true')
 parser.add_argument('--label_smoothing', action='store_false')
 parser.add_argument('--lr_decay_strategy', type=str, default='exp')
 parser.add_argument('--warmup_steps', type=int, default=4000,
     help="this will be used when '--lr_decay_strategy=noam'")
 parser.add_argument('--model_dir', type=str, default='./saved')
 
-parser.set_defaults(tie_proj_weight=True)
+parser.set_defaults(tied_proj_weight=True)
 parser.set_defaults(label_smoothing=True)
 
 args = parser.parse_args()

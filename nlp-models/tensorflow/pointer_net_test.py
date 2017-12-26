@@ -41,7 +41,7 @@ def preprocess_data(max_len):
         _chars = chars + [x_eos] + [x_pad]* (max_len-1-len(chars))
         X_indices.append(_chars)
         target = sorted(_chars)
-        Y_indices.append([_chars.index(c) for c in target])
+        Y_indices.append([_chars.index(t) for t in target])
         X_seq_len.append(len(chars)+1)
 
     X_indices = np.array(X_indices)

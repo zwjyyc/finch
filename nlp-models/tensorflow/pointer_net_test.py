@@ -36,18 +36,22 @@ def preprocess_data(max_len):
     Y_indices = []
     Y_seq_len = []
 
-    for line in X_data.split('\n'):
-        chars = [X_char2idx.get(char, x_unk) for char in line]
-        _chars = chars + [x_eos] + [x_pad]* (max_len-1-len(chars))
-        X_indices.append(_chars)
-        target = sorted(_chars)
-        Y_indices.append([_chars.index(t) for t in target])
-        X_seq_len.append(len(chars)+1)
+    for x_line, y_line in zip(X_data.split('\n'), Y_data.split('\n')):
+        x_chars = [X_char2idx.get(char, x_unk) for char in x_line]
+        _x_chars = x_chars + [x_eos] + [x_pad]* (max_len-1-len(x_chars))
+        X_indices.append(_x_chars)
+        
+        y_chars = [X_char2idx.get(char, x_unk) for char in y_line]
+        _y_chars = y_chars + [x_eos] + [x_pad]* (max_len-1-len(y_chars))
+        target = [_x_chars.index(y) for y in _y_chars]
+        Y_indices.append(target)
+        X_seq_len.append(len(x_chars)+1)
+        Y_seq_len.append(len(y_chars)+1)
 
     X_indices = np.array(X_indices)
     Y_indices = np.array(Y_indices)
     X_seq_len = np.array(X_seq_len)
-    Y_seq_len = X_seq_len
+    Y_seq_len = np.array(Y_seq_len)
 
     return X_indices, X_seq_len, Y_indices, Y_seq_len, X_char2idx, X_idx2char
 # end function
@@ -84,7 +88,7 @@ def main():
         embedding_dim = 50)
     
     model.fit(X_train, X_train_len, Y_train, Y_train_len,
-        val_data=(X_test, X_test_len, Y_test, Y_test_len), batch_size=BATCH_SIZE, n_epoch=50)
+        val_data=(X_test, X_test_len, Y_test, Y_test_len), batch_size=BATCH_SIZE, n_epoch=60)
     model.infer('common', X_idx2char)
     model.infer('apple', X_idx2char)
     model.infer('zhedong', X_idx2char)

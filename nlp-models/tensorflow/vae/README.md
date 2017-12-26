@@ -21,24 +21,24 @@ Following tricks are enabled:
 
 ``` python train.py ```
 ```
-Step 78169 | [100/100] | [750/781] | nll_loss:66.7 | kl_w:1.000 | kl_loss:13.47 
+Step 23429 | [30/100] | [750/781] | nll_loss:76.2 | kl_w:1.000 | kl_loss:12.23 
 
 
-I: this is probably the best movie from director hector it shows a brazilian reality unknown by foreigners which is the
+I: it's not exactly progressive but it's funny and inoffensive and definitely a step up from the previous year's the birdcage
 
-D: <start> this <unk> probably the <unk> movie from <unk> <unk> <unk> <unk> <unk> brazilian <unk> unknown <unk> <unk> which is <unk>
+D: <start> it's <unk> <unk> progressive <unk> it's funny <unk> inoffensive <unk> definitely a step <unk> <unk> <unk> <unk> <unk> the <unk>
 
-O: is <unk> and the <unk> is the <unk> to end up in the <unk> that the writer director has all <end>
+O: for it to prevent him to the viewer to see the film with the lives of the 21st century <end>
 
 
 I: i love this film and i think it is one of the best films
 
-O: if there was a babe and see this is the only thing that is the most of the greatest <end>
+O: about it to be desired but it's a must see for all in all the rest of your life <end>
 
 
 I: this movie is a waste of time and there is no point to watch it
 
-O: and it is a <unk> to the <unk> to the <unk> for it to the multiplex to see this movie <end>
+O: for the end for the end of the story of this film is worth checking out if you are <end>
 
 Model saved in file: ./saved/vrae.ckpt
 ```
@@ -51,39 +51,6 @@ where:
 
 * G is random text generation, replacing the latent vector (z) by unit gaussian
 
-``` python test.py ```
-```
-Loading trained model ...
-
-I: i love this firm and it is beyond my expectation
-
-O: <unk> this is the <unk> as well as the <unk> as well as the other reviewers have seen this film
-
-
-I: i want to watch this movie again because it is so interesting
-
-O: if it were all in all this movie is the best and all the way it is also very <end> -1
-
-
-I: the time taken to develop the characters is quite long
-
-O: very well done and well acted mini series in the end but at least it was brilliant as well <end>
-
-
-I: is there any point to make a bad movie like this
-
-O: much better than this movie a few thumbs up in the cast i loved the book so much better <end>
-
-
-I: sorry but there is no point to watch this movie again
-
-O: as well as it is a film to come out of the end it is worth taking place in theaters <end>
-
-
-I: to be honest this movie is not worth my time and money
-
-O: what a shame on that this film is so bad that the <unk> br br the camera work is <end>
-```
 ---
 Reference
 * [Generating Sentences from a Continuous Space](https://arxiv.org/abs/1511.06349)

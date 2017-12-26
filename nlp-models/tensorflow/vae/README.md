@@ -12,10 +12,12 @@ Following tricks are enabled:
 * KL cost annealing ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
 
 * Word dropout and historyless decoding ([Bengio, 2015](https://arxiv.org/abs/1511.06349))
-    * ```word_dropout_rate``` is the % of decoder input words masked with unknown tags, in order to weaken the decoder and force it relying on encoder
 
-* Concatenating latent vector (z) into decoder inputs, which requires modifying the decoder in source code ```tf.contrib.seq2seq```;
-    * The modified decoders are placed in the folder ``` modified_tf_classes ```
+  ```word_dropout_rate``` is the % of decoder input words masked with unknown tags, in order to weaken the decoder and force it relying on encoder
+
+* Concatenating latent vector (z) into decoder inputs, which requires modifying the decoder in source code ```tf.contrib.seq2seq```
+
+  The modified decoders are placed in the folder ``` modified_tf_classes ```
 ---
 ``` python train.py ```
 ```

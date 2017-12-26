@@ -15,7 +15,7 @@ def build_map(data):
     specials = ['<GO>',  '<EOS>', '<PAD>', '<UNK>']
     chars = list(set([char for line in data.split('\n') for char in line]))
     chars = sorted(chars)
-    idx2char = {idx: char for idx, char in enumerate(chars+specials)}
+    idx2char = {idx: char for idx, char in enumerate(specials+chars)}
     char2idx = {char: idx for idx, char in idx2char.items()}
     return idx2char, char2idx
 # end function

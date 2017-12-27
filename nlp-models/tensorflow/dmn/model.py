@@ -63,8 +63,9 @@ class MemoryNetwork:
             inputs = tf.reduce_sum(inputs * position, 2)                                  # (B, I, D)
             birnn_out, _ = tf.nn.bidirectional_dynamic_rnn(                                             
                 self.GRU(args.hidden_size//2), self.GRU(args.hidden_size//2),
-                inputs, self.placeholders['inputs_len'], dtype=np.float32)                # (B, I, D)
-            fact_vecs = tf.concat(birnn_out, -1)
+                inputs, self.placeholders['inputs_len'], dtype=np.float32)
+                            
+            fact_vecs = tf.concat(birnn_out, -1)                                          # (B, I, D)
             fact_vecs = tf.layers.dropout(
                 fact_vecs, args.dropout_rate, training=self.placeholders['is_training'])
             return fact_vecs
@@ -90,11 +91,13 @@ class MemoryNetwork:
 
 
     def gen_episode(self, memory, q_vec, fact_vecs, i):
+        # Gates (attentions) are activated if sentence relevant to the question or memory
         attentions = [self.gen_attention(memory, q_vec, fact_vec, bool(i) or bool(n_fact))
             for n_fact, fact_vec in enumerate(tf.unstack(fact_vecs, axis=1))]    # n_fact list of (B,)
         attentions = tf.transpose(tf.stack(attentions))                          # (B, n_fact)
         attentions = tf.nn.softmax(attentions)                                   # (B, n_fact)
         attentions = tf.expand_dims(attentions, -1)                              # (B, n_fact, 1)
+        # The relevant facts are summarized in another GRU
         reuse = i > 0
         with tf.variable_scope('attention_gru', reuse=reuse):
             _, episode = tf.nn.dynamic_rnn(

@@ -55,13 +55,13 @@ class VRAE:
             tied_embedding = tf.get_variable('tied_embedding',
                 [self.params['vocab_size'], args.embedding_dim],
                 tf.float32)
-            encoded_output, encoded_state = tf.nn.dynamic_rnn(
-                cell = tf.nn.rnn_cell.MultiRNNCell(
-                    [self._residual_rnn_cell() for _ in range(args.encoder_layers)]), 
+            _, (state_fw, state_bw) = tf.nn.bidirectional_dynamic_rnn(
+                cell_fw = self._rnn_cell(args.rnn_size//2),
+                cell_bw = self._rnn_cell(args.rnn_size//2), 
                 inputs = tf.nn.embedding_lookup(tied_embedding, self.enc_inp),
                 sequence_length = self.enc_seq_len,
                 dtype = tf.float32)
-        encoded_state = self._latest_enc_state(encoded_state)
+        encoded_state = tf.concat((state_fw, state_bw), -1)
         self.z_mean = tf.layers.dense(encoded_state, args.latent_size)
         self.z_logvar = tf.layers.dense(encoded_state, args.latent_size)
         return self.z_mean, self.z_logvar
@@ -79,20 +79,19 @@ class VRAE:
 
 
     def _decoder_training(self, z):
-        init_state = self._z_to_dec_state(z)
-
         with tf.variable_scope('encoder', reuse=True):
             tied_embedding = tf.get_variable('tied_embedding', [self.params['vocab_size'], args.embedding_dim])
 
         with tf.variable_scope('decoding'):
+            init_state = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu)
+
             lin_proj = tf.layers.Dense(self.params['vocab_size'], _scope='decoder/dense')
             
             helper = tf.contrib.seq2seq.TrainingHelper(
                 inputs = tf.nn.embedding_lookup(tied_embedding, self.dec_inp),
                 sequence_length = self.dec_seq_len)
             decoder = BasicDecoder(
-                cell = tf.nn.rnn_cell.MultiRNNCell(
-                    [self._rnn_cell() for _ in range(args.decoder_layers)]),
+                cell = self._rnn_cell(),
                 helper = helper,
                 initial_state = init_state,
                 concat_z = self.z)
@@ -103,16 +102,16 @@ class VRAE:
 
 
     def _decoder_inference(self, z):
-        init_state = self._z_to_dec_state(z)
         tiled_z = tf.tile(tf.expand_dims(self.z, 1), [1, args.beam_width, 1])
         
         with tf.variable_scope('encoder', reuse=True):
             tied_embedding = tf.get_variable('tied_embedding', [self.params['vocab_size'], args.embedding_dim])
 
         with tf.variable_scope('decoding', reuse=True):
+            init_state = tf.layers.dense(self.z, args.rnn_size, tf.nn.elu, reuse=True)
+
             decoder = BeamSearchDecoder(
-                cell = tf.nn.rnn_cell.MultiRNNCell(
-                    [self._rnn_cell(reuse=True) for _ in range(args.decoder_layers)]),
+                cell = self._rnn_cell(reuse=True),
                 embedding = tied_embedding,
                 start_tokens = tf.tile(tf.constant(
                     [self.params['word2idx']['<start>']], dtype=tf.int32), [self._batch_size]),
@@ -128,24 +127,10 @@ class VRAE:
         return decoder_output.predicted_ids[:, :, 0]
 
 
-    def _rnn_cell(self, reuse=False):
-        if args.rnn_cell == 'LSTM':
-            return tf.nn.rnn_cell.LSTMCell(
-                args.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
-        elif args.rnn_cell == 'GRU':
-            return tf.nn.rnn_cell.GRUCell(
-                args.rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
-        else:
-            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
-
-
-    def _residual_rnn_cell(self, reuse=False):
-        if args.embedding_dim != args.rnn_size:
-            return tf.nn.rnn_cell.ResidualWrapper(
-                tf.contrib.rnn.OutputProjectionWrapper(
-                    self._rnn_cell(reuse=reuse), args.embedding_dim))
-        if args.embedding_dim == args.rnn_size:
-            return tf.nn.rnn_cell.ResidualWrapper(self._rnn_cell(reuse=reuse))
+    def _rnn_cell(self, rnn_size=None, reuse=False):
+        rnn_size = args.rnn_size if rnn_size is None else rnn_size
+        return tf.nn.rnn_cell.GRUCell(
+            rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
 
 
     def _nll_loss_fn(self):
@@ -193,19 +178,24 @@ class VRAE:
 
     def reconstruct(self, sess, sentence, sentence_dropped):
         idx2word = self.params['idx2word']
-        print('\nI: %s' % ' '.join([idx2word[idx] for idx in sentence]), end='\n\n')
-        print('D: %s' % ' '.join([idx2word[idx] for idx in sentence_dropped]), end='\n\n')
+        print('I: %s' % ' '.join([idx2word[idx] for idx in sentence]))
+        print()
+        print('D: %s' % ' '.join([idx2word[idx] for idx in sentence_dropped]))
+        print()
         predicted_ids = sess.run(self.predicted_ids, {self.enc_inp: np.atleast_2d(sentence)})[0]
-        print('O: %s' % ' '.join([idx2word[idx] for idx in predicted_ids]), end='\n\n')
-
+        print('O: %s' % ' '.join([idx2word[idx] for idx in predicted_ids]))
+        print('-'*12)
     
+
     def customized_reconstruct(self, sess, sentence):
         idx2word = self.params['idx2word']
         sentence = [self.get_new_w(w) for w in sentence.split()][:args.max_len]
-        print('\nI: %s' % ' '.join([idx2word[idx] for idx in sentence]), end='\n\n')
+        print('I: %s' % ' '.join([idx2word[idx] for idx in sentence]))
+        print()
         sentence = sentence + [self.params['word2idx']['<pad>']] * (args.max_len-len(sentence))
         predicted_ids = sess.run(self.predicted_ids, {self.enc_inp: np.atleast_2d(sentence)})[0]
-        print('O: %s' % ' '.join([idx2word[idx] for idx in predicted_ids]), end='\n\n')
+        print('O: %s' % ' '.join([idx2word[idx] for idx in predicted_ids]))
+        print('-'*12)
 
 
     def get_new_w(self, w):
@@ -218,7 +208,8 @@ class VRAE:
                                 {self._batch_size: 1,
                                  self.z: np.random.randn(1, args.latent_size),
                                  self.enc_seq_len: [args.max_len]})[0]
-        print('G: %s' % ' '.join([self.params['idx2word'][idx] for idx in predicted_ids]), end='\n\n')
+        print('G: %s' % ' '.join([self.params['idx2word'][idx] for idx in predicted_ids]))
+        print('-'*12)
 
 
     def _gradient_clipping(self, loss_op):
@@ -226,25 +217,3 @@ class VRAE:
         gradients = tf.gradients(loss_op, params)
         clipped_gradients, _ = tf.clip_by_global_norm(gradients, args.clip_norm)
         return clipped_gradients, params
-
-
-    def _latest_enc_state(self, encoded_state):
-        if args.rnn_cell == 'LSTM':
-            encoded_state = encoded_state[-1].h
-        elif args.rnn_cell == 'GRU':
-            encoded_state = encoded_state[-1]
-        else:
-            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")
-        return encoded_state
-    
-
-    def _z_to_dec_state(self, z, activation=tf.nn.elu):
-        if args.rnn_cell == 'LSTM':
-            c = tf.layers.dense(self.z, args.rnn_size, activation)
-            h = tf.layers.dense(self.z, args.rnn_size, activation)
-            return tuple([tf.nn.rnn_cell.LSTMStateTuple(c=c, h=h)] * args.decoder_layers)
-        elif args.rnn_cell == 'GRU':
-            state = tf.layers.dense(self.z, args.rnn_size, activation)
-            return tuple([state] * args.decoder_layers)
-        else:
-            raise ValueError("rnn_cell must be one of 'lstm' or 'gru'")

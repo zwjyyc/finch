@@ -30,8 +30,8 @@ def main():
                 print("Step %d | [%d/%d] | [%d/%d]" % (log['step'], epoch+1, args.num_epoch, i, len(dataloader.enc_inp)//args.batch_size), end='')
                 print(" | nll_loss:%.1f | kl_w:%.3f | kl_loss:%.2f \n" % (log['nll_loss'], log['kl_w'], log['kl_loss']))
         
+        model.generate(sess)
         model.reconstruct(sess, enc_inp[-1], dec_inp[-1])
-        #model.generate(sess)
         model.customized_reconstruct(sess, 'i love this film and i think it is one of the best films')
         model.customized_reconstruct(sess, 'this movie is a waste of time and there is no point to watch it')
         

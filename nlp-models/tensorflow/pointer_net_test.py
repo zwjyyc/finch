@@ -26,6 +26,7 @@ def preprocess_data(max_len):
     Y_data = read_data('temp/letters_target.txt')
 
     X_idx2char, X_char2idx = build_map(X_data)
+    print("==> Word Index Built")
 
     x_unk = X_char2idx['<UNK>']
     x_eos = X_char2idx['<EOS>']
@@ -39,11 +40,12 @@ def preprocess_data(max_len):
     for x_line, y_line in zip(X_data.split('\n'), Y_data.split('\n')):
         x_chars = [X_char2idx.get(char, x_unk) for char in x_line]
         _x_chars = x_chars + [x_eos] + [x_pad]* (max_len-1-len(x_chars))
-        X_indices.append(_x_chars)
         
         y_chars = [X_char2idx.get(char, x_unk) for char in y_line]
         _y_chars = y_chars + [x_eos] + [x_pad]* (max_len-1-len(y_chars))
-        target = [_x_chars.index(y) for y in _y_chars]
+        target = [_x_chars.index(y) for y in _y_chars] # we are predicting the positions
+
+        X_indices.append(_x_chars)
         Y_indices.append(target)
         X_seq_len.append(len(x_chars)+1)
         Y_seq_len.append(len(y_chars)+1)
@@ -52,6 +54,7 @@ def preprocess_data(max_len):
     Y_indices = np.array(Y_indices)
     X_seq_len = np.array(X_seq_len)
     Y_seq_len = np.array(Y_seq_len)
+    print("==> Sequence Padded")
 
     return X_indices, X_seq_len, Y_indices, Y_seq_len, X_char2idx, X_idx2char
 # end function

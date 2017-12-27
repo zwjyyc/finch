@@ -49,6 +49,7 @@ where:
 * O is the decoder output with regards to encoder input I
 
 * G is random text generation, replacing the latent vector (z) by unit gaussian
+
 ``` python test.py ```
 ```
 Loading trained model ...
@@ -75,7 +76,6 @@ O: movie but it was so bad i mean the people have seen this movie again <end>
 I: to be honest this movie is not worth my time and money
 
 O: don't bother with this movie is so bad if you're on imdb com and enjoy <end>
-------------
 ```
 ---
 Reference

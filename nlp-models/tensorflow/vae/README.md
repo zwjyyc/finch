@@ -49,7 +49,34 @@ where:
 * O is the decoder output with regards to encoder input I
 
 * G is random text generation, replacing the latent vector (z) by unit gaussian
+``` python test.py ```
+```
+Loading trained model ...
+I: i love this firm and it is beyond my expectation
 
+O: i watched this movie because it was very much more than it at all costs <end>
+------------
+I: i want to watch this movie again because it is so interesting
+
+O: i can to say that this is no reason why this movie was so bad <end>
+------------
+I: the time taken to develop the characters is quite long
+
+O: the other people are so many people like this is the film to see it <end>
+------------
+I: is there any point to make a bad movie like this
+
+O: to watch this film you have a lot but it's a good movie that is <end>
+------------
+I: sorry but there is no point to watch this movie again
+
+O: movie but it was so bad i mean the people have seen this movie again <end>
+------------
+I: to be honest this movie is not worth my time and money
+
+O: don't bother with this movie is so bad if you're on imdb com and enjoy <end>
+------------
+```
 ---
 Reference
 * [Generating Sentences from a Continuous Space](https://arxiv.org/abs/1511.06349)

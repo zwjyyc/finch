@@ -21,25 +21,24 @@ Following tricks are enabled:
 ---
 ``` python train.py ```
 ```
-Step 23429 | [30/100] | [750/781] | nll_loss:76.2 | kl_w:1.000 | kl_loss:12.23 
+Step 23429 | [30/30] | [750/781] | nll_loss:50.5 | kl_w:1.000 | kl_loss:14.03 
 
+G: this is the worst movie ever made the film i have ever seen in the <end>
+------------
+I: the 60´s is a well balanced mini series between historical facts and a good plot
 
-I: it's not exactly progressive but it's funny and inoffensive and definitely a step up from the previous year's the birdcage
+D: <start> <unk> <unk> <unk> <unk> <unk> balanced <unk> <unk> <unk> historical <unk> <unk> a <unk> plot
 
-D: <start> it's <unk> <unk> progressive <unk> it's funny <unk> inoffensive <unk> definitely a step <unk> <unk> <unk> <unk> <unk> the <unk>
-
-O: for it to prevent him to the viewer to see the film with the lives of the 21st century <end>
-
-
+O: the movie is one of the most interesting and the actors and a great cast <end>
+------------
 I: i love this film and i think it is one of the best films
 
-O: about it to be desired but it's a must see for all in all the rest of your life <end>
-
-
+O: i love this movie and i found it was a fan of the best films <end>
+------------
 I: this movie is a waste of time and there is no point to watch it
 
-O: for the end for the end of the story of this film is worth checking out if you are <end>
-
+O: this movie is a complete waste of time to this movie and don't miss it <end>
+------------
 Model saved in file: ./saved/vrae.ckpt
 ```
 where:

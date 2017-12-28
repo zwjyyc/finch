@@ -1,4 +1,4 @@
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae_motivation.png" height='300'>
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae_struct.jpg" height='300'>
 
 ---
 * TensorFlow >= 1.4
@@ -81,6 +81,6 @@ O: don't bother with this movie is so bad if you're on imdb com and enjoy <end>
 Reference
 * [Generating Sentences from a Continuous Space](https://arxiv.org/abs/1511.06349)
 
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae_struct.jpg" height='300'>
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae_motivation.png" height='300'>
 
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae.png" height="300">

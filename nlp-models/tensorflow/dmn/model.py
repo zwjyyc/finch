@@ -1,5 +1,5 @@
 from config import args
-from attention_gru_cell import AttentionGRUCell
+from attn_gru_cell import AttentionGRUCell
 
 import tensorflow as tf
 import numpy as np

@@ -2,9 +2,7 @@
 * Based on that:
 
     * We have added a decoder in the answer module for talking
-    * We have modified ```AttentionGRUCell``` from ```GRUCell``` in 1.4
-    
-      previous one was from 1.2, some code out of date
+    * We have reproduced ```AttentionGRUCell``` from official ```GRUCell``` in 1.4
 
 ```
 python train.py

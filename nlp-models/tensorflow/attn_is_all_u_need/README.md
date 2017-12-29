@@ -14,6 +14,8 @@ Some functions are adapted from [Kyubyong's](https://github.com/Kyubyong/transfo
   * added more activation choices (leaky relu / elu) for easier gradient propagation
   
   * enhanced masking (mask positional encoding as well)
+  
+  * decoding on graph
 
 * Small Task 1: learn sorting characters
     * ``` python train_letters.py --tie_embedding```

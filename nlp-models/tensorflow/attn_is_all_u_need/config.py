@@ -1,5 +1,6 @@
 import argparse
 
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--source_max_len', type=int, default=10)

@@ -129,7 +129,7 @@ def _model_fn_predict(features, mode, params):
         ids = tf.expand_dims(ids, 1)
         id_list.append(ids)
     
-    return tf.estimator.EstimatorSpec(mode=mode, predictions=tf.concat(id_list, axis=1))
+    return tf.estimator.EstimatorSpec(mode=mode, predictions=tf.concat(id_list, 1))
 
 
 def tf_estimator_model_fn(features, labels, mode, params):

@@ -19,7 +19,7 @@ def main():
     print('Target Vocab Size:', len(dl.target_word2idx))
     
     tf_estimator = tf.estimator.Estimator(
-        tf_estimator_model_fn, params=_prepare_params(dl), model_dir=args.model_dir)
+        tf_estimator_model_fn, params=prepare_params(dl), model_dir=args.model_dir)
     
     for epoch in range(args.num_epochs):
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(

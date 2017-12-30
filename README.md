@@ -46,7 +46,7 @@
 * [Dynamic Memory Network](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/dmn) 
 
 #### Generative Modelling（生成式建模）
-* [Generating Sentences from a Continuous Space](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/vae) 
+* [VAE](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/vae) 
 
 #### Reinforcement Learning（强化学习）
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_cartpole_test.py)

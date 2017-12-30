@@ -1,12 +1,8 @@
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae_struct.jpg" height='300'>
 
 ---
-* TensorFlow >= 1.4
-* scikit-learn
-```
-git clone https://github.com/zhedongzheng/vae-nlp.git
-cd vae-nlp
-```
+Implementing the idea of Bowman, Samuel R., et al. "Generating Sentences from a Continuous Space." CoNLL 2016.
+
 ---
 Following tricks are enabled:
 * KL cost annealing

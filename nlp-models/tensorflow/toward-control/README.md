@@ -44,3 +44,9 @@ O: i have seen this movie the worst film ever made in the <unk> i have <end>
 R: i loved this movie because i was a chance to see this movie is refreshing <end>
 ------------
 ```
+where:
+* I is the encoder input
+
+* O is the decoder output
+
+* R is the decoder output when the attribute c (e.g. sentiment) is reversed

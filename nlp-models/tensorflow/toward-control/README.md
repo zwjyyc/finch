@@ -1,5 +1,5 @@
 ---
-Tries to implement the idea of ICML 2017's "Toward Controlled Generation of Text"
+Tries to implement the idea of Hu, et. al., ICML 2017's "Toward Controlled Generation of Text"
 
 ---
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/control-vae.png" height='300'>

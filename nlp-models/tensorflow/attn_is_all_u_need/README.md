@@ -1,3 +1,8 @@
+---
+Implementing the idea of "Attention is All you Need"
+
+---
+
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/transformer.png" width="300">
 
 Some functions are adapted from [Kyubyong's](https://github.com/Kyubyong/transformer) work, thanks for him!

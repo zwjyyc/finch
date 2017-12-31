@@ -47,7 +47,7 @@
 
 #### Generative Modelling（生成式建模）
 * [VAE - Generating Sentences from a Continuous Space](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/vae)
-* [Toward Controlled Generation of Text](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/toward-control)
+* [VAE + Discriminator - Toward Controlled Generation of Text](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/toward-control)
 
 #### Reinforcement Learning（强化学习）
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_cartpole_test.py)

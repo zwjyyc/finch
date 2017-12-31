@@ -1,7 +1,7 @@
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/vrae_struct.jpg" height='300'>
 
 ---
-Implementing the idea of Bowman, Samuel R., et al. "Generating Sentences from a Continuous Space." CoNLL 2016.
+Implementing the idea of ["Generating Sentences from a Continuous Space"](https://arxiv.org/abs/1511.06349)
 
 ---
 Following tricks are enabled:

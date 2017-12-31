@@ -1,5 +1,5 @@
 ---
-Implementing the idea of "Attention is All you Need"
+Implementing the idea of ["Attention is All you Need"](https://arxiv.org/abs/1706.03762)
 
 ---
 

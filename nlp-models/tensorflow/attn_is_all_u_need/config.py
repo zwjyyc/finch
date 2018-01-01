@@ -1,17 +1,16 @@
 import argparse
 
-
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--source_max_len', type=int, default=10)
 parser.add_argument('--target_max_len', type=int, default=20)
 parser.add_argument('--min_freq', type=int, default=50)
 parser.add_argument('--hidden_units', type=int, default=128)
-parser.add_argument('--num_blocks', type=int, default=1)
+parser.add_argument('--num_blocks', type=int, default=2)
 parser.add_argument('--num_heads', type=int, default=8)
 parser.add_argument('--dropout_rate', type=float, default=0.2)
 parser.add_argument('--batch_size', type=int, default=64)
-parser.add_argument('--num_epochs', type=int, default=100)
+parser.add_argument('--num_epochs', type=int, default=10)
 parser.add_argument('--positional_encoding', type=str, default='learned')
 parser.add_argument('--activation', type=str, default='elu')
 parser.add_argument('--tied_proj_weight', action='store_false')

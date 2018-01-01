@@ -116,7 +116,7 @@ def _model_fn_predict(features, mode, params):
 
     id_list = [tf.expand_dims(features['target'][:, 0], 1)]
     for j in range(1, args.target_max_len):
-        if len(id_list) == 0:
+        if len(id_list) == 1:
             target = features['target']
         else:
             target = tf.concat(id_list, axis=1)

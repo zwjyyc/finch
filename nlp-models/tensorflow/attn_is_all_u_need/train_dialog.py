@@ -25,8 +25,8 @@ def main():
         tf_estimator.train(tf.estimator.inputs.numpy_input_fn(
             x = {'source':sources, 'target':targets},
             batch_size = args.batch_size,
-            num_epochs = None,
-            shuffle = True), steps=2000)
+            num_epochs = 1,
+            shuffle = True))
         auto_regressive_decode(['你是谁', '你喜欢我吗', '给我唱一首歌', '我帅吗'], tf_estimator, dl)
 
 

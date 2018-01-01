@@ -114,12 +114,10 @@ def _model_fn_train(features, mode, params):
 def _model_fn_predict(features, mode, params):
     _ = forward_pass(features['source'], features['target'], params)
 
-    id_list = []
-    for j in range(args.target_max_len):
+    id_list = [tf.expand_dims(features['target'][:, 0], 1)]
+    for j in range(1, args.target_max_len):
         if len(id_list) == 0:
             target = features['target']
-        elif len(id_list) == 1:
-            target = tf.concat((id_list[0], features['target'][:, 1:]), axis=1)
         else:
             target = tf.concat(id_list, axis=1)
             target = tf.concat((target, features['target'][:, len(id_list):]), axis=1)

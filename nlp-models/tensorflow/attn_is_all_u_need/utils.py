@@ -13,6 +13,8 @@ def auto_regressive_decode(test_words, tf_estimator, dl):
     test_indices = np.atleast_2d(test_indices)
     
     zeros = np.zeros([len(test_words), args.target_max_len], np.int64)
+    zeros[:, 0] = dl.target_word2idx['<start>']
+
     pred_ids = tf_estimator.predict(tf.estimator.inputs.numpy_input_fn(
         x={'source':test_indices, 'target':zeros}, batch_size=len(test_words), shuffle=False))
     pred_ids = list(pred_ids)
@@ -20,7 +22,7 @@ def auto_regressive_decode(test_words, tf_estimator, dl):
     target_idx2word = {i: w for w, i in dl.target_word2idx.items()}
     for i, test_word in enumerate(test_words):
         ans = ''.join([target_idx2word[id] for id in pred_ids[i]])
-        print(test_word, '->', ans)
+        print(test_word, '->', ans.replace('<end>', '').replace('<start>', ''))
 
 
 def prepare_params(dl):

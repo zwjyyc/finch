@@ -20,7 +20,7 @@ Some functions are adapted from [Kyubyong's](https://github.com/Kyubyong/transfo
   
   * enhanced masking (mask positional encoding as well)
   
-  * decoding on graph
+  * implemented decoding on graph and added start tokens
 
 * Small Task 1: learn sorting characters
     * ``` python train_letters.py --tie_embedding```

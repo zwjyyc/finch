@@ -1,6 +1,5 @@
 import tensorflow as tf
 import numpy as np
-from tensorflow.python.layers import core as core_layers
 
 
 class RNNTextGen:
@@ -42,17 +41,14 @@ class RNNTextGen:
 
             helper = tf.contrib.seq2seq.TrainingHelper(
                 inputs = tf.nn.embedding_lookup(decoder_embedding, self._decoder_input()),
-                sequence_length = self.sequence_length+1,
-                time_major = False)
+                sequence_length = self.sequence_length+1)
             decoder = tf.contrib.seq2seq.BasicDecoder(
                 cell = decoder_cell,
                 helper = helper,
                 initial_state = decoder_cell.zero_state(self._batch_size, tf.float32),
-                output_layer = core_layers.Dense(self.vocab_size))
+                output_layer = tf.layers.Dense(self.vocab_size))
             decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                decoder = decoder,
-                impute_finished = True,
-                maximum_iterations = tf.reduce_max(self.sequence_length+1))
+                decoder = decoder)
             self.logits = decoder_output.rnn_output
         
         with tf.variable_scope('decode', reuse=True):
@@ -66,11 +62,9 @@ class RNNTextGen:
                 initial_state = tf.contrib.seq2seq.tile_batch(
                     decoder_cell.zero_state(self._batch_size,tf.float32), self.beam_width),
                 beam_width = self.beam_width,
-                output_layer = core_layers.Dense(self.vocab_size, _reuse=True),
-                length_penalty_weight = 0.0)
+                output_layer = tf.layers.Dense(self.vocab_size, _reuse=True))
             decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
                 decoder = decoder,
-                impute_finished = False,
                 maximum_iterations = self.gen_seq_length)
             self.predicted_ids = decoder_output.predicted_ids[:, :, 0]
     # end method
@@ -78,10 +72,10 @@ class RNNTextGen:
 
     def add_backward_path(self):
         targets = self._decoder_output()
-        self.loss = tf.reduce_sum(tf.contrib.seq2seq.sequence_loss(
+        self.loss = tf.reduce_mean(tf.contrib.seq2seq.sequence_loss(
             logits = self.logits,
             targets = targets,
-            weights = tf.cast(tf.ones_like(targets), tf.float32),
+            weights = tf.to_float(tf.ones_like(targets)),
             average_across_timesteps = True,
             average_across_batch = True))
         # gradient clipping

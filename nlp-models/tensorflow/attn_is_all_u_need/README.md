@@ -23,6 +23,7 @@ Some functions are adapted from [Kyubyong's](https://github.com/Kyubyong/transfo
     * implemented decoding on graph and added start tokens
 
 * Small Task 1: learn sorting characters
+
     ``` python train_letters.py --tie_embedding```
         
     ```
@@ -32,6 +33,7 @@ Some functions are adapted from [Kyubyong's](https://github.com/Kyubyong/transfo
     zhedong -> deghnoz
     ```
 * Small Task 2: learn chinese dialog
+
     ``` python train_dialog.py```
     
     ```

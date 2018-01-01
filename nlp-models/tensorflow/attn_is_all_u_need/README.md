@@ -24,7 +24,7 @@ Some functions are adapted from [Kyubyong's](https://github.com/Kyubyong/transfo
 
 * Small Task 1: learn sorting characters
 
-    ``` python train_letters.py --tie_embedding```
+    ``` python train_letters.py ```
         
     ```
     INFO:tensorflow:Restoring parameters from ./saved/model.ckpt-2000

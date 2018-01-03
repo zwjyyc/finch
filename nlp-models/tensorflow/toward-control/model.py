@@ -54,19 +54,20 @@ class Model:
 
 
     def build_train_discriminator_graph(self):
-        logits = self.discriminator(self.enc_inp, is_training=True)
-        self.train_clf_loss = self.sparse_cross_entropy_fn(logits, self.labels)
-        self.train_clf_acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, 1), self.labels), tf.float32))
+        logits_real = self.discriminator(self.enc_inp, is_training=True)
+        self.train_clf_loss = self.sparse_cross_entropy_fn(logits_real, self.labels)
+        self.train_clf_acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits_real, 1), self.labels), tf.float32))
 
         # unsupervised: minimize cross_entropy between classified c and prior c
         c_prior = self.draw_c_prior()
         latent_vec = tf.concat((self.draw_z_prior(), c_prior), -1)
         _, logits_gen = self.generator(latent_vec, reuse=True)
         ids_gen = tf.argmax(logits_gen[:, :-1, :], -1)
-        c_logits = self.discriminator(ids_gen, reuse=True, refeed=True)
-        self.train_clf_c_confi = self.cross_entropy_fn(c_logits, c_prior)
+        logits_fake = self.discriminator(ids_gen, reuse=True, refeed=True)
+        entropy = - tf.reduce_sum(tf.log(tf.nn.softmax(logits_fake)))
+        self.L_u = self.cross_entropy_fn(logits_fake, c_prior) + args.beta * entropy
 
-        loss_op = self.train_clf_loss + args.lambda_c * self.train_clf_c_confi
+        loss_op = self.train_clf_loss + args.lambda_u * self.L_u
         self.train_clf_op = self.optimizer.minimize(
             loss_op, var_list=tf.trainable_variables(self.scopes['D']), global_step=self.global_step)
 
@@ -94,6 +95,8 @@ class Model:
         self.l_attr_c = self.cross_entropy_fn(c_logits, c_prior)
 
         z_mean_gen, z_logvar_gen = self.encoder(gumbel_softmax, reuse=True, gumbel=True)
+        #z_gen = self.reparam(z_mean_gen, z_logvar_gen)
+        #self.l_attr_z = self.mse_fn(z_gen, z_prior)
         self.l_attr_z = self.mutinfo_loss_fn(z_mean_gen, z_logvar_gen)
 
         generator_loss_op = vae_loss + (args.lambda_c*self.l_attr_c) + (args.lambda_z*self.l_attr_z)
@@ -307,6 +310,10 @@ class Model:
         return tf.reduce_sum(mutinfo_loss) / tf.to_float(self.batch_size)
 
 
+    def mse_fn(self, x1, x2):
+        return tf.reduce_sum(tf.squared_difference(x1, x2)) / tf.to_float(self.batch_size)
+
+
     def rnn_cell(self, rnn_size=None, reuse=False):
         rnn_size = args.rnn_size if rnn_size is None else rnn_size
         return tf.nn.rnn_cell.GRUCell(rnn_size, kernel_initializer=tf.orthogonal_initializer(), reuse=reuse)
@@ -326,12 +333,12 @@ class Model:
 
     
     def train_discriminator_session(self, sess, enc_inp, dec_inp, dec_out, labels):
-        _, loss, acc, confidence, step = sess.run(
-            [self.train_clf_op, self.train_clf_loss, self.train_clf_acc, self.train_clf_c_confi,
+        _, loss, acc, L_u, step = sess.run(
+            [self.train_clf_op, self.train_clf_loss, self.train_clf_acc, self.L_u,
              self.global_step],
             {self.enc_inp: enc_inp, self.dec_inp: dec_inp, self.dec_out: dec_out, self.labels: labels})
         return {'clf_loss': loss, 'clf_acc': acc, 'step': step,
-                'c_confi': (args.lambda_c * confidence)}
+                'L_u': (args.lambda_u * L_u)}
 
     
     def train_generator_session(self, sess, enc_inp, dec_inp, dec_out):

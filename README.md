@@ -56,8 +56,6 @@
 ---
 #### How To Use
 1. The following command clones all the files
-
-   (very large, a better way is to partially download files);
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```

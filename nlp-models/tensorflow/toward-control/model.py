@@ -56,7 +56,7 @@ class Model:
     def build_train_discriminator_graph(self):
         logits_real = self.discriminator(self.enc_inp, is_training=True)
         self.train_clf_loss = self.sparse_cross_entropy_fn(logits_real, self.labels)
-        self.train_clf_acc = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits_real, 1), self.labels), tf.float32))
+        self.train_clf_acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(logits_real, 1), self.labels)))
 
         # unsupervised: minimize cross_entropy between classified c and prior c
         c_prior = self.draw_c_prior()
@@ -95,9 +95,9 @@ class Model:
         self.l_attr_c = self.cross_entropy_fn(c_logits, c_prior)
 
         z_mean_gen, z_logvar_gen = self.encoder(gumbel_softmax, reuse=True, gumbel=True)
-        #z_gen = self.reparam(z_mean_gen, z_logvar_gen)
-        #self.l_attr_z = self.mse_fn(z_gen, z_prior)
-        self.l_attr_z = self.mutinfo_loss_fn(z_mean_gen, z_logvar_gen)
+        z_gen = self.reparam(z_mean_gen, z_logvar_gen)
+        self.l_attr_z = self.mse_fn(z_gen, z_prior)
+        #self.l_attr_z = self.mutinfo_loss_fn(z_mean_gen, z_logvar_gen)
 
         generator_loss_op = vae_loss + (args.lambda_c*self.l_attr_c) + (args.lambda_z*self.l_attr_z)
         encoder_loss_op = vae_loss
@@ -161,10 +161,16 @@ class Model:
                 x = tf.reshape(x, [self.batch_size, args.max_len, args.embedding_dim])
             x = tf.layers.dropout(x, args.cnn_dropout_rate, training=is_training)
             
-            x = tf.layers.conv1d(x, args.cnn_filters, args.cnn_kernel_size, activation=tf.nn.elu, reuse=reuse)
-            seq_len = x.get_shape().as_list()[1] if not refeed else (args.max_len - args.cnn_kernel_size + 1)
-            x = tf.layers.max_pooling1d(x, seq_len, 1)
-            x = tf.reshape(x, [self.batch_size, args.cnn_filters])
+            multi_kernels = []
+            for i, k in enumerate([3, 4, 5]):
+                _x = tf.layers.conv1d(x, args.cnn_filters, k,
+                    activation=tf.nn.elu, reuse=reuse, name='conv%d'%i)
+                seq_len = _x.get_shape().as_list()[1] if not refeed else (args.max_len - k + 1)
+                _x = tf.layers.max_pooling1d(_x, seq_len, 1)
+                _x = tf.reshape(_x, [self.batch_size, args.cnn_filters])
+                multi_kernels.append(_x)
+            x = tf.concat(multi_kernels, -1)
+            
             logits = tf.layers.dense(x, args.num_class, reuse=reuse)
             return logits
 
@@ -275,7 +281,7 @@ class Model:
 
     def kl_w_fn(self):
         return args.kl_anneal_max * tf.sigmoid((10 / args.kl_anneal_bias) * (
-            tf.cast(self.global_step, tf.float32) - tf.constant(args.kl_anneal_bias / 2)))
+            tf.to_float(self.global_step) - tf.constant(args.kl_anneal_bias / 2)))
 
 
     def kl_loss_fn(self, mean, logvar):
@@ -295,7 +301,7 @@ class Model:
 
     def temperature_fn(self):
         return args.temperature_anneal_max * inverse_sigmoid((10 / args.temperature_anneal_bias) * (
-            tf.cast(self.global_step, tf.float32) - tf.constant(args.temperature_anneal_bias / 2)))
+            tf.to_float(self.global_step) - tf.constant(args.temperature_anneal_bias / 2)))
 
 
     def mutinfo_loss_fn(self, z_mean_new, z_logvar_new):

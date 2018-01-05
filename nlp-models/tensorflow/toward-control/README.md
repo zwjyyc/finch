@@ -31,6 +31,8 @@ python train_discriminator.py
 where:
 * I is the encoder input
 
-* O is the decoder output
+* G is the decoder output with prior z
 
-* R is the decoder output when the attribute c (e.g. sentiment) is reversed
+* O is the decoder output with posterior z
+
+* R is the decoder output with posterior z, when the attribute c (e.g. sentiment) is reversed

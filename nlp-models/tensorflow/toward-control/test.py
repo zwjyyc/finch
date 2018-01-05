@@ -12,7 +12,7 @@ def main():
     sess.run(tf.global_variables_initializer())
 
     print("Loading trained model ...")
-    model.saver.restore(sess, model.model_path)
+    model.saver.restore(sess, './saved_temp/model.ckpt')
 
     # lowercase, no punctuation, please 
     model.post_inference(sess, "i love this film it is one of the best")

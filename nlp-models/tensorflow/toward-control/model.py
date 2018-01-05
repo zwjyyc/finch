@@ -95,9 +95,9 @@ class Model:
         self.l_attr_c = self.cross_entropy_fn(c_logits, c_prior)
 
         z_mean_gen, z_logvar_gen = self.encoder(gumbel_softmax, reuse=True, gumbel=True)
-        z_gen = self.reparam(z_mean_gen, z_logvar_gen)
-        self.l_attr_z = self.mse_fn(z_gen, z_prior)
-        #self.l_attr_z = self.mutinfo_loss_fn(z_mean_gen, z_logvar_gen)
+        #z_gen = self.reparam(z_mean_gen, z_logvar_gen)
+        #self.l_attr_z = self.mse_fn(z_gen, z_prior)
+        self.l_attr_z = self.mutinfo_loss_fn(z_mean_gen, z_logvar_gen)
 
         generator_loss_op = vae_loss + (args.lambda_c*self.l_attr_c) + (args.lambda_z*self.l_attr_z)
         encoder_loss_op = vae_loss

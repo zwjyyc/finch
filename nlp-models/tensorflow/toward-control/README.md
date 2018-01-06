@@ -8,18 +8,18 @@ Implementing the idea of ["Toward Controlled Generation of Text"](https://arxiv.
 python train_base_vae.py
 ```
 ```
-Step 18737 | Train VAE | [24/25] | [750/781] | nll_loss:59.4 | kl_w:1.00 | kl_loss:12.13
+Step 18737 | Train VAE | [24/25] | [750/781] | nll_loss:48.7 | kl_w:1.00 | kl_loss:15.90
 
 Word Dropout
 Data Shuffled
 
-G: give it a must see if you read the book it is not for me <end>
+G: they are all the other films they were trying to be afraid of a film <end>
 ------------
 I: i love this film it is so good to watch
 
-O: i can't understand what to say this movie is very funny and poorly executed poorly <end> -1
+O: to say that this movie is the worst movie i would give it 0 10 <end>
 
-R: i really liked this movie a good movie is a good movie i have to <end>
+R: i really enjoyed this movie and i didn't want to write a copy of it <end>
 ------------
 ```
 ```

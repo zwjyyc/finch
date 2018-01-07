@@ -10,5 +10,6 @@ parser.add_argument('--dropout_rate', type=float, default=0.1)
 parser.add_argument('--n_hops', type=int, default=3)
 parser.add_argument('--clip_norm', type=float, default=5.0)
 parser.add_argument('--display_step', type=int, default=50)
+parser.add_argument('--add_gradient_noise', action='store_true')
 
 args = parser.parse_args()

@@ -49,11 +49,18 @@ class MemoryNetwork:
         self.loss_op = tf.reduce_mean(tf.contrib.seq2seq.sequence_loss(
             logits=logits, targets=targets, weights=masks))
         self.acc_op = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(logits, -1), targets)))
-
+        """
         params = tf.trainable_variables()
         grads = tf.gradients(self.loss_op, params)
         clipped_grads, _ = tf.clip_by_global_norm(grads, args.clip_norm)
         self.train_op = tf.train.AdamOptimizer().apply_gradients(zip(clipped_grads, params))
+        """
+        opt = tf.train.AdamOptimizer()
+        gvs = opt.compute_gradients(self.loss_op)
+        gvs = [(tf.clip_by_norm(grad, args.clip_norm), var) for grad, var in gvs]
+        if args.add_gradient_noise:
+            gvs = [(self.add_grad_noise(grad), var) for grad, var in gvs]
+        self.train_op = opt.apply_gradients(gvs)
 
 
     def input_module(self, embedding):
@@ -183,6 +190,15 @@ class MemoryNetwork:
                 encoding[i-1, j-1] = (i - (le-1)/2) * (j - (ls-1)/2)
         encoding = 1 + 4 * encoding / embedding_size / sentence_size
         return np.transpose(encoding)
+
+
+    def add_grad_noise(self, t, stddev=1e-3):
+        """Adds gradient noise as described in http://arxiv.org/abs/1511.06807
+        The input Tensor `t` should be a gradient.
+        The output will be `t` + gaussian noise.
+        0.001 was said to be a good fixed value for memory networks."""
+        gn = tf.random_normal(tf.shape(t), stddev=stddev)
+        return tf.add(t, gn)
 
 
     def train_session(self, sess, batch):

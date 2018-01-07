@@ -95,9 +95,7 @@ class Model:
         self.l_attr_c = self.cross_entropy_fn(c_logits, c_prior)
 
         z_mean_gen, z_logvar_gen = self.encoder(gumbel_softmax, reuse=True, gumbel=True)
-        z_gen = self.reparam(z_mean_gen, z_logvar_gen)
-        self.l_attr_z = self.mse_fn(z_gen, z_prior)
-        #self.l_attr_z = self.mutinfo_loss_fn(z_mean_gen, z_logvar_gen)
+        self.l_attr_z = self.mutinfo_loss_fn(z_mean_gen, z_logvar_gen)
 
         generator_loss_op = vae_loss + (args.lambda_c*self.l_attr_c) + (args.lambda_z*self.l_attr_z)
         encoder_loss_op = vae_loss
@@ -301,7 +299,8 @@ class Model:
 
     def temperature_fn(self):
         return args.temperature_anneal_max * inverse_sigmoid((10 / args.temperature_anneal_bias) * (
-            tf.to_float(self.global_step) - tf.constant(args.temperature_anneal_bias / 2)))
+            tf.to_float(self.global_step - args.temperature_start_step) - tf.constant(
+                args.temperature_anneal_bias / 2)))
 
 
     def mutinfo_loss_fn(self, z_mean_new, z_logvar_new):

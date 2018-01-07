@@ -1,3 +1,5 @@
+<img src="https://github.com/zhedongzheng/finch/blob/master/assets/dmn-details.png">
+
 * Many functions are adapted from [Alex Barron's](https://github.com/barronalex/Dynamic-Memory-Networks-in-TensorFlow) work, thanks for him!
 * Based on that:
 

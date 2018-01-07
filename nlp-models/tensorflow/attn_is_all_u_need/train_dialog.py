@@ -1,7 +1,7 @@
 from model import tf_estimator_model_fn
 from config import args
 from data import DataLoader
-from utils import auto_regressive_decode, prepare_params
+from utils import greedy_decode, prepare_params
 
 import json
 import numpy as np
@@ -27,7 +27,7 @@ def main():
             batch_size = args.batch_size,
             num_epochs = 1,
             shuffle = True))
-        auto_regressive_decode(['你是谁', '你喜欢我吗', '给我唱一首歌', '我帅吗'], tf_estimator, dl)
+        greedy_decode(['你是谁', '你喜欢我吗', '给我唱一首歌', '我帅吗'], tf_estimator, dl)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 from model import tf_estimator_model_fn
 from config import args
 from data import DataLoader
-from utils import auto_regressive_decode, prepare_params
+from utils import greedy_decode, prepare_params
 import json
 import numpy as np
 import tensorflow as tf
@@ -24,7 +24,7 @@ def main():
             batch_size = args.batch_size,
             num_epochs = None,
             shuffle = True), steps=1000)
-        auto_regressive_decode(['apple', 'common', 'zhedong'], tf_estimator, dl)
+        greedy_decode(['apple', 'common', 'zhedong'], tf_estimator, dl)
 
 
 if __name__ == '__main__':

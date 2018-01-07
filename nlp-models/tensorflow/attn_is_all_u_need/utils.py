@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 
 
-def auto_regressive_decode(test_words, tf_estimator, dl):
+def greedy_decode(test_words, tf_estimator, dl):
     test_indices = []
     for test_word in test_words:
         test_idx = [dl.source_word2idx[c] for c in test_word] + \
@@ -13,7 +13,6 @@ def auto_regressive_decode(test_words, tf_estimator, dl):
     test_indices = np.atleast_2d(test_indices)
     
     zeros = np.zeros([len(test_words), args.target_max_len], np.int64)
-    zeros[:, 0] = dl.target_word2idx['<start>']
 
     pred_ids = tf_estimator.predict(tf.estimator.inputs.numpy_input_fn(
         x={'source':test_indices, 'target':zeros}, batch_size=len(test_words), shuffle=False))

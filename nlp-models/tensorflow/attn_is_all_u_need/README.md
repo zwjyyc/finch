@@ -27,21 +27,14 @@ Some functions are adapted from [Kyubyong's](https://github.com/Kyubyong/transfo
     ``` python train_letters.py ```
         
     ```
-    INFO:tensorflow:Restoring parameters from ./saved/model.ckpt-2000
-    apple -> aelpp
-    common -> cmmnoo
-    zhedong -> deghnoz
+    
     ```
 * Small Task 2: learn chinese dialog
 
     ``` python train_dialog.py```
     
     ```
-    INFO:tensorflow:Restoring parameters from ./saved/model.ckpt-7092
-    你是谁 -> 我是小通
-    你喜欢我吗 -> 我也喜欢你
-    给我唱一首歌 -> =。========
-    我帅吗 -> 你是我的
+    
     ```
 
 <img src="https://github.com/zhedongzheng/finch/blob/master/assets/transform20fps.gif" height='400'>

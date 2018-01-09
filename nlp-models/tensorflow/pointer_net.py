@@ -57,7 +57,7 @@ class PointerNetwork:
             with tf.variable_scope('rnn_decoder', reuse=reuse):
                 v = tf.get_variable('attention_v', [self.attn_size], tf.float32)
                 query = tf.layers.dense(tf.expand_dims(state, 1), self.attn_size, reuse=reuse) # (B, 1, D)
-                keys = tf.layers.dense(self.enc_inp, self.attn_size, reuse=reuse)              # (B, T, D)
+                keys = tf.layers.dense(self.enc_rnn_out, self.attn_size, reuse=reuse)              # (B, T, D)
             align = tf.reduce_sum(v * tf.tanh(keys + query), [2])                              # (B, T)
             return align
 

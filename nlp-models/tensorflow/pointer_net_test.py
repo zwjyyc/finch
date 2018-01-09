@@ -88,7 +88,7 @@ def main():
         rnn_size = 50,
         attn_size = 15,
         X_word2idx = X_char2idx,
-        embedding_dim = 50)
+        embedding_dim = 15)
     
     model.fit(X_train, X_train_len, Y_train, Y_train_len,
         val_data=(X_test, X_test_len, Y_test, Y_test_len), batch_size=BATCH_SIZE, n_epoch=60)

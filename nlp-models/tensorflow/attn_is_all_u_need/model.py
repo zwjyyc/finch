@@ -38,7 +38,7 @@ def forward_pass(sources, targets, params, reuse=False):
         if args.tied_embedding:
             with tf.variable_scope('encoder_embedding', reuse=True):
                 decoded = embed_seq(decoder_inputs, params['target_vocab_size'], args.hidden_units,
-                    zero_pad=True, scale=True, tie_signal=True)
+                    zero_pad=True, scale=True)
         else:
             with tf.variable_scope('decoder_embedding', reuse=reuse):
                 decoded = embed_seq(

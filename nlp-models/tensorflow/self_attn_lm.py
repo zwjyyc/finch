@@ -157,24 +157,24 @@ def self_multihead_attn(queries, keys, num_units, num_heads, dropout_rate, is_tr
     K_ = tf.concat(tf.split(K, num_heads, axis=2), axis=0)                         # (h*N, T_k, C/h) 
     V_ = tf.concat(tf.split(V, num_heads, axis=2), axis=0)                         # (h*N, T_k, C/h)
 
-    outputs = tf.matmul(Q_, tf.transpose(K_, [0,2,1]))                             # (h*N, T_q, T_k)
-    outputs = outputs / (K_.get_shape().as_list()[-1] ** 0.5)                      # scale
+    align = tf.matmul(Q_, tf.transpose(K_, [0,2,1]))                               # (h*N, T_q, T_k)
+    align = align / (K_.get_shape().as_list()[-1] ** 0.5)                          # scale
     
-    paddings = tf.fill(tf.shape(outputs), float('-inf'))                           # exp(-large) -> 0
+    paddings = tf.fill(tf.shape(align), float('-inf'))                             # exp(-large) -> 0
 
     # Future Binding
     lower_tri = tf.ones([T_q, T_k])                                                # (T_q, T_k)
     lower_tri = tf.contrib.linalg.LinearOperatorTriL(lower_tri).to_dense()         # (T_q, T_k)
-    masks = tf.tile(tf.expand_dims(lower_tri,0), [tf.shape(outputs)[0], 1, 1])     # (h*N, T_q, T_k)
-    outputs = tf.where(tf.equal(masks, 0), paddings, outputs)                      # (h*N, T_q, T_k)
+    masks = tf.tile(tf.expand_dims(lower_tri,0), [tf.shape(align)[0], 1, 1])       # (h*N, T_q, T_k)
+    align = tf.where(tf.equal(masks, 0), paddings, align)                          # (h*N, T_q, T_k)
 
     # Softmax
-    outputs = tf.nn.softmax(outputs)                                               # (h*N, T_q, T_k)
+    align = tf.nn.softmax(align)                                                   # (h*N, T_q, T_k)
 
-    outputs = tf.layers.dropout(outputs, dropout_rate, training=is_training)       # (h*N, T_q, T_k)
+    align = tf.layers.dropout(align, dropout_rate, training=is_training)           # (h*N, T_q, T_k)
 
     # Weighted sum
-    outputs = tf.matmul(outputs, V_)                                               # (h*N, T_q, C/h)
+    outputs = tf.matmul(align, V_)                                                 # (h*N, T_q, C/h)
     # Restore shape
     outputs = tf.concat(tf.split(outputs, num_heads, axis=0), axis=2)              # (N, T_q, C)
     # Residual connection

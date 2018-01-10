@@ -7,7 +7,7 @@ from utils import embed_seq, learned_positional_encoding, pointwise_feedforward,
 
 class Tagger:
     def __init__(self, vocab_size, n_out, seq_len,
-                 dropout_rate=0.2, hidden_units=128, num_heads=4, num_blocks=1, sess=tf.Session()):
+                 dropout_rate=0.1, hidden_units=128, num_heads=8, num_blocks=1, sess=tf.Session()):
         self.vocab_size = vocab_size
         self.n_out = n_out
         self.seq_len = seq_len
@@ -48,12 +48,16 @@ class Tagger:
         with tf.variable_scope('encoder_dropout'):
             encoded = tf.layers.dropout(encoded, self.dropout_rate, training=self.is_training)
         for i in range(self.num_blocks):
-            with tf.variable_scope('encoder_attn_%d'%i):
+            with tf.variable_scope('restricted_attn_%d'%i):
+                encoded = multihead_attn(queries=encoded, keys=encoded,
+                    num_units=self.hidden_units, num_heads=self.num_heads, dropout_rate=self.dropout_rate,
+                    is_training=self.is_training, restricted=True)
+            with tf.variable_scope('global_attn_%d'%i):
                 encoded = multihead_attn(queries=encoded, keys=encoded,
                     num_units=self.hidden_units, num_heads=self.num_heads, dropout_rate=self.dropout_rate,
                     is_training=self.is_training)
             with tf.variable_scope('encoder_feedforward_%d'%i):
-                encoded = pointwise_feedforward(encoded, num_units=[self.hidden_units, self.hidden_units],
+                encoded = pointwise_feedforward(encoded, num_units=[4*self.hidden_units, self.hidden_units],
                     activation=tf.nn.elu)
         self.logits = tf.layers.dense(encoded, self.n_out)
     # end method add_forward_path
@@ -152,7 +156,8 @@ class Tagger:
 # end class
 
 
-def multihead_attn(queries, keys, num_units, num_heads, dropout_rate, is_training):
+def multihead_attn(queries, keys, num_units, num_heads, dropout_rate, is_training,
+                   restricted=False):
     """
     Args:
       queries: A 3d tensor with shape of [N, T_q, C_q]
@@ -171,15 +176,22 @@ def multihead_attn(queries, keys, num_units, num_heads, dropout_rate, is_trainin
     K_ = tf.concat(tf.split(K, num_heads, axis=2), axis=0)                         # (h*N, T_k, C/h) 
     V_ = tf.concat(tf.split(V, num_heads, axis=2), axis=0)                         # (h*N, T_k, C/h)
 
-    outputs = tf.matmul(Q_, tf.transpose(K_, [0,2,1]))                             # (h*N, T_q, T_k)
-    outputs = outputs / (K_.get_shape().as_list()[-1] ** 0.5)                      # scale
+    align = tf.matmul(Q_, tf.transpose(K_, [0,2,1]))                               # (h*N, T_q, T_k)
+    align = align / (K_.get_shape().as_list()[-1] ** 0.5)                          # scale
     
-    outputs = tf.nn.softmax(outputs)                                               # (h*N, T_q, T_k)
+    if restricted:
+        paddings = tf.fill(tf.shape(align), float('-inf'))                         # exp(-large) -> 0
+        lower_tri = tf.ones([T_q, T_k])                                            # (T_q, T_k)
+        lower_tri = tf.contrib.linalg.LinearOperatorTriL(lower_tri).to_dense()     # (T_q, T_k)
+        masks = tf.tile(tf.expand_dims(lower_tri,0), [tf.shape(align)[0], 1, 1])   # (h*N, T_q, T_k)
+        align = tf.where(tf.equal(masks, 0), paddings, align)                      # (h*N, T_q, T_k)
 
-    outputs = tf.layers.dropout(outputs, dropout_rate, training=is_training)       # (h*N, T_q, T_k)
+    align = tf.nn.softmax(align)                                                   # (h*N, T_q, T_k)
+
+    align = tf.layers.dropout(align, dropout_rate, training=is_training)           # (h*N, T_q, T_k)
 
     # Weighted sum
-    outputs = tf.matmul(outputs, V_)                                               # (h*N, T_q, C/h)
+    outputs = tf.matmul(align, V_)                                                 # (h*N, T_q, C/h)
     # Restore shape
     outputs = tf.concat(tf.split(outputs, num_heads, axis=0), axis=2)              # (N, T_q, C)
     # Residual connection

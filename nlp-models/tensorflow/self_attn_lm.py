@@ -50,7 +50,7 @@ class LM:
                         dropout_rate=self.dropout_rate, is_training=self.is_training)
                 with tf.variable_scope('feedforward%d'%i, reuse=reuse):
                     encoded = pointwise_feedforward(encoded,
-                        num_units=[self.hidden_units, self.hidden_units], activation=tf.nn.elu)
+                        num_units=[4*self.hidden_units, self.hidden_units], activation=tf.nn.elu)
             return tf.layers.dense(encoded, self.vocab_size)
 
 

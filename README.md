@@ -69,6 +69,7 @@
    <img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr_0.png" width="600">
 
 3. Find the test file path
+
    <img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="600">
 
 4. run on command line

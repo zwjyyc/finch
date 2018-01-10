@@ -60,20 +60,20 @@
 #### How To Use
 1. The following command clones all the files
 
-   (it is large due to historical reasons, sorry)
-```
-git clone https://github.com/zhedongzheng/finch.git
-```
+      (it is large due to historical reasons, sorry)
+   ```
+   git clone https://github.com/zhedongzheng/finch.git
+   ```
 
 2. Use [contents](https://github.com/zhedongzheng/finch#contents) to find the model and test that may interest you, click on that test
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr_0.png" width="600">
+   <img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr_0.png" width="600">
 
 3. Find the test file path
-<img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="600">
+   <img src="https://github.com/zhedongzheng/finch/blob/master/assets/addr.png" width="600">
 
 4. run on command line
-```
-cd finch/nlp-models/tensorflow
-python rnn_attn_estimator_imdb_test.py
-```
+   ```
+   cd finch/nlp-models/tensorflow
+   python rnn_attn_estimator_imdb_test.py
+   ```
 ---

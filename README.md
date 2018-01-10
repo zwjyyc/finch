@@ -59,6 +59,7 @@
 ---
 #### How To Use
 1. The following command clones all the files
+(it is large because of historical reasons, sorry)
 ```
 git clone https://github.com/zhedongzheng/finch.git
 ```

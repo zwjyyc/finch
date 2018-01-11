@@ -6,7 +6,8 @@ import sklearn
 
 
 class Conv1DClassifier:
-    def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(), embedding_dims=50, padding='valid'):
+    def __init__(self, seq_len, vocab_size, n_out, sess=tf.Session(),
+                 n_filters=250, embedding_dims=50, padding='valid'):
         """
         Parameters:
         -----------
@@ -29,6 +30,7 @@ class Conv1DClassifier:
         """
         self.seq_len = seq_len
         self.vocab_size = vocab_size
+        self.n_filters = n_filters
         self.embedding_dims = embedding_dims
         self.padding = padding
         self.n_out = n_out
@@ -41,11 +43,15 @@ class Conv1DClassifier:
     def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding()
-        self.conv1 = self.add_conv1d(250, kernel_size=3)
-        self.conv2 = self.add_conv1d(250, kernel_size=4)
-        self.conv3 = self.add_conv1d(250, kernel_size=5)
-        self.merge_layers([self.conv1, self.conv2, self.conv3])
-        self.add_global_pooling()
+
+        kernels = [3, 4, 5]
+        parallels = []
+        for k in kernels:
+            p = self.add_conv1d(self.n_filters//len(kernels), kernel_size=k)
+            p = self.add_global_pooling(p)
+            parallels.append(p)
+        self.merge_layers(parallels)
+
         self.add_output_layer()   
         self.add_backward_path()
     # end method build_graph
@@ -61,8 +67,7 @@ class Conv1DClassifier:
 
 
     def add_word_embedding(self):
-        embedding = tf.get_variable('encoder', [self.vocab_size,self.embedding_dims], tf.float32,
-                                     tf.random_uniform_initializer(-1.0, 1.0))
+        embedding = tf.get_variable('encoder', [self.vocab_size,self.embedding_dims], tf.float32)
         embedded = tf.nn.embedding_lookup(embedding, self._pointer)
         self._pointer = tf.nn.dropout(embedded, self.keep_prob)
     # end method add_word_embedding_layer
@@ -80,19 +85,19 @@ class Conv1DClassifier:
     # end method add_conv1d_layer
 
 
-    def merge_layers(self, layers):
-        self._pointer = tf.concat(layers, axis=1)
-    # end method merge_layers
-
-
-    def add_global_pooling(self):
-        Y = tf.layers.max_pooling1d(inputs = self._pointer,
-                                    pool_size = self._pointer.get_shape().as_list()[1],
+    def add_global_pooling(self, x):
+        Y = tf.layers.max_pooling1d(inputs = x,
+                                    pool_size = x.get_shape().as_list()[1],
                                     strides = 1,
                                     padding = self.padding)
         Y = tf.reshape(Y, [-1, Y.get_shape().as_list()[-1]])
-        self._pointer = Y
+        return Y
     # end method add_global_maxpool_layer
+
+
+    def merge_layers(self, layers):
+        self._pointer = tf.concat(layers, axis=-1)
+    # end method merge_layers
 
 
     def add_output_layer(self):
@@ -107,7 +112,7 @@ class Conv1DClassifier:
     # end method add_backward_path
 
 
-    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, keep_prob=1.0, en_exp_decay=True,
+    def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, keep_prob=0.8, en_exp_decay=True,
             en_shuffle=True):
         if val_data is None:
             print("Train %d samples" % len(X))

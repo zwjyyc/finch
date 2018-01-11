@@ -90,7 +90,7 @@ class Conv1DClassifier:
 
     def add_kmax_pooling(self, x):
         Y = tf.transpose(x, [0, 2, 1])
-        Y = tf.nn.top_k(Y, self.top_k, sorted=True).values
+        Y = tf.nn.top_k(Y, self.top_k, sorted=False).values
         Y = tf.transpose(Y, [0, 2, 1])
         Y = tf.reshape(Y, [self._batch_size, self.top_k, self.n_filters//len(self.kernels)])
         return Y

@@ -4,7 +4,7 @@ import numpy as np
 
 
 class LM:
-    def __init__(self, text, seq_len=150, embedding_dims=30, hidden_units=128, n_layers=2,
+    def __init__(self, text, seq_len, embedding_dims=30, hidden_units=128, n_layers=2,
                  num_heads=8, dropout_rate=0.1, sess=tf.Session()):
         self.sess = sess
         self.text = text

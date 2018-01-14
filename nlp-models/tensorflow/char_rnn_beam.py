@@ -3,8 +3,8 @@ import numpy as np
 
 
 class RNNTextGen:
-    def __init__(self, text, seq_len=50, embedding_dims=30, rnn_size=256, n_layers=2, grad_clip=5.,
-                 beam_width=5, sess=tf.Session()):
+    def __init__(self, text, seq_len, embedding_dims=30, rnn_size=256, n_layers=2, grad_clip=5.,
+                 beam_width=3, sess=tf.Session()):
         self.sess = sess
         self.text = text
         self.seq_len = seq_len
@@ -127,7 +127,7 @@ class RNNTextGen:
     def decode(self):
         predicted_ids = self.sess.run(self.predicted_ids,
                                      {self._batch_size: 1,
-                                      self.gen_seq_length: self.seq_len * 2})[0]
+                                      self.gen_seq_length: self.seq_len})[0]
         print('D: '+''.join([self.idx2char[idx] for idx in predicted_ids]), end='\n\n')
     # end method
 

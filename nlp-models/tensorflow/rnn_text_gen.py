@@ -128,7 +128,7 @@ class RNNTextGen:
     # end method next_batch
 
 
-    def fit(self, start_word, n_gen, text_iter_step=1, n_epoch=1, batch_size=128, en_exp_decay=False):
+    def fit(self, start_word, n_gen, text_iter_step=25, n_epoch=1, batch_size=128, en_exp_decay=False):
         global_step = 0
         n_batch = (len(self.indexed) - self.seq_len*batch_size - 1) // text_iter_step
         total_steps = n_epoch * n_batch

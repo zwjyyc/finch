@@ -1,3 +1,4 @@
+```
 Epoch 10/10 | Batch 1050/2067 | train loss: 0.9063
 Epoch 10/10 | Batch 1100/2067 | train loss: 0.7625
 Epoch 10/10 | Batch 1150/2067 | train loss: 0.9400
@@ -22,3 +23,4 @@ Nearest to [six]: thereby, inflation, frustration, averages, war,
 Nearest to [gold]: ounce, platinum, bullion, silver, ounces,
 Nearest to [japan]: buildup, keen, fellow, seeing, swings,
 Nearest to [college]: basketball, colleges, teaches, graduates, football,
+```

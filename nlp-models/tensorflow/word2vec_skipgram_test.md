@@ -1,3 +1,4 @@
+```
 Epoch 10/10 | Batch 50/1545 | train loss: 2.0702
 Epoch 10/10 | Batch 100/1545 | train loss: 1.8695
 Epoch 10/10 | Batch 150/1545 | train loss: 1.8683
@@ -22,3 +23,4 @@ Nearest to [six]: declaring, maturing, constitution, ruled, columbia,
 Nearest to [gold]: ounce, platinum, ounces, bullion, mehta,
 Nearest to [japan]: controlling, conclude, affidavit, entertainment, instructed,
 Nearest to [college]: graduates, football, sports, basketball, athletes,
+```

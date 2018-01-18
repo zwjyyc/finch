@@ -54,7 +54,7 @@
 
 #### Reinforcement Learning（强化学习）
 
-For this section, please ``` pip install gym ```
+For this section, please install [openai-gym](https://github.com/openai/gym)
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_cartpole_test.py)
 ---
 #### How To Use

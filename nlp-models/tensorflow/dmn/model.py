@@ -49,12 +49,7 @@ class MemoryNetwork:
         self.loss_op = tf.reduce_mean(tf.contrib.seq2seq.sequence_loss(
             logits=logits, targets=targets, weights=masks))
         self.acc_op = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(logits, -1), targets)))
-        """
-        params = tf.trainable_variables()
-        grads = tf.gradients(self.loss_op, params)
-        clipped_grads, _ = tf.clip_by_global_norm(grads, args.clip_norm)
-        self.train_op = tf.train.AdamOptimizer().apply_gradients(zip(clipped_grads, params))
-        """
+        
         opt = tf.train.AdamOptimizer()
         gvs = opt.compute_gradients(self.loss_op)
         gvs = [(tf.clip_by_norm(grad, args.clip_norm), var) for grad, var in gvs]
@@ -89,7 +84,7 @@ class MemoryNetwork:
     def memory_module(self, fact_vecs, q_vec):
         memory = q_vec
         for i in range(args.n_hops):
-            print('==> Building Episode', i)
+            print('==> Memory Episode', i)
             episode = self.gen_episode(memory, q_vec, fact_vecs, i)
             with tf.variable_scope('memory_%d' % i):
                 memory = tf.layers.dense(
@@ -99,8 +94,8 @@ class MemoryNetwork:
 
     def gen_episode(self, memory, q_vec, fact_vecs, i):
         # Gates (attentions) are activated if sentence relevant to the question or memory
-        attentions = [self.gen_attention(memory, q_vec, fact_vec, bool(i) or bool(n_fact))
-            for n_fact, fact_vec in enumerate(tf.unstack(fact_vecs, axis=1))]    # n_fact list of (B,)
+        attentions = [self.gen_attention(memory, q_vec, fact_vec, bool(i) or bool(j))
+            for j, fact_vec in enumerate(tf.unstack(fact_vecs, axis=1))]         # n_fact list of (B,)
         attentions = tf.transpose(tf.stack(attentions))                          # (B, n_fact)
         attentions = tf.nn.softmax(attentions)                                   # (B, n_fact)
         attentions = tf.expand_dims(attentions, -1)                              # (B, n_fact, 1)

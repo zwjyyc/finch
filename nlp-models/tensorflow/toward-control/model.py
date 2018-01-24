@@ -58,7 +58,6 @@ class Model:
         self.train_clf_loss = self.sparse_cross_entropy_fn(logits_real, self.labels)
         self.train_clf_acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(logits_real, 1), self.labels)))
 
-        # unsupervised: minimize cross_entropy between classified c and prior c
         c_prior = self.draw_c_prior()
         latent_vec = tf.concat((self.draw_z_prior(), c_prior), -1)
         _, logits_gen = self.generator(latent_vec, reuse=True)

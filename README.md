@@ -48,7 +48,7 @@
 * [Dynamic Memory Network](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/dmn) 
 
 #### Generative Modelling（生成式建模）
-* [VAE](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/vae)
+* [VAE (Variational Autoencoder)](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/vae)
 
    * [VAE + Discriminator](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/toward-control)
 

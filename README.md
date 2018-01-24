@@ -50,7 +50,7 @@
 #### Generative Modelling（生成式建模）
 * [Generating Sentences from a Continuous Space](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/vae)
 
-* [Toward Controlled Generation of Text](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/toward-control)
+   * [Toward Controlled Generation of Text](https://github.com/zhedongzheng/finch/tree/master/nlp-models/tensorflow/toward-control)
 
 #### Reinforcement Learning（强化学习）
 

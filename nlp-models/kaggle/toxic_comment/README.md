@@ -1,10 +1,10 @@
-[Identify and classify toxic online comments](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge)
+The task is to [Identify and classify toxic online comments](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge)
 
 Please install two more libraries:
 * nltk
 * gensim
 
-Train three models and then ensemble
+My solution is to train three models and then ensemble:
 ```
 cd model_gru
 python train.py

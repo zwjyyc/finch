@@ -1,3 +1,6 @@
+* nltk
+* gensim
+
 ```
 cd model_gru
 python train.py

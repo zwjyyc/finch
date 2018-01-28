@@ -1,4 +1,4 @@
-put data here
+put data files here
 ```
 sample_submission.csv
 test.csv

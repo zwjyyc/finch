@@ -4,6 +4,7 @@ Please install two more libraries:
 * nltk
 * gensim
 
+Train three models and then ensemble
 ```
 cd model_gru
 python train.py

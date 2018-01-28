@@ -3,6 +3,7 @@ The task is to [Identify and classify toxic online comments](https://www.kaggle.
 Please install two more libraries:
 * nltk
 * gensim
+* tqdm
 
 My solution is to train three models and then ensemble:
 ```

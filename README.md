@@ -58,7 +58,7 @@ For this section, please install [OpenAI Gym](https://github.com/openai/gym)
 * TensorFlow &nbsp; | &nbsp; Policy Gradient &nbsp; &nbsp; [Model](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg.py) &nbsp; &nbsp; [CartPole Test](https://github.com/zhedongzheng/finch/blob/master/nlp-models/rl-models/tensorflow/pg_cartpole_test.py)
 
 #### Kaggle Competition（Kaggle 竞赛）
-* [Toxic Comment Classification Challenge (Top 15%)](https://github.com/zhedongzheng/finch/blob/master/nlp-models/kaggle/toxic_comment)
+* [Toxic Comment Classification Challenge (Top 20%)](https://github.com/zhedongzheng/finch/blob/master/nlp-models/kaggle/toxic_comment)
 
 ---
 #### How To Use

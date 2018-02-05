@@ -16,8 +16,6 @@ class Seq2Seq:
         self.sess = sess
         self.register_symbols()
         self.build_graph()
-    # end constructor
-
 
     def build_graph(self):
         self.add_input_layer()
@@ -26,29 +24,24 @@ class Seq2Seq:
         self.add_backward_path()
     # end method build_graph
 
-
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, None])
         self.Y = tf.placeholder(tf.int32, [None, None])
         self.X_seq_len = tf.placeholder(tf.int32, [None])
         self.Y_seq_len = tf.placeholder(tf.int32, [None])
         self.batch_size = tf.placeholder(tf.int32, [])
-    # end method add_input_layer
-
 
     def lstm_cell(self, reuse=False):
         return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
-    # end method lstm_cell
-
 
     def add_encoder_layer(self):
         encoder_embedding = tf.get_variable('encoder_embedding', [len(self.X_word2idx), self.encoder_embedding_dim],
                                              tf.float32, tf.random_uniform_initializer(-1.0, 1.0))            
         self.encoder_out, self.encoder_state = tf.nn.dynamic_rnn(
-            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]), 
-            inputs = tf.nn.embedding_lookup(encoder_embedding, self.X),
-            sequence_length = self.X_seq_len,
-            dtype = tf.float32)
+            cell=tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]),
+            inputs=tf.nn.embedding_lookup(encoder_embedding, self.X),
+            sequence_length=self.X_seq_len,
+            dtype=tf.float32)
         self.encoder_state = tuple(self.encoder_state[-1] for _ in range(self.n_layers))
     # end method add_encoder_layer
     

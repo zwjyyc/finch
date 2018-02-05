@@ -17,14 +17,12 @@ class Seq2Seq:
         self.build_graph()
     # end constructor
 
-
     def build_graph(self):
         self.add_input_layer()
         self.add_encoder_layer()
         self.add_decoder_layer()
         self.add_backward_path()
     # end method build_graph
-
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, None])
@@ -34,11 +32,9 @@ class Seq2Seq:
         self.batch_size = tf.shape(self.X)[0]
     # end method add_input_layer
 
-
     def lstm_cell(self, reuse=False):
         return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
     # end method lstm_cell
-
 
     def add_encoder_layer(self):
         encoder_embedding = tf.get_variable('encoder_embedding', [len(self.X_word2idx), self.encoder_embedding_dim],
@@ -50,7 +46,6 @@ class Seq2Seq:
             dtype = tf.float32)
         self.encoder_state = tuple(self.encoder_state[-1] for _ in range(self.n_layers))
     # end method add_encoder_layer
-    
 
     def processed_decoder_input(self):
         #main = tf.strided_slice(self.Y, [0, 0], [self.batch_size, -1], [1, 1]) # remove last char
@@ -58,7 +53,6 @@ class Seq2Seq:
         decoder_input = tf.concat([tf.fill([self.batch_size, 1], self._y_go), main], 1)
         return decoder_input
     # end method add_decoder_layer
-
 
     def add_decoder_layer(self):
         with tf.variable_scope('decode'):
@@ -96,7 +90,6 @@ class Seq2Seq:
             self.predicting_ids = predicting_decoder_output.sample_id
     # end method add_decoder_layer
 
-
     def add_backward_path(self):
         masks = tf.sequence_mask(self.Y_seq_len, tf.reduce_max(self.Y_seq_len), dtype=tf.float32)
         self.loss = tf.contrib.seq2seq.sequence_loss(logits = self.training_logits,
@@ -110,7 +103,6 @@ class Seq2Seq:
         self.train_op = tf.train.AdamOptimizer().apply_gradients(zip(clipped_gradients, params))
     # end method add_backward_path
 
-
     def pad_sentence_batch(self, sentence_batch, pad_int):
         padded_seqs = []
         seq_lens = []
@@ -120,7 +112,6 @@ class Seq2Seq:
             seq_lens.append(len(sentence))
         return padded_seqs, seq_lens
     # end method pad_sentence_batch
-
 
     def next_batch(self, X, Y, batch_size):
         for i in range(0, len(X) - len(X) % batch_size, batch_size):
@@ -133,7 +124,6 @@ class Seq2Seq:
                    X_batch_lens,
                    Y_batch_lens)
     # end method next_batch
-
 
     def fit(self, X_train, Y_train, val_data, n_epoch=60, display_step=50, batch_size=128):
         X_test, Y_test = val_data
@@ -157,7 +147,6 @@ class Seq2Seq:
                         % (epoch, n_epoch, local_step, len(X_train)//batch_size, loss, val_loss))
     # end method fit
 
-
     def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):        
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
         out_indices = self.sess.run(self.predicting_ids, {
@@ -172,7 +161,6 @@ class Seq2Seq:
         print('Word: {}'.format([i for i in out_indices]))
         print('OUT: {}'.format(' '.join([Y_idx2word[i] for i in out_indices])))
     # end method infer
-
 
     def register_symbols(self):
         self._x_go = self.X_word2idx['<GO>']

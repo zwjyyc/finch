@@ -30,7 +30,6 @@ class BiRNN:
         self.build_graph()
     # end constructor
 
-
     def build_graph(self):
         self.add_input_layer()
         self.add_word_embedding_layer()
@@ -38,7 +37,6 @@ class BiRNN:
         self.add_output_layer()
         self.add_backward_path()
     # end method build_graph
-
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, None])
@@ -48,7 +46,6 @@ class BiRNN:
         self._pointer = self.X
     # end method add_input_layer
 
-
     def add_word_embedding_layer(self):
         embedding = tf.get_variable('encoder', [self.vocab_size, self.embedding_dims], tf.float32,
                                      tf.random_uniform_initializer(-1.0, 1.0))
@@ -56,11 +53,9 @@ class BiRNN:
         self._pointer = tf.nn.dropout(embedded, self.keep_prob)
     # end method add_word_embedding_layer
 
-
     def lstm_cell(self):
         return tf.nn.rnn_cell.LSTMCell(self.cell_size, initializer=tf.orthogonal_initializer())
     # end method lstm_cell
-
 
     def add_bidirectional_dynamic_rnn(self):
         birnn_out = self._pointer
@@ -74,11 +69,9 @@ class BiRNN:
         self._pointer = birnn_out
     # end method add_dynamic_rnn
 
-
     def add_output_layer(self):
         self.logits = tf.layers.dense(tf.reshape(self._pointer, [-1, 2*self.cell_size]), self.n_out)
     # end method add_output_layer
-
 
     def add_backward_path(self):
         self.loss = tf.contrib.seq2seq.sequence_loss(
@@ -92,7 +85,6 @@ class BiRNN:
                                                    tf.reshape(self.Y, [-1])), tf.float32))
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
     # end method add_backward_path
-
 
     def fit(self, X, Y, val_data=None, n_epoch=10, batch_size=128, en_exp_decay=True, en_shuffle=True,
             keep_prob=1.0):

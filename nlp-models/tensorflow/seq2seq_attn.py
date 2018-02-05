@@ -13,7 +13,6 @@ class Seq2Seq:
         self.Y_word2idx = Y_word2idx
         self.decoder_embedding_dim = decoder_embedding_dim
         self.sess = sess
-        self.register_symbols()
         self.build_graph()
 
     def build_graph(self):

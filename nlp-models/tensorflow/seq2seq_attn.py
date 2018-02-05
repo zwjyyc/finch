@@ -177,8 +177,8 @@ class Seq2Seq:
         
         print('\nSource')
         print('Word: {}'.format([i for i in input_indices]))
-        out_str = 'IN: {}'.format(' '.join([X_idx2word[i] for i in input_indices]))
-        print(out_str.encode('utf8'))
+        out_str = 'IN: {}'.format(' '.join([X_idx2word[i].encode('utf8') for i in input_indices]))
+        print(out_str)
         
         print('\nTarget')
         print('Word: {}'.format([i for i in out_indices]))

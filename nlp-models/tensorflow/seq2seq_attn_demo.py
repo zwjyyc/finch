@@ -29,6 +29,19 @@ def read_data(path, word2idx, unk_id, eos_id=-1):
             return [[word2idx.get(word, unk_id) for word in line.strip().split()] + [eos_id] for line in fin]
 
 
+def filter_pairs(x_data, y_data):
+    x_new_data = []
+    y_new_data = []
+
+    max_p_len = 50
+    for x_raw, y_raw in zip(x_data, y_data):
+        if len(x_raw) > max_p_len or len(y_raw) > max_p_len:
+            continue
+        else:
+            x_new_data.append(x_raw)
+            y_new_data.append(y_raw)
+    return x_new_data, y_new_data
+
 def preprocess_data(src_files, valid_files, vocab_files):
     x_idx2word, x_word2idx = build_map(vocab_files[0])
     y_idx2word, y_word2idx = build_map(vocab_files[1])
@@ -46,6 +59,11 @@ def preprocess_data(src_files, valid_files, vocab_files):
     x_valid_data = read_data(valid_files[0], x_word2idx, x_unk)
     y_valid_data = read_data(valid_files[1], y_word2idx, y_unk, y_eos)
 
+    assert len(x_train) == len(y_train), 'numbers of pairs must be equal'
+    assert len(x_valid_data) == len(y_valid_data), 'numbers of pairs must be equal'
+
+    x_train, y_train = filter_pairs(x_train, y_train)
+    x_valid_data, y_valid_data = filter_pairs(x_valid_data, y_valid_data)
     return x_train, y_train, x_valid_data, y_valid_data, x_word2idx, y_word2idx, x_idx2word, y_idx2word
 
 

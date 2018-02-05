@@ -13,8 +13,8 @@ if int(sys.version[0]) == 2:
 
 
 def build_map(vocab_file):
-    with open(vocab_file, 'r') as fin:
-        words = list(set([line.decode('utf8').strip() for line in fin]))
+    with open(vocab_file, 'r', encoding='utf8') as fin:
+        words = list(set([line.strip() for line in fin]))
 
     idx2word = {idx: word for idx, word in enumerate(words)}
     word2idx = {word: idx for idx, word in idx2word.items()}
@@ -22,7 +22,7 @@ def build_map(vocab_file):
 
 
 def read_data(path, word2idx, unk_id, eos_id=-1):
-    with open(path, 'r', encoding='utf-8') as fin:
+    with open(path, 'r', encoding='utf8') as fin:
         if eos_id == -1:
             return [[word2idx.get(word, unk_id)] for line in fin for word in line.strip().split()]
         else:

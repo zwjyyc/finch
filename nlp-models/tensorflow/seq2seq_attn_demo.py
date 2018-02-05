@@ -28,6 +28,7 @@ def read_data(path, word2idx, unk_id, eos_id=-1):
         else:
             return [[word2idx.get(word, unk_id) for word in line.strip().split()] + [eos_id] for line in fin]
 
+
 def preprocess_data(src_files, valid_files, vocab_files):
     x_idx2word, x_word2idx = build_map(vocab_files[0])
     y_idx2word, y_word2idx = build_map(vocab_files[1])

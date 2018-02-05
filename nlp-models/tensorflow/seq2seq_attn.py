@@ -1,4 +1,3 @@
-from tensorflow.python.layers import core as core_layers
 import tensorflow as tf
 import numpy as np
 
@@ -22,7 +21,6 @@ class Seq2Seq:
         self.add_encoder_layer()
         self.add_decoder_layer()
         self.add_backward_path()
-    # end method build_graph
 
     def add_input_layer(self):
         self.X = tf.placeholder(tf.int32, [None, None])
@@ -167,7 +165,6 @@ class Seq2Seq:
                         % (epoch, n_epoch, local_step, len(X_train)//batch_size, loss, val_loss))
     # end method fit
 
-
     def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):        
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
         out_indices = self.sess.run(self.predicting_ids, {
@@ -184,16 +181,4 @@ class Seq2Seq:
         print('OUT: {}'.format(' '.join([Y_idx2word[i] for i in out_indices])))
     # end method infer
 
-
-    def register_symbols(self):
-        self._x_go = self.X_word2idx['<GO>']
-        self._x_eos = self.X_word2idx['<EOS>']
-        self._x_pad = self.X_word2idx['<PAD>']
-        self._x_unk = self.X_word2idx['<UNK>']
-
-        self._y_go = self.Y_word2idx['<GO>']
-        self._y_eos = self.Y_word2idx['<EOS>']
-        self._y_pad = self.Y_word2idx['<PAD>']
-        self._y_unk = self.Y_word2idx['<UNK>']
-    # end method add_symbols
 # end class

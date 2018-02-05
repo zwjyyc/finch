@@ -92,8 +92,8 @@ def main(args):
         decoder_embedding_dim=args.hidden_size,
     )
 
-    #model.fit(x_train, y_train, val_data=(x_valid, y_valid), batch_size=batch_size)
-    #model.infer(u'我的青蛙叫呱呱！', x_idx2word, y_idx2word)
+    model.fit(x_train, y_train, val_data=(x_valid, y_valid), batch_size=batch_size)
+    model.infer(r'我的青蛙叫呱呱！', x_idx2word, y_idx2word)
 
 if __name__ == '__main__':
     main(parse_args())

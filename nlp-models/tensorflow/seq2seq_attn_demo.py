@@ -29,7 +29,7 @@ def read_data(path, word2idx, unk_id, eos_id=-1):
             return [[word2idx.get(word, unk_id)] + [eos_id] for line in fin for word in line.strip().split()]
 
 
-def preprocess_data(src_files, valid_file, ref_file, vocab_files):
+def preprocess_data(src_files, valid_files, vocab_files):
     x_idx2word, x_word2idx = build_map(vocab_files[0])
     y_idx2word, y_word2idx = build_map(vocab_files[1])
 
@@ -43,8 +43,8 @@ def preprocess_data(src_files, valid_file, ref_file, vocab_files):
 
     x_train = read_data(src_files[0], x_word2idx, x_unk)
     y_train = read_data(src_files[1], y_word2idx, y_unk, y_eos)
-    x_valid_data = read_data(valid_file, x_word2idx, x_unk)
-    y_valid_data = read_data(ref_file, y_word2idx, y_unk, y_eos)
+    x_valid_data = read_data(valid_files[0], x_word2idx, x_unk)
+    y_valid_data = read_data(valid_files[1], y_word2idx, y_unk, y_eos)
 
     print x_train
 
@@ -62,16 +62,12 @@ def parse_args():
     # input files
     parser.add_argument("--input", type=str, nargs=2,
                         help="Path of source and target corpus")
-    parser.add_argument("--record", type=str,
-                        help="Path to tf.Record data")
     parser.add_argument("--output", type=str, default="train",
                         help="Path to saved models")
     parser.add_argument("--vocabulary", type=str, nargs=2,
                         help="Path of source and target vocabulary")
-    parser.add_argument("--validation", type=str,
+    parser.add_argument("--validation", type=str, nargs=2,
                         help="Path of validation file")
-    parser.add_argument("--references", type=str, nargs="+",
-                        help="Path of reference files")
 
     # model settings
     parser.add_argument("--batch_size", type=int, default=128, help="batch size")
@@ -84,7 +80,7 @@ def parse_args():
 def main(args):
     batch_size = args.batch_size
 
-    x_train, y_train, x_valid, y_valid, x_word2idx, y_word2idx, x_idx2word, y_idx2word = preprocess_data(args.input, args.validation, args.references, args.vocabulary)
+    x_train, y_train, x_valid, y_valid, x_word2idx, y_word2idx, x_idx2word, y_idx2word = preprocess_data(args.input, args.validation, args.vocabulary)
 
     model = Seq2Seq(
         rnn_size=args.hidden_size,

@@ -46,10 +46,6 @@ def preprocess_data(src_files, valid_files, vocab_files):
     x_valid_data = read_data(valid_files[0], x_word2idx, x_unk)
     y_valid_data = read_data(valid_files[1], y_word2idx, y_unk, y_eos)
 
-    print x_train
-
-    print y_train
-
     return x_train, y_train, x_valid_data, y_valid_data, x_word2idx, y_word2idx, x_idx2word, y_idx2word
 
 

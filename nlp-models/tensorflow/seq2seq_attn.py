@@ -13,6 +13,7 @@ class Seq2Seq:
         self.Y_word2idx = Y_word2idx
         self.decoder_embedding_dim = decoder_embedding_dim
         self.sess = sess
+        self.register_symbols()
         self.build_graph()
 
     def build_graph(self):
@@ -164,6 +165,7 @@ class Seq2Seq:
                         % (epoch, n_epoch, local_step, len(X_train)//batch_size, loss, val_loss))
     # end method fit
 
+
     def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):        
         input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
         out_indices = self.sess.run(self.predicting_ids, {
@@ -180,4 +182,16 @@ class Seq2Seq:
         print('OUT: {}'.format(' '.join([Y_idx2word[i] for i in out_indices])))
     # end method infer
 
+
+    def register_symbols(self):
+        self._x_go = self.X_word2idx['<go>']
+        self._x_eos = self.X_word2idx['<eos>']
+        self._x_pad = self.X_word2idx['<pad>']
+        self._x_unk = self.X_word2idx['<unk>']
+
+        self._y_go = self.Y_word2idx['<go>']
+        self._y_eos = self.Y_word2idx['<eos>']
+        self._y_pad = self.Y_word2idx['<pad>']
+        self._y_unk = self.Y_word2idx['<unk>']
+    # end method add_symbols
 # end class

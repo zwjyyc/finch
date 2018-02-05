@@ -42,6 +42,7 @@ def filter_pairs(x_data, y_data):
             y_new_data.append(y_raw)
     return x_new_data, y_new_data
 
+
 def preprocess_data(src_files, valid_files, vocab_files):
     x_idx2word, x_word2idx = build_map(vocab_files[0])
     y_idx2word, y_word2idx = build_map(vocab_files[1])
@@ -106,7 +107,7 @@ def main(args):
     )
 
     model.fit(x_train, y_train, val_data=(x_valid, y_valid), batch_size=batch_size)
-    model.infer(u'我的青蛙叫呱呱！', x_idx2word, y_idx2word)
+    model.infer(u'我 的 青蛙 叫 呱呱！', x_idx2word, y_idx2word)
 
 if __name__ == '__main__':
     main(parse_args())

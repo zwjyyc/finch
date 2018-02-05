@@ -167,7 +167,7 @@ class Seq2Seq:
 
 
     def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):        
-        input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word]
+        input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
         out_indices = self.sess.run(self.predicting_ids, {
             self.X: [input_indices] * batch_size,
             self.X_seq_len: [len(input_indices)] * batch_size,

@@ -182,7 +182,7 @@ class Seq2Seq:
                   % (epoch, n_epoch, val_loss))
             if val_loss < best_metric_val:
                 print 'Storing the model'
-                self.saver.save(self.sess, self.model_dir)
+                self.saver.save(self.sess) #, self.model_dir)
                 best_metric_val = val_loss
         self.sess.close()
 

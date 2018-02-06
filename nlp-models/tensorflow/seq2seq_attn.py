@@ -2,7 +2,7 @@
 # coding=utf-8
 import tensorflow as tf
 import numpy as np
-
+import os
 
 def pad_sentence_batch(sentence_batch, pad_int):
     padded_seqs = []
@@ -27,6 +27,9 @@ class Seq2Seq:
         self.sess = sess
         self.model_dir = model_dir if model_dir else 'my_model'
         self.saver = None
+
+        if not os.isdir(self.model_dir):
+            os.makedirs(self.model_dir)
 
         self._x_go = self.x_word2idx['<go>']
         self._x_eos = self.x_word2idx['<eos>']

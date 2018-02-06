@@ -41,7 +41,7 @@ class Seq2Seq:
 
     def restore_graph(self):
         # self.saver =
-        self.saver = tf.train.Saver()  # import_meta_graph('./test_model.meta')
+        self.saver = tf.train.import_meta_graph(self.model_path)
         self.saver.restore(self.sess, tf.train.latest_checkpoint(self.model_path))
 
     def build_graph(self):

@@ -27,7 +27,7 @@ class Seq2Seq:
         self.sess = sess
         self.model_dir = model_dir if model_dir else 'my_model'
         self.saver = None
-
+        self.predict_op = None
         if not os.path.isdir(self.model_dir):
             os.makedirs(self.model_dir)
 
@@ -51,6 +51,8 @@ class Seq2Seq:
         # self.saver =
         self.saver = tf.train.import_meta_graph('./my_test_model.meta')
         self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))
+        graph = tf.get_default_graph()
+        self.predict_op = graph.get_tensor_by_name("predict_ids")
 
     def build_graph(self):
         self.build_encoder_layer()
@@ -124,6 +126,7 @@ class Seq2Seq:
                 impute_finished=True,
                 maximum_iterations=2 * tf.reduce_max(self.X_seq_len))
             self.predicting_ids = predicting_decoder_output.sample_id
+            predicting_decoder_output.sample_id = tf.identity(predicting_decoder_output.sample_id, name='predict_ids')
 
     def build_backward_path(self):
         masks = tf.sequence_mask(self.Y_seq_len, tf.reduce_max(self.Y_seq_len), dtype=tf.float32)
@@ -189,7 +192,7 @@ class Seq2Seq:
     def infer_sentence(self, input_word, x_idx2word, y_idx2word, batch_size=128):
 
         input_indices = [self.x_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
-        out_indices = self.sess.run(self.predicting_ids, {
+        out_indices = self.sess.run(self.predict_op, {
             self.X: [input_indices] * batch_size,
             self.X_seq_len: [len(input_indices)] * batch_size,
             self.batch_size: batch_size})[0]

@@ -90,6 +90,7 @@ def parse_args():
     parser.add_argument("--batch_size", type=int, default=128, help="batch size")
     parser.add_argument("--hidden_size", type=int, default=128, help="hidden size")
     parser.add_argument("--n_layers", type=int, default=2, help="number of layers in encoder")
+    parser.add_argument("--n_epoch", type=int, default=10)
 
     return parser.parse_args()
 
@@ -117,7 +118,7 @@ def main(args):
     if not args.predict:
         model.build_graph()
         print 'Training ...'
-        model.fit(x_train, y_train, val_data=(x_valid, y_valid), batch_size=batch_size)
+        model.fit(x_train, y_train, val_data=(x_valid, y_valid), batch_size=batch_size, n_epoch=args.n_epoch)
     else:
         print 'Loading pre-trained model ...'
         model.restore_graph()

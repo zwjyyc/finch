@@ -113,9 +113,9 @@ def main(args):
         decoder_embedding_dim=args.hidden_size,
         model_dir=args.model_dir
     )
-    model.build_graph()
     if not args.predict:
         print 'Training ...'
+        model.build_graph()
         model.fit(x_train, y_train, val_data=(x_valid, y_valid), batch_size=batch_size)
     else:
         print 'Loading pre-trained model ...'

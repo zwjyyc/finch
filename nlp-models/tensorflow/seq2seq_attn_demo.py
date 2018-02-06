@@ -111,7 +111,7 @@ def main(args):
         encoder_embedding_dim=args.hidden_size,
         y_word2idx=y_word2idx,
         decoder_embedding_dim=args.hidden_size,
-        model_dir=args.model_dir
+        model_path=args.model_dir
     )
 
     if not args.predict:

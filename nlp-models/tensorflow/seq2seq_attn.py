@@ -16,7 +16,7 @@ def pad_sentence_batch(sentence_batch, pad_int):
 
 class Seq2Seq:
     def __init__(self, rnn_size, n_layers, x_word2idx, encoder_embedding_dim, y_word2idx, decoder_embedding_dim,
-                 x_embs=None, y_embs=None, sess=tf.Session(), grad_clip=5.0, model_dir='my_model'):
+                 x_embs=None, y_embs=None, sess=tf.Session(), grad_clip=5.0, model_path='./my_model'):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
@@ -25,11 +25,9 @@ class Seq2Seq:
         self.y_word2idx = y_word2idx
         self.decoder_embedding_dim = decoder_embedding_dim
         self.sess = sess
-        self.model_dir = model_dir if model_dir else 'my_model'
+        self.model_path = model_path if model_path else 'my_model'
         self.saver = None
         self.predict_op = None
-        if not os.path.isdir(self.model_dir):
-            os.makedirs(self.model_dir)
 
         self._x_go = self.x_word2idx['<go>']
         self._x_eos = self.x_word2idx['<eos>']
@@ -43,8 +41,8 @@ class Seq2Seq:
 
     def restore_graph(self):
         # self.saver =
-        self.saver = tf.train.import_meta_graph('./test_model.meta')
-        self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))
+        self.saver = tf.train.Saver()  # import_meta_graph('./test_model.meta')
+        self.saver.restore(self.sess, tf.train.latest_checkpoint(self.model_path))
 
     def build_graph(self):
         self.X = tf.placeholder(tf.int32, [None, None], 'X')
@@ -187,7 +185,7 @@ class Seq2Seq:
                   % (epoch, n_epoch, val_loss))
             if val_loss < best_metric_val:
                 print 'Storing the model'
-                self.saver.save(self.sess, './test_model')  # self.model_dir)
+                self.saver.save(self.sess, self.model_path)  # self.model_dir)
                 best_metric_val = val_loss
 
     def infer_sentence(self, input_word, x_idx2word, y_idx2word, batch_size=128):

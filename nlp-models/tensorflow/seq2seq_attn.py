@@ -55,9 +55,6 @@ class Seq2Seq:
         self.Y_seq_len = tf.placeholder(tf.int32, [None], 'Y_seq_len')
         self.batch_size = tf.placeholder(tf.int32, [], 'batch_size')
 
-        print self.X.name
-        print self.Y.name
-        print self.X_seq_len.name
         self.build_encoder_layer()
         self.build_decoder_layer()
         self.build_backward_path()

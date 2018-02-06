@@ -45,8 +45,6 @@ class Seq2Seq:
         # self.saver =
         self.saver = tf.train.import_meta_graph('./my_test_model.meta')
         self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))
-        graph = tf.get_default_graph()
-        self.predict_op = graph.get_tensor_by_name("decode_1/decoder/transpose_1:0")
 
     def build_graph(self):
         self.X = tf.placeholder(tf.int32, [None, None])
@@ -190,6 +188,9 @@ class Seq2Seq:
                 best_metric_val = val_loss
 
     def infer_sentence(self, input_word, x_idx2word, y_idx2word, batch_size=128):
+
+        graph = tf.get_default_graph()
+        self.predict_op = graph.get_tensor_by_name("decode_1/decoder/transpose_1:0")
 
         input_indices = [self.x_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
         out_indices = self.sess.run(self.predict_op, {

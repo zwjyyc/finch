@@ -41,12 +41,6 @@ class Seq2Seq:
         self._y_pad = self.y_word2idx['<pad>']
         self._y_unk = self.y_word2idx['<unk>']
 
-        self.X = tf.placeholder(tf.int32, [None, None])
-        self.Y = tf.placeholder(tf.int32, [None, None])
-        self.X_seq_len = tf.placeholder(tf.int32, [None])
-        self.Y_seq_len = tf.placeholder(tf.int32, [None])
-        self.batch_size = tf.placeholder(tf.int32, [])
-
     def restore_graph(self):
         # self.saver =
         self.saver = tf.train.import_meta_graph('./my_test_model.meta')
@@ -55,6 +49,12 @@ class Seq2Seq:
         self.predict_op = graph.get_tensor_by_name("decode_1/decoder/transpose_1:0")
 
     def build_graph(self):
+        self.X = tf.placeholder(tf.int32, [None, None])
+        self.Y = tf.placeholder(tf.int32, [None, None])
+        self.X_seq_len = tf.placeholder(tf.int32, [None])
+        self.Y_seq_len = tf.placeholder(tf.int32, [None])
+        self.batch_size = tf.placeholder(tf.int32, [])
+
         self.build_encoder_layer()
         self.build_decoder_layer()
         self.build_backward_path()
@@ -194,9 +194,7 @@ class Seq2Seq:
         input_indices = [self.x_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
         out_indices = self.sess.run(self.predict_op, {
             self.X: [input_indices] * batch_size,
-            self.Y: [input_indices] * batch_size,
             self.X_seq_len: [len(input_indices)] * batch_size,
-            self.Y_seq_len: [len(input_indices)] * batch_size,
             self.batch_size: batch_size})[0]
         
         print('\nSource')

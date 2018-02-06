@@ -53,13 +53,15 @@ class Seq2Seq:
         self.build_decoder_layer()
         self.build_backward_path()
 
+    def lstm_cell(self, reuse=False):
+        return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+
     def build_encoder_layer(self):
         encoder_embedding = tf.get_variable('encoder_embedding', [len(self.x_word2idx), self.encoder_embedding_dim],
                                             tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
-        lstm_cell = tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=False)
 
         self.encoder_out, self.encoder_state = tf.nn.dynamic_rnn(
-            cell=tf.nn.rnn_cell.MultiRNNCell([lstm_cell for _ in range(self.n_layers)]),
+            cell=tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]),
             inputs=tf.nn.embedding_lookup(encoder_embedding, self.X),
             sequence_length=self.X_seq_len,
             dtype=tf.float32)
@@ -71,9 +73,8 @@ class Seq2Seq:
             memory=self.encoder_out,
             memory_sequence_length=self.X_seq_len)
 
-        lstm_cell = tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
         return tf.contrib.seq2seq.AttentionWrapper(
-            cell=tf.nn.rnn_cell.MultiRNNCell([lstm_cell for _ in range(self.n_layers)]),
+            cell=tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse) for _ in range(self.n_layers)]),
             attention_mechanism=attention_mechanism,
             attention_layer_size=self.rnn_size)
 

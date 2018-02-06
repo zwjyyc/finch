@@ -96,6 +96,7 @@ def parse_args():
 
 def main(args):
     batch_size = args.batch_size
+    print args
 
     if args.predict:
         assert args.model_dir, 'model directory must be specified when predicting'

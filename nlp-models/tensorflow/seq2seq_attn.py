@@ -194,7 +194,9 @@ class Seq2Seq:
         input_indices = [self.x_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
         out_indices = self.sess.run(self.predict_op, {
             self.X: [input_indices] * batch_size,
+            self.Y: [input_indices] * batch_size,
             self.X_seq_len: [len(input_indices)] * batch_size,
+            self.Y_seq_len: [len(input_indices)] * batch_size,
             self.batch_size: batch_size})[0]
         
         print('\nSource')

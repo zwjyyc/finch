@@ -43,7 +43,7 @@ class Seq2Seq:
 
     def restore_graph(self):
         # self.saver =
-        self.saver = tf.train.import_meta_graph('./my_test_model.meta')
+        self.saver = tf.train.import_meta_graph('./test_model.meta')
         self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))
 
     def build_graph(self):
@@ -187,7 +187,7 @@ class Seq2Seq:
                   % (epoch, n_epoch, val_loss))
             if val_loss < best_metric_val:
                 print 'Storing the model'
-                self.saver.save(self.sess, './model.ckpt')  # self.model_dir)
+                self.saver.save(self.sess, './test_model')  # self.model_dir)
                 best_metric_val = val_loss
 
     def infer_sentence(self, input_word, x_idx2word, y_idx2word, batch_size=128):

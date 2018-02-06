@@ -4,60 +4,78 @@ import tensorflow as tf
 import numpy as np
 
 
+def pad_sentence_batch(sentence_batch, pad_int):
+    padded_seqs = []
+    seq_lens = []
+    max_sentence_len = max([len(sentence) for sentence in sentence_batch])
+    for sentence in sentence_batch:
+        padded_seqs.append(sentence + [pad_int] * (max_sentence_len - len(sentence)))
+        seq_lens.append(len(sentence))
+    return padded_seqs, seq_lens
+
+
 class Seq2Seq:
-    def __init__(self, rnn_size, n_layers, X_word2idx, encoder_embedding_dim, Y_word2idx, decoder_embedding_dim,
-                 sess=tf.Session(), grad_clip=5.0):
+    def __init__(self, rnn_size, n_layers, x_word2idx, encoder_embedding_dim, y_word2idx, decoder_embedding_dim,
+                 x_embs=None, y_embs=None, sess=tf.Session(), grad_clip=5.0, model_dir='my_model'):
         self.rnn_size = rnn_size
         self.n_layers = n_layers
         self.grad_clip = grad_clip
-        self.X_word2idx = X_word2idx
+        self.x_word2idx = x_word2idx
         self.encoder_embedding_dim = encoder_embedding_dim
-        self.Y_word2idx = Y_word2idx
+        self.y_word2idx = y_word2idx
         self.decoder_embedding_dim = decoder_embedding_dim
         self.sess = sess
-        self.register_symbols()
-        self.build_graph()
+        self.model_dir = model_dir if model_dir else 'my_model'
+        self.saver = None
 
-    def build_graph(self):
-        self.add_input_layer()
-        self.add_encoder_layer()
-        self.add_decoder_layer()
-        self.add_backward_path()
+        self._x_go = self.x_word2idx['<go>']
+        self._x_eos = self.x_word2idx['<eos>']
+        self._x_pad = self.x_word2idx['<pad>']
+        self._x_unk = self.x_word2idx['<unk>']
 
-    def add_input_layer(self):
+        self._y_go = self.y_word2idx['<go>']
+        self._y_eos = self.y_word2idx['<eos>']
+        self._y_pad = self.y_word2idx['<pad>']
+        self._y_unk = self.y_word2idx['<unk>']
+
         self.X = tf.placeholder(tf.int32, [None, None])
         self.Y = tf.placeholder(tf.int32, [None, None])
         self.X_seq_len = tf.placeholder(tf.int32, [None])
         self.Y_seq_len = tf.placeholder(tf.int32, [None])
         self.batch_size = tf.placeholder(tf.int32, [])
 
-    def lstm_cell(self, reuse=False):
-        return tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+    def restore_graph(self):
+        self.saver = tf.train.import_meta_graph(self.model_dir)
+        self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))
 
-    def add_encoder_layer(self):
-        encoder_embedding = tf.get_variable('encoder_embedding', [len(self.X_word2idx), self.encoder_embedding_dim],
-                                             tf.float32, tf.random_uniform_initializer(-1.0, 1.0))            
+    def build_graph(self):
+        self.build_encoder_layer()
+        self.build_decoder_layer()
+        self.build_backward_path()
+
+    def build_encoder_layer(self):
+        encoder_embedding = tf.get_variable('encoder_embedding', [len(self.x_word2idx), self.encoder_embedding_dim],
+                                            tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
+        lstm_cell = tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=False)
+
         self.encoder_out, self.encoder_state = tf.nn.dynamic_rnn(
-            cell=tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell() for _ in range(self.n_layers)]),
+            cell=tf.nn.rnn_cell.MultiRNNCell([lstm_cell for _ in range(self.n_layers)]),
             inputs=tf.nn.embedding_lookup(encoder_embedding, self.X),
             sequence_length=self.X_seq_len,
             dtype=tf.float32)
         self.encoder_state = tuple(self.encoder_state[-1] for _ in range(self.n_layers))
-    # end method add_encoder_layer
-    
 
     def _attention(self, reuse=False):
         attention_mechanism = tf.contrib.seq2seq.LuongAttention(
-            num_units = self.rnn_size, 
-            memory = self.encoder_out,
-            memory_sequence_length = self.X_seq_len)
-        
-        return tf.contrib.seq2seq.AttentionWrapper(
-            cell = tf.nn.rnn_cell.MultiRNNCell([self.lstm_cell(reuse) for _ in range(self.n_layers)]),
-            attention_mechanism = attention_mechanism,
-            attention_layer_size = self.rnn_size)
-    # end method add_attention
+            num_units=self.rnn_size,
+            memory=self.encoder_out,
+            memory_sequence_length=self.X_seq_len)
 
+        lstm_cell = tf.nn.rnn_cell.LSTMCell(self.rnn_size, initializer=tf.orthogonal_initializer(), reuse=reuse)
+        return tf.contrib.seq2seq.AttentionWrapper(
+            cell=tf.nn.rnn_cell.MultiRNNCell([lstm_cell for _ in range(self.n_layers)]),
+            attention_mechanism=attention_mechanism,
+            attention_layer_size=self.rnn_size)
 
     def processed_decoder_input(self):
         main = tf.strided_slice(self.Y, [0, 0], [self.batch_size, -1], [1, 1]) # remove last char
@@ -65,111 +83,107 @@ class Seq2Seq:
         return decoder_input
     # end method add_decoder_layer
 
-
-    def add_decoder_layer(self):
+    def build_decoder_layer(self):
         with tf.variable_scope('decode'):
-            decoder_embedding = tf.get_variable('decoder_embedding', [len(self.Y_word2idx), self.decoder_embedding_dim],
-                                                 tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
+            decoder_embedding = tf.get_variable('decoder_embedding', [len(self.y_word2idx), self.decoder_embedding_dim],
+                                                tf.float32, tf.random_uniform_initializer(-1.0, 1.0))
             decoder_cell = self._attention()
             training_helper = tf.contrib.seq2seq.TrainingHelper(
-                inputs = tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
-                sequence_length = self.Y_seq_len,
-                time_major = False)
+                inputs=tf.nn.embedding_lookup(decoder_embedding, self.processed_decoder_input()),
+                sequence_length=self.Y_seq_len,
+                time_major=False)
             training_decoder = tf.contrib.seq2seq.BasicDecoder(
-                cell = decoder_cell,
-                helper = training_helper,
-                initial_state = decoder_cell.zero_state(self.batch_size, tf.float32).clone(cell_state=self.encoder_state),
-                output_layer = tf.layers.Dense(len(self.Y_word2idx)))
+                cell=decoder_cell,
+                helper=training_helper,
+                initial_state=decoder_cell.zero_state(self.batch_size, tf.float32).clone(cell_state=self.encoder_state),
+                output_layer=tf.layers.Dense(len(self.y_word2idx)))
             training_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                decoder = training_decoder,
-                impute_finished = True,
-                maximum_iterations = tf.reduce_max(self.Y_seq_len))
+                decoder=training_decoder,
+                impute_finished=True,
+                maximum_iterations=tf.reduce_max(self.Y_seq_len))
             self.training_logits = training_decoder_output.rnn_output
         
         with tf.variable_scope('decode', reuse=True):
             decoder_cell = self._attention(reuse=True)
             predicting_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
-                embedding = tf.get_variable('decoder_embedding'),
-                start_tokens = tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
-                end_token = self._y_eos)
+                embedding=tf.get_variable('decoder_embedding'),
+                start_tokens=tf.tile(tf.constant([self._y_go], dtype=tf.int32), [self.batch_size]),
+                end_token=self._y_eos)
             predicting_decoder = tf.contrib.seq2seq.BasicDecoder(
-                cell = decoder_cell,
-                helper = predicting_helper,
-                initial_state = decoder_cell.zero_state(self.batch_size, tf.float32).clone(cell_state=self.encoder_state),
-                output_layer = tf.layers.Dense(len(self.Y_word2idx), _reuse=True))
-            predicting_decoder_output, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                decoder = predicting_decoder,
-                impute_finished = True,
-                maximum_iterations = 2 * tf.reduce_max(self.X_seq_len))
+                cell=decoder_cell,
+                helper=predicting_helper,
+                initial_state=decoder_cell.zero_state(self.batch_size, tf.float32).clone(cell_state=self.encoder_state),
+                output_layer=tf.layers.Dense(len(self.y_word2idx), _reuse=True))
+            predicting_decoder_output, _, _=tf.contrib.seq2seq.dynamic_decode(
+                decoder=predicting_decoder,
+                impute_finished=True,
+                maximum_iterations=2 * tf.reduce_max(self.X_seq_len))
             self.predicting_ids = predicting_decoder_output.sample_id
-    # end method add_decoder_layer
 
-
-    def add_backward_path(self):
+    def build_backward_path(self):
         masks = tf.sequence_mask(self.Y_seq_len, tf.reduce_max(self.Y_seq_len), dtype=tf.float32)
-        self.loss = tf.contrib.seq2seq.sequence_loss(logits = self.training_logits,
-                                                     targets = self.Y,
-                                                     weights = masks)
+        self.loss = tf.contrib.seq2seq.sequence_loss(logits=self.training_logits, targets=self.Y, weights=masks)
 
         # gradient clipping
         params = tf.trainable_variables()
         gradients = tf.gradients(self.loss, params)
         clipped_gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)
         self.train_op = tf.train.AdamOptimizer().apply_gradients(zip(clipped_gradients, params))
-    # end method add_backward_path
 
+    def next_batch(self, x, y, batch_size):
+        for i in range(0, len(x) - len(x) % batch_size, batch_size):
+            x_batch = x[i: i + batch_size]
+            y_batch = y[i: i + batch_size]
+            padded_x_batch, x_batch_lens = pad_sentence_batch(x_batch, self._x_pad)
+            padded__y_batch, y_batch_lens = pad_sentence_batch(y_batch, self._y_pad)
+            yield (np.array(padded_x_batch),
+                   np.array(padded__y_batch),
+                   x_batch_lens,
+                   y_batch_lens)
 
-    def pad_sentence_batch(self, sentence_batch, pad_int):
-        padded_seqs = []
-        seq_lens = []
-        max_sentence_len = max([len(sentence) for sentence in sentence_batch])
-        for sentence in sentence_batch:
-            padded_seqs.append(sentence + [pad_int] * (max_sentence_len - len(sentence)))
-            seq_lens.append(len(sentence))
-        return padded_seqs, seq_lens
-    # end method pad_sentence_batch
-
-
-    def next_batch(self, X, Y, batch_size):
-        for i in range(0, len(X) - len(X) % batch_size, batch_size):
-            X_batch = X[i : i + batch_size]
-            Y_batch = Y[i : i + batch_size]
-            padded_X_batch, X_batch_lens = self.pad_sentence_batch(X_batch, self._x_pad)
-            padded_Y_batch, Y_batch_lens = self.pad_sentence_batch(Y_batch, self._y_pad)
-            yield (np.array(padded_X_batch),
-                   np.array(padded_Y_batch),
-                   X_batch_lens,
-                   Y_batch_lens)
-    # end method next_batch
-
-
-    def fit(self, X_train, Y_train, val_data, n_epoch=60, display_step=50, batch_size=128):
-        X_test, Y_test = val_data
-        X_test_batch, Y_test_batch, X_test_batch_lens, Y_test_batch_lens = next(
-        self.next_batch(X_test, Y_test, batch_size))
+    def fit(self, x_train, y_train, val_data, n_epoch=10, display_step=500, batch_size=128):
+        x_test, y_test = val_data
+        x_test_batch, y_test_batch, x_test_batch_lens, y_test_batch_lens = \
+            next(self.next_batch(x_test, y_test, batch_size))
 
         self.sess.run(tf.global_variables_initializer())
+
+        best_metric_val = float('inf')
+        self.saver = tf.train.Saver()
+
         for epoch in range(1, n_epoch+1):
-            for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) in enumerate(
-                self.next_batch(X_train, Y_train, batch_size)):
+            for local_step, (X_train_batch, Y_train_batch, X_train_batch_lens, Y_train_batch_lens) \
+                    in enumerate(self.next_batch(x_train, y_train, batch_size)):
                 _, loss = self.sess.run([self.train_op, self.loss], {self.X: X_train_batch,
                                                                      self.Y: Y_train_batch,
                                                                      self.X_seq_len: X_train_batch_lens,
                                                                      self.Y_seq_len: Y_train_batch_lens,
                                                                      self.batch_size: batch_size})
                 if local_step % display_step == 0:
-                    val_loss = self.sess.run(self.loss, {self.X: X_test_batch,
-                                                         self.Y: Y_test_batch,
-                                                         self.X_seq_len: X_test_batch_lens,
-                                                         self.Y_seq_len: Y_test_batch_lens,
+                    val_loss = self.sess.run(self.loss, {self.X: x_test_batch,
+                                                         self.Y: y_test_batch,
+                                                         self.X_seq_len: x_test_batch_lens,
+                                                         self.Y_seq_len: y_test_batch_lens,
                                                          self.batch_size: batch_size})
                     print("Epoch %d/%d | Batch %d/%d | train_loss: %.3f | test_loss: %.3f"
-                        % (epoch, n_epoch, local_step, len(X_train)//batch_size, loss, val_loss))
-    # end method fit
+                          % (epoch, n_epoch, local_step, len(x_train) // batch_size, loss, val_loss))
 
+            val_loss = self.sess.run(self.loss, {self.X: x_test_batch,
+                                                 self.Y: y_test_batch,
+                                                 self.X_seq_len: x_test_batch_lens,
+                                                 self.Y_seq_len: y_test_batch_lens,
+                                                 self.batch_size: batch_size})
 
-    def infer(self, input_word, X_idx2word, Y_idx2word, batch_size=128):        
-        input_indices = [self.X_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
+            print("Epoch %d/%d | test_loss: %.3f"
+                  % (epoch, n_epoch, val_loss))
+            if val_loss < best_metric_val:
+                print 'Storing the model'
+                self.saver.save(self.sess, self.model_dir)
+                best_metric_val = val_loss
+        self.sess.close()
+
+    def infer_sentence(self, input_word, x_idx2word, y_idx2word, batch_size=128):
+        input_indices = [self.x_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
         out_indices = self.sess.run(self.predicting_ids, {
             self.X: [input_indices] * batch_size,
             self.X_seq_len: [len(input_indices)] * batch_size,
@@ -177,24 +191,10 @@ class Seq2Seq:
         
         print('\nSource')
         print('Word: {}'.format([i for i in input_indices]))
-        out_str = 'IN: {}'.format(' '.join([X_idx2word[i].encode('utf8') for i in input_indices]))
+        out_str = 'IN: {}'.format(' '.join([x_idx2word[i].encode('utf8') for i in input_indices]))
         print(out_str)
         
         print('\nTarget')
         print('Word: {}'.format([i for i in out_indices]))
-        print('OUT: {}'.format(' '.join([Y_idx2word[i] for i in out_indices])))
-    # end method infer
-
-
-    def register_symbols(self):
-        self._x_go = self.X_word2idx['<go>']
-        self._x_eos = self.X_word2idx['<eos>']
-        self._x_pad = self.X_word2idx['<pad>']
-        self._x_unk = self.X_word2idx['<unk>']
-
-        self._y_go = self.Y_word2idx['<go>']
-        self._y_eos = self.Y_word2idx['<eos>']
-        self._y_pad = self.Y_word2idx['<pad>']
-        self._y_unk = self.Y_word2idx['<unk>']
-    # end method add_symbols
-# end class
+        print('OUT: {}'.format(' '.join([y_idx2word[i] for i in out_indices])))
+        self.sess.close()

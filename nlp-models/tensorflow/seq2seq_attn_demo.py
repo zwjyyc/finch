@@ -83,6 +83,8 @@ def parse_args():
                         help="Path of source and target vocabulary")
     parser.add_argument("--validation", type=str, nargs=2,
                         help="Path of validation file")
+    parser.add_argument("--predict", default=False, action='store_true')
+    parser.add_argument("--model_dir", default='', help="model directory")
 
     # model settings
     parser.add_argument("--batch_size", type=int, default=128, help="batch size")
@@ -95,19 +97,32 @@ def parse_args():
 def main(args):
     batch_size = args.batch_size
 
-    x_train, y_train, x_valid, y_valid, x_word2idx, y_word2idx, x_idx2word, y_idx2word = preprocess_data(args.input, args.validation, args.vocabulary)
+    if args.predict:
+        assert args.model_dir, 'model directory must be specified when predicting'
+
+    x_train, y_train, x_valid, y_valid, x_word2idx, y_word2idx, x_idx2word, y_idx2word = \
+        preprocess_data(args.input, args.validation, args.vocabulary)
 
     model = Seq2Seq(
         rnn_size=args.hidden_size,
         n_layers=args.n_layers,
-        X_word2idx=x_word2idx,
+        x_word2idx=x_word2idx,
         encoder_embedding_dim=args.hidden_size,
-        Y_word2idx=y_word2idx,
+        y_word2idx=y_word2idx,
         decoder_embedding_dim=args.hidden_size,
+        model_dir=args.model_dir
     )
+    model.build_graph()
+    if not args.predict:
+        print 'Training ...'
+        model.fit(x_train, y_train, val_data=(x_valid, y_valid), batch_size=batch_size)
+    else:
+        print 'Loading pre-trained model ...'
+        model.restore_graph()
 
-    model.fit(x_train, y_train, val_data=(x_valid, y_valid), batch_size=batch_size)
-    model.infer(u'我 的 青蛙 叫 呱呱！', x_idx2word, y_idx2word)
+    print 'Translating ...'
+    model.infer_sentence(u'我 的 青蛙 叫 呱呱 ！', x_idx2word, y_idx2word)
+    model.infer_sentence(u'我 非常 期待 它 带 礼物 回来 !', x_idx2word, y_idx2word)
 
 if __name__ == '__main__':
     main(parse_args())

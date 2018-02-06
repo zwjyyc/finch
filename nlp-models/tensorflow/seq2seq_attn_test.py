@@ -47,9 +47,9 @@ def main():
     model = Seq2Seq(
         rnn_size=50,
         n_layers=2,
-        X_word2idx=X_char2idx,
+        x_word2idx=X_char2idx,
         encoder_embedding_dim=15,
-        Y_word2idx=Y_char2idx,
+        y_word2idx=Y_char2idx,
         decoder_embedding_dim=15,
     )
     model.fit(X_train, Y_train, val_data=(X_test, Y_test), batch_size=batch_size)

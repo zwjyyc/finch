@@ -126,7 +126,7 @@ class Seq2Seq:
                 impute_finished=True,
                 maximum_iterations=2 * tf.reduce_max(self.X_seq_len))
             self.predicting_ids = predicting_decoder_output.sample_id
-            predicting_decoder_output.sample_id = tf.identity(predicting_decoder_output.sample_id, name='predict_ids')
+            print self.predicting_ids.name
 
     def build_backward_path(self):
         masks = tf.sequence_mask(self.Y_seq_len, tf.reduce_max(self.Y_seq_len), dtype=tf.float32)

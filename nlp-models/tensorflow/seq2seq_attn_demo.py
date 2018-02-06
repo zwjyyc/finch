@@ -84,7 +84,7 @@ def parse_args():
     parser.add_argument("--validation", type=str, nargs=2,
                         help="Path of validation file")
     parser.add_argument("--predict", default=False, action='store_true')
-    parser.add_argument("--model_dir", default='', help="model directory")
+    parser.add_argument("--model_path", default='', help="model path")
 
     # model settings
     parser.add_argument("--batch_size", type=int, default=128, help="batch size")
@@ -111,7 +111,7 @@ def main(args):
         encoder_embedding_dim=args.hidden_size,
         y_word2idx=y_word2idx,
         decoder_embedding_dim=args.hidden_size,
-        model_path=args.model_dir
+        model_path=args.model_path
     )
 
     if not args.predict:

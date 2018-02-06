@@ -52,7 +52,7 @@ class Seq2Seq:
         self.saver = tf.train.import_meta_graph('./my_test_model.meta')
         self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))
         graph = tf.get_default_graph()
-        self.predict_op = graph.get_tensor_by_name("predict_ids")
+        self.predict_op = graph.get_tensor_by_name("decode_1/decoder/transpose_1:0")
 
     def build_graph(self):
         self.build_encoder_layer()

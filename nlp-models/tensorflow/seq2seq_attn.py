@@ -184,7 +184,6 @@ class Seq2Seq:
                 print 'Storing the model'
                 self.saver.save(self.sess, './my_test_model')  # self.model_dir)
                 best_metric_val = val_loss
-        self.sess.close()
 
     def infer_sentence(self, input_word, x_idx2word, y_idx2word, batch_size=128):
         input_indices = [self.x_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
@@ -201,4 +200,3 @@ class Seq2Seq:
         print('\nTarget')
         print('Word: {}'.format([i for i in out_indices]))
         print('OUT: {}'.format(' '.join([y_idx2word[i] for i in out_indices])))
-        self.sess.close()

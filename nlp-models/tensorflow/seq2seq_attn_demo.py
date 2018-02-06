@@ -98,8 +98,8 @@ def main(args):
     batch_size = args.batch_size
     print args
 
-    if args.predict:
-        assert args.model_dir, 'model directory must be specified when predicting'
+    # if args.predict:
+    #    assert args.model_dir, 'model directory must be specified when predicting'
 
     x_train, y_train, x_valid, y_valid, x_word2idx, y_word2idx, x_idx2word, y_idx2word = \
         preprocess_data(args.input, args.validation, args.vocabulary)

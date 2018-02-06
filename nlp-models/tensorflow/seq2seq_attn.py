@@ -53,6 +53,9 @@ class Seq2Seq:
         self.Y_seq_len = tf.placeholder(tf.int32, [None], 'Y_seq_len')
         self.batch_size = tf.placeholder(tf.int32, [], 'batch_size')
 
+        print self.X.name
+        print self.Y.name
+        print self.X_seq_len.name
         self.build_encoder_layer()
         self.build_decoder_layer()
         self.build_backward_path()
@@ -191,9 +194,9 @@ class Seq2Seq:
 
         graph = tf.get_default_graph()
         predict_op = graph.get_tensor_by_name("decode_1/decoder/transpose_1:0")
-        x_tensor = graph.get_tensor_by_name('X')
-        x_len_tensor = graph.get_tensor_by_name('X_seq_len')
-        batch_size_tensor = graph.get_tensor_by_name('batch_size')
+        x_tensor = graph.get_tensor_by_name('X:0')
+        x_len_tensor = graph.get_tensor_by_name('X_seq_len:0')
+        batch_size_tensor = graph.get_tensor_by_name('batch_size:0')
 
         input_indices = [self.x_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
         out_indices = self.sess.run(predict_op, {

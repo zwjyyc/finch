@@ -47,11 +47,11 @@ class Seq2Seq:
         self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))
 
     def build_graph(self):
-        self.X = tf.placeholder(tf.int32, [None, None])
-        self.Y = tf.placeholder(tf.int32, [None, None])
-        self.X_seq_len = tf.placeholder(tf.int32, [None])
-        self.Y_seq_len = tf.placeholder(tf.int32, [None])
-        self.batch_size = tf.placeholder(tf.int32, [])
+        self.X = tf.placeholder(tf.int32, [None, None], 'X')
+        self.Y = tf.placeholder(tf.int32, [None, None], 'Y')
+        self.X_seq_len = tf.placeholder(tf.int32, [None], 'X_seq_len')
+        self.Y_seq_len = tf.placeholder(tf.int32, [None], 'Y_seq_len')
+        self.batch_size = tf.placeholder(tf.int32, [], 'batch_size')
 
         self.build_encoder_layer()
         self.build_decoder_layer()
@@ -190,13 +190,16 @@ class Seq2Seq:
     def infer_sentence(self, input_word, x_idx2word, y_idx2word, batch_size=128):
 
         graph = tf.get_default_graph()
-        self.predict_op = graph.get_tensor_by_name("decode_1/decoder/transpose_1:0")
+        predict_op = graph.get_tensor_by_name("decode_1/decoder/transpose_1:0")
+        x_tensor = graph.get_tensor_by_name('X')
+        x_len_tensor = graph.get_tensor_by_name('X_seq_len')
+        batch_size_tensor = graph.get_tensor_by_name('batch_size')
 
         input_indices = [self.x_word2idx.get(char, self._x_unk) for char in input_word.strip().split()]
-        out_indices = self.sess.run(self.predict_op, {
-            self.X: [input_indices] * batch_size,
-            self.X_seq_len: [len(input_indices)] * batch_size,
-            self.batch_size: batch_size})[0]
+        out_indices = self.sess.run(predict_op, {
+            x_tensor: [input_indices] * batch_size,
+            x_len_tensor: [len(input_indices)] * batch_size,
+            batch_size_tensor: batch_size})[0]
         
         print('\nSource')
         print('Word: {}'.format([i for i in input_indices]))

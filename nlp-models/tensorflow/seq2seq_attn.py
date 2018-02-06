@@ -29,6 +29,10 @@ class Seq2Seq:
         self.saver = None
         self.predict_op = None
 
+        model_dir = os.path.dirname(self.model_path)
+        if not os.path.isdir(model_dir):
+            os.makedirs(model_dir)
+
         self._x_go = self.x_word2idx['<go>']
         self._x_eos = self.x_word2idx['<eos>']
         self._x_pad = self.x_word2idx['<pad>']

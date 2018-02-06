@@ -48,7 +48,7 @@ class Seq2Seq:
         self.batch_size = tf.placeholder(tf.int32, [])
 
     def restore_graph(self):
-        self.saver = tf.train.import_meta_graph('./my_test_model')
+        self.saver = tf.train.import_meta_graph('./my_test_model.meta')
         self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))
 
     def build_graph(self):
